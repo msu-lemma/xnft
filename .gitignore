@@ -1,0 +1,9 @@
+# pixi environments
+.pixi/*
+!.pixi/config.toml
+
+# Sphinx
+docs/build
+
+# macOS
+.DS_Store

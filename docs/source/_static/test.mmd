@@ -1,0 +1,51 @@
+---
+title: Near-Field Measurement System Class Diagram
+config:
+  theme: default
+---
+classDiagram
+direction TB
+
+
+    %% class Issue {
+	%%     +int id
+	%%     +String title
+	%%     +String description
+	%%     +Status status
+	%%     +User assignedTo
+	%%     +start()
+	%%     +complete()
+    %% }
+    
+    class FieldData {
+        +xarray.DataArray fields
+    }
+
+    class NearFieldData {
+
+    }
+
+    class FarFieldData {
+
+    }
+
+    <<Abstract>> FieldData
+    FieldData <|-- NearFieldData : Inheritance
+    FieldData <|-- FarFieldData : Inheritance
+    
+	%% <<Abstract>> Issue
+	%% <<Abstract>> User
+	%% <<interface>> TaskManager
+	%% <<enumeration>> Status
+	%% <<enumeration>> Severity
+    %% TaskManager <|.. TaskApp
+    %% Issue "1" --> User : assignedTo
+    %% Issue "1" --> Status : has
+    %% Bug "1" --> Severity : has
+    %% Issue <|-- Bug : Inheritance
+    %% Issue <|-- Epic : Inheritance
+    %% Issue <|-- Task : Inheritance
+    %% Issue <|-- Story : Inheritance
+    %% Epic "0..*" --> "many" Story
+    %% User <|-- Admin
+    %% User <|-- RegularUser
