@@ -1,16 +1,17 @@
 """
 Loader functions for 'theory' files.
 
-Theory files contain information to generate a theoretical ideal aperture [§12, 1].
+Theory files contain information to generate a theoretical ideal
+aperture [§12, 1].
 
-[1] C. A. Balanis, Antenna theory: analysis and design, 3. ed. Hoboken, N.J: Wiley-Interscience, 2005.
+[1] C. A. Balanis, Antenna theory: analysis and design, 3. ed. Hoboken,
+    N.J: Wiley-Interscience, 2005.
 """
 
 from pathlib import Path
 import logging
 
 import yaml
-import pandas as pd
 import numpy as np
 import xarray as xr
 
@@ -94,7 +95,8 @@ def load_theory_near_field_yaml(file_path: Path) -> xr.Dataset:
         ]
     else:
         raise NotImplementedError(
-            f"Excitation distribution {excitation_distribution} is not yet implemented."
+            f"Excitation distribution {excitation_distribution} is not yet "
+            "implemented."
         )
 
     e_field = np.stack([e_x, e_y, e_z])
@@ -189,11 +191,10 @@ def load_theory_far_field_yaml(file_path: Path) -> xr.Dataset:
     d_2 = ap_x**2 + ap_y**2  # Maximum aperture extents, squared
     r_ff = 2.0 * d_2 / wavelength  # Far-field radius (m)
 
-    # Constants from [Table 12.2, 1]
+    # Constants from [Table 12.1, 1]
 
-    c_ff = 1j * ap_x * ap_y * k_0 * e_0
     greens_func_ff = np.exp(-1j * k_0 * r_ff) / (2.0 * np.pi * r_ff)
-    c_ff *= greens_func_ff
+    c_ff = 1j * ap_x * ap_y * k_0 * e_0 * greens_func_ff
 
     x_ff = k_0 * ap_x / 2 * np.sin(theta_grid) * np.cos(phi_grid)
     y_ff = k_0 * ap_y / 2 * np.sin(theta_grid) * np.sin(phi_grid)
@@ -201,42 +202,21 @@ def load_theory_far_field_yaml(file_path: Path) -> xr.Dataset:
     excitation_distribution = fd["antenna"]["excitation"]["distribution"]
 
     if excitation_distribution == "uniform":
-        e_theta = (
-            c_ff
-            * np.sin(phi_grid)
-            * np.sinc(x_ff / np.pi)
-            * np.sinc(y_ff / np.pi)
-        )
-        e_phi = (
-            c_ff
-            * np.cos(theta_grid)
-            * np.cos(phi_grid)
-            * np.sinc(x_ff / np.pi)
-            * np.sinc(y_ff / np.pi)
-        )
+        cx = np.sinc(x_ff / np.pi)
+        cy = np.sinc(y_ff / np.pi)
+        e_theta = c_ff * np.sin(phi_grid) * cx * cy
+        e_phi = c_ff * np.cos(theta_grid) * np.cos(phi_grid) * cx * cy
     elif excitation_distribution == "te10":
-        e_theta = (
-            -np.pi
-            / 2
-            * c_ff
-            * np.sin(phi_grid)
-            * np.cos(x_ff)
-            / (x_ff**2 - (np.pi / 2) ** 2)
-            * np.sinc(y_ff / np.pi)
-        )
+        cx = np.cos(x_ff) / (x_ff**2 - (np.pi / 2)**2)
+        cy = np.sinc(y_ff / np.pi)
+        e_theta = -np.pi / 2 * c_ff * np.sin(phi_grid) * cx * cy
         e_phi = (
-            -np.pi
-            / 2
-            * c_ff
-            * np.cos(theta_grid)
-            * np.cos(phi_grid)
-            * np.cos(x_ff)
-            / (x_ff**2 - (np.pi / 2) ** 2)
-            * np.sinc(y_ff / np.pi)
+            -np.pi / 2 * c_ff * np.cos(theta_grid) * np.cos(phi_grid) * cx * cy
         )
     else:
         raise NotImplementedError(
-            f"Excitation distribution {excitation_distribution} is not yet implemented."
+            f"Excitation distribution {excitation_distribution} is not yet "
+            "implemented."
         )
 
     h_theta = -e_phi / eta
