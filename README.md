@@ -2,7 +2,17 @@
 
 ## Installation
 
-...
+To quickly install the environment to run `xnft`, follow the steps below:
+
+1. Install Pixi package manager: https://pixi.sh/latest/
+2. Install the `default` environment by running: 
+    ```shell
+    pixi install
+    ```
+3. Launch `xnft` by running: 
+    ```shell
+    pixi run xnft
+    ```
 
 ## Development
 
@@ -10,7 +20,8 @@
 
 ### Upgrading Dependencies
 
-> [!warning] Upgrading all dependencies may break software due to incompatible changes in newer versions of libraries.
+> [!warning] 
+> Upgrading all dependencies may break software due to incompatible changes in newer versions of libraries.
 
 To upgrade dependencies listed in the `pyproject.toml` using pixi, run 
 ```shell
