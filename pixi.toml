@@ -31,7 +31,7 @@ test = ["test"]
 test-metal = ["test", "metal"]
 docs = ["docs"]
 jupyter = ["dev", "jupyter"]
-jupyter-metal = ["metal", "dev-metal", "jupyter"]
+jupyter-metal = ["dev", "metal", "dev-metal", "jupyter"]
 
 [tasks]
 
@@ -62,7 +62,7 @@ build-pdf-docs = { cmd = [
 build-docs = { depends-on = ["build-html-docs", "build-pdf-docs"] }
 
 [feature.dev.tasks]
-format = { cmd = ["black", "$PIXI_PROJECT_ROOT"] }
+format = { cmd = ["black", "$PIXI_PROJECT_ROOT", "--line-length", "79"] }
 
 [dependencies]
 ipympl = ">=0.9.8,<0.10"
