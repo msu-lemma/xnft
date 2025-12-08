@@ -316,7 +316,9 @@ def load_hfss_far_field_ffd(file_path: Path) -> xr.Dataset:
                     float(x) for x in line.split(" ")
                 ]
                 phi_sample_location_array = np.radians(
-                    np.linspace(phi_start_deg, phi_stop_deg, int(phi_num_steps))
+                    np.linspace(
+                        phi_start_deg, phi_stop_deg, int(phi_num_steps)
+                    )
                 )
 
             # Extract number of frequencies from header

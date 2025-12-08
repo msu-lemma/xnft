@@ -19,7 +19,7 @@ def generate_tests():
     tests_list = []
     for source in test_dict["source"]:
         for field in test_dict["field"]:
-            nf_test_dir = test_dir / "data" / f'{field}_field' / source
+            nf_test_dir = test_dir / "data" / f"{field}_field" / source
             for file in nf_test_dir.iterdir():
                 if file.is_file() and file.name[0:3].isnumeric():
                     tests_list.append((source, field, file))
@@ -27,7 +27,7 @@ def generate_tests():
     return tests_list
 
 
-@pytest.mark.parametrize('source,field,file', generate_tests())
+@pytest.mark.parametrize("source,field,file", generate_tests())
 def test_loaders(source, field, file):
     """
     Test loaders.
@@ -36,5 +36,6 @@ def test_loaders(source, field, file):
     try:
         assert isinstance(result, xr.Dataset)
     except AssertionError as exc:
-        raise AssertionError(f'Error processing test: {source, field, file} / {result}') from exc
-
+        raise AssertionError(
+            f"Error processing test: {source, field, file} / {result}"
+        ) from exc

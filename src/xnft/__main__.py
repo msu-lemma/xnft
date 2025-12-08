@@ -7,6 +7,7 @@ from . import cli, gui
 
 logger = logging.getLogger(__name__)
 
+
 def main():
     """
     Main entrypoint function for xnft.

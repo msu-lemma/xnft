@@ -83,7 +83,7 @@ class FileLoaderRegistry:
             raise NotImplementedError(
                 f"No file loader exists for: {{ source: '{source}', field: '{field}', extension: '{extension}' }} ({loader_key}). Available options are {self._loaders}. {exc}"
             ) from exc
-        
+
         return_value = loader_function(file_path)
 
         return return_value
