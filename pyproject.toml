@@ -30,4 +30,4 @@ ignore_missing_imports = true
 # === PyTest Configuration ===
 
 [tool.pytest.ini_options]
-addopts = "--cov=xnft --cov-report term --cov-report xml:cov.xml -n auto"
+addopts = "--cov=xnft --cov-report term --cov-report xml:coverage.xml -n auto"
