@@ -82,6 +82,7 @@ pyside6 = ">=6.9.3,<7"
 pyqtgraph = ">=0.14.0,<0.15"
 pyyaml = ">=6.0.3,<7"
 quantiphy = ">=2.20,<3"
+git-lfs = ">=3.7.1,<4"
 
 [pypi-dependencies]
 xnft = { path = ".", editable = true }
