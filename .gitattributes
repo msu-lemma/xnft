@@ -4,7 +4,3 @@ pixi.lock merge=binary gitlab-language=yaml gitlab-generated=true
 *.ffd filter=lfs diff=lfs merge=lfs -text
 *.nfd filter=lfs diff=lfs merge=lfs -text
 *.h5 filter=lfs diff=lfs merge=lfs -text
-.h5 filter=lfs diff=lfs merge=lfs -text
-.nfd filter=lfs diff=lfs merge=lfs -text
-.ffd filter=lfs diff=lfs merge=lfs -text
-.csv filter=lfs diff=lfs merge=lfs -text
