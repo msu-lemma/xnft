@@ -15,7 +15,7 @@ import yaml
 import xnft.loaders  # noqa: F401  # pylint: disable=unused-import
 
 from . import __version__
-from .core import WELCOME_BANNER, nft
+from .core.core import WELCOME_BANNER, nft
 from .loaders.file_registry import registry
 
 logger = logging.getLogger(__name__)

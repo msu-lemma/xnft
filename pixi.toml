@@ -11,6 +11,7 @@ preview = ["pixi-build"]
 # often conservatively old.
 macos = "15.0"
 # cuda = "12"
+libc = { family = "glibc", version = "2.39" }  # Minimum required for pyside6-essentials
 
 [package.build.backend]
 name = "pixi-build-python"
@@ -78,7 +79,7 @@ clang = ">=21.1.7,<22"
 xarray = ">=2025.12.0,<2026"
 uv = ">=0.9.16,<0.10"
 click = ">=8.3.1,<9"
-pyside6 = ">=6.9.3,<7"
+# pyside6 = ">=6.9.3,<7"
 pyqtgraph = ">=0.14.0,<0.15"
 pyyaml = ">=6.0.3,<7"
 quantiphy = ">=2.20,<3"
@@ -87,6 +88,8 @@ git-lfs = ">=3.7.1,<4"
 [pypi-dependencies]
 xnft = { path = ".", editable = true }
 rocket-fft = { git = "https://github.com/styfenschaer/rocket-fft.git", rev = "b707c76bed5de65355c5e3bb0d5fbf167cae93c7" }
+pyside6-qtads = ">=4.4.1.2, <5"
+
 
 [feature.metal]
 platforms = ["osx-arm64", "linux-64"]

@@ -15,7 +15,8 @@ from numpy.fft import ifftn, ifftshift
 
 from quantiphy import Quantity
 
-from . import __version__
+from .. import __version__
+from . import project
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +33,10 @@ WELCOME_BANNER = (
 """
     f"=== xnft - version {__version__} ===\n"
 )
+
+
+def new_project():
+    pass
 
 
 def nft(
