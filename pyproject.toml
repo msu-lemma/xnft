@@ -8,11 +8,11 @@ authors = [
 ]
 maintainers = [{ name = "Jason Merlo", email = "merlojas@msu.edu" }]
 readme = "README.md"
-requires-python = ">=3.12"
 description = "Near-field to far-field antenna measurement transformation software."
 
 [project.scripts]
-xnft = "xnft.__main__:main"
+xnft = "xnft.cli.cli:main"
+xnft-gui = "xnft.gui.app:main"
 
 [project.urls]
 Homepage = "https://gitlab.msu.edu/ece-lemma/near-field"
