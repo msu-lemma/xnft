@@ -1,57 +1,34 @@
 """Module providing command line interfaces."""
 
-import logging.config
-
-# from importlib import resources
-
 import click
-import yaml
-
-# TODO: REMOVE THESE LINES -- FOR TESTING ONLY
-# import numpy as np
-# import matplotlib.pyplot as plt
+import logging
 
 # Registers all loaders
 import xnft.loaders  # noqa: F401  # pylint: disable=unused-import
 
-from . import __version__
-from .core.core import WELCOME_BANNER, nft
-from .loaders.file_registry import registry
+from .. import __version__
+from ..core.algorithms import nft
+from ..loaders.file_registry import registry
 
 logger = logging.getLogger(__name__)
 
+WELCOME_BANNER = (
+    r"""
+              __ _
+             / _| |
+ __  ___ __ | |_| |_
+ \ \/ / '_ \|  _| __|
+  >  <| | | | | | |_
+ /_/\_\_| |_|_|  \__|
 
-def configure_logging(
-    config_path: str | None = None,  # default_config: str = "logging.dev.yaml"
-):
-    """
-    Configure logging format.
-
-    Parameters
-    ----------
-    config_path : _type_, optional
-        _description_, by default None
-    default_config : str, optional
-        _description_, by default "logging.dev.yaml"
-    """
-    # if config_path is None:
-    #     with resources.as_file(
-    #         resources.files("xnft.resources") / default_config
-    #     ) as p:
-    if config_path is not None:
-        with open(config_path, encoding="utf-8") as f:
-            config_dict = yaml.safe_load(f)
-        logging.config.dictConfig(config_dict)
+"""
+    f"=== xnft - version {__version__} ===\n"
+)
 
 
 # @click.group(invoke_without_command=True)
 @click.command()
 @click.version_option(__version__, "--version", prog_name="xnft")
-@click.option(
-    "--log-config",
-    type=click.Path(exists=True),
-    help="Path to logging configuration YAML file.",
-)
 @click.option(
     "-s",
     "--source",
@@ -92,14 +69,11 @@ def configure_logging(
     help="Path to far-field file",
 )
 # @click.pass_context
-def main(
-    source: str, near_field_file: str, far_field_file: str, log_config: str
-) -> None:
+def main(source: str, near_field_file: str, far_field_file: str) -> None:
     """
     Main CLI Entrypoint.
     """
     click.echo(WELCOME_BANNER)
-    configure_logging(log_config)
     logger.debug(
         "source=%s:%s, near_field_file=%s:%s, far_field_file=%s:%s",
         source,
@@ -125,3 +99,7 @@ def main(
 
     # Begin NFT computation
     nft(near_field_data, far_field_data)
+
+
+if __name__ == "__main__":
+    main()

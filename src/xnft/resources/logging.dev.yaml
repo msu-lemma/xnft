@@ -12,7 +12,8 @@ handlers:
 root:
   level: INFO
   handlers: [console]
-# Example to change log level of submodules
+
+# Set log level of submodules
 loggers:
   xnft.loaders:
     level: INFO
