@@ -10,7 +10,7 @@ preview = ["pixi-build"]
 # to find packages that will run on these requirements. The Pixi defaults are
 # often conservatively old.
 macos = "15.0"
-# cuda = "12"
+cuda = "12"
 # libc = { family = "glibc", version = "2.39" }  # Minimum required for pyside6-essentials
 
 [package.build.backend]
@@ -88,7 +88,7 @@ git-lfs = ">=3.7.1,<4"
 
 [pypi-dependencies]
 xnft = { path = ".", editable = true }
-rocket-fft = { git = "https://github.com/styfenschaer/rocket-fft.git", rev = "b707c76bed5de65355c5e3bb0d5fbf167cae93c7" }
+rocket-fft = ">=0.3.1"  # { git = "https://github.com/styfenschaer/rocket-fft.git", rev = "b707c76bed5de65355c5e3bb0d5fbf167cae93c7" }
 
 
 [feature.metal]

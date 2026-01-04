@@ -289,7 +289,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/linux-64/zlib-ng-2.3.2-hceb46e0_1.conda
       - conda: https://prefix.dev/conda-forge/linux-64/zstd-1.5.7-hb78ec9c_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/55/0d/ac67fb0b2fac382ab5585719bbd1f4927c19ba0ee3bbc28dc8a1ef83e81d/rocket_fft-0.3.1-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
       - pypi: ./
       linux-aarch64:
       - conda: https://prefix.dev/conda-forge/linux-aarch64/_openmp_mutex-4.5-2_gnu.tar.bz2
@@ -572,7 +572,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/linux-aarch64/zlib-ng-2.3.2-ha7cb516_1.conda
       - conda: https://prefix.dev/conda-forge/linux-aarch64/zstd-1.5.7-h85ac4a6_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/48/2c/5bbe8d6b0c4e009f7bc6f9f4eee802a9b556ec2c3b02b9d5e5ccfa8edff1/rocket_fft-0.3.1-cp313-cp313-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl
       - pypi: ./
       osx-64:
       - conda: https://prefix.dev/conda-forge/osx-64/_openmp_mutex-4.5-7_kmp_llvm.conda
@@ -825,7 +825,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/osx-64/zlib-ng-2.3.2-h8bce59a_1.conda
       - conda: https://prefix.dev/conda-forge/osx-64/zstd-1.5.7-h3eecb57_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/2f/33/1b1025d47226031616bf1ac02e63f240d02b89fe2b8462b35d1766519968/rocket_fft-0.3.1-cp313-cp313-macosx_10_13_x86_64.whl
       - pypi: ./
       osx-arm64:
       - conda: https://prefix.dev/conda-forge/osx-arm64/_openmp_mutex-4.5-7_kmp_llvm.conda
@@ -1078,7 +1078,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/osx-arm64/zlib-ng-2.3.2-hed4e4f5_1.conda
       - conda: https://prefix.dev/conda-forge/osx-arm64/zstd-1.5.7-hbf9d68e_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/bd/3a/41b7a3355e6d44139f2a891d4763ff0a1eeb634fc0faa43cefdb1cdda702/rocket_fft-0.3.1-cp312-cp312-macosx_11_0_arm64.whl
       - pypi: ./
       win-64:
       - conda: https://prefix.dev/conda-forge/win-64/_openmp_mutex-4.5-2_gnu.conda
@@ -1315,7 +1315,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/win-64/zlib-ng-2.3.2-h0261ad2_1.conda
       - conda: https://prefix.dev/conda-forge/win-64/zstd-1.5.7-h534d264_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/f8/af/0ab2b29548925c6f84607010d3bf5a928331232d1ef54f273ab9989c64c0/rocket_fft-0.3.1-cp313-cp313-win_amd64.whl
       - pypi: ./
   dev:
     channels:
@@ -1629,7 +1629,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/linux-64/zlib-ng-2.3.2-hceb46e0_1.conda
       - conda: https://prefix.dev/conda-forge/linux-64/zstd-1.5.7-hb78ec9c_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/c8/92/98bd01cad9e5ceeb383722d744597d066e37cdd0e54742906341aa369c28/rocket_fft-0.3.1-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
       - pypi: ./
       linux-aarch64:
       - conda: https://prefix.dev/conda-forge/linux-aarch64/_openmp_mutex-4.5-2_gnu.tar.bz2
@@ -1935,7 +1935,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/linux-aarch64/zlib-ng-2.3.2-ha7cb516_1.conda
       - conda: https://prefix.dev/conda-forge/linux-aarch64/zstd-1.5.7-h85ac4a6_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/48/2c/5bbe8d6b0c4e009f7bc6f9f4eee802a9b556ec2c3b02b9d5e5ccfa8edff1/rocket_fft-0.3.1-cp313-cp313-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl
       - pypi: ./
       osx-64:
       - conda: https://prefix.dev/conda-forge/osx-64/_openmp_mutex-4.5-7_kmp_llvm.conda
@@ -2210,7 +2210,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/osx-64/zlib-ng-2.3.2-h8bce59a_1.conda
       - conda: https://prefix.dev/conda-forge/osx-64/zstd-1.5.7-h3eecb57_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/2f/33/1b1025d47226031616bf1ac02e63f240d02b89fe2b8462b35d1766519968/rocket_fft-0.3.1-cp313-cp313-macosx_10_13_x86_64.whl
       - pypi: ./
       osx-arm64:
       - conda: https://prefix.dev/conda-forge/osx-arm64/_openmp_mutex-4.5-7_kmp_llvm.conda
@@ -2485,7 +2485,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/osx-arm64/zlib-ng-2.3.2-hed4e4f5_1.conda
       - conda: https://prefix.dev/conda-forge/osx-arm64/zstd-1.5.7-hbf9d68e_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/af/3c/371012b4ffa4697574ecfa148e8068a74e6ad57a182ec78f9b221bd4270c/rocket_fft-0.3.1-cp313-cp313-macosx_11_0_arm64.whl
       - pypi: ./
       win-64:
       - conda: https://prefix.dev/conda-forge/win-64/_openmp_mutex-4.5-2_gnu.conda
@@ -2744,7 +2744,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/win-64/zlib-ng-2.3.2-h0261ad2_1.conda
       - conda: https://prefix.dev/conda-forge/win-64/zstd-1.5.7-h534d264_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/f8/af/0ab2b29548925c6f84607010d3bf5a928331232d1ef54f273ab9989c64c0/rocket_fft-0.3.1-cp313-cp313-win_amd64.whl
       - pypi: ./
   dev-metal:
     channels:
@@ -3052,7 +3052,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/linux-64/zlib-ng-2.3.2-hceb46e0_1.conda
       - conda: https://prefix.dev/conda-forge/linux-64/zstd-1.5.7-hb78ec9c_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/c8/92/98bd01cad9e5ceeb383722d744597d066e37cdd0e54742906341aa369c28/rocket_fft-0.3.1-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
       - pypi: ./
       osx-arm64:
       - conda: https://prefix.dev/conda-forge/osx-arm64/_openmp_mutex-4.5-7_kmp_llvm.conda
@@ -3320,7 +3320,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/osx-arm64/zlib-ng-2.3.2-hed4e4f5_1.conda
       - conda: https://prefix.dev/conda-forge/osx-arm64/zstd-1.5.7-hbf9d68e_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/af/3c/371012b4ffa4697574ecfa148e8068a74e6ad57a182ec78f9b221bd4270c/rocket_fft-0.3.1-cp313-cp313-macosx_11_0_arm64.whl
       - pypi: ./
   docs:
     channels:
@@ -3625,7 +3625,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/linux-64/zlib-ng-2.3.2-hceb46e0_1.conda
       - conda: https://prefix.dev/conda-forge/linux-64/zstd-1.5.7-hb78ec9c_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/55/0d/ac67fb0b2fac382ab5585719bbd1f4927c19ba0ee3bbc28dc8a1ef83e81d/rocket_fft-0.3.1-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
       - pypi: ./
       linux-aarch64:
       - conda: https://prefix.dev/conda-forge/linux-aarch64/_openmp_mutex-4.5-2_gnu.tar.bz2
@@ -3922,7 +3922,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/linux-aarch64/zlib-ng-2.3.2-ha7cb516_1.conda
       - conda: https://prefix.dev/conda-forge/linux-aarch64/zstd-1.5.7-h85ac4a6_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/48/2c/5bbe8d6b0c4e009f7bc6f9f4eee802a9b556ec2c3b02b9d5e5ccfa8edff1/rocket_fft-0.3.1-cp313-cp313-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl
       - pypi: ./
       osx-64:
       - conda: https://prefix.dev/conda-forge/osx-64/_openmp_mutex-4.5-7_kmp_llvm.conda
@@ -4189,7 +4189,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/osx-64/zlib-ng-2.3.2-h8bce59a_1.conda
       - conda: https://prefix.dev/conda-forge/osx-64/zstd-1.5.7-h3eecb57_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/2f/33/1b1025d47226031616bf1ac02e63f240d02b89fe2b8462b35d1766519968/rocket_fft-0.3.1-cp313-cp313-macosx_10_13_x86_64.whl
       - pypi: ./
       osx-arm64:
       - conda: https://prefix.dev/conda-forge/osx-arm64/_openmp_mutex-4.5-7_kmp_llvm.conda
@@ -4456,7 +4456,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/osx-arm64/zlib-ng-2.3.2-hed4e4f5_1.conda
       - conda: https://prefix.dev/conda-forge/osx-arm64/zstd-1.5.7-hbf9d68e_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/bd/3a/41b7a3355e6d44139f2a891d4763ff0a1eeb634fc0faa43cefdb1cdda702/rocket_fft-0.3.1-cp312-cp312-macosx_11_0_arm64.whl
       - pypi: ./
       win-64:
       - conda: https://prefix.dev/conda-forge/win-64/_openmp_mutex-4.5-2_gnu.conda
@@ -4707,7 +4707,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/win-64/zlib-ng-2.3.2-h0261ad2_1.conda
       - conda: https://prefix.dev/conda-forge/win-64/zstd-1.5.7-h534d264_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/f8/af/0ab2b29548925c6f84607010d3bf5a928331232d1ef54f273ab9989c64c0/rocket_fft-0.3.1-cp313-cp313-win_amd64.whl
       - pypi: ./
   jupyter:
     channels:
@@ -5013,7 +5013,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/linux-64/zlib-ng-2.3.2-hceb46e0_1.conda
       - conda: https://prefix.dev/conda-forge/linux-64/zstd-1.5.7-hb78ec9c_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/c8/92/98bd01cad9e5ceeb383722d744597d066e37cdd0e54742906341aa369c28/rocket_fft-0.3.1-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
       - pypi: ./
       linux-aarch64:
       - conda: https://prefix.dev/conda-forge/linux-aarch64/_openmp_mutex-4.5-2_gnu.tar.bz2
@@ -5311,7 +5311,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/linux-aarch64/zlib-ng-2.3.2-ha7cb516_1.conda
       - conda: https://prefix.dev/conda-forge/linux-aarch64/zstd-1.5.7-h85ac4a6_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/48/2c/5bbe8d6b0c4e009f7bc6f9f4eee802a9b556ec2c3b02b9d5e5ccfa8edff1/rocket_fft-0.3.1-cp313-cp313-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl
       - pypi: ./
       osx-64:
       - conda: https://prefix.dev/conda-forge/osx-64/_openmp_mutex-4.5-7_kmp_llvm.conda
@@ -5578,7 +5578,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/osx-64/zlib-ng-2.3.2-h8bce59a_1.conda
       - conda: https://prefix.dev/conda-forge/osx-64/zstd-1.5.7-h3eecb57_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/2f/33/1b1025d47226031616bf1ac02e63f240d02b89fe2b8462b35d1766519968/rocket_fft-0.3.1-cp313-cp313-macosx_10_13_x86_64.whl
       - pypi: ./
       osx-arm64:
       - conda: https://prefix.dev/conda-forge/osx-arm64/_openmp_mutex-4.5-7_kmp_llvm.conda
@@ -5845,7 +5845,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/osx-arm64/zlib-ng-2.3.2-hed4e4f5_1.conda
       - conda: https://prefix.dev/conda-forge/osx-arm64/zstd-1.5.7-hbf9d68e_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/af/3c/371012b4ffa4697574ecfa148e8068a74e6ad57a182ec78f9b221bd4270c/rocket_fft-0.3.1-cp313-cp313-macosx_11_0_arm64.whl
       - pypi: ./
       win-64:
       - conda: https://prefix.dev/conda-forge/win-64/_openmp_mutex-4.5-2_gnu.conda
@@ -6096,7 +6096,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/win-64/zlib-ng-2.3.2-h0261ad2_1.conda
       - conda: https://prefix.dev/conda-forge/win-64/zstd-1.5.7-h534d264_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/f8/af/0ab2b29548925c6f84607010d3bf5a928331232d1ef54f273ab9989c64c0/rocket_fft-0.3.1-cp313-cp313-win_amd64.whl
       - pypi: ./
   jupyter-metal:
     channels:
@@ -6404,7 +6404,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/linux-64/zlib-ng-2.3.2-hceb46e0_1.conda
       - conda: https://prefix.dev/conda-forge/linux-64/zstd-1.5.7-hb78ec9c_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/c8/92/98bd01cad9e5ceeb383722d744597d066e37cdd0e54742906341aa369c28/rocket_fft-0.3.1-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
       - pypi: ./
       osx-arm64:
       - conda: https://prefix.dev/conda-forge/osx-arm64/_openmp_mutex-4.5-7_kmp_llvm.conda
@@ -6672,7 +6672,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/osx-arm64/zlib-ng-2.3.2-hed4e4f5_1.conda
       - conda: https://prefix.dev/conda-forge/osx-arm64/zstd-1.5.7-hbf9d68e_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/af/3c/371012b4ffa4697574ecfa148e8068a74e6ad57a182ec78f9b221bd4270c/rocket_fft-0.3.1-cp313-cp313-macosx_11_0_arm64.whl
       - pypi: ./
   metal:
     channels:
@@ -6965,7 +6965,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/linux-64/zlib-ng-2.3.2-hceb46e0_1.conda
       - conda: https://prefix.dev/conda-forge/linux-64/zstd-1.5.7-hb78ec9c_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/55/0d/ac67fb0b2fac382ab5585719bbd1f4927c19ba0ee3bbc28dc8a1ef83e81d/rocket_fft-0.3.1-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
       - pypi: ./
       osx-arm64:
       - conda: https://prefix.dev/conda-forge/osx-arm64/_openmp_mutex-4.5-7_kmp_llvm.conda
@@ -7219,7 +7219,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/osx-arm64/zlib-ng-2.3.2-hed4e4f5_1.conda
       - conda: https://prefix.dev/conda-forge/osx-arm64/zstd-1.5.7-hbf9d68e_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/af/3c/371012b4ffa4697574ecfa148e8068a74e6ad57a182ec78f9b221bd4270c/rocket_fft-0.3.1-cp313-cp313-macosx_11_0_arm64.whl
       - pypi: ./
   test:
     channels:
@@ -7518,7 +7518,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/linux-64/zlib-ng-2.3.2-hceb46e0_1.conda
       - conda: https://prefix.dev/conda-forge/linux-64/zstd-1.5.7-hb78ec9c_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/55/0d/ac67fb0b2fac382ab5585719bbd1f4927c19ba0ee3bbc28dc8a1ef83e81d/rocket_fft-0.3.1-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
       - pypi: ./
       linux-aarch64:
       - conda: https://prefix.dev/conda-forge/linux-aarch64/_openmp_mutex-4.5-2_gnu.tar.bz2
@@ -7809,7 +7809,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/linux-aarch64/zlib-ng-2.3.2-ha7cb516_1.conda
       - conda: https://prefix.dev/conda-forge/linux-aarch64/zstd-1.5.7-h85ac4a6_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/48/2c/5bbe8d6b0c4e009f7bc6f9f4eee802a9b556ec2c3b02b9d5e5ccfa8edff1/rocket_fft-0.3.1-cp313-cp313-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl
       - pypi: ./
       osx-64:
       - conda: https://prefix.dev/conda-forge/osx-64/_openmp_mutex-4.5-7_kmp_llvm.conda
@@ -8070,7 +8070,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/osx-64/zlib-ng-2.3.2-h8bce59a_1.conda
       - conda: https://prefix.dev/conda-forge/osx-64/zstd-1.5.7-h3eecb57_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/2f/33/1b1025d47226031616bf1ac02e63f240d02b89fe2b8462b35d1766519968/rocket_fft-0.3.1-cp313-cp313-macosx_10_13_x86_64.whl
       - pypi: ./
       osx-arm64:
       - conda: https://prefix.dev/conda-forge/osx-arm64/_openmp_mutex-4.5-7_kmp_llvm.conda
@@ -8331,7 +8331,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/osx-arm64/zlib-ng-2.3.2-hed4e4f5_1.conda
       - conda: https://prefix.dev/conda-forge/osx-arm64/zstd-1.5.7-hbf9d68e_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/bd/3a/41b7a3355e6d44139f2a891d4763ff0a1eeb634fc0faa43cefdb1cdda702/rocket_fft-0.3.1-cp312-cp312-macosx_11_0_arm64.whl
       - pypi: ./
       win-64:
       - conda: https://prefix.dev/conda-forge/win-64/_openmp_mutex-4.5-2_gnu.conda
@@ -8576,7 +8576,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/win-64/zlib-ng-2.3.2-h0261ad2_1.conda
       - conda: https://prefix.dev/conda-forge/win-64/zstd-1.5.7-h534d264_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/f8/af/0ab2b29548925c6f84607010d3bf5a928331232d1ef54f273ab9989c64c0/rocket_fft-0.3.1-cp313-cp313-win_amd64.whl
       - pypi: ./
   test-metal:
     channels:
@@ -8877,7 +8877,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/linux-64/zlib-ng-2.3.2-hceb46e0_1.conda
       - conda: https://prefix.dev/conda-forge/linux-64/zstd-1.5.7-hb78ec9c_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/55/0d/ac67fb0b2fac382ab5585719bbd1f4927c19ba0ee3bbc28dc8a1ef83e81d/rocket_fft-0.3.1-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
       - pypi: ./
       osx-arm64:
       - conda: https://prefix.dev/conda-forge/osx-arm64/_openmp_mutex-4.5-7_kmp_llvm.conda
@@ -9139,7 +9139,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/zipp-3.23.0-pyhcf101f3_1.conda
       - conda: https://prefix.dev/conda-forge/osx-arm64/zlib-ng-2.3.2-hed4e4f5_1.conda
       - conda: https://prefix.dev/conda-forge/osx-arm64/zstd-1.5.7-hbf9d68e_6.conda
-      - pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+      - pypi: https://files.pythonhosted.org/packages/af/3c/371012b4ffa4697574ecfa148e8068a74e6ad57a182ec78f9b221bd4270c/rocket_fft-0.3.1-cp313-cp313-macosx_11_0_arm64.whl
       - pypi: ./
 packages:
 - conda: https://prefix.dev/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2
@@ -19461,14 +19461,69 @@ packages:
   - pkg:pypi/rfc3987-syntax?source=hash-mapping
   size: 22913
   timestamp: 1752876729969
-- pypi: git+https://github.com/styfenschaer/rocket-fft.git?rev=b707c76bed5de65355c5e3bb0d5fbf167cae93c7#b707c76bed5de65355c5e3bb0d5fbf167cae93c7
+- pypi: https://files.pythonhosted.org/packages/2f/33/1b1025d47226031616bf1ac02e63f240d02b89fe2b8462b35d1766519968/rocket_fft-0.3.1-cp313-cp313-macosx_10_13_x86_64.whl
   name: rocket-fft
-  version: 0.2.5
+  version: 0.3.1
+  sha256: 3fa706995cebcc7bff41894e23323d2a221906454d21cb12fed97833b0f7433e
   requires_dist:
-  - numba>=0.56.0
-  - scipy>=1.7.2 ; extra == 'dev'
-  - pytest>=6.2.5 ; extra == 'dev'
-  - setuptools>=59.2.0 ; extra == 'dev'
+  - numba>=0.60.0
+  - scipy>=1.13.1 ; extra == 'dev'
+  - pytest>=8.4.2 ; extra == 'dev'
+  requires_python: '>=3.9'
+- pypi: https://files.pythonhosted.org/packages/48/2c/5bbe8d6b0c4e009f7bc6f9f4eee802a9b556ec2c3b02b9d5e5ccfa8edff1/rocket_fft-0.3.1-cp313-cp313-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl
+  name: rocket-fft
+  version: 0.3.1
+  sha256: 5906c6517fc87295a1d142c7e6ebd1c55e057f6ee4c605549bbcecacab83774f
+  requires_dist:
+  - numba>=0.60.0
+  - scipy>=1.13.1 ; extra == 'dev'
+  - pytest>=8.4.2 ; extra == 'dev'
+  requires_python: '>=3.9'
+- pypi: https://files.pythonhosted.org/packages/55/0d/ac67fb0b2fac382ab5585719bbd1f4927c19ba0ee3bbc28dc8a1ef83e81d/rocket_fft-0.3.1-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
+  name: rocket-fft
+  version: 0.3.1
+  sha256: 9d830aacc34d65b28daab715aa4a90d98489e89a48c2836039982f18ba1e2db3
+  requires_dist:
+  - numba>=0.60.0
+  - scipy>=1.13.1 ; extra == 'dev'
+  - pytest>=8.4.2 ; extra == 'dev'
+  requires_python: '>=3.9'
+- pypi: https://files.pythonhosted.org/packages/af/3c/371012b4ffa4697574ecfa148e8068a74e6ad57a182ec78f9b221bd4270c/rocket_fft-0.3.1-cp313-cp313-macosx_11_0_arm64.whl
+  name: rocket-fft
+  version: 0.3.1
+  sha256: 4a50609003f944aea1b8000a19f9b9cf9cbaaa5e4726e5aefaccccd1cfd81a99
+  requires_dist:
+  - numba>=0.60.0
+  - scipy>=1.13.1 ; extra == 'dev'
+  - pytest>=8.4.2 ; extra == 'dev'
+  requires_python: '>=3.9'
+- pypi: https://files.pythonhosted.org/packages/bd/3a/41b7a3355e6d44139f2a891d4763ff0a1eeb634fc0faa43cefdb1cdda702/rocket_fft-0.3.1-cp312-cp312-macosx_11_0_arm64.whl
+  name: rocket-fft
+  version: 0.3.1
+  sha256: 0de1a8841638e3091ef774d9304a6427801fd06dd29e6d2baacd17bac65eb9f3
+  requires_dist:
+  - numba>=0.60.0
+  - scipy>=1.13.1 ; extra == 'dev'
+  - pytest>=8.4.2 ; extra == 'dev'
+  requires_python: '>=3.9'
+- pypi: https://files.pythonhosted.org/packages/c8/92/98bd01cad9e5ceeb383722d744597d066e37cdd0e54742906341aa369c28/rocket_fft-0.3.1-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
+  name: rocket-fft
+  version: 0.3.1
+  sha256: 7d64c9fc81206f2c77f74f68761f54ac6f1ebe4c8840f0ef9795c28ab229463f
+  requires_dist:
+  - numba>=0.60.0
+  - scipy>=1.13.1 ; extra == 'dev'
+  - pytest>=8.4.2 ; extra == 'dev'
+  requires_python: '>=3.9'
+- pypi: https://files.pythonhosted.org/packages/f8/af/0ab2b29548925c6f84607010d3bf5a928331232d1ef54f273ab9989c64c0/rocket_fft-0.3.1-cp313-cp313-win_amd64.whl
+  name: rocket-fft
+  version: 0.3.1
+  sha256: 97452673ea99b907c75c99c4046d5297ea01778a6e74cb51ba515c01e3e5e5d7
+  requires_dist:
+  - numba>=0.60.0
+  - scipy>=1.13.1 ; extra == 'dev'
+  - pytest>=8.4.2 ; extra == 'dev'
+  requires_python: '>=3.9'
 - conda: https://prefix.dev/conda-forge/noarch/roman-numerals-4.1.0-pyhd8ed1ab_0.conda
   sha256: 30f3c04fcfb64c44d821d392a4a0b8915650dbd900c8befc20ade8fde8ec6aa2
   md5: 0dc48b4b570931adc8641e55c6c17fe4
@@ -21042,7 +21097,7 @@ packages:
 - pypi: ./
   name: xnft
   version: 0.0.0
-  sha256: 0fc57a324bcf493be2fe078ab92094c5b6fdf3f198ab4150bb5c852aaa7881f0
+  sha256: 9a1cf50f9e30d0170da03849a9abc5e81e20a4ea2561f54989d6674670bfded2
   editable: true
 - conda: https://prefix.dev/conda-forge/linux-64/xorg-libice-1.1.2-hb9d3cd8_0.conda
   sha256: c12396aabb21244c212e488bbdc4abcdef0b7404b15761d9329f5a4a39113c4b
