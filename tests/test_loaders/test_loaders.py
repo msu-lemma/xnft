@@ -11,6 +11,8 @@ from xnft.loaders.file_registry import registry
 test_dir = Path(__file__).parent.parent
 test_dict = {"source": ["hfss", "theory"], "field": ["near", "far"]}
 
+hfss_field_extensions = {"near": [".nfd", ".csv"], "far": [".ffd", ".csv"]}
+
 
 def generate_tests():
     """
@@ -22,6 +24,12 @@ def generate_tests():
             nf_test_dir = test_dir / "data" / f"{field}_field" / source
             for file in nf_test_dir.iterdir():
                 if file.is_file() and file.name[0:3].isnumeric():
+                    # Separate max_parameters from fields files
+                    if (
+                        source == "hfss"
+                        and file.suffix not in hfss_field_extensions[field]
+                    ):
+                        continue
                     tests_list.append((source, field, file))
 
     return tests_list
