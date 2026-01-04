@@ -21,24 +21,6 @@ from . import project
 logger = logging.getLogger(__name__)
 
 
-WELCOME_BANNER = (
-    r"""
-              __ _
-             / _| |
- __  ___ __ | |_| |_
- \ \/ / '_ \|  _| __|
-  >  <| | | | | | |_
- /_/\_\_| |_|_|  \__|
-
-"""
-    f"=== xnft - version {__version__} ===\n"
-)
-
-
-def new_project():
-    pass
-
-
 def nft(
     near_field_data, far_field_data, xfft_size=int(2**10), yfft_size=int(2**10)
 ):
