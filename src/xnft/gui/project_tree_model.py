@@ -1,10 +1,6 @@
 from PySide6.QtCore import Qt, QAbstractItemModel, QModelIndex
-from PySide6.QtGui import QAction, QIcon, QContextMenuEvent
-from PySide6.QtWidgets import (
-    QTreeView,
-    QMenu,
-    QAbstractItemView,
-)
+from PySide6.QtGui import QIcon
+
 
 from ..core import project
 
@@ -119,6 +115,11 @@ class ProjectManagerTreeModel(QAbstractItemModel):
         self._project_manager.add_project(proj)
         self.endInsertRows()
 
+        # Return the model index for other functions to use
+        model_index = self.createIndex(insert_row_index, 0, proj)
+
+        return model_index
+
     def remove_project(self, proj: project.Project):
         """Remove a top-level project in the project manager tree.
 
@@ -155,6 +156,11 @@ class ProjectManagerTreeModel(QAbstractItemModel):
         self.beginInsertRows(parent_index, insert_row_index, insert_row_index)
         parent_item.add_child(node)
         self.endInsertRows()
+
+        # Return the model index for other functions to use
+        model_index = self.createIndex(insert_row_index, 0, node)
+
+        return model_index
 
     def remove_node(self, parent_item: project.Node, node: project.Node):
         """Remove a node from the project manager tree.
@@ -247,79 +253,3 @@ class ProjectManagerTreeModel(QAbstractItemModel):
             return True
 
         return False
-
-
-class ProjectTreeView(QTreeView):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-
-        # Allow editing node items
-        self.setEditTriggers(
-            QAbstractItemView.EditKeyPressed
-            | QAbstractItemView.SelectedClicked
-            | QAbstractItemView.DoubleClicked
-        )
-
-    # Add context menu from decorators
-    def contextMenuEvent(self, e: QContextMenuEvent) -> None:
-        idx = self.indexAt(e.pos())
-
-        node = idx.internalPointer()
-        actions = node.menu_actions
-
-        if not actions:
-            return
-
-        menu = QMenu(self)
-        for action in actions:
-            if action.icon_name:
-                qaction = QAction(
-                    QIcon.fromTheme(action.icon_name), action.label, menu
-                )
-            else:
-                qaction = QAction(action.label, menu)
-            qaction.setEnabled(action.enabled)
-
-            if action.tooltip:
-                qaction.setToolTip(action.tooltip)
-
-            qaction.triggered.connect(action.invoke)
-            menu.addAction(qaction)
-
-        # If Node is a Project, add special action to close project
-        if isinstance(node, project.Project):
-            # menu.addSeparator()
-            close_action = QAction(
-                QIcon.fromTheme("window-close"), "Close Project", menu
-            )
-            close_action.setStatusTip("Close this project")
-            # TODO: add special method for "close project" that will prompt
-            # the user to save unsaved changes, if any, before removing
-            # fmt: off
-            close_action.triggered.connect(
-                lambda checked=False,
-                model=self.model(),
-                proj=node: 
-                model.remove_project(proj)
-            )
-            # fmt: on
-            menu.addAction(close_action)
-
-        menu.exec(e.globalPos())
-
-    def get_active_project(self):
-        """Get the project associated with the currently selected field."""
-        selected_idx = self.selectedIndexes()
-        if not selected_idx:
-            print("No node selected")
-            return None
-        else:
-            # Only one item may be selected at a time
-            selected_idx = selected_idx[0]
-        project_node = selected_idx.internalPointer()
-
-        # Find root node (project)
-        while not project_node.is_root:
-            project_node = project_node.parent
-
-        return project_node

@@ -1,5 +1,5 @@
-# new_project_dialog.py
-from __future__ import annotations
+"""Define new project dialog window."""
+
 from pathlib import Path
 
 from PySide6.QtCore import Qt
@@ -27,11 +27,9 @@ class NewProjectDialog(QDialog):
     Includes basic data validation.
     """
 
-    def __init__(
-        self, parent: QWidget | None = None, title: str = "Create New Project"
-    ):
+    def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
-        self.setWindowTitle(title)
+        self.setWindowTitle("Create New Project")
         self.setMinimumWidth(480)
 
         # --- Widgets ---

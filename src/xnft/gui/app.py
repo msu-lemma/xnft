@@ -20,6 +20,8 @@ from PySide6.QtWidgets import (
     QMdiSubWindow,
     QMdiArea,
     QTextEdit,
+    QTableWidget,
+    QTableWidgetItem,
 )
 
 import logging.config
@@ -27,7 +29,11 @@ import logging.config
 from .. import __version__
 from ..core import project
 from .dialogs.new_project_dialog import NewProjectDialog
-from .project_tree_model import ProjectManagerTreeModel, ProjectTreeView
+from .project_tree_model import ProjectManagerTreeModel
+from .project_tree_view import ProjectTreeView
+
+# Registers all loaders
+import xnft.loaders  # noqa: F401  # pylint: disable=unused-import
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +54,7 @@ class MainWindow(QMainWindow):
         self.create_menus()
         self.create_tool_bars()
         self.create_status_bar()
-        self.create_project_manager_widget(self.project_manager)
+        self.create_project_manager_widgets(self.project_manager)
         self.create_plot_area()
 
     def create_actions(self):
@@ -112,8 +118,11 @@ class MainWindow(QMainWindow):
     def create_status_bar(self):
         self.statusBar().showMessage("Ready")
 
-    def create_project_manager_widget(self, pm):
-        dock = QDockWidget("Project Manager", self)
+    def create_project_manager_widgets(self, pm):
+
+        # Create project manager tree
+
+        pm_dock = QDockWidget("Project Manager", self)
 
         self.model = ProjectManagerTreeModel(pm)
         self.project_tree = ProjectTreeView()
@@ -124,9 +133,56 @@ class MainWindow(QMainWindow):
         self.project_tree.setIndentation(15)
         self.project_tree.expandAll()
 
-        dock.setWidget(self.project_tree)
-        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, dock)
-        self._view_menu.addAction(dock.toggleViewAction())
+        pm_dock.setWidget(self.project_tree)
+        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, pm_dock)
+        self._view_menu.addAction(pm_dock.toggleViewAction())
+
+        # Create node info table
+        properties_dock = QDockWidget("Properties", self)
+
+        self.properties_table = QTableWidget()
+        self.properties_table.setColumnCount(2)
+        self.properties_table.setHorizontalHeaderLabels(["Property", "Value"])
+        self.properties_table.verticalHeader().setVisible(False)
+        self.properties_table.setAlternatingRowColors(True)
+        self.properties_table.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.properties_table.setSelectionBehavior(QTableWidget.SelectRows)
+        self.properties_table.setSelectionMode(QTableWidget.SingleSelection)
+        self.properties_table.horizontalHeader().setStretchLastSection(True)
+
+        properties_dock.setWidget(self.properties_table)
+        self.addDockWidget(
+            Qt.DockWidgetArea.LeftDockWidgetArea, properties_dock
+        )
+        self._view_menu.addAction(properties_dock.toggleViewAction())
+
+        selection_model = self.project_tree.selectionModel()
+        if selection_model is not None:
+            selection_model.currentChanged.connect(
+                lambda current_index, _: self._node_info_from_index(
+                    current_index
+                )
+            )
+
+    def _node_info_from_index(self, index: QModelIndex):
+        # Extract a dict of properties from your model.
+
+        node = index.internalPointer()
+
+        properties_dict = node.__dict__
+
+        # Fill table
+        self.properties_table.setRowCount(0)
+
+        for row, (key, value) in enumerate(properties_dict.items()):
+            self.properties_table.insertRow(row)
+            key_item = QTableWidgetItem(str(key))
+            value_item = QTableWidgetItem("" if value is None else str(value))
+            # Optional: make them non-selectable/editable flags more explicit
+            for item in (key_item, value_item):
+                item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+            self.properties_table.setItem(row, 0, key_item)
+            self.properties_table.setItem(row, 1, value_item)
 
     def _about(self):
         QMessageBox.about(self, "About xNFT", f"xNFT Version {__version__}")
@@ -145,7 +201,7 @@ class MainWindow(QMainWindow):
         area.addSubWindow(self.win)
 
     def _new_project(self):
-        dialog = NewProjectDialog(self, title="New Project")
+        dialog = NewProjectDialog(self)
         if dialog.exec() == QDialog.Accepted:
             name, path = dialog.get_project_info()
             project_path = Path(path) / f"{name}.xnft"
@@ -155,15 +211,7 @@ class MainWindow(QMainWindow):
 
             # Create the underlying project object
             new_project = project.Project(name=name, path=project_path)
-            self.model.insert_project(new_project)
-
-            # Find the newly added project in the project tree
-            new_project_row_index = (
-                self.model._project_manager.index_of_project(new_project)
-            )
-            model_index = self.model.index(
-                new_project_row_index, 0, QModelIndex()
-            )
+            model_index = self.model.insert_project(new_project)
 
             # Expand rows in tree and highlight
             self.project_tree.expand(model_index)
@@ -177,6 +225,36 @@ class MainWindow(QMainWindow):
             self.statusBar().showMessage(save_status)
         else:
             self.statusBar().showMessage("No project selected to save.")
+
+    def _new_node(self, helper_dialog, invoke_function):
+        dialog = helper_dialog(self)
+        if dialog.exec() == QDialog.Accepted:
+            invoke_kwargs = dialog.get_info()
+
+            # Call bound function with kwargs returned from helper_dialog
+            node_pair_list, status = invoke_function(**invoke_kwargs)
+
+            self.statusBar().showMessage(status)
+
+            model_index = None
+            for idx, node_pair in enumerate(node_pair_list):
+                parent_node = node_pair[0]
+                node = node_pair[1]
+                index = self.model.insert_node(parent_node, node)
+                self.project_tree.expand(index)
+                self.project_tree.setCurrentIndex(index)
+                self.project_tree.scrollTo(index)
+
+                # Keep the first node and select this in the tree
+                # Other nodes are secondary (e.g., derived nodes that
+                # the user did not directly request)
+                if idx == 0:
+                    model_index = index
+
+            # Expand rows in tree and highlight
+            self.project_tree.expand(model_index)
+            self.project_tree.setCurrentIndex(model_index)
+            self.project_tree.scrollTo(model_index)
 
 
 def center_window(window: QWindow, target_size_ratio: float = 0.7):
