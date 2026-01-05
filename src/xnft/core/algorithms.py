@@ -15,9 +15,6 @@ from numpy.fft import ifftn, ifftshift
 
 from quantiphy import Quantity
 
-from .. import __version__
-from . import project
-
 logger = logging.getLogger(__name__)
 
 
@@ -106,10 +103,12 @@ def nft(
         axs[0].set_aspect("equal")
 
         print(
-            f"Theta:\t[{np.min(theta_grid) / np.pi}, {np.max(theta_grid) / np.pi}] π"
+            f"Theta:\t[{np.min(theta_grid) / np.pi}, "
+            "{np.max(theta_grid) / np.pi}] π"
         )
         print(
-            f"Phi:\t[{np.min(phi_grid) / np.pi}, {np.max(phi_grid) / np.pi}] π"
+            f"Phi:\t[{np.min(phi_grid) / np.pi}, "
+            "{np.max(phi_grid) / np.pi}] π"
         )
 
         # Convert polar to cartesian to plot on pcolormesh
@@ -130,10 +129,12 @@ def nft(
         )
 
         print(
-            f"FF Theta:\t[{np.min(far_field_data.theta.values) / np.pi}, {np.max(far_field_data.theta.values) / np.pi}] π"
+            f"FF Theta:\t[{np.min(far_field_data.theta.values) / np.pi}, "
+            "{np.max(far_field_data.theta.values) / np.pi}] π"
         )
         print(
-            f"FF Phi:\t\t[{np.min(far_field_data.phi.values) / np.pi}, {np.max(far_field_data.phi.values) / np.pi}] π"
+            f"FF Phi:\t\t[{np.min(far_field_data.phi.values) / np.pi}, "
+            "{np.max(far_field_data.phi.values) / np.pi}] π"
         )
 
         ff_theta = far_field_data.theta - np.pi / 2
