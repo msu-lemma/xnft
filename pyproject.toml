@@ -23,7 +23,7 @@ Issues = "https://gitlab.msu.edu/ece-lemma/near-field/-/issues"
 
 [tool.mypy]
 [[tool.mypy.overrides]]
-module = ["pyqtgraph.*", "xnft.*"]
+module = ["pyqtgraph.*", "PySide6.*", "xnft.*"]
 ignore_missing_imports = true
 follow_untyped_imports = true
 
