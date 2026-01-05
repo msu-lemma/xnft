@@ -23,7 +23,7 @@ from .file_registry import registry
 logger = logging.getLogger(__name__)
 
 
-@registry.register(source="theory", field="near", extension=".yaml")
+@registry.register(source="Theory", field="Near Field", extension=".yaml")
 def load_theory_near_field_yaml(file_path: Path) -> xr.Dataset:
     """
     Generate theoretical near-field based on simple description file.
@@ -129,7 +129,7 @@ def load_theory_near_field_yaml(file_path: Path) -> xr.Dataset:
     return fields
 
 
-@registry.register(source="theory", field="far", extension=".yaml")
+@registry.register(source="Theory", field="Far Field", extension=".yaml")
 def load_theory_far_field_yaml(file_path: Path) -> xr.Dataset:
     """
     Generate theoretical far-field based on simple description file.

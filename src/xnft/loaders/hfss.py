@@ -15,7 +15,7 @@ from .file_registry import registry
 logger = logging.getLogger(__name__)
 
 
-@registry.register(source="hfss", field="near", extension=".nfd")
+@registry.register(source="HFSS", field="Near Field", extension=".nfd")
 def load_hfss_near_field_ndf(file_path: Path) -> xr.Dataset:
     """
     Load near-field file data.
@@ -161,7 +161,7 @@ def load_hfss_near_field_ndf(file_path: Path) -> xr.Dataset:
     return fields
 
 
-@registry.register(source="hfss", field="far", extension=".csv")
+@registry.register(source="HFSS", field="Far Field", extension=".csv")
 def load_hfss_far_field_csv(file_path: Path) -> xr.Dataset:
     """
     Load far-field file data.
@@ -262,7 +262,7 @@ def load_hfss_far_field_csv(file_path: Path) -> xr.Dataset:
     return fields
 
 
-@registry.register(source="hfss", field="far", extension=".ffd")
+@registry.register(source="HFSS", field="Far Field", extension=".ffd")
 def load_hfss_far_field_ffd(file_path: Path) -> xr.Dataset:
     """
     Load far-field file data.

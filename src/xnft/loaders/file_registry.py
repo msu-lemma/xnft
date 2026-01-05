@@ -3,6 +3,7 @@
 from typing import Literal
 import logging
 from pathlib import Path
+from collections import defaultdict
 
 
 logger = logging.getLogger(__name__)
@@ -21,7 +22,10 @@ class FileLoaderRegistry:
         return f"{source}-{field}-{extension}"
 
     def register(
-        self, source: str, field: Literal["near", "far"], extension: str
+        self,
+        source: str,
+        field: Literal["Near Field", "Far Field"],
+        extension: str,
     ):
         """
         Decorator to register a loader function for a given source and field
@@ -31,10 +35,10 @@ class FileLoaderRegistry:
         ----------
         source : str
             System type that generated the data (e.g., HFSS, NSI, etc.).
-        field : {'near', 'far'}, Literal
+        field : {'Near Field', 'Far Field'}, Literal
             Field type of measurement.
-            - 'near' : Near-field measurement.
-            - 'far' : Far-field measurement.
+            - 'Near Field' : Near-field measurement.
+            - 'Far Field' : Far-field measurement.
         extension : str
             File extension (e.g., csv, nfd, ffd, etc.).
         """
@@ -59,8 +63,8 @@ class FileLoaderRegistry:
             System type that generated the data (e.g., HFSS, NSI, etc.).
         field : {'near', 'far'}, Literal
             Field type of measurement.
-            - 'near' : Near-field measurement.
-            - 'far' : Far-field measurement.
+            - 'Near Field' : Near-field measurement.
+            - 'Far Field' : Far-field measurement.
         path : str
             String representing the path to a file.
         """
@@ -81,12 +85,32 @@ class FileLoaderRegistry:
             loader_function = self._loaders[loader_key]
         except KeyError as exc:
             raise NotImplementedError(
-                f"No file loader exists for: {{ source: '{source}', field: '{field}', extension: '{extension}' }} ({loader_key}). Available options are {self._loaders}. {exc}"
+                f"No file loader exists for: "
+                f"{{ source: '{source}', field: '{field}', extension: "
+                f"'{extension}' }} ({loader_key}). Available options "
+                f"are {self._loaders}. {exc}"
             ) from exc
 
         return_value = loader_function(file_path)
 
         return return_value
+
+    @property
+    def loaders(self):
+        """
+        Return dictionary of field type, source type and accepted file
+        extensions.
+        """
+        loader_dict = {
+            "Near Field": defaultdict(list),
+            "Far Field": defaultdict(list),
+        }
+
+        for key in self._loaders.keys():
+            source, field, extension = key.split("-")
+            loader_dict[field][source].append(extension)
+
+        return loader_dict
 
 
 registry = FileLoaderRegistry()
