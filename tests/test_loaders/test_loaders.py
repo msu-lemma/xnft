@@ -9,9 +9,15 @@ import xarray as xr
 from xnft.loaders.file_registry import registry
 
 test_dir = Path(__file__).parent.parent
-test_dict = {"source": ["hfss", "theory"], "field": ["near", "far"]}
+test_dict = {
+    "source": ["HFSS", "Theory"],
+    "field": ["Near Field", "Far Field"],
+}
 
-hfss_field_extensions = {"near": [".nfd", ".csv"], "far": [".ffd", ".csv"]}
+hfss_field_extensions = {
+    "Near Field": [".nfd", ".csv"],
+    "Far Field": [".ffd", ".csv"],
+}
 
 
 def generate_tests():
@@ -21,12 +27,17 @@ def generate_tests():
     tests_list = []
     for source in test_dict["source"]:
         for field in test_dict["field"]:
-            nf_test_dir = test_dir / "data" / f"{field}_field" / source
+            nf_test_dir = (
+                test_dir
+                / "data"
+                / f"{field.lower().replace(' ', '_')}"
+                / source.lower()
+            )
             for file in nf_test_dir.iterdir():
                 if file.is_file() and file.name[0:3].isnumeric():
                     # Separate max_parameters from fields files
                     if (
-                        source == "hfss"
+                        source == "HFSS"
                         and file.suffix not in hfss_field_extensions[field]
                     ):
                         continue
