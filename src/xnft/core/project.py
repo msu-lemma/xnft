@@ -8,8 +8,36 @@ from uuid import uuid4
 from pathlib import Path
 import inspect
 import logging.config
+from enum import Enum
+from ..gui.dialogs.new_field_measurement_dialog import (
+    NewFieldMeasurementDialog,
+)
+
+from ..loaders.file_registry import registry
 
 logger = logging.getLogger(__name__)
+
+
+class NodeType(Enum):
+    PROJECT = 100
+    FIELDS = 200
+    ANALYSIS = 300
+    COORDINATES = 400
+    RESTULTS = 500
+    MODEL = 600
+
+    ANALYSIS_TRANSFORM = 601
+    ANALYSIS_INTERPOLATION = 602
+
+    RESULTS_PLOT_1D = 501
+    RESULTS_PLOT_2D = 502
+    RESULTS_PLOT_3D = 503
+    RESULTS_TABLE = 504
+
+    FIELD_NEAR = 201
+    FIELD_FAR = 202
+
+    UNKNOWN = 0
 
 
 # --- Action metadata + decorator ---
@@ -22,6 +50,8 @@ class ContextAction:
     enabled: bool = True
     tooltip: Optional[str] = None
     icon_name: Optional[str] = None
+    action: Optional[str] = None
+    helper_dialog: Optional[object] = None
     order: int = 100
 
 
@@ -31,6 +61,8 @@ def menu_action(
     tooltip: Optional[str] = None,
     icon_name: Optional[str] = None,
     order: int = 100,
+    action: Optional[str] = None,
+    helper_dialog: Optional[object] = None,
 ):
     """Decorator to add a ContextAction (right-click menu item) to a method.
 
@@ -56,6 +88,8 @@ def menu_action(
             "tooltip": tooltip,
             "icon_name": icon_name,
             "order": order,
+            "action": action,
+            "helper_dialog": helper_dialog,
         }
         return func
 
@@ -72,10 +106,11 @@ class Node:
     # Node values
     id: str = field(default_factory=lambda: str(uuid4()))
     name: str = "None"
+    type: NodeType = NodeType.UNKNOWN
     name_editable: bool = False
     attributes: Optional[dict] = field(default_factory=dict)
     data: Optional[object] = None
-    icon_name: Optional[object] = "folder"
+    icon_name: Optional[object] = "text-x-generic"
 
     # Node traversal pointers
     _parent: Optional["Node"] = None
@@ -149,6 +184,17 @@ class Node:
     def index_of_node(self, node: "Node"):
         return self._children.index(node)
 
+    @property
+    def root(self):
+        root = self
+        while not root.is_root:
+            root = root.parent
+        return root
+
+    @property
+    def display_type(self):
+        return self.type
+
     # -- Menu actions --
 
     @property
@@ -184,6 +230,8 @@ class Node:
                     tooltip=meta["tooltip"],
                     icon_name=meta["icon_name"],
                     order=meta["order"],
+                    action=meta["action"],
+                    helper_dialog=meta["helper_dialog"],
                 )
             )
 
@@ -196,20 +244,84 @@ class Node:
 class Fields(Node):
     name: str = "Fields"
     icon_name: str = "src/xnft/resources/icons/fields.svg"
+    type: NodeType = NodeType.FIELDS
 
-    @menu_action("New Measured Near Field", order=10, enabled=False)
-    def new_measured_near_field(self):
-        logger.warning("New measured near-field is not yet implemented.")
+    field_type_map = {
+        "Near Field": NodeType.FIELD_NEAR,
+        "Far Field": NodeType.FIELD_FAR,
+    }
 
-    @menu_action("New Measured Far Field", order=20, enabled=False)
-    def new_measured_far_field(self):
-        logger.warning("New measured far-field is not yet implemented.")
+    @menu_action(
+        "New Measured Field",
+        order=10,
+        enabled=True,
+        icon_name="document-new",
+        action="new_node",
+        helper_dialog=NewFieldMeasurementDialog,
+    )
+    def new_measured_field(self, field_type, source_type, field_name, path):
+
+        # Read measured field file
+        field_data = registry.load(
+            source=source_type, field=field_type, path=path
+        )
+
+        field_node = Field(
+            name=field_name,
+            source_type=source_type,
+            measured=True,
+            attributes={"path": path},
+            icon_name="text-x-generic",
+            name_editable=True,
+            data=field_data,
+        )
+
+        # Add pointer to coordinates (All measured data should have intrinsic
+        # coordinates associated with it)
+        coordinates_node = None
+        for tmp_node in self.parent.children:
+            if tmp_node.name == "Coordinates":
+                coordinates_node = tmp_node
+                break
+        assert coordinates_node is not None
+
+        coordinate_data = field_data.coords
+        coordinate_node = Coordinate(
+            name=f"{field_name} Coordinates",
+            source=field_node,
+            data=coordinate_data,
+        )
+        # coordinates_node.add_child(coordinate_node)
+
+        status = f"Successfully created {field_type.lower()} node."
+
+        node_pair_list = [
+            (self, field_node),
+            (coordinates_node, coordinate_node),
+        ]
+        return node_pair_list, status
+
+
+@dataclass(kw_only=True)
+class Field(Node):
+    source_type: str
+    measured: Optional[bool] = False
+
+    @property
+    def display_type(self):
+        return f"{'Measured ' if self.measured else ''}{type.title()}"
+
+
+@dataclass(kw_only=True)
+class Coordinate(Node):
+    source: Optional[Node]
 
 
 @dataclass(kw_only=True)
 class Analyses(Node):
     name: str = "Analyses"
     icon_name: str = "src/xnft/resources/icons/function.svg"
+    type: NodeType = NodeType.ANALYSIS
 
     @menu_action(
         "New Planar Near-to-far Field Transform", order=10, enabled=False
@@ -236,6 +348,7 @@ class Analyses(Node):
 class Results(Node):
     name: str = "Results"
     icon_name: str = "src/xnft/resources/icons/plot.svg"
+    type: NodeType = NodeType.RESTULTS
 
     @menu_action("New Near Field Report", order=10, enabled=False)
     def new_near_field_report(self):
@@ -254,6 +367,7 @@ class Results(Node):
 class Coordinates(Node):
     name: str = "Coordinates"
     icon_name: str = "src/xnft/resources/icons/coordinates.svg"
+    type: NodeType = NodeType.COORDINATES
 
     @menu_action("New Measurement Coordinates", order=10, enabled=False)
     def new_measurement_coordinates(self):
@@ -264,6 +378,7 @@ class Coordinates(Node):
 class Model(Node):
     name: str = "Model"
     icon_name: str = "src/xnft/resources/icons/model.svg"
+    type: NodeType = NodeType.MODEL
 
     @menu_action("New Model Asset", order=10, enabled=False)
     def new_measurement_coordinates(self):
@@ -274,14 +389,16 @@ class Model(Node):
 class Project(Node):
     path: Optional[Path] = None
     version: int = 1
+    type: NodeType = NodeType.PROJECT
+    icon_name: str = "folder"
 
     def __post_init__(self):
         # Add default project nodes
-        self.add_child(Fields(data="value b"))
-        self.add_child(Analyses(data="value b"))
-        self.add_child(Results(data="value b"))
-        self.add_child(Coordinates(data="value b"))
-        self.add_child(Model(data="value b"))
+        self.add_child(Fields())
+        self.add_child(Analyses())
+        self.add_child(Results())
+        self.add_child(Coordinates())
+        self.add_child(Model())
 
         # Allow projects to be renamed in the Project Manager
         self.name_editable = True
@@ -297,8 +414,6 @@ class Project(Node):
 
 
 # === Project Manager ===
-
-
 class Manager:
     def __init__(self):
         self._projects: List[Project] = []
