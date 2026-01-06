@@ -29,7 +29,7 @@ class NewProjectDialog(QDialog):
 
     def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
-        self.setWindowTitle("Create New Project")
+        self.setWindowTitle("New Project")
         self.setMinimumWidth(480)
 
         # --- Widgets ---

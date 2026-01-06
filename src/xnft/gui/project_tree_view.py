@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (
 )
 
 
-from ..core import project
+from ..core.project import manager
 
 
 class ProjectTreeView(QTreeView):
@@ -48,6 +48,9 @@ class ProjectTreeView(QTreeView):
             if menu_action.tooltip:
                 action.setToolTip(menu_action.tooltip)
 
+            if menu_action.separator:
+                menu.addSeparator()
+
             # Check special action types, else simply invoke callable
             if menu_action.action == "new_node":
                 helper_dialog = menu_action.helper_dialog
@@ -56,15 +59,15 @@ class ProjectTreeView(QTreeView):
                 action.triggered.connect(
                     lambda
                     checked=False,
-                    hd=helper_dialog,
-                    parent_node=node,
-                    inv=invoke_function,
+                    helper_dialog=helper_dialog,
+                    target_node=node,
+                    invoke_function=invoke_function,
                     main=self.window():
-                    main._new_node(hd, inv)
+                    main._new_node(helper_dialog, target_node, invoke_function)
                 )
                 # fmt: on
             elif menu_action.action == "close_project" and isinstance(
-                node, project.Project
+                node, manager.Project
             ):
                 # fmt: off
                 action.triggered.connect(
@@ -85,7 +88,7 @@ class ProjectTreeView(QTreeView):
 
             menu.addAction(action)
 
-        if isinstance(node, project.Project):
+        if isinstance(node, manager.Project):
             close_action = QAction(
                 QIcon.fromTheme("window-close"), "Close Project", menu
             )

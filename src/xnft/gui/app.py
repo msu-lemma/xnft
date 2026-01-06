@@ -27,7 +27,7 @@ from PySide6.QtWidgets import (
 import logging.config
 
 from .. import __version__
-from ..core import project
+from ..core.project import manager
 from .dialogs.new_project_dialog import NewProjectDialog
 from .project_tree_model import ProjectManagerTreeModel
 from .project_tree_view import ProjectTreeView
@@ -210,7 +210,7 @@ class MainWindow(QMainWindow):
             )
 
             # Create the underlying project object
-            new_project = project.Project(name=name, path=project_path)
+            new_project = manager.Project(name=name, path=project_path)
             model_index = self.model.insert_project(new_project)
 
             # Expand rows in tree and highlight
@@ -226,10 +226,21 @@ class MainWindow(QMainWindow):
         else:
             self.statusBar().showMessage("No project selected to save.")
 
-    def _new_node(self, helper_dialog, invoke_function):
-        dialog = helper_dialog(self)
+    def _new_node(self, helper_dialog, target_node, invoke_function):
+        """Add a new chile node to "target_node".
+
+        Parameters
+        ----------
+        helper_dialog : QDialog
+            Dialog window for data entry.
+        target_node : project.Node
+            Node to add child to.
+        invoke_function : Callable
+            A function to callback from the project to perform project action.
+        """
+        dialog = helper_dialog(self, target_node=target_node)
         if dialog.exec() == QDialog.Accepted:
-            invoke_kwargs = dialog.get_info()
+            invoke_kwargs = dialog.get_selections()
 
             # Call bound function with kwargs returned from helper_dialog
             node_pair_list, status = invoke_function(**invoke_kwargs)
@@ -303,12 +314,12 @@ def main():
     """
     app = QApplication(sys.argv)
     # app.setStyle("Fusion")
-    pm = project.Manager()
-    pm.add_project(
-        project.Project(
-            name="TestProject", path=Path.home() / "TestProject.xnft"
-        )
-    )
+    pm = manager.Manager()
+    # pm.add_project(
+    #     project.Project(
+    #         name="TestProject", path=Path.home() / "TestProject.xnft"
+    #     )
+    # )
 
     window = MainWindow(pm)
     center_window(window, target_size_ratio=0.7)

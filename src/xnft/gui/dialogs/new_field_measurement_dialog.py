@@ -1,6 +1,5 @@
 """Define new field measurement dialog window."""
 
-from __future__ import annotations
 from pathlib import Path
 
 from PySide6.QtCore import Qt
@@ -25,7 +24,7 @@ from ...loaders.file_registry import registry
 
 class NewFieldMeasurementDialog(QDialog):
     """
-    Input dialog for near field measurement data.
+    Input dialog for field measurement data.
 
     Includes basic data validation.
     """
@@ -33,10 +32,10 @@ class NewFieldMeasurementDialog(QDialog):
     def __init__(
         self,
         parent: QWidget | None = None,
-        title: str = "Add New Near Field Measurement",
+        target_node=None,
     ):
         super().__init__(parent)
-        self.setWindowTitle(title)
+        self.setWindowTitle("New Field Measurement")
         self.setMinimumWidth(480)
 
         # --- Widgets ---
@@ -56,7 +55,7 @@ class NewFieldMeasurementDialog(QDialog):
 
         self.path_field = QLineEdit(self)
         self.path_field.setPlaceholderText(
-            "Choose or enter the path to the fields file"
+            "Choose or enter the path to the field file"
         )
 
         self.btn_browse = QPushButton(self)
@@ -87,7 +86,7 @@ class NewFieldMeasurementDialog(QDialog):
         path_row = QHBoxLayout()
         path_row.addWidget(self.path_field, 1)
         path_row.addWidget(self.btn_browse, 0)
-        form_layout.addRow("Save directory:", path_row)
+        form_layout.addRow("Field File:", path_row)
 
         layout = QVBoxLayout(self)
         layout.addLayout(form_layout)
@@ -114,13 +113,13 @@ class NewFieldMeasurementDialog(QDialog):
         self.path_field.returnPressed.connect(self._try_accept)
 
     # --- Public Methods ---
-    def get_info(self) -> dict:
-        """Return (name, path) chosen by the user."""
+    def get_selections(self) -> dict:
+        """Return values chosen by user."""
         return {
-            "field_type": self.field_type_field.currentText(),
-            "source_type": self.source_format_field.currentText(),
-            "field_name": self.field_name_field.text(),
-            "path": self.path_field.text(),
+            "field_type": self.field_type_field.currentText().strip(),
+            "source_type": self.source_format_field.currentText().strip(),
+            "field_name": self.field_name_field.text().strip(),
+            "path": self.path_field.text().strip(),
         }
 
     # --- Private Methods ---
@@ -143,7 +142,7 @@ class NewFieldMeasurementDialog(QDialog):
             self,
             "Select Fields File",
             start_dir,
-            filter=",".join(self._get_available_extensions()),
+            filter=" ".join(self._get_available_extensions()),
         )
         if chosen[0]:
             self.path_field.setText(chosen[0])
@@ -162,14 +161,22 @@ class NewFieldMeasurementDialog(QDialog):
         return [f"*{extension}" for extension in file_extensions]
 
     def _is_input_valid(self, silent: bool) -> bool:
+        name = self.field_name_field.text().strip()
         raw_path = self.path_field.text().strip()
+
+        if not name:
+            if not silent:
+                QMessageBox.warning(
+                    self, "Missing Name", "Please enter a field node name."
+                )
+            return False
 
         if not raw_path:
             if not silent:
                 QMessageBox.warning(
                     self,
                     "Missing Location",
-                    "Please select a fields file.",
+                    "Please select a field file.",
                 )
             return False
 

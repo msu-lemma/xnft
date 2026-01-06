@@ -2,7 +2,9 @@ from PySide6.QtCore import Qt, QAbstractItemModel, QModelIndex
 from PySide6.QtGui import QIcon
 
 
-from ..core import project
+from ..core.project import manager
+from ..core.project.nodes.project import Project
+from ..core.project.nodes.node import Node
 
 
 class ProjectManagerTreeModel(QAbstractItemModel):
@@ -23,9 +25,9 @@ class ProjectManagerTreeModel(QAbstractItemModel):
             return self._project_manager.project_count
 
         parent_item = parent.internalPointer()
-        if isinstance(parent_item, project.Project):
+        if isinstance(parent_item, Project):
             return parent_item.child_count
-        elif isinstance(parent_item, project.Node):
+        elif isinstance(parent_item, Node):
             return parent_item.child_count
 
         return 0
@@ -42,13 +44,13 @@ class ProjectManagerTreeModel(QAbstractItemModel):
             return self.createIndex(row, column, proj)
 
         parent_item = parent.internalPointer()
-        if isinstance(parent_item, project.Project):
+        if isinstance(parent_item, Project):
             if row >= parent_item.child_count:
                 return QModelIndex()
             node = parent_item.get_child_by_index(row)
             return self.createIndex(row, column, node)
 
-        elif isinstance(parent_item, project.Node):
+        elif isinstance(parent_item, Node):
             if row >= parent_item.child_count:
                 return QModelIndex()
             child = parent_item.get_child_by_index(row)
@@ -61,18 +63,18 @@ class ProjectManagerTreeModel(QAbstractItemModel):
             return QModelIndex()
 
         item = index.internalPointer()
-        if isinstance(item, project.Project):
+        if isinstance(item, Project):
             # Top level, no parent
             return QModelIndex()
 
-        if isinstance(item, project.Node):
+        if isinstance(item, Node):
             parent_obj = item.parent
-            if isinstance(parent_obj, project.Project):
+            if isinstance(parent_obj, Project):
                 row = self._project_manager.index_of_project(parent_obj)
                 return self.createIndex(row, 0, parent_obj)
-            elif isinstance(parent_obj, project.Node):
+            elif isinstance(parent_obj, Node):
                 grand_parent = parent_obj.parent
-                if isinstance(grand_parent, project.Project):
+                if isinstance(grand_parent, Project):
                     row = grand_parent.index_of_node(parent_obj)
                 else:
                     row = grand_parent.children.index(parent_obj)
@@ -97,7 +99,7 @@ class ProjectManagerTreeModel(QAbstractItemModel):
                 return QIcon.fromTheme(icon_name)
         return None
 
-    def insert_project(self, proj: project.Project):
+    def insert_project(self, proj: Project):
         """Insert a top-level project in the project manager tree.
 
         Parameters
@@ -120,7 +122,7 @@ class ProjectManagerTreeModel(QAbstractItemModel):
 
         return model_index
 
-    def remove_project(self, proj: project.Project):
+    def remove_project(self, proj: Project):
         """Remove a top-level project in the project manager tree.
 
         Should be called when closing a project.
@@ -138,7 +140,7 @@ class ProjectManagerTreeModel(QAbstractItemModel):
         self._project_manager.remove_project(proj)
         self.endRemoveRows()
 
-    def insert_node(self, parent_item: project.Node, node: project.Node):
+    def insert_node(self, parent_item: Node, node: Node):
         """Insert a node in the project manager tree.
 
         Parameters
@@ -162,7 +164,7 @@ class ProjectManagerTreeModel(QAbstractItemModel):
 
         return model_index
 
-    def remove_node(self, parent_item: project.Node, node: project.Node):
+    def remove_node(self, parent_item: Node, node: Node):
         """Remove a node from the project manager tree.
 
         Parameters
