@@ -1,4 +1,8 @@
-"""Module providing command line interfaces."""
+"""
+Module providing command line interfaces.
+
+Copyright 2025-2026 The LEmmA Group, Michigan State University.
+"""
 
 import click
 import logging
@@ -22,7 +26,8 @@ WELCOME_BANNER = (
  /_/\_\_| |_|_|  \__|
 
 """
-    f"=== xnft - version {__version__} ===\n"
+    f"=== xnft - version {__version__} ===\n\n"
+    "Copyright 2025-2026 The LEmmA Group, Michigan State University.\n"
 )
 
 

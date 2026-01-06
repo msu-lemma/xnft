@@ -1,4 +1,8 @@
-"""Define new project dialog window."""
+"""
+Define new project dialog window.
+
+Copyright 2025-2026 The LEmmA Group, Michigan State University.
+"""
 
 from pathlib import Path
 

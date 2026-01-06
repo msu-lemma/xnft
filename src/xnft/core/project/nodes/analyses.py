@@ -1,5 +1,7 @@
 """
 Handle xnft project actions.
+
+Copyright 2025-2026 The LEmmA Group, Michigan State University.
 """
 
 from dataclasses import dataclass

@@ -1,4 +1,8 @@
-"""Core logic for xnft."""
+"""
+Core logic for xnft.
+
+Copyright 2025-2026 Michigan State University.
+"""
 
 import logging
 import time

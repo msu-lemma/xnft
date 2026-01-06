@@ -1,3 +1,6 @@
+"""
+Copyright 2025-2026 The LEmmA Group, Michigan State University.
+"""
 from PySide6.QtGui import QAction, QIcon, QContextMenuEvent
 from PySide6.QtWidgets import (
     QTreeView,

@@ -1,4 +1,8 @@
-"""Handle loading of data files."""
+"""
+Handle loading of data files.
+
+Copyright 2025-2026 The LEmmA Group, Michigan State University.
+"""
 
 from typing import Literal
 import logging

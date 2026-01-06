@@ -1,4 +1,8 @@
-"""Define new field measurement dialog window."""
+"""
+Define new field measurement dialog window.
+
+Copyright 2025-2026 The LEmmA Group, Michigan State University.
+"""
 
 from pathlib import Path
 

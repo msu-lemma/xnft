@@ -1,4 +1,8 @@
-"""Module providing graphical user interfaces."""
+"""
+Module providing graphical user interfaces.
+
+Copyright 2025-2026 The LEmmA Group, Michigan State University.
+"""
 
 import sys
 from pathlib import Path
@@ -24,7 +28,9 @@ from PySide6.QtWidgets import (
     QTableWidgetItem,
 )
 
-import logging.config
+import logging
+import importlib.metadata
+
 
 from .. import __version__
 from ..core.project import manager
@@ -185,7 +191,20 @@ class MainWindow(QMainWindow):
             self.properties_table.setItem(row, 1, value_item)
 
     def _about(self):
-        QMessageBox.about(self, "About xNFT", f"xNFT Version {__version__}")
+        meta = importlib.metadata.metadata("xnft")
+
+        authors = "\n".join(
+            [meta.get("Author"), *meta.get("Author-email").split(", ")]
+        )
+
+        QMessageBox.about(
+            self,
+            "About xNFT",
+            f"xNFT Version {__version__}\n\n"
+            f"{meta.get("Summary")}\n\n"
+            "Copyright 2025-2026 The LEmmA Group, Michigan State University.\n\n"
+            f"Authors:\n{authors}",
+        )
 
     def create_plot_area(self):
 

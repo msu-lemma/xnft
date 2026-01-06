@@ -1,4 +1,8 @@
-"""Loader functions for HFSS files."""
+"""
+Loader functions for Ansys HFSS files.
+
+Copyright 2025-2026 The LEmmA Group, Michigan State University.
+"""
 
 from pathlib import Path
 import logging

@@ -1,3 +1,7 @@
+"""
+Copyright 2025-2026 The LEmmA Group, Michigan State University.
+"""
+
 # Configure package logging
 import logging
 import logging.config

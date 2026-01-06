@@ -1,4 +1,8 @@
-"""Module providing classes specific to xnft."""
+"""
+Module providing classes specific to xnft.
+
+Copyright 2025-2026 The LEmmA Group, Michigan State University.
+"""
 
 import numpy as np
 import xarray as xr
