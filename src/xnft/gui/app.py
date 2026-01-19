@@ -39,7 +39,6 @@ from PySide6.QtWidgets import (
     QTableWidgetItem,
     QFileDialog,
 )
-from PySide6.QtSvg import QSvgRenderer
 
 import logging
 import importlib.metadata
@@ -344,7 +343,7 @@ class QMdiAreaWatermark(QMdiArea):
         self._opacity = 0.5
         self._margin = 12
         self._emrg_target_size = QSizeF(510.2 / 2, 164 / 2)
-        self._lemma_target_size = QSizeF(381 / 2, 325 / 2)
+        self._lemma_target_size = QSizeF(381 / 1.5, 325 / 1.5)
 
     def paintEvent(self, event):
         super().paintEvent(event)
@@ -364,15 +363,15 @@ class QMdiAreaWatermark(QMdiArea):
 
         painter.drawImage(emrg_target_rect, QImage(self._emrg_logo_path))
 
-        # lemma_w, lemma_h = (
-        #     self._lemma_target_size.width(),
-        #     self._lemma_target_size.height(),
-        # )
-        # lemma_x = emrg_x - lemma_w - self._margin
-        # lemma_y = vp_rect.bottom() - lemma_h - self._margin
-        # lemma_target_rect = QRect(lemma_x, lemma_y, lemma_w, lemma_h)
+        lemma_w, lemma_h = (
+            self._lemma_target_size.width(),
+            self._lemma_target_size.height(),
+        )
+        lemma_x = vp_rect.right() - lemma_w - self._margin
+        lemma_y = vp_rect.top() + self._margin
+        lemma_target_rect = QRect(lemma_x, lemma_y, lemma_w, lemma_h)
 
-        # painter.drawImage(lemma_target_rect, QImage(self._lemma_logo_path))
+        painter.drawImage(lemma_target_rect, QImage(self._lemma_logo_path))
 
 
 def center_window(window: QWindow, target_size_ratio: float = 0.7):

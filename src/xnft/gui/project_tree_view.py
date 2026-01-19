@@ -2,6 +2,7 @@
 Copyright 2025-2026 The LEmmA Group, Michigan State University.
 """
 from PySide6.QtGui import QAction, QIcon, QContextMenuEvent
+from PySide6.QtCore import QSize
 from PySide6.QtWidgets import (
     QTreeView,
     QMenu,
@@ -23,6 +24,10 @@ class ProjectTreeView(QTreeView):
             | QAbstractItemView.DoubleClicked
         )
 
+        self.setUniformRowHeights(True)
+        self.setHeaderHidden(True)
+
+
     def contextMenuEvent(self, ctx_menu_event: QContextMenuEvent) -> None:
         """Add context menu (right click) items."""
         idx = self.indexAt(ctx_menu_event.pos())
@@ -38,7 +43,7 @@ class ProjectTreeView(QTreeView):
         for menu_action in menu_actions:
             if menu_action.icon_name:
                 action = QAction(
-                    QIcon.fromTheme(menu_action.icon_name),
+                    self.model.get_icon(menu_action.icon_name, from_theme=True),
                     menu_action.label,
                     menu,
                 )
@@ -93,7 +98,7 @@ class ProjectTreeView(QTreeView):
 
         if isinstance(node, manager.Project):
             close_action = QAction(
-                QIcon.fromTheme("window-close"), "Close Project", menu
+                self.model.get_icon("window-close", from_theme=True), "Close Project", menu
             )
             close_action.setStatusTip("Close this project")
             # fmt: off

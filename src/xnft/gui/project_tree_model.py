@@ -4,6 +4,7 @@ Copyright 2025-2026 The LEmmA Group, Michigan State University.
 from PySide6.QtCore import Qt, QAbstractItemModel, QModelIndex
 from PySide6.QtGui import QIcon
 
+from functools import cache
 
 from ..core.project import manager
 from ..core.project.nodes.project import Project
@@ -17,7 +18,19 @@ class ProjectManagerTreeModel(QAbstractItemModel):
 
     def __init__(self, project_manager, parent=None):
         super().__init__(parent)
+
+        # Cache icons to avoid lookup/icon creation when redrawing tree
+        self._icon_cache = {}
+
         self._project_manager = project_manager
+
+    def get_icon(self, name, from_theme=False):
+        if name not in self._icon_cache:
+            if from_theme:
+                self._icon_cache[name] = QIcon.fromTheme(name)
+            else:
+                self._icon_cache[name] = QIcon(name)
+        return self._icon_cache[name]
 
     def columnCount(self, parent=QModelIndex()) -> int:
         return 1
@@ -36,8 +49,6 @@ class ProjectManagerTreeModel(QAbstractItemModel):
         return 0
 
     def index(self, row, column, parent=QModelIndex()) -> QModelIndex:
-        if column < 0 or column >= self.columnCount(parent):
-            return QModelIndex()
 
         # Project manager node
         if not parent.isValid():
@@ -48,14 +59,10 @@ class ProjectManagerTreeModel(QAbstractItemModel):
 
         parent_item = parent.internalPointer()
         if isinstance(parent_item, Project):
-            if row >= parent_item.child_count:
-                return QModelIndex()
             node = parent_item.get_child_by_index(row)
             return self.createIndex(row, column, node)
 
         elif isinstance(parent_item, Node):
-            if row >= parent_item.child_count:
-                return QModelIndex()
             child = parent_item.get_child_by_index(row)
             return self.createIndex(row, column, child)
 
@@ -97,9 +104,9 @@ class ProjectManagerTreeModel(QAbstractItemModel):
             # If the icon name has a . in it, assume it's a file path,
             # otherwise, assume it's from the theme.
             if "." in icon_name:
-                return QIcon(icon_name)
+                return self.get_icon(icon_name)
             else:
-                return QIcon.fromTheme(icon_name)
+                return self.get_icon(icon_name, from_theme=True)
         return None
 
     def insert_project(self, proj: Project):
