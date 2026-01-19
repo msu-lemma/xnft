@@ -8,7 +8,7 @@ import logging
 import time
 
 import numpy as np
-import pandas as pd
+import xarray as xr
 import matplotlib.pyplot as plt
 import scipy.constants as spc
 from scipy import signal
@@ -19,11 +19,18 @@ from matplotlib.ticker import EngFormatter
 
 import numpy.fft as npfft
 
-# TODO: Add logic to detect if MLX is installed
-import mlx.core as mx
-import mlx.core.fft as mxfft
+MLX_AVAILABLE = False
+try:
+    MLX_AVAILABLE = True
+    import mlx.core as mx
+    import mlx.core.fft as mxfft
+except ImportError:
+    pass
 
 from quantiphy import Quantity
+
+from ..core.types import DataSourceType, FieldType, CoordinateSystem
+
 
 # Create unit formatters
 fmt_hz = EngFormatter(unit="Hz")
@@ -40,6 +47,9 @@ logger = logging.getLogger(__name__)
 
 # def coordinates()
 
+def gen_near_field_sampling_grid():
+    pass
+
 
 def planar_near_field_transform(
     near_field_data,
@@ -48,6 +58,7 @@ def planar_near_field_transform(
     yfft_size=int(2**10),
     probe_correction=None,
     frequencies=None,
+    device='gpu'
 ):
     # =========================================================================
     # ### Select Frequency From Source File
@@ -78,7 +89,7 @@ def planar_near_field_transform(
 
     print(f"{' Selected Values ':{'-'}^{80}}")
     print(f"Frequency: {Quantity(frequency, 'Hz')}")
-    print(f"Wavelength: {Quantity(wavelength,'m')}")
+    print(f"Wavelength: {Quantity(wavelength, 'm')}")
     print(f"k0: {Quantity(k0, 'rad/m')}")
 
     # =========================================================================
@@ -116,7 +127,8 @@ def planar_near_field_transform(
     # on the aperture (center of aperture).
     # Compute the k-space sampling grid
 
-    interpolated_x_size = interpolated_y_size = 2**12 - 1
+    interpolated_x_size = xfft_size - 1
+    interpolated_y_size = yfft_size - 1
 
     kx = (
         np.linspace(-Nx / 2, Nx / 2, interpolated_x_size, endpoint=True)
@@ -151,13 +163,16 @@ def planar_near_field_transform(
     # ## Project sampling grid onto spherical wavefront angles (polar
     # coordinates)
 
+    phi = np.atan2(kyy, kxx).real[:, 0]
+    theta = np.arccos(kz / k0).real * np.sign(phi)
+
     phi_grid = np.atan2(kyy, kxx).real
     theta_grid = np.arccos(kzz / k0).real
 
     # =========================================================================
     # ## Compute the near to far-field transform
     # Select either CPU (via Numpy) or GPU (via MLX).  MLX supports Metal GPUs
-    # (Apple M-series processors) or Nvidia GPUs.
+    # (Apple M-series processors) or Nvidia GPUs (Linux only).
     #
     # The following proceeds from [§12.9, 1].
     # [1] C. A. Balanis, Antenna theory: analysis and design, 3. ed. Hoboken,
@@ -178,19 +193,13 @@ def planar_near_field_transform(
     e_y = near_field_data["E"].sel(component="y")[:, :, 0, f_idx].values
 
     # Select device for FFT
-    device = "cpu"  # 'cpu' or 'gpu'
     print(f"Device: {device.upper()}")
 
     # Start performance timer
     t_start = time.perf_counter()
 
     # Perform setup for CPU and GPU
-    if device == "cpu":
-        # --- Numpy CPU Implementation -------------
-        # Set namespace to numpy
-        ns = np
-
-    elif device == "gpu":
+    if device == "gpu" and MLX_AVAILABLE:
         # --- Metal GPU Implementation ---------------
         # NOTE: Metal only supports single precision complex floats
         # (i.e., complex64)
@@ -210,6 +219,10 @@ def planar_near_field_transform(
         e_y = mx.array(
             near_field_data["E"].sel(component="y")[:, :, 0, f_idx].values
         )
+    else:
+        # --- Numpy CPU Implementation -------------
+        # Set namespace to numpy
+        ns = np
 
     # --- Compute the FFT ---
     fe_x = ns.fft.ifftshift(
@@ -240,18 +253,18 @@ def planar_near_field_transform(
         1j
         * c
         * greens_func
-        * np.cos(theta_grid)
-        * (-fe_x * np.sin(phi_grid) + fe_y * np.cos(phi_grid))
+        * ns.cos(theta_grid)
+        * (-fe_x * ns.sin(phi_grid) + fe_y * ns.cos(phi_grid))
     )
     e_theta = (
         1j
         * c
         * greens_func
-        * (fe_x * np.cos(phi_grid) + fe_y * np.sin(phi_grid))
+        * (fe_x * ns.cos(phi_grid) + fe_y * ns.sin(phi_grid))
     )
 
     # Compute magnitude of E-field to plot
-    e_total = np.sqrt(e_phi**2 + e_theta**2)
+    e_total = ns.sqrt(e_phi**2 + e_theta**2)
 
     # If using GPU memory, create view of memory for numpy
     if device == "gpu":
@@ -266,6 +279,43 @@ def planar_near_field_transform(
     t_end = time.perf_counter()
     elapsed_time = Quantity(t_end - t_start, "s")
     print("Far-field transform:", elapsed_time)
+
+    # -- Generate field output --
+
+    eta = (spc.mu_0 / spc.epsilon_0) ** 0.5
+    h_theta = -e_phi / eta
+    h_phi = e_theta / eta
+
+    e_field = np.stack([e_phi, e_theta])[..., np.newaxis]
+    h_field = np.stack([h_phi, h_theta])[..., np.newaxis]
+
+    fields = xr.Dataset(
+        {
+            "E": (
+                ("component", "phi", "theta", "frequency"),
+                e_field,
+                {"Units": "V/m"},
+            ),
+            "H": (
+                ("component", "phi", "theta", "frequency"),
+                h_field,
+                {"Units": "A/m"},
+            ),
+        },
+        coords={
+            "component": ["phi", "theta"],
+            "phi": phi,
+            "theta": theta,
+            "frequency": [frequency],
+        },
+        attrs={
+            "data_source_type": DataSourceType.XNFT,
+            "field": FieldType.FAR,
+            "coordinate_system": CoordinateSystem.SPHERICAL,
+        },
+    )
+
+    return fields
 
 
 # ----------------------------------------------------------------------------
@@ -490,19 +540,14 @@ def planar_near_field_transform_full(
     e_y = near_field_data["E"].sel(component="y")[:, :, 0, f_idx].values
 
     # Select device for FFT
-    device = "cpu"  # 'cpu' or 'gpu'
+    device = "gpu"  # 'cpu' or 'gpu'
     print(f"Device: {device.upper()}")
 
     # Start performance timer
     t_start = time.perf_counter()
 
     # Perform setup for CPU and GPU
-    if device == "cpu":
-        # --- Numpy CPU Implementation -------------
-        # Set namespace to numpy
-        ns = np
-
-    elif device == "gpu":
+    if device == "gpu" and MLX_AVAILABLE:
         # --- Metal GPU Implementation ---------------
         # NOTE: Metal only supports single precision complex floats
         # (i.e., complex64)
@@ -522,6 +567,10 @@ def planar_near_field_transform_full(
         e_y = mx.array(
             near_field_data["E"].sel(component="y")[:, :, 0, f_idx].values
         )
+    else:
+        # --- Numpy CPU Implementation -------------
+        # Set namespace to numpy
+        ns = np
 
     # --- Compute the FFT ---
     fe_x = ns.fft.ifftshift(
@@ -544,26 +593,26 @@ def planar_near_field_transform_full(
 
     # Phase correction term such that phase at measured radius is constant
     r_ff = 10  # TODO: compute based on aperture size
-    greens_func = ns.exp(-1j * k0 * r_ff) / r_ff
+    greens_func = ns.exp(-1j * k0 * r_ff) / (4.0 * ns.pi * r_ff)
 
-    c = k0 / (2.0 * np.pi)
+    c = 2.0 * k0
 
     e_phi = (
         1j
         * c
         * greens_func
-        * np.cos(theta_grid)
-        * (-fe_x * np.sin(phi_grid) + fe_y * np.cos(phi_grid))
+        * ns.cos(theta_grid)
+        * (-fe_x * ns.sin(phi_grid) + fe_y * ns.cos(phi_grid))
     )
     e_theta = (
         1j
         * c
         * greens_func
-        * (fe_x * np.cos(phi_grid) + fe_y * np.sin(phi_grid))
+        * (fe_x * ns.cos(phi_grid) + fe_y * ns.sin(phi_grid))
     )
 
     # Compute magnitude of E-field to plot
-    e_total = np.sqrt(e_phi**2 + e_theta**2)
+    e_total = ns.sqrt(e_phi**2 + e_theta**2)
 
     # If using GPU memory, create view of memory for numpy
     if device == "gpu":
