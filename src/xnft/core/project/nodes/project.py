@@ -11,10 +11,11 @@ import logging
 
 from .node import Node, NodeType, menu_action
 from .fields import FieldsNode
-from .analyses import AnalysesNode
+from .analysis import AnalysisNode
 from .results import ResultsNode
 from .coordinates import CoordinatesNode
 from .model import ModelNode
+from ..project_loader import write_project
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +30,7 @@ class Project(Node):
     def __post_init__(self):
         # Add default project nodes
         self.add_child(FieldsNode())
-        self.add_child(AnalysesNode())
+        self.add_child(AnalysisNode())
         self.add_child(ResultsNode())
         self.add_child(CoordinatesNode())
         self.add_child(ModelNode())
@@ -43,5 +44,9 @@ class Project(Node):
     def save(self, path=None):
         if path is not None:
             self.path = path
-        logger.warning("Project saving not yet implemented.")
-        return f"Failed to save {self.name} to path: {self.path}"
+
+        try:
+            write_project(self, compression_level=10)
+            return f"Saved project {self.name} to path: {self.path}"
+        except Exception:
+            return f"Failed to save {self.name} to path: {self.path}"

@@ -1,6 +1,7 @@
 """Define new planar near field transform dialog window."""
 
 from __future__ import annotations
+import numpy as np
 from typing import List, Tuple
 from pathlib import Path
 
@@ -86,13 +87,15 @@ class NewPlanarNearFieldTransform(QDialog):
         )
 
         self.sb_fft_x_size = QSpinBox(self)
+        self.sb_fft_x_size.correctionMode = True
         self.sb_fft_x_size.setMinimum(2)
-        self.sb_fft_x_size.setMaximum(16384)
+        self.sb_fft_x_size.setMaximum(int(2**20))
         self.sb_fft_x_size.setValue(4096)
 
         self.sb_fft_y_size = QSpinBox(self)
+        self.sb_fft_y_size.correctionMode = True
         self.sb_fft_y_size.setMinimum(2)
-        self.sb_fft_y_size.setMaximum(16384)
+        self.sb_fft_y_size.setMaximum(int(2**20))
         self.sb_fft_y_size.setValue(4096)
 
         self.help_label = QLabel(
@@ -149,7 +152,6 @@ class NewPlanarNearFieldTransform(QDialog):
         self.cb_source_field.currentTextChanged.connect(
             self._update_frequencies
         )
-
         self.buttons.accepted.connect(self._on_accept)
         self.buttons.rejected.connect(self.reject)
 

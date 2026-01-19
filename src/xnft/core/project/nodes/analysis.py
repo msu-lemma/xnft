@@ -6,8 +6,9 @@ Copyright 2025-2026 The LEmmA Group, Michigan State University.
 
 from dataclasses import dataclass
 import logging
+from enum import StrEnum
 
-from ....gui.dialogs.new_planar_nft_dialog import (
+from ....gui.dialogs.analysis.new_planar_nft_dialog import (
     NewPlanarNearFieldTransform,
 )
 
@@ -22,9 +23,11 @@ logger = logging.getLogger(__name__)
 
 
 
+
+
 @dataclass(kw_only=True)
-class AnalysesNode(Node):
-    name: str = "Analyses"
+class AnalysisNode(Node):
+    name: str = "Analysis"
     icon_name: str = "src/xnft/resources/icons/function.svg"
     type: NodeType = NodeType.ANALYSIS
 
@@ -46,7 +49,7 @@ class AnalysesNode(Node):
         frequencies,
     ):
         # Perform the near to far field transform
-        planar_near_field_transform_full(
+        data = planar_near_field_transform(
             near_field_data=source_field.data,
             far_field_data=far_field.data,
             xfft_size=fft_x_size,
@@ -56,7 +59,7 @@ class AnalysesNode(Node):
         )
 
         # Create the transform node item
-        node = TransformNode(name=transform_name)
+        node = TransformNode(name=transform_name, data=data)
 
         # Prepare results
         pass

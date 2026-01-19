@@ -23,7 +23,7 @@ from PySide6.QtWidgets import (
     QLabel,
 )
 
-from ...loaders.file_registry import registry
+from ....loaders.file_registry import registry
 
 
 class NewFieldMeasurementDialog(QDialog):
@@ -82,10 +82,10 @@ class NewFieldMeasurementDialog(QDialog):
         form_layout = QFormLayout()
         form_layout.setFieldGrowthPolicy(QFormLayout.ExpandingFieldsGrow)
 
-        form_layout.addRow("Field Type:", self.field_type_field)
-        form_layout.addRow("Source Format:", self.source_format_field)
-
         form_layout.addRow("Field Name:", self.field_name_field)
+
+        form_layout.addRow("Field Type:", self.field_type_field)
+        form_layout.addRow("Source File Format:", self.source_format_field)
 
         path_row = QHBoxLayout()
         path_row.addWidget(self.path_field, 1)
@@ -157,12 +157,15 @@ class NewFieldMeasurementDialog(QDialog):
             f"{', '.join(self._get_available_extensions())}"
         )
 
-    def _get_available_extensions(self) -> list[str]:
+    def _get_available_extensions(self, glob_format=True) -> list[str]:
         field_type = self.field_type_field.currentText()
         source_type = self.source_format_field.currentText()
 
         file_extensions = registry.loaders[field_type][source_type]
-        return [f"*{extension}" for extension in file_extensions]
+        if glob_format:
+            return [f"*{extension}" for extension in file_extensions]
+        else:
+            return file_extensions
 
     def _is_input_valid(self, silent: bool) -> bool:
         name = self.field_name_field.text().strip()
@@ -192,6 +195,19 @@ class NewFieldMeasurementDialog(QDialog):
                     self,
                     "Invalid Location",
                     "The chosen file does not exist.",
+                )
+            return False
+
+        if p.suffix not in self._get_available_extensions(glob_format=False):
+            if not silent:
+                field_type = self.field_type_field.currentText()
+                source_type = self.source_format_field.currentText()
+                extensions = self._get_available_extensions()
+                QMessageBox.warning(
+                    self,
+                    "Invalid File Type",
+                    "The chosen file does not have a supported file extension.\n"
+                    f"Valid types for {source_type} {field_type} are: {', '.join(extensions)}",
                 )
             return False
 

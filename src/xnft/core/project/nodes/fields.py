@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from typing import Optional
 import logging
 
-from ....gui.dialogs.new_field_measurement_dialog import (
+from ....gui.dialogs.fields.new_field_measurement_dialog import (
     NewFieldMeasurementDialog,
 )
 from ....loaders.file_registry import registry
@@ -23,11 +23,6 @@ class FieldsNode(Node):
     name: str = "Fields"
     icon_name: str = "src/xnft/resources/icons/fields.svg"
     type: NodeType = NodeType.FIELDS
-
-    field_type_map = {
-        "Near Field": NodeType.FIELD_NEAR,
-        "Far Field": NodeType.FIELD_FAR,
-    }
 
     @menu_action(
         "New Measured Field",
@@ -52,7 +47,7 @@ class FieldsNode(Node):
             icon_name="text-x-generic",
             name_editable=True,
             data=field_data,
-            type=field_type,
+            type=field_type
         )
 
         # Add pointer to coordinates (All measured data should have intrinsic
@@ -69,9 +64,10 @@ class FieldsNode(Node):
             name=f"{field_name} Coordinates",
             source=field_node,
             data=coordinate_data,
-            type="Cartesian",
         )
         # coordinates_node.add_child(coordinate_node)
+
+        field_node.coordinates = coordinate_node
 
         status = f"Successfully created {field_type.lower()} node."
 
@@ -86,6 +82,7 @@ class FieldsNode(Node):
 class FieldNode(Node):
     source_type: str
     measured: Optional[bool] = False
+    coordinates: Optional[Node] = None
 
     @property
     def display_type(self):

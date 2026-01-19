@@ -9,32 +9,13 @@ from typing import List, Optional, Callable
 from uuid import uuid4
 import inspect
 import logging
-from enum import Enum
+from ...types import NodeType
 
 
 logger = logging.getLogger(__name__)
 
 
-class NodeType(Enum):
-    PROJECT = 100
-    FIELDS = 200
-    ANALYSIS = 300
-    COORDINATES = 400
-    RESTULTS = 500
-    MODEL = 600
 
-    ANALYSIS_TRANSFORM = 601
-    ANALYSIS_INTERPOLATION = 602
-
-    RESULTS_PLOT_1D = 501
-    RESULTS_PLOT_2D = 502
-    RESULTS_PLOT_3D = 503
-    RESULTS_TABLE = 504
-
-    FIELD_NEAR = 201
-    FIELD_FAR = 202
-
-    UNKNOWN = 0
 
 
 # --- Action metadata + decorator ---
