@@ -12,14 +12,18 @@ import string
 import pandas as pd
 import numpy as np
 import xarray as xr
+import scipy.constants as spc
 
 from .file_registry import registry
+from ..core.types import DataSourceType, FieldType, CoordinateSystem
 
 
 logger = logging.getLogger(__name__)
 
 
-@registry.register(source="HFSS", field="Near Field", extension=".nfd")
+@registry.register(
+    source=DataSourceType.HFSS, field=FieldType.NEAR, extension=".nfd"
+)
 def load_hfss_near_field_ndf(file_path: Path) -> xr.Dataset:
     """
     Load near-field file data.
@@ -156,6 +160,11 @@ def load_hfss_near_field_ndf(file_path: Path) -> xr.Dataset:
             "z": z_sample_location_array,
             "frequency": sample_frequency_array,
         },
+        attrs={
+            "data_source_type": DataSourceType.HFSS,
+            "field": FieldType.NEAR,
+            "coordinate_system": CoordinateSystem.CARTESIAN,
+        },
     )
 
     fields_buffer = io.StringIO()
@@ -165,7 +174,9 @@ def load_hfss_near_field_ndf(file_path: Path) -> xr.Dataset:
     return fields
 
 
-@registry.register(source="HFSS", field="Far Field", extension=".csv")
+@registry.register(
+    source=DataSourceType.HFSS, field=FieldType.FAR, extension=".csv"
+)
 def load_hfss_far_field_csv(file_path: Path) -> xr.Dataset:
     """
     Load far-field file data.
@@ -235,8 +246,12 @@ def load_hfss_far_field_csv(file_path: Path) -> xr.Dataset:
         e_field[:, phi_index, theta_index, freq_index] = e_phi, e_theta
         # h_field[:, x_index, y_index, z_index, freq_index] = hx, hy, hz
 
-    # # TODO/FIXME: Compute H-Field here
-    h_field = e_field
+    eta = (spc.mu_0 / spc.epsilon_0) ** 0.5
+    h_theta = -e_phi / eta
+    h_phi = e_theta / eta
+
+    e_field = np.stack([e_phi, e_theta])
+    h_field = np.stack([h_phi, h_theta])
 
     fields = xr.Dataset(
         {
@@ -257,6 +272,11 @@ def load_hfss_far_field_csv(file_path: Path) -> xr.Dataset:
             "theta": theta_sample_location_array,
             "frequency": sample_frequency_array,
         },
+        attrs={
+            "data_source_type": DataSourceType.HFSS,
+            "field": FieldType.FAR,
+            "coordinate_system": CoordinateSystem.SPHERICAL,
+        },
     )
 
     fields_buffer = io.StringIO()
@@ -266,7 +286,9 @@ def load_hfss_far_field_csv(file_path: Path) -> xr.Dataset:
     return fields
 
 
-@registry.register(source="HFSS", field="Far Field", extension=".ffd")
+@registry.register(
+    source=DataSourceType.HFSS, field=FieldType.FAR, extension=".ffd"
+)
 def load_hfss_far_field_ffd(file_path: Path) -> xr.Dataset:
     """
     Load far-field file data.
@@ -377,8 +399,15 @@ def load_hfss_far_field_ffd(file_path: Path) -> xr.Dataset:
 
     # === Post-process FFD File Data ===
 
-    # TODO/FIXME: Compute H-Field here
+    # TODO/FIXME
     h_field = e_field
+
+    # eta = (spc.mu_0 / spc.epsilon_0) ** 0.5
+    # h_theta = -e_phi / eta
+    # h_phi = e_theta / eta
+
+    # e_field = np.stack([e_phi, e_theta])
+    # h_field = np.stack([h_phi, h_theta])
 
     fields = xr.Dataset(
         {
@@ -398,6 +427,11 @@ def load_hfss_far_field_ffd(file_path: Path) -> xr.Dataset:
             "phi": phi_sample_location_array,
             "theta": theta_sample_location_array,
             "frequency": sample_frequency_array,
+        },
+        attrs={
+            "data_source_type": DataSourceType.HFSS,
+            "field": FieldType.FAR,
+            "coordinate_system": CoordinateSystem.SPHERICAL,
         },
     )
 

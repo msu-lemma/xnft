@@ -20,12 +20,14 @@ import xarray as xr
 import scipy.constants as spc
 
 from .file_registry import registry
-
+from ..core.types import DataSourceType, FieldType, CoordinateSystem
 
 logger = logging.getLogger(__name__)
 
 
-@registry.register(source="Theory", field="Near Field", extension=".yaml")
+@registry.register(
+    source=DataSourceType.THEORY, field=FieldType.NEAR, extension=".yaml"
+)
 def load_theory_near_field_yaml(file_path: Path) -> xr.Dataset:
     """
     Generate theoretical near-field based on simple description file.
@@ -126,12 +128,19 @@ def load_theory_near_field_yaml(file_path: Path) -> xr.Dataset:
             "z": z_sample_location_array,
             "frequency": sample_frequency_array,
         },
+        attrs={
+            "data_source_type": DataSourceType.THEORY,
+            "field": FieldType.NEAR,
+            "coordinate_system": CoordinateSystem.CARTESIAN,
+        },
     )
 
     return fields
 
 
-@registry.register(source="Theory", field="Far Field", extension=".yaml")
+@registry.register(
+    source=DataSourceType.THEORY, field=FieldType.FAR, extension=".yaml"
+)
 def load_theory_far_field_yaml(file_path: Path) -> xr.Dataset:
     """
     Generate theoretical far-field based on simple description file.
@@ -209,7 +218,7 @@ def load_theory_far_field_yaml(file_path: Path) -> xr.Dataset:
         e_theta = c_ff * np.sin(phi_grid) * cx * cy
         e_phi = c_ff * np.cos(theta_grid) * np.cos(phi_grid) * cx * cy
     elif excitation_distribution == "te10":
-        cx = np.cos(x_ff) / (x_ff**2 - (np.pi / 2)**2)
+        cx = np.cos(x_ff) / (x_ff**2 - (np.pi / 2) ** 2)
         cy = np.sinc(y_ff / np.pi)
         e_theta = -np.pi / 2 * c_ff * np.sin(phi_grid) * cx * cy
         e_phi = (
@@ -245,6 +254,11 @@ def load_theory_far_field_yaml(file_path: Path) -> xr.Dataset:
             "phi": phi_sample_location_array,
             "theta": theta_sample_location_array,
             "frequency": sample_frequency_array,
+        },
+        attrs={
+            "data_source_type": DataSourceType.THEORY,
+            "field": FieldType.FAR,
+            "coordinate_system": CoordinateSystem.SPHERICAL,
         },
     )
 

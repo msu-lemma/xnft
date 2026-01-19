@@ -8,7 +8,7 @@ from typing import Literal
 import logging
 from pathlib import Path
 from collections import defaultdict
-
+from ..core.types import FieldType, DataSourceType
 
 logger = logging.getLogger(__name__)
 
@@ -23,12 +23,12 @@ class FileLoaderRegistry:
 
     def loader_key(self, source, field, extension):
         """Generate a key for the _loaders list."""
-        return f"{source}-{field}-{extension}"
+        return (source, field, extension)
 
     def register(
         self,
-        source: str,
-        field: Literal["Near Field", "Far Field"],
+        source: SourceFileType,
+        field: FieldType,
         extension: str,
     ):
         """
@@ -37,14 +37,14 @@ class FileLoaderRegistry:
 
         Parameters
         ----------
-        source : str
+        source : SourceFileType
             System type that generated the data (e.g., HFSS, NSI, etc.).
-        field : {'Near Field', 'Far Field'}, Literal
+        field : FieldType
             Field type of measurement.
-            - 'Near Field' : Near-field measurement.
-            - 'Far Field' : Far-field measurement.
+            - FieldType.NEAR : Near-field measurement.
+            - FieldType.FAR : Far-field measurement.
         extension : str
-            File extension (e.g., csv, nfd, ffd, etc.).
+            File extension (e.g., .csv, .nfd, .ffd, etc.).
         """
 
         def decorator(func):
@@ -57,18 +57,18 @@ class FileLoaderRegistry:
 
         return decorator
 
-    def load(self, source: str, field: str, path: str):
+    def load(self, source: SourceFileType, field: FieldType, path: str):
         """
         Load a file using appropriate loader.
 
         Parameters
         ----------
-        source : str
+        source : SourceFileType
             System type that generated the data (e.g., HFSS, NSI, etc.).
-        field : {'near', 'far'}, Literal
+        field : FieldType
             Field type of measurement.
-            - 'Near Field' : Near-field measurement.
-            - 'Far Field' : Far-field measurement.
+            - FieldType.NEAR : Near-field measurement.
+            - FieldType.FAR : Far-field measurement.
         path : str
             String representing the path to a file.
         """
@@ -90,9 +90,9 @@ class FileLoaderRegistry:
         except KeyError as exc:
             raise NotImplementedError(
                 f"No file loader exists for: "
-                f"{{ source: '{source}', field: '{field}', extension: "
-                f"'{extension}' }} ({loader_key}). Available options "
-                f"are {self._loaders}. {exc}"
+                f"{{ source: '{source.value}', field: '{field.value}',"
+                f" extension: '{extension}' }} ({loader_key}). "
+                f"Available options are {self._loaders}. {exc}"
             ) from exc
 
         return_value = loader_function(file_path)
@@ -106,12 +106,12 @@ class FileLoaderRegistry:
         extensions.
         """
         loader_dict = {
-            "Near Field": defaultdict(list),
-            "Far Field": defaultdict(list),
+            FieldType.NEAR: defaultdict(list),
+            FieldType.FAR: defaultdict(list),
         }
 
         for key in self._loaders.keys():
-            source, field, extension = key.split("-")
+            source, field, extension = key
             loader_dict[field][source].append(extension)
 
         return loader_dict
