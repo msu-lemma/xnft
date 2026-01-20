@@ -5,8 +5,8 @@ Copyright 2025-2026 The LEmmA Group, Michigan State University.
 """
 
 from dataclasses import dataclass
+from typing import Optional
 import logging
-from enum import StrEnum
 
 from ....gui.dialogs.analysis.new_planar_nft_dialog import (
     NewPlanarNearFieldTransform,
@@ -17,12 +17,11 @@ from ...algorithms import (
     planar_near_field_transform_full,
 )
 
-from .node import Node, NodeType, menu_action
+from .node import Node, context_action
+from .fields import FieldNode
+from ...types import NodeType, FieldType, DataSourceType
 
 logger = logging.getLogger(__name__)
-
-
-
 
 
 @dataclass(kw_only=True)
@@ -31,7 +30,7 @@ class AnalysisNode(Node):
     icon_name: str = "src/xnft/resources/icons/function.svg"
     type: NodeType = NodeType.ANALYSIS
 
-    @menu_action(
+    @context_action(
         "New Planar Near-to-far Field Transform",
         order=10,
         enabled=True,
@@ -58,34 +57,52 @@ class AnalysisNode(Node):
             frequencies=frequencies,
         )
 
-        # Create the transform node item
-        node = TransformNode(name=transform_name, data=data)
+        # Create the transform node and field node
+        far_field_node = FieldNode(
+            name=transform_name,
+            data=data,
+            type=FieldType.FAR,
+            source_type=DataSourceType.XNFT,
+        )
+        transform_node = TransformNode(
+            name=transform_name, data=far_field_node
+        )
 
-        # Prepare results
-        pass
+        # Get the fields root node to add far field node to
+        fields_node = None
+        for tmp_node in self.parent.children:
+            if tmp_node.name == "Fields":
+                fields_node = tmp_node
+                break
+        assert fields_node is not None
 
-        node_pair_list = [(self, node)]
+        node_pair_list = [
+            (self, transform_node),
+            (fields_node, far_field_node),
+        ]
+
+        # Status to display on status bar at bottom of window
         status = "Near-to-far Field Transform is not yet implemented."
 
         return node_pair_list, status
 
-    @menu_action(
+    @context_action(
         "New Spherical Near-to-far Field Transform", order=20, enabled=False
     )
     def new_spherical_nft(self):
         logger.warning("Near-to-far Field Transform is not yet implemented.")
 
-    @menu_action(
+    @context_action(
         "New Near Field Interpolation", order=30, enabled=False, separator=True
     )
     def new_near_field_interpolation(self):
         logger.warning("Near field interpolation is not yet implemented.")
 
-    @menu_action("New Far Field Interpolation", order=40, enabled=False)
+    @context_action("New Far Field Interpolation", order=40, enabled=False)
     def new_far_field_interpolation(self):
         logger.warning("Far field interpolation is not yet implemented.")
 
 
 @dataclass(kw_only=True)
 class TransformNode(Node):
-    pass
+    name_editable: Optional[bool] = True

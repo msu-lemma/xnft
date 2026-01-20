@@ -1,6 +1,7 @@
 """
 Copyright 2025-2026 The LEmmA Group, Michigan State University.
 """
+
 from PySide6.QtGui import QAction, QIcon, QContextMenuEvent
 from PySide6.QtCore import QSize
 from PySide6.QtWidgets import (
@@ -27,7 +28,6 @@ class ProjectTreeView(QTreeView):
         self.setUniformRowHeights(True)
         self.setHeaderHidden(True)
 
-
     def contextMenuEvent(self, ctx_menu_event: QContextMenuEvent) -> None:
         """Add context menu (right click) items."""
         idx = self.indexAt(ctx_menu_event.pos())
@@ -35,34 +35,36 @@ class ProjectTreeView(QTreeView):
             return
 
         node = idx.internalPointer()
-        menu_actions = getattr(node, "menu_actions", [])
-        if not menu_actions:
+        context_actions = getattr(node, "context_actions", [])
+        if not context_actions:
             return
 
         menu = QMenu(self)
-        for menu_action in menu_actions:
-            if menu_action.icon_name:
+        for context_action in context_actions:
+            if context_action.icon_name:
                 action = QAction(
-                    self.model.get_icon(menu_action.icon_name, from_theme=True),
-                    menu_action.label,
+                    self.model().get_icon(
+                        context_action.icon_name, from_theme=True
+                    ),
+                    context_action.label,
                     menu,
                 )
             else:
                 action = QAction(
-                    menu_action.label,
+                    context_action.label,
                     menu,
                 )
-            action.setEnabled(bool(menu_action.enabled))
-            if menu_action.tooltip:
-                action.setToolTip(menu_action.tooltip)
+            action.setEnabled(bool(context_action.enabled))
+            if context_action.tooltip:
+                action.setToolTip(context_action.tooltip)
 
-            if menu_action.separator:
+            if context_action.separator:
                 menu.addSeparator()
 
             # Check special action types, else simply invoke callable
-            if menu_action.action == "new_node":
-                helper_dialog = menu_action.helper_dialog
-                invoke_function = menu_action.invoke
+            if context_action.action == "new_node":
+                helper_dialog = context_action.helper_dialog
+                invoke_function = context_action.invoke
                 # fmt: off
                 action.triggered.connect(
                     lambda
@@ -74,7 +76,7 @@ class ProjectTreeView(QTreeView):
                     main._new_node(helper_dialog, target_node, invoke_function)
                 )
                 # fmt: on
-            elif menu_action.action == "close_project" and isinstance(
+            elif context_action.action == "close_project" and isinstance(
                 node, manager.Project
             ):
                 # fmt: off
@@ -88,7 +90,7 @@ class ProjectTreeView(QTreeView):
                 # fmt: on
             else:
                 # Fallback for direct callable
-                invoke = getattr(menu_action, "invoke", None)
+                invoke = getattr(context_action, "invoke", None)
                 if callable(invoke):
                     action.triggered.connect(
                         lambda checked=False, inv=invoke: inv()
@@ -98,7 +100,9 @@ class ProjectTreeView(QTreeView):
 
         if isinstance(node, manager.Project):
             close_action = QAction(
-                self.model.get_icon("window-close", from_theme=True), "Close Project", menu
+                self.model().get_icon("window-close", from_theme=True),
+                "Close Project",
+                menu,
             )
             close_action.setStatusTip("Close this project")
             # fmt: off

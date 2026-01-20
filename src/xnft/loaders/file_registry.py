@@ -27,7 +27,7 @@ class FileLoaderRegistry:
 
     def register(
         self,
-        source: SourceFileType,
+        source: DataSourceType,
         field: FieldType,
         extension: str,
     ):
@@ -37,7 +37,7 @@ class FileLoaderRegistry:
 
         Parameters
         ----------
-        source : SourceFileType
+        source : DataSourceType
             System type that generated the data (e.g., HFSS, NSI, etc.).
         field : FieldType
             Field type of measurement.
@@ -57,13 +57,13 @@ class FileLoaderRegistry:
 
         return decorator
 
-    def load(self, source: SourceFileType, field: FieldType, path: str):
+    def load(self, source: DataSourceType, field: FieldType, path: str):
         """
         Load a file using appropriate loader.
 
         Parameters
         ----------
-        source : SourceFileType
+        source : DataSourceType
             System type that generated the data (e.g., HFSS, NSI, etc.).
         field : FieldType
             Field type of measurement.

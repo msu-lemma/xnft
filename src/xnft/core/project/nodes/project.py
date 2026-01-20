@@ -9,7 +9,7 @@ from typing import Optional
 from pathlib import Path
 import logging
 
-from .node import Node, NodeType, menu_action
+from .node import Node, NodeType, context_action
 from .fields import FieldsNode
 from .analysis import AnalysisNode
 from .results import ResultsNode
@@ -38,7 +38,7 @@ class Project(Node):
         # Allow projects to be renamed in the Project Manager
         self.name_editable = True
 
-    @menu_action(
+    @context_action(
         "Save Project", order=10, enabled=True, icon_name="document-save"
     )
     def save(self, path=None):

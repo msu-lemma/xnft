@@ -7,7 +7,8 @@ Copyright 2025-2026 The LEmmA Group, Michigan State University.
 from dataclasses import dataclass
 from typing import Optional
 import logging
-from .node import Node, NodeType, menu_action
+from .node import Node, context_action
+from ...types import NodeType
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +20,7 @@ class CoordinatesNode(Node):
     icon_name: str = "src/xnft/resources/icons/coordinates.svg"
     type: NodeType = NodeType.COORDINATES
 
-    @menu_action("New Measurement Coordinates", order=10, enabled=False)
+    @context_action("New Measurement Coordinates", order=10, enabled=False)
     def new_measurement_coordinates(self):
         logger.warning("New measurement coordinates is not yet implemented.")
 
@@ -27,5 +28,5 @@ class CoordinatesNode(Node):
 @dataclass(kw_only=True)
 class CoordinateNode(Node):
     source: Optional[Node]
-    name_editable: bool = True
+    name_editable: Optional[bool] = True
 

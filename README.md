@@ -4,7 +4,7 @@
 
 To quickly install the environment to run `xnft`, follow the steps below:
 
-1. Install Pixi package manager: https://pixi.sh/latest/
+1. Install Pixi package manager: https://pixi.prefix.dev/latest/installation/
 2. Install the `default` environment by running: 
     ```shell
     pixi install

@@ -12,8 +12,10 @@ from ....gui.dialogs.fields.new_field_measurement_dialog import (
     NewFieldMeasurementDialog,
 )
 from ....loaders.file_registry import registry
-from .node import Node, NodeType, menu_action
+from .node import Node, NodeType, context_action
 from .coordinates import CoordinateNode
+
+from ...types import CoordinateSystem, FieldType
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +26,7 @@ class FieldsNode(Node):
     icon_name: str = "src/xnft/resources/icons/fields.svg"
     type: NodeType = NodeType.FIELDS
 
-    @menu_action(
+    @context_action(
         "New Measured Field",
         order=10,
         enabled=True,
@@ -45,9 +47,8 @@ class FieldsNode(Node):
             measured=True,
             attributes={"path": path},
             icon_name="text-x-generic",
-            name_editable=True,
             data=field_data,
-            type=field_type
+            type=field_type,
         )
 
         # Add pointer to coordinates (All measured data should have intrinsic
@@ -64,6 +65,11 @@ class FieldsNode(Node):
             name=f"{field_name} Coordinates",
             source=field_node,
             data=coordinate_data,
+            type=(  # TODO: Add better detection of coordinate system
+                CoordinateSystem.CARTESIAN
+                if field_type == FieldType.NEAR
+                else CoordinateSystem.SPHERICAL
+            ),
         )
         # coordinates_node.add_child(coordinate_node)
 
@@ -83,6 +89,7 @@ class FieldNode(Node):
     source_type: str
     measured: Optional[bool] = False
     coordinates: Optional[Node] = None
+    name_editable: Optional[bool] = True
 
     @property
     def display_type(self):

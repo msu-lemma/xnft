@@ -11,7 +11,8 @@
             "module": "xnft.gui.app",
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
-            "subProcess": true
+            "subProcess": true,
+            "autoReload": {"enable": true}
         }
     ]
 }

@@ -15,9 +15,6 @@ from ...types import NodeType
 logger = logging.getLogger(__name__)
 
 
-
-
-
 # --- Action metadata + decorator ---
 @dataclass
 class ContextAction:
@@ -34,7 +31,7 @@ class ContextAction:
     separator: bool = False
 
 
-def menu_action(
+def context_action(
     label: str,
     enabled: Callable[["Node"], bool] | bool = True,
     tooltip: Optional[str] = None,
@@ -68,7 +65,7 @@ def menu_action(
     """
 
     def decorator(func):
-        func.__menu_action__ = {
+        func.__context_action__ = {
             "label": label,
             "enabled": enabled,
             "tooltip": tooltip,
@@ -94,7 +91,7 @@ class Node:
     id: str = field(default_factory=lambda: str(uuid4()))
     name: str = "None"
     type: NodeType = NodeType.UNKNOWN
-    name_editable: bool = False
+    name_editable: Optional[bool] = False
     attributes: Optional[dict] = field(default_factory=dict)
     data: Optional[object] = None
     icon_name: Optional[object] = "text-x-generic"
@@ -115,8 +112,7 @@ class Node:
             self._parent = parent
         else:
             raise TypeError(
-                f"Node 'parent' must be of type 'Node'"
-                f" got {type(parent)}."
+                f"Node 'parent' must be of type 'Node'" f" got {type(parent)}."
             )
 
     # -- Children --
@@ -185,7 +181,7 @@ class Node:
     # -- Menu actions --
 
     @property
-    def menu_actions(self) -> list[ContextAction]:
+    def context_actions(self) -> list[ContextAction]:
         """Collect all ContextAction items added by decorator.
 
         Returns
@@ -198,12 +194,12 @@ class Node:
         for name, function in inspect.getmembers(
             self.__class__, predicate=inspect.isfunction
         ):
-            # Check if __menu_action__ attribute is available before
+            # Check if __context_action__ attribute is available before
             # continuing
-            if name == "menu_actions":
+            if name == "context_actions":
                 continue
 
-            meta = getattr(function, "__menu_action__", None)
+            meta = getattr(function, "__context_action__", None)
             if not meta:
                 continue
 
@@ -226,3 +222,19 @@ class Node:
         # Sort by order then label
         actions.sort(key=lambda a: (a.order, a.label))
         return actions
+
+
+@dataclass(kw_only=True)
+class LeafNode(Node):
+    """
+    Specialization of Node class with default helper context/helper functions
+    unique to leaf nodes.
+    """
+    # @context_action()
+    def edit(self):
+        pass
+
+    # @context_action()
+    def delete(self):
+        pass
+    

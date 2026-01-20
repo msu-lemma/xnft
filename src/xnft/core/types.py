@@ -12,7 +12,7 @@ class NodeType(StrEnum):
     FIELDS = "Fields"
     ANALYSIS = "Analysis"
     COORDINATES = "Coordinates"
-    RESTULTS = "Results"
+    RESULTS = "Results"
     MODEL = "Model"
     UNKNOWN = "Unknown"
 

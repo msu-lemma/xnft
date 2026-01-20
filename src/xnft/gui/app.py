@@ -47,10 +47,12 @@ import importlib.metadata
 from .. import __version__
 from ..core.project import manager
 from ..core.project.nodes.project import Project
+from ..core.project.project_loader import read_project
+
 from .dialogs.project.new_project_dialog import NewProjectDialog
 from .project_tree_model import ProjectManagerTreeModel
 from .project_tree_view import ProjectTreeView
-from ..core.project.project_loader import read_project
+from .mdi_area import QMdiAreaWatermark
 
 # Registers all loaders
 import xnft.loaders  # noqa: F401  # pylint: disable=unused-import
@@ -159,8 +161,6 @@ class MainWindow(QMainWindow):
         self.project_tree = ProjectTreeView()
         self.project_tree.setModel(self.model)
         self.project_tree.setAlternatingRowColors(True)
-        self.project_tree.setUniformRowHeights(True)
-        self.project_tree.setHeaderHidden(True)
         self.project_tree.setIndentation(15)
         self.project_tree.expandAll()
 
@@ -234,15 +234,15 @@ class MainWindow(QMainWindow):
     def create_plot_area(self):
 
         # Create MDI area for windows to exist
-        area = QMdiAreaWatermark()
-        self.setCentralWidget(area)
+        self.mdi_area = QMdiAreaWatermark()
+        self.setCentralWidget(self.mdi_area)
 
         self.pw = pg.PlotWidget()
         self.win = QMdiSubWindow()
         self.win.setWidget(self.pw)
         self.win.setWindowTitle("Plot Window 1")
 
-        area.addSubWindow(self.win)
+        self.mdi_area.addSubWindow(self.win)
 
     def _open_project(self):
         start_dir = str(Path.home())
@@ -328,50 +328,6 @@ class MainWindow(QMainWindow):
             self.project_tree.expand(model_index)
             self.project_tree.setCurrentIndex(model_index)
             self.project_tree.scrollTo(model_index)
-
-
-class QMdiAreaWatermark(QMdiArea):
-    """Custom QMdiArea to display watermark."""
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self._emrg_logo_path = "src/xnft/resources/logos/emrg_logo.svg"
-        self._lemma_logo_path = (
-            "src/xnft/resources/logos/lemma_logo_transparent.png"
-        )
-
-        self._opacity = 0.5
-        self._margin = 12
-        self._emrg_target_size = QSizeF(510.2 / 2, 164 / 2)
-        self._lemma_target_size = QSizeF(381 / 1.5, 325 / 1.5)
-
-    def paintEvent(self, event):
-        super().paintEvent(event)
-        painter = QPainter(self.viewport())
-        painter.setOpacity(self._opacity)
-
-        # Compute lower right corner location for watermarks
-
-        vp_rect = self.viewport().rect()
-        emrg_w, emrg_h = (
-            self._emrg_target_size.width(),
-            self._emrg_target_size.height(),
-        )
-        emrg_x = vp_rect.right() - emrg_w - self._margin
-        emrg_y = vp_rect.bottom() - emrg_h - self._margin
-        emrg_target_rect = QRect(emrg_x, emrg_y, emrg_w, emrg_h)
-
-        painter.drawImage(emrg_target_rect, QImage(self._emrg_logo_path))
-
-        lemma_w, lemma_h = (
-            self._lemma_target_size.width(),
-            self._lemma_target_size.height(),
-        )
-        lemma_x = vp_rect.right() - lemma_w - self._margin
-        lemma_y = vp_rect.top() + self._margin
-        lemma_target_rect = QRect(lemma_x, lemma_y, lemma_w, lemma_h)
-
-        painter.drawImage(lemma_target_rect, QImage(self._lemma_logo_path))
 
 
 def center_window(window: QWindow, target_size_ratio: float = 0.7):

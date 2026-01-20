@@ -1,4 +1,8 @@
-"""Define new planar near field transform dialog window."""
+"""
+Define new planar near field transform dialog window.
+
+Copyright 2025-2026 The LEmmA Group, Michigan State University.
+"""
 
 from __future__ import annotations
 import numpy as np
@@ -31,8 +35,6 @@ class NewPlanarNearFieldTransform(QDialog):
     Input dialog for planar near field transform.
 
     Includes basic data validation.
-
-    Copyright 2025-2026 The LEmmA Group, Michigan State University.
     """
 
     def __init__(
