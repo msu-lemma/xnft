@@ -88,6 +88,9 @@ xnft = { path = ".", editable = true }
 rocket-fft = ">=0.3.1, <0.4"
 jax-finufft = "*"
 
+[target.win-64.dependencies]
+cxx-compiler = ">=1.11.0,<2"
+
 
 [feature.metal]
 platforms = ["osx-arm64", "linux-64"]
