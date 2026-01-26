@@ -7,7 +7,7 @@ aperture [§12, 1].
 [1] C. A. Balanis, Antenna theory: analysis and design, 3. ed. Hoboken,
     N.J: Wiley-Interscience, 2005.
 
-Copyright 2025-2026 The LEmmA Group, Michigan State University.
+Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
 from pathlib import Path

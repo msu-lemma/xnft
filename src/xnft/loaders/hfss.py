@@ -1,7 +1,7 @@
 """
 Loader functions for Ansys HFSS files.
 
-Copyright 2025-2026 The LEmmA Group, Michigan State University.
+Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
 from pathlib import Path
@@ -367,13 +367,14 @@ def load_hfss_far_field_ffd(file_path: Path) -> xr.Dataset:
             # Find frequency content
             elif line[0] == "F":  # Frequency content lines start with 'F'
                 if "Frequency" in line:
+                    # Increment frequency index
+                    frequency_index += 1
+                    
                     current_frequency = float(line.split(" ")[1])
                     sample_frequency_array[frequency_index] = current_frequency
                     logger.debug(
                         "Found current_frequency = %e Hz", current_frequency
                     )
-                    # Increment frequency index
-                    frequency_index += 1
 
                     # Reset data_index to -1 (counts sample offset for a
                     # given frequency), increments at end of loop
@@ -434,6 +435,8 @@ def load_hfss_far_field_ffd(file_path: Path) -> xr.Dataset:
             "coordinate_system": CoordinateSystem.SPHERICAL,
         },
     )
+
+    print(fields)
 
     fields_buffer = io.StringIO()
     fields.info(buf=fields_buffer)
