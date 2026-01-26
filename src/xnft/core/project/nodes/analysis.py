@@ -14,7 +14,6 @@ from ....gui.dialogs.analysis.new_planar_nft_dialog import (
 
 from ...algorithms import (
     planar_near_field_transform,
-    planar_near_field_transform_full,
 )
 
 from .node import Node, LeafNode, context_action
