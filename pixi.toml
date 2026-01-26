@@ -17,7 +17,7 @@ channels = ["https://prefix.dev/conda-forge"]
 [package.build.config]
 noarch = false
 compilers = [
-    # "cxx",
+    "cxx",
 ] # Only required to build rocket-fft from source 
 
 [environments]
