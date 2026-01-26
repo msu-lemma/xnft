@@ -1,7 +1,7 @@
 """
 Handle xnft project actions.
 
-Copyright 2025-2026 The LEmmA Group, Michigan State University.
+Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
 from dataclasses import dataclass, field
@@ -230,11 +230,27 @@ class LeafNode(Node):
     Specialization of Node class with default helper context/helper functions
     unique to leaf nodes.
     """
-    # @context_action()
+
+    @context_action(
+        label="Edit",
+        icon_name="mail-message-new",
+        enabled=False,
+        order=1000,
+        separator=True,
+    )
     def edit(self):
         pass
 
-    # @context_action()
+
+    @context_action(
+        label="Rename", icon_name="format-text-strikethrough", enabled=False, order=1001
+    )
+    def rename(self):
+        pass
+
+    @context_action(
+        label="Delete", icon_name="edit-delete", enabled=False, order=1002, action='ui_action'
+    )
     def delete(self):
         pass
-    
+

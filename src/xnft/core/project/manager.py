@@ -1,7 +1,7 @@
 """
 Handle xnft project actions.
 
-Copyright 2025-2026 The LEmmA Group, Michigan State University.
+Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
 import logging
@@ -27,6 +27,7 @@ class Manager:
 
     def remove_project(self, project: Project):
         self._projects.remove(project)
+        # TODO: handle removing project from memory
 
     @property
     def project_count(self):

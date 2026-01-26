@@ -1,7 +1,7 @@
 """
 Module providing command line interfaces.
 
-Copyright 2025-2026 The LEmmA Group, Michigan State University.
+Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
 import click
@@ -27,7 +27,7 @@ WELCOME_BANNER = (
 
 """
     f"=== xnft - version {__version__} ===\n\n"
-    "Copyright 2025-2026 The LEmmA Group, Michigan State University.\n"
+    "Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.\n"
 )
 
 

@@ -1,7 +1,7 @@
 """
 Handle xnft project actions.
 
-Copyright 2025-2026 The LEmmA Group, Michigan State University.
+Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
 from dataclasses import dataclass
@@ -17,7 +17,7 @@ from ...algorithms import (
     planar_near_field_transform_full,
 )
 
-from .node import Node, context_action
+from .node import Node, LeafNode, context_action
 from .fields import FieldNode
 from ...types import NodeType, FieldType, DataSourceType
 
@@ -34,8 +34,9 @@ class AnalysisNode(Node):
         "New Planar Near-to-far Field Transform",
         order=10,
         enabled=True,
-        action="new_node",
+        action="ui_action",
         helper_dialog=NewPlanarNearFieldTransform,
+        icon_name="document-new",
     )
     def new_planar_nft(
         self,
@@ -84,25 +85,42 @@ class AnalysisNode(Node):
         # Status to display on status bar at bottom of window
         status = "Near-to-far Field Transform is not yet implemented."
 
-        return node_pair_list, status
+        result_dict = {
+            "status": status,
+            "nodes": node_pair_list
+        }
+
+        return result_dict
 
     @context_action(
-        "New Spherical Near-to-far Field Transform", order=20, enabled=False
+        "New Spherical Near-to-far Field Transform",
+        order=20,
+        enabled=False,
+        icon_name="document-new",
     )
     def new_spherical_nft(self):
         logger.warning("Near-to-far Field Transform is not yet implemented.")
 
     @context_action(
-        "New Near Field Interpolation", order=30, enabled=False, separator=True
+        "New Near Field Interpolation",
+        order=30,
+        enabled=False,
+        separator=True,
+        icon_name="document-new",
     )
     def new_near_field_interpolation(self):
         logger.warning("Near field interpolation is not yet implemented.")
 
-    @context_action("New Far Field Interpolation", order=40, enabled=False)
+    @context_action(
+        "New Far Field Interpolation",
+        order=40,
+        enabled=False,
+        icon_name="document-new",
+    )
     def new_far_field_interpolation(self):
         logger.warning("Far field interpolation is not yet implemented.")
 
 
 @dataclass(kw_only=True)
-class TransformNode(Node):
+class TransformNode(LeafNode):
     name_editable: Optional[bool] = True

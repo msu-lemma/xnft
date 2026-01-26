@@ -1,7 +1,7 @@
 """
 Handle xnft project actions.
 
-Copyright 2025-2026 The LEmmA Group, Michigan State University.
+Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
 from dataclasses import dataclass
@@ -12,7 +12,7 @@ from ....gui.dialogs.fields.new_field_measurement_dialog import (
     NewFieldMeasurementDialog,
 )
 from ....loaders.file_registry import registry
-from .node import Node, NodeType, context_action
+from .node import Node, LeafNode, NodeType, context_action
 from .coordinates import CoordinateNode
 
 from ...types import CoordinateSystem, FieldType
@@ -31,7 +31,7 @@ class FieldsNode(Node):
         order=10,
         enabled=True,
         icon_name="document-new",
-        action="new_node",
+        action="ui_action",
         helper_dialog=NewFieldMeasurementDialog,
     )
     def new_measured_field(self, field_type, source_type, field_name, path):
@@ -81,11 +81,17 @@ class FieldsNode(Node):
             (self, field_node),
             (coordinates_node, coordinate_node),
         ]
-        return node_pair_list, status
+
+        result_dict = {
+            "status": status,
+            "nodes": node_pair_list
+        }
+
+        return result_dict
 
 
 @dataclass(kw_only=True)
-class FieldNode(Node):
+class FieldNode(LeafNode):
     source_type: str
     measured: Optional[bool] = False
     coordinates: Optional[Node] = None

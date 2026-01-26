@@ -1,12 +1,14 @@
 """
 Module providing graphical user interfaces.
 
-Copyright 2025-2026 The LEmmA Group, Michigan State University.
+Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
 import sys
 from pathlib import Path
 import pyqtgraph as pg
+
+from PySide6 import QtGui
 
 from PySide6.QtCore import (
     Qt,
@@ -16,6 +18,8 @@ from PySide6.QtCore import (
     QRectF,
     QSizeF,
     QPointF,
+    QSettings,
+    QCoreApplication,
 )
 from PySide6.QtGui import (
     QAction,
@@ -38,6 +42,7 @@ from PySide6.QtWidgets import (
     QTableWidget,
     QTableWidgetItem,
     QFileDialog,
+    QToolBar,
 )
 
 import logging
@@ -67,6 +72,14 @@ class MainWindow(QMainWindow):
 
     def __init__(self, project_manager):
         super().__init__()
+
+        QCoreApplication.setOrganizationName(
+            "LEmmA, Electromagnetics Research Group, Michigan State University"
+        )
+        QCoreApplication.setOrganizationDomain("engineering.msu.edu")
+        QCoreApplication.setApplicationName("xNFT")
+        self.settings = QSettings()
+
         self.setWindowTitle(f"xNFT - version {__version__}")
         self.project_manager = project_manager
 
@@ -78,6 +91,9 @@ class MainWindow(QMainWindow):
         self.create_status_bar()
         self.create_project_manager_widgets(self.project_manager)
         self.create_plot_area()
+
+        center_window(self, target_size_ratio=0.7)
+        self.restore_all()
 
     def create_actions(self):
         # -- Create new project --
@@ -143,10 +159,12 @@ class MainWindow(QMainWindow):
         self._help_menu.addAction(self._about_act)
 
     def create_tool_bars(self):
-        self._file_tool_bar = self.addToolBar("File")
+        self._file_tool_bar = QToolBar("File")
+        self._file_tool_bar.setObjectName("ToolbarFile")
         self._file_tool_bar.addAction(self._new_project_act)
         self._file_tool_bar.addAction(self._save_act)
         self._file_tool_bar.addAction(self._open_act)
+        self.addToolBar(self._file_tool_bar)
 
     def create_status_bar(self):
         self.statusBar().showMessage("Ready")
@@ -156,6 +174,7 @@ class MainWindow(QMainWindow):
         # Create project manager tree
 
         pm_dock = QDockWidget("Project Manager", self)
+        pm_dock.setObjectName("DockProjectManager")  # Used for restore
 
         self.model = ProjectManagerTreeModel(pm)
         self.project_tree = ProjectTreeView()
@@ -170,6 +189,7 @@ class MainWindow(QMainWindow):
 
         # Create node info table
         properties_dock = QDockWidget("Properties", self)
+        properties_dock.setObjectName("DockProperties")  # Used for restore
 
         self.properties_table = QTableWidget()
         self.properties_table.setColumnCount(2)
@@ -196,24 +216,25 @@ class MainWindow(QMainWindow):
             )
 
     def _node_info_from_index(self, index: QModelIndex):
-        # Extract a dict of properties from your model.
 
         node = index.internalPointer()
 
-        properties_dict = node.__dict__
+        # May be None if project was released from memory
+        if node is not None:
+            properties_dict = node.__dict__
 
-        # Fill table
-        self.properties_table.setRowCount(0)
+            # Fill table
+            self.properties_table.setRowCount(0)
 
-        for row, (key, value) in enumerate(properties_dict.items()):
-            self.properties_table.insertRow(row)
-            key_item = QTableWidgetItem(str(key))
-            value_item = QTableWidgetItem("" if value is None else str(value))
-            # Optional: make them non-selectable/editable flags more explicit
-            for item in (key_item, value_item):
-                item.setFlags(item.flags() & ~Qt.ItemIsEditable)
-            self.properties_table.setItem(row, 0, key_item)
-            self.properties_table.setItem(row, 1, value_item)
+            for row, (key, value) in enumerate(properties_dict.items()):
+                self.properties_table.insertRow(row)
+                key_item = QTableWidgetItem(str(key))
+                value_item = QTableWidgetItem("" if value is None else str(value))
+                
+                for item in (key_item, value_item):
+                    item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+                self.properties_table.setItem(row, 0, key_item)
+                self.properties_table.setItem(row, 1, value_item)
 
     def _about(self):
         meta = importlib.metadata.metadata("xnft")
@@ -227,22 +248,14 @@ class MainWindow(QMainWindow):
             "About xNFT",
             f"xNFT Version {__version__}\n\n"
             f"{meta.get("Summary")}\n\n"
-            "Copyright 2025-2026 The LEmmA Group, Michigan State University.\n\n"
+            "Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.\n\n"
             f"Authors:\n{authors}",
         )
 
     def create_plot_area(self):
-
         # Create MDI area for windows to exist
         self.mdi_area = QMdiAreaWatermark()
         self.setCentralWidget(self.mdi_area)
-
-        self.pw = pg.PlotWidget()
-        self.win = QMdiSubWindow()
-        self.win.setWidget(self.pw)
-        self.win.setWindowTitle("Plot Window 1")
-
-        self.mdi_area.addSubWindow(self.win)
 
     def _open_project(self):
         start_dir = str(Path.home())
@@ -288,8 +301,12 @@ class MainWindow(QMainWindow):
         else:
             self.statusBar().showMessage("No project selected to save.")
 
-    def _new_node(self, helper_dialog, target_node, invoke_function):
-        """Add a new chile node to "target_node".
+    def _ui_action(self, helper_dialog, target_node, invoke_function):
+        """Perform actions that interact with the UI from external models
+            (e.g., nodes).
+        Examples:
+            - add child node to "target_node"
+            - create window in MDI area
 
         Parameters
         ----------
@@ -300,15 +317,33 @@ class MainWindow(QMainWindow):
         invoke_function : Callable
             A function to callback from the project to perform project action.
         """
-        dialog = helper_dialog(self, target_node=target_node)
-        if dialog.exec() == QDialog.Accepted:
-            invoke_kwargs = dialog.get_selections()
 
-            # Call bound function with kwargs returned from helper_dialog
-            node_pair_list, status = invoke_function(**invoke_kwargs)
+        # If a helper dialog is provided, get args and invoke; else invokw without args
+        if helper_dialog:
+            dialog = helper_dialog(self, target_node=target_node)
+            if dialog.exec() == QDialog.Accepted:
+                invoke_kwargs = dialog.get_selections()
 
+                # Call bound function with kwargs returned from helper_dialog
+                result_dict = invoke_function(**invoke_kwargs)
+
+        else:
+            result_dict = invoke_function()
+
+        # TODO: handle long-running asynchronous tasks
+        # will reqiure callbacks when tasks finish to perform further
+        # UI actions
+        #
+        # tasks = result_dict["tasks"]
+
+        # Set status bar text
+        status = result_dict.get("status", None)
+        if status:
             self.statusBar().showMessage(status)
 
+        # Add nodes to project manager tree
+        node_pair_list = result_dict.get("nodes", None)
+        if node_pair_list:
             model_index = None
             for idx, node_pair in enumerate(node_pair_list):
                 parent_node = node_pair[0]
@@ -328,6 +363,24 @@ class MainWindow(QMainWindow):
             self.project_tree.expand(model_index)
             self.project_tree.setCurrentIndex(model_index)
             self.project_tree.scrollTo(model_index)
+
+        # Add windows to MDI area
+        windows = result_dict.get("windows", None)
+        if windows:
+            for win in windows:
+                sub = self.mdi_area.addSubWindow(win)
+                sub.show()
+
+    def restore_all(self):
+        if self.settings.contains("geometry"):
+            self.restoreGeometry(self.settings.value("geometry"))
+        if self.settings.contains("windowState"):
+            self.restoreState(self.settings.value("windowState"))
+
+    def closeEvent(self, event):
+        self.settings.setValue("geometry", self.saveGeometry())
+        self.settings.setValue("windowState", self.saveState())
+        super().closeEvent(event)
 
 
 def center_window(window: QWindow, target_size_ratio: float = 0.7):
@@ -375,17 +428,10 @@ def main():
     Main GUI entrypoint.
     """
     app = QApplication(sys.argv)
+    app.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
-    # app.setStyle("Fusion")
     pm = manager.Manager()
-    # pm.add_project(
-    #     project.Project(
-    #         name="TestProject", path=Path.home() / "TestProject.xnft"
-    #     )
-    # )
-
     window = MainWindow(pm)
-    center_window(window, target_size_ratio=0.7)
     window.show()
 
     sys.exit(app.exec())

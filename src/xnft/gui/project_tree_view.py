@@ -1,5 +1,5 @@
 """
-Copyright 2025-2026 The LEmmA Group, Michigan State University.
+Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
 from PySide6.QtGui import QAction, QIcon, QContextMenuEvent
@@ -62,7 +62,7 @@ class ProjectTreeView(QTreeView):
                 menu.addSeparator()
 
             # Check special action types, else simply invoke callable
-            if context_action.action == "new_node":
+            if context_action.action == "ui_action":
                 helper_dialog = context_action.helper_dialog
                 invoke_function = context_action.invoke
                 # fmt: off
@@ -73,7 +73,7 @@ class ProjectTreeView(QTreeView):
                     target_node=node,
                     invoke_function=invoke_function,
                     main=self.window():
-                    main._new_node(helper_dialog, target_node, invoke_function)
+                    main._ui_action(helper_dialog, target_node, invoke_function)
                 )
                 # fmt: on
             elif context_action.action == "close_project" and isinstance(

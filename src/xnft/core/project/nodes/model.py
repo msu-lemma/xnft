@@ -1,7 +1,7 @@
 """
 Handle xnft project actions.
 
-Copyright 2025-2026 The LEmmA Group, Michigan State University.
+Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
 from dataclasses import dataclass
@@ -18,7 +18,11 @@ class ModelNode(Node):
     icon_name: str = "src/xnft/resources/icons/model.svg"
     type: NodeType = NodeType.MODEL
 
-    @context_action("New Model Asset", order=10, enabled=False)
+    @context_action(
+        "New Model Asset",
+        order=10,
+        enabled=False,
+        icon_name="document-new",
+    )
     def new_measurement_coordinates(self):
         logger.warning("New model asset is not yet implemented.")
-

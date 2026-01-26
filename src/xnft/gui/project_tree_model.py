@@ -1,5 +1,5 @@
 """
-Copyright 2025-2026 The LEmmA Group, Michigan State University.
+Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 from PySide6.QtCore import Qt, QAbstractItemModel, QModelIndex
 from PySide6.QtGui import QIcon

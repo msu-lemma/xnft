@@ -1,5 +1,5 @@
 """
-Copyright 2025-2026 The LEmmA Group, Michigan State University.
+Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
 # Configure package logging
@@ -26,6 +26,7 @@ def configure_logging(
     default_config : str, optional
         _description_, by default "logging.dev.yaml"
     """
+    # if False and config_path is not None:
     if config_path is not None:
         with open(config_path, encoding="utf-8") as f:
             config_dict = yaml.safe_load(f)
