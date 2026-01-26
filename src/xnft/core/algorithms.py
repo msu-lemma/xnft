@@ -16,10 +16,10 @@ from scipy import interpolate
 
 MLX_AVAILABLE = False
 try:
-    MLX_AVAILABLE = True
     import mlx.core as mx
+    MLX_AVAILABLE = True
 except ImportError:
-    pass
+    MLX_AVAILABLE = False
 
 from quantiphy import Quantity
 
