@@ -7,7 +7,7 @@ preview = ["pixi-build"]
 # Minimum system requirements
 macos = "15.0"
 cuda = "13"
-# libc = { family = "glibc", version = "2.39" }  # Minimum required for pyside6-essentials
+libc = { family = "glibc", version = "2.35" }  # Minimum required for pyside6-essentials
 
 [package.build.backend]
 name = "pixi-build-python"
@@ -104,14 +104,16 @@ rocket-fft = ">=0.3.1, <0.4"
 [feature.metal]
 platforms = ["osx-arm64", "linux-64"]
 
-[feature.metal.dependencies]
+[feature.metal.target.osx-arm64.dependencies]
 mlx = ">=0.30.3,<0.31"
+
+[feature.metal.target.linux-64.pypi-dependencies]
+mlx = { version = ">=0.30.4, <0.31", extras = ["cuda"] }
 
 [feature.cuda]
 platforms = ["linux-64"]
 
 [feature.cuda.dependencies]
-# python = ">=3.12.12,<3.15"
 cupy = ">=13.4.1,<14"
 cufinufft = ">=2.4.1,<3"
 
