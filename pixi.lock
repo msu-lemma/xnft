@@ -2841,7 +2841,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/linux-64/zstd-1.5.7-hb78ec9c_6.conda
       - pypi: https://files.pythonhosted.org/packages/55/0d/ac67fb0b2fac382ab5585719bbd1f4927c19ba0ee3bbc28dc8a1ef83e81d/rocket_fft-0.3.1-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
       - pypi: ./
-  dev-metal:
+  dev-mlx:
     channels:
     - url: https://prefix.dev/conda-forge/
     indexes:
@@ -6703,7 +6703,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/win-64/zstd-1.5.7-h534d264_6.conda
       - pypi: https://files.pythonhosted.org/packages/12/90/72606ca091da7c40f72c9423bf5d27b50f7561619780586893fc43cb562f/rocket_fft-0.3.1-cp314-cp314-win_amd64.whl
       - pypi: ./
-  jupyter-metal:
+  jupyter-mlx:
     channels:
     - url: https://prefix.dev/conda-forge/
     indexes:
@@ -7753,7 +7753,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/win-64/zstd-1.5.7-h534d264_6.conda
       - pypi: https://files.pythonhosted.org/packages/12/90/72606ca091da7c40f72c9423bf5d27b50f7561619780586893fc43cb562f/rocket_fft-0.3.1-cp314-cp314-win_amd64.whl
       - pypi: ./
-  metal:
+  mlx:
     channels:
     - url: https://prefix.dev/conda-forge/
     indexes:
@@ -9718,7 +9718,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/linux-64/zstd-1.5.7-hb78ec9c_6.conda
       - pypi: https://files.pythonhosted.org/packages/bf/d9/def65716cd225954d0cd5f1f6326c72c20601db5dc65557ef4b66157ccea/rocket_fft-0.3.1-cp314-cp314-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl
       - pypi: ./
-  test-metal:
+  test-mlx:
     channels:
     - url: https://prefix.dev/conda-forge/
     indexes:
