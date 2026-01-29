@@ -26,12 +26,12 @@ mlx = ["mlx"]
 cuda = ["cuda"]
 
 dev = ["test", "dev"]
-dev-mlx = ["dev", "mlx"]
-dev-cuda = ["dev", "cuda"]
+dev-mlx = ["test", "dev", "mlx"]
+dev-cuda = ["test", "dev", "cuda"]
 
 jupyter = ["dev", "jupyter"]
-jupyter-mlx = ["dev-mlx", "jupyter"]
-jupyter-cuda = ["dev-cuda", "jupyter"]
+jupyter-mlx = ["dev", "mlx", "jupyter"]
+jupyter-cuda = ["dev", "cuda", "jupyter"]
 
 test = ["test"]
 test-mlx = ["test", "mlx"]
