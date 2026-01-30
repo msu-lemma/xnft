@@ -69,6 +69,9 @@ def load_theory_near_field_yaml(file_path: Path) -> xr.Dataset:
     e_y = e_0 * np.ones(
         (x_size, y_size, 1, sample_frequency_array.size), np.float64
     )
+    h_x = h_y = h_z = np.zeros(
+        (x_size, y_size, 1, sample_frequency_array.size), np.float64
+    )
 
     yy, xx = np.meshgrid(y_sample_location_array, x_sample_location_array)
 
@@ -104,9 +107,7 @@ def load_theory_near_field_yaml(file_path: Path) -> xr.Dataset:
         )
 
     e_field = np.stack([e_x, e_y, e_z])
-
-    # TODO / FIXME
-    h_field = e_field
+    h_field = np.stack([h_x, h_y, h_z])
 
     fields = xr.Dataset(
         {

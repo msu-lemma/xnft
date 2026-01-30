@@ -59,8 +59,8 @@ class AnalysisType(StrEnum):
 class DataSourceType(StrEnum):
     """Available source file types."""
     XNFT = "xNFT"
-    THEORY = "Theoretical Ideal Aperture"
+    THEORY = "Ideal Aperture"
     HFSS = "Ansys HFSS"
-    NSI_MEAS = "NSI-MI Scanner Measurement"
-    NSI_REF = "NSI-MI Scanner Reference"
-    LEMMA = "LEmmA Scanner Measurement"
+    NSI_MEAS = "NSI-MI Scanner"
+    NSI_REF = "NSI-MI Reference"
+    LEMMA = "LEmmA Scanner"

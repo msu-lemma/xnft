@@ -49,8 +49,8 @@ class AnalysisNode(Node):
     ):
         # Perform the near to far field transform
         data = planar_near_field_transform(
-            near_field_data=source_field.data,
-            far_field_data=far_field.data,
+            near_field=source_field.data,
+            far_field=far_field.data if far_field else None,
             xfft_size=fft_x_size,
             yfft_size=fft_y_size,
             probe_correction=probe_correction,
