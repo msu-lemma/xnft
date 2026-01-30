@@ -26,8 +26,8 @@ mlx = ["mlx"]
 cuda = ["cuda"]
 
 dev = ["test", "dev"]
-dev-mlx = ["test", "dev", "mlx"]
-dev-cuda = ["test", "dev", "cuda"]
+dev-mlx = ["test", "dev", "mlx", "dev-mlx"]
+dev-cuda = ["test", "dev", "cuda", "dev-cuda"]
 
 jupyter = ["dev", "jupyter"]
 jupyter-mlx = ["dev", "mlx", "jupyter"]
@@ -87,8 +87,8 @@ numpy = ">=2.3.5,<3"
 numba = ">=0.63.1,<0.64"
 pip = ">=25.3,<26"
 clang = ">=21.1.8,<22"
-xarray = ">=2025.12.0,<2026"
-uv = ">=0.9.27,<0.10"
+xarray = ">=2026.1.0,<2027"
+uv = ">=0.9.28,<0.10"
 click = ">=8.3.1,<9"
 pyside6 = ">=6.10.1,<7"
 pyqtgraph = ">=0.14.0,<0.15"
@@ -98,6 +98,7 @@ git-lfs = ">=3.7.1,<4"
 # TODO: build finufft from source for better performance
 #   See notes for feature.cuda support on win-64
 finufft = ">=2.4.1,<3"
+h5py = ">=3.15.1,<4"
 
 [pypi-dependencies]
 xnft = { path = ".", editable = true }
@@ -107,7 +108,7 @@ rocket-fft = ">=0.3.1, <0.4"
 platforms = ["osx-arm64", "linux-64"]
 
 [feature.mlx.target.osx-arm64.dependencies]
-mlx = ">=0.30.3,<0.31"
+mlx = ">=0.30.4,<0.31"
 
 [feature.mlx.target.linux-64.pypi-dependencies]
 mlx = { version = ">=0.30.4, <0.31", extras = ["cuda"] }
