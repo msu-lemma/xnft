@@ -1,138 +1,178 @@
 """
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
+
 from PySide6.QtCore import Qt, QAbstractItemModel, QModelIndex
 from PySide6.QtGui import QIcon
 
 from functools import cache
 
-from ..core.project import manager
 from ..core.project.nodes.project import Project
-from ..core.project.nodes.node import Node
+from ..core.project.nodes.node import Node, DataNode
 
 
 class ProjectManagerTreeModel(QAbstractItemModel):
     """
-    Class for managing the ProjecManager interface to the QTreeView.
+    Custom QAbstractItemModel subclass for managing the ProjecManager
+    interface to the QTreeView.
+
+    For more information refer to:
+    https://doc.qt.io/qtforpython-6/PySide6/QtCore/QAbstractItemModel.html
     """
 
     def __init__(self, project_manager, parent=None):
         super().__init__(parent)
 
-        # Cache icons to avoid lookup/icon creation when redrawing tree
-        self._icon_cache = {}
-
         self._project_manager = project_manager
 
-    def get_icon(self, name, from_theme=False):
-        if name not in self._icon_cache:
-            if from_theme:
-                self._icon_cache[name] = QIcon.fromTheme(name)
-            else:
-                self._icon_cache[name] = QIcon(name)
-        return self._icon_cache[name]
+    @cache  # Store icons in a cache once loaded; icons shouldn't change
+    def get_icon(self, name: str, from_theme=False) -> QIcon:
+        """
+        Dynamically load icon from file or from built-in theme.
+
+        Parameters
+        ----------
+        name : str
+            Name of icon to load
+        from_theme : bool, optional
+            Load icon from built-in theme (True) or from file (False), by
+            default False
+
+        Returns
+        -------
+        QIcon
+            Icon asset.
+        """
+        if from_theme:
+            icon = QIcon.fromTheme(name)
+        else:
+            icon = QIcon(name)
+        return icon
 
     def columnCount(self, parent=QModelIndex()) -> int:
+        """
+        Return number of colums. Our model only has one column.
+        """
         return 1
 
     def rowCount(self, parent=QModelIndex()) -> int:
+        """
+        Return the number of rows under the given parent.
+
+        When the parent is valid it means that rowCount is returning the
+        number of children of parent.
+        """
+        # Top-level node is project manager
         if not parent.isValid():
-            # Top level project
             return self._project_manager.project_count
+        else:
+            # For lower-level nodes, return child_count
+            parent_node = parent.internalPointer()
+            return parent_node.child_count
 
-        parent_item = parent.internalPointer()
-        if isinstance(parent_item, Project):
-            return parent_item.child_count
-        elif isinstance(parent_item, Node):
-            return parent_item.child_count
-
-        return 0
-
-    def index(self, row, column, parent=QModelIndex()) -> QModelIndex:
-
-        # Project manager node
+    def index(
+        self, row: int, column: int, parent=QModelIndex()
+    ) -> QModelIndex:
+        """Return QModelIndex at requested location."""
+        # Top-level node is project manager
         if not parent.isValid():
             if row >= self._project_manager.project_count:
                 return QModelIndex()
+
             proj = self._project_manager.get_project_by_index(row)
             return self.createIndex(row, column, proj)
 
-        parent_item = parent.internalPointer()
-        if isinstance(parent_item, Project):
-            node = parent_item.get_child_by_index(row)
-            return self.createIndex(row, column, node)
+        parent_node = parent.internalPointer()
+        child = parent_node.get_child_by_index(row)
+        return self.createIndex(row, column, child)
 
-        elif isinstance(parent_item, Node):
-            child = parent_item.get_child_by_index(row)
-            return self.createIndex(row, column, child)
+    def parent(self, index: QModelIndex) -> QModelIndex:
+        """
+        Returns the parent of the model index, or QModelIndex() if it has no parent.
 
-        return QModelIndex()
+        Get parent of node, then create associated QModelIndex.
+        """
 
-    def parent(self, index):
-        if not index.isValid():
-            return QModelIndex()
+        parent_node = index.internalPointer().parent
 
-        item = index.internalPointer()
-        if isinstance(item, Project):
-            # Top level, no parent
-            return QModelIndex()
+        if isinstance(parent_node, Project):
+            row = self._project_manager.index_of_project(parent_node)
+            return self.createIndex(row, 0, parent_node)
 
-        if isinstance(item, Node):
-            parent_obj = item.parent
-            if isinstance(parent_obj, Project):
-                row = self._project_manager.index_of_project(parent_obj)
-                return self.createIndex(row, 0, parent_obj)
-            elif isinstance(parent_obj, Node):
-                grand_parent = parent_obj.parent
-                if isinstance(grand_parent, Project):
-                    row = grand_parent.index_of_node(parent_obj)
-                else:
-                    row = grand_parent.children.index(parent_obj)
-                return self.createIndex(row, 0, parent_obj)
+        elif isinstance(parent_node, Node):
+            row = parent_node.parent.children.index(parent_node)
+            return self.createIndex(row, 0, parent_node)
 
         return QModelIndex()
 
-    def data(self, index, role=Qt.DisplayRole):
-        if not index.isValid():
-            return None
+    def data(self, index: QModelIndex, role=Qt.DisplayRole) -> object:
+        """
+        Returns the data stored under the given `role` for the item referred
+        to by the `index`.
+
+        Parameters
+        ----------
+        index : QModelIndex
+            Model index to access data at.
+        role : Qt.ItemDataRole, optional
+            Role of the model index to access, by default Qt.DisplayRole.
+
+        Returns
+        -------
+        object
+            Data stored in the model index role.
+        """
+        # Return labels for tree items
         if role in (Qt.DisplayRole, Qt.EditRole):
-            item = index.internalPointer()
-            return getattr(item, "name", "")
+            node = index.internalPointer()
+            if isinstance(node, DataNode):
+                label = node.name
+            else:
+                label = node.type
+            return label
+
+        # Return icons for tree items
         if role == Qt.DecorationRole:
-            item = index.internalPointer()
-            icon_name = getattr(item, "icon_name", "")
+            node = index.internalPointer()
+            icon_name = getattr(node, "icon_name", "")
+
             # If the icon name has a . in it, assume it's a file path,
             # otherwise, assume it's from the theme.
             if "." in icon_name:
                 return self.get_icon(icon_name)
             else:
                 return self.get_icon(icon_name, from_theme=True)
+
         return None
 
-    def insert_project(self, proj: Project):
-        """Insert a top-level project in the project manager tree.
+    def insert_project(self, project: Project) -> QModelIndex:
+        """Insert a top-level project into the project manager tree.
 
         Parameters
         ----------
-        proj : project.Project
+        project : project.Project
             Project object to be inserted.
+
+        Returns
+        -------
+        QModelIndex
+            Newly intserted model index.
         """
         parent_index = QModelIndex()
 
-        # Insert in the last row of the project tree
+        # Append project to the tree
         insert_row_index = self._project_manager.project_count
-        self.beginInsertRows(parent_index, insert_row_index, insert_row_index)
 
-        # Add the new project to the project mnanager
-        self._project_manager.add_project(proj)
+        self.beginInsertRows(parent_index, insert_row_index, insert_row_index)
+        self._project_manager.add_project(project)
         self.endInsertRows()
 
-        # Return the model index for other functions to use
-        model_index = self.createIndex(insert_row_index, 0, proj)
+        # Return the new model index to caller for other functions to use
+        model_index = self.createIndex(insert_row_index, 0, project)
 
         return model_index
 
-    def remove_project(self, proj: Project):
+    def remove_project(self, project: Project):
         """Remove a top-level project in the project manager tree.
 
         Should be called when closing a project.
@@ -142,15 +182,15 @@ class ProjectManagerTreeModel(QAbstractItemModel):
         proj : project.Project
             Project to be removed.
         """
-        remove_row_index = self._project_manager.index_of_project(proj)
+        remove_row_index = self._project_manager.index_of_project(project)
 
         parent_index = QModelIndex()
 
         self.beginRemoveRows(parent_index, remove_row_index, remove_row_index)
-        self._project_manager.remove_project(proj)
+        self._project_manager.remove_project(project)
         self.endRemoveRows()
 
-    def insert_node(self, parent_item: Node, node: Node):
+    def insert_node(self, parent_item: Node, node: Node) -> QModelIndex:
         """Insert a node in the project manager tree.
 
         Parameters
@@ -159,17 +199,23 @@ class ProjectManagerTreeModel(QAbstractItemModel):
             Parent of node being inserted.
         node : project.Node
             Node object to insert.
+
+        Returns
+        -------
+        QModelIndex
+            Newly intserted model index.
         """
         parent_row_index = parent_item.parent.children.index(parent_item)
 
         parent_index = self.createIndex(parent_row_index, 0, parent_item)
-        insert_row_index = parent_item.child_count
+        insert_row_index = parent_item.child_count  # append to end
 
         self.beginInsertRows(parent_index, insert_row_index, insert_row_index)
         parent_item.add_child(node)
         self.endInsertRows()
 
-        # Return the model index for other functions to use
+        # Return the model index to caller for other functions to use
+        # e.g., expand newly added rows
         model_index = self.createIndex(insert_row_index, 0, node)
 
         return model_index
@@ -193,17 +239,17 @@ class ProjectManagerTreeModel(QAbstractItemModel):
         parent_item.remove_child(node)
         self.endRemoveRows()
 
-    def flags(self, index: QModelIndex):
+    def flags(self, index: QModelIndex) -> Qt.ItemFlag:
         """Returns the item flags for the given index.
 
-        Teturns a combination of flags that enables the item (ItemIsEnabled),
+        Returns a combination of flags that enables the item (ItemIsEnabled),
         allows it to be selected (ItemIsSelectable), and if specified by the
         Node, allows it to be edited (ItemIsEditable).
 
         Parameters
         ----------
         index : QModelIndex
-            _description_
+            Model index to generate the flags for.
 
         Returns
         -------
@@ -213,17 +259,20 @@ class ProjectManagerTreeModel(QAbstractItemModel):
         if not index.isValid():
             return Qt.NoItemFlags
 
-        base = Qt.ItemIsEnabled | Qt.ItemIsSelectable
+        # Default flags; always enabled and selectable
+        flags = Qt.ItemIsEnabled | Qt.ItemIsSelectable
 
         item = index.internalPointer()
+
+        # Only allow user to edit (rename) some nodes
         editable = getattr(item, "name_editable", False)
         if editable:
-            base |= Qt.ItemIsEditable
+            flags |= Qt.ItemIsEditable
 
-        return base
+        return flags
 
     def setData(self, index: QModelIndex, value, role=Qt.EditRole) -> bool:
-        """Sets the role data for the item at index to value.
+        """Sets the `role` data for the item at `index` to `value`.
 
         The dataChanged() signal should be emitted if the data was
         successfully set.
@@ -231,37 +280,39 @@ class ProjectManagerTreeModel(QAbstractItemModel):
         Parameters
         ----------
         index : QModelIndex
+            Model index to update.
         value : object
+            New data to set.
         role : ItemFlag, optional
-            _description_, by default Qt.EditRole
+            Model index role to set data for, by default Qt.EditRole
 
         Returns
         -------
         bool
             True if successful; otherwise False.
         """
-        if not index.isValid():
-            return False
 
         if role not in (Qt.EditRole, Qt.DisplayRole):
             return False
 
-        item = index.internalPointer()
-        item_editable = getattr(item, "name_editable", False)
-
-        if not item_editable:
+        # Only allow user to rename DataNodes (user-created nodes with data)
+        node = index.internalPointer()
+        if not isinstance(node, DataNode):
             return False
 
-        if hasattr(item, "name"):
-            new_name = str(value)
-            if new_name != item.name:
-                item.name = new_name
+        is_editable = getattr(node, "name_editable", False)
 
-                # Notify the view
-                self.dataChanged.emit(
-                    index, index, [Qt.DisplayRole, Qt.EditRole]
-                )
+        if not is_editable:
+            return False
 
+        new_name = str(value)
+        
+        # Only update if the name changed
+        if new_name != node.name:
+            node.name = new_name
+            # Send dataChanged signal on success to allow UI to update
+            self.dataChanged.emit(
+                index, index, [Qt.DisplayRole, Qt.EditRole]
+            )
             return True
-
         return False
