@@ -1,4 +1,7 @@
 """
+Custom QAbstractItemModel subclass for managing the ProjecManager interface
+to the QTreeView.
+
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
@@ -125,7 +128,7 @@ class ProjectManagerTreeModel(QAbstractItemModel):
         # Return labels for tree items
         if role in (Qt.DisplayRole, Qt.EditRole):
             node = index.internalPointer()
-            if isinstance(node, DataNode):
+            if isinstance(node, (DataNode, Project)):
                 label = node.name
             else:
                 label = node.type
@@ -306,13 +309,11 @@ class ProjectManagerTreeModel(QAbstractItemModel):
             return False
 
         new_name = str(value)
-        
+
         # Only update if the name changed
         if new_name != node.name:
             node.name = new_name
             # Send dataChanged signal on success to allow UI to update
-            self.dataChanged.emit(
-                index, index, [Qt.DisplayRole, Qt.EditRole]
-            )
+            self.dataChanged.emit(index, index, [Qt.DisplayRole, Qt.EditRole])
             return True
         return False

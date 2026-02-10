@@ -1,4 +1,6 @@
 """
+Custom QTreeView subclass to extend context menu actions.
+
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
@@ -15,6 +17,8 @@ from ..core.project import manager
 
 
 class ProjectTreeView(QTreeView):
+    """Custom QTreeView subclass to extend context menu actions."""
+
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -29,18 +33,31 @@ class ProjectTreeView(QTreeView):
         self.setHeaderHidden(True)
 
     def contextMenuEvent(self, ctx_menu_event: QContextMenuEvent) -> None:
-        """Add context menu (right click) items."""
-        idx = self.indexAt(ctx_menu_event.pos())
-        if not idx.isValid():
-            return
+        """
+        Handle adding context menu (right click) items.
 
-        node = idx.internalPointer()
+        Context menu actions `context_actions` are added via decorators applied
+        to nodes in the xnft/core/project/nodes classes.
+
+        TODO: should come up with a more unified framework for adding project
+              menu items based on context menu actions. Currently, menu items
+              don't automatically populate and this section of could would need
+              to be duplicated elsewhere to achieve this.
+        """
+        # Get node at context menu index
+        index = self.indexAt(ctx_menu_event.pos())
+        node = index.internalPointer()
+
+        # Get context_actions associated with node
         context_actions = getattr(node, "context_actions", [])
-        if not context_actions:
+        if not context_actions:  # not all nodes need context actions
             return
 
+        # Build the context menu based on associated actions
         menu = QMenu(self)
         for context_action in context_actions:
+
+            # If context action has an associated icon
             if context_action.icon_name:
                 action = QAction(
                     self.model().get_icon(
@@ -49,15 +66,20 @@ class ProjectTreeView(QTreeView):
                     context_action.label,
                     menu,
                 )
+
+            # Else if no icon
             else:
                 action = QAction(
                     context_action.label,
                     menu,
                 )
+
+            # Set action enabled or disabled
             action.setEnabled(bool(context_action.enabled))
             if context_action.tooltip:
                 action.setToolTip(context_action.tooltip)
 
+            # Add a separator _before_ this item
             if context_action.separator:
                 menu.addSeparator()
 
@@ -89,41 +111,30 @@ class ProjectTreeView(QTreeView):
                 )
                 # fmt: on
             else:
-                # Fallback for direct callable
+                # If no context.action specified, directly invoke callable
                 invoke = getattr(context_action, "invoke", None)
                 if callable(invoke):
                     action.triggered.connect(
                         lambda checked=False, inv=invoke: inv()
                     )
+                pass
 
             menu.addAction(action)
-
-        if isinstance(node, manager.Project):
-            close_action = QAction(
-                self.model().get_icon("window-close", from_theme=True),
-                "Close Project",
-                menu,
-            )
-            close_action.setStatusTip("Close this project")
-            # fmt: off
-            close_action.triggered.connect(
-                lambda checked=False,
-                model=self.model(),
-                proj=node:
-                model.remove_project(proj)
-            )
-            # fmt: on
-            menu.addAction(close_action)
 
         menu.exec(ctx_menu_event.globalPos())
 
     def get_active_project(self):
-        """Get the project associated with the currently selected field."""
+        """
+        Get the project associated with the currently selected field.
+
+        Used to get project to apply project-related program menu tasks.
+        """
         selected_idx = self.selectedIndexes()
         if not selected_idx:
             return None
         else:
-            # Only one item may be selected at a time
+            # Only possible to select one project at a time, so just
+            # return project at that index
             selected_idx = selected_idx[0]
         project_node = selected_idx.internalPointer()
 
