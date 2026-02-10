@@ -20108,7 +20108,7 @@ packages:
 - pypi: ./
   name: xnft
   version: 0.0.0
-  sha256: 5c4dd0a083e88255e2e6d198b6855a95e5f41ad7c63d15f883f4387259dd69da
+  sha256: b9089e2c5f22a329fada7cb7d8cf75da44dbd75210a336247799d95dcef7e541
   editable: true
 - conda: https://prefix.dev/conda-forge/linux-64/xorg-libice-1.1.2-hb9d3cd8_0.conda
   sha256: c12396aabb21244c212e488bbdc4abcdef0b7404b15761d9329f5a4a39113c4b

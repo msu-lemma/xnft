@@ -8,7 +8,7 @@
             "name": "Python Debugger",
             "type": "debugpy",
             "request": "launch",
-            "module": "xnft.gui.app",
+            "module": "xnft.gui.main",
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
             "subProcess": true,

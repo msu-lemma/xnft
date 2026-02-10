@@ -11,21 +11,11 @@ readme = "README.md"
 description = "Near-field to far-field antenna measurement transformation software."
 
 [project.scripts]
-xnft = "xnft.cli.cli:main"
-xnft-gui = "xnft.gui.app:main"
+xnft = "xnft.gui.main:main"
 
 [project.urls]
 Homepage = "https://gitlab.msu.edu/ece-lemma/near-field"
 Issues = "https://gitlab.msu.edu/ece-lemma/near-field/-/issues"
-
-
-# === MyPy Configuration ===
-
-[tool.mypy]
-[[tool.mypy.overrides]]
-module = ["pyqtgraph.*"]
-ignore_missing_imports = true
-follow_untyped_imports = true
 
 # === PyTest Configuration ===
 
