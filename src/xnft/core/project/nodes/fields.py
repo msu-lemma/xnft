@@ -1,7 +1,8 @@
 """
 Handle xnft fields actions.
 
-Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
+Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
+University.
 """
 
 from dataclasses import dataclass

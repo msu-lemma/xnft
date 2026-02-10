@@ -1,12 +1,12 @@
 """
 Base Node classes and actions for Project tree.
 
-Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
+Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
+University.
 """
 
 from dataclasses import dataclass, field
 from typing import List, Optional, Callable
-from uuid import uuid4
 import inspect
 import logging
 from ...types import NodeType

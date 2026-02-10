@@ -1,7 +1,8 @@
 """
 Handle xnft project actions.
 
-Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
+Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
+University.
 """
 
 from dataclasses import dataclass
@@ -23,6 +24,7 @@ logger = logging.getLogger(__name__)
 @dataclass(kw_only=True)
 class Project(Node):
     """Project Node subclass to handle projects."""
+
     path: Optional[Path] = None
     version: int = 1
     type: NodeType = NodeType.PROJECT
@@ -64,9 +66,12 @@ class Project(Node):
             return f"Saved project {self.name} to path: {self.path}"
         except Exception:
             return f"Failed to save {self.name} to path: {self.path}"
-        
+
     @context_action(
-        "Save Project As...", order=10, enabled=False, icon_name="document-save"
+        "Save Project As...",
+        order=10,
+        enabled=False,
+        icon_name="document-save",
     )
     def save_as(self, path=None):
         pass
@@ -77,7 +82,7 @@ class Project(Node):
         enabled=True,
         icon_name="window-close",
         action="close_project",
-        separator=True
+        separator=True,
     )
     def close(self, path=None):
         pass

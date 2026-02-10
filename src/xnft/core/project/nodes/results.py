@@ -1,14 +1,13 @@
 """
 Handle xnft results node actions.
 
-Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
+Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
+University.
 """
 
 from dataclasses import dataclass, field
 from typing import Optional
 import logging
-
-import pyqtgraph as pg
 
 from PySide6.QtWidgets import QMdiSubWindow
 
@@ -95,6 +94,7 @@ class ReportNode(DataNode):
                 self.fields[0], projection="uv"
             )  # TODO FIXME should only be one field
 
+        # TODO: Ideally the Qt code would live outside of this module
         win = QMdiSubWindow()
         win.setWidget(plot_widget)
         win.setWindowTitle(self.name)
