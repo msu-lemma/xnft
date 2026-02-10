@@ -29,7 +29,7 @@ def load_lemma_h5(file_path: Path) -> xr.Dataset:
         sample_locations = dataset['points'][()] / POINTS_PER_METER
         x_locs = sample_locations[:, 0]
         y_locs = sample_locations[:, 2]
-        z_locs = sample_locations[:, 1]
+        z_locs = sample_locations[:, 1] + 0.069
 
         # s11 = dataset['S11real'][()] + 1.0j * dataset['S11imag'][()]
         # s12 = dataset['S12real'][()] + 1.0j * dataset['S12imag'][()]
@@ -73,22 +73,15 @@ def load_lemma_h5(file_path: Path) -> xr.Dataset:
     )
     e_field = np.empty(fields_shape, dtype=np.complex128)
 
-    # Re-run over data and re-organize measured data into appropriate
-    # format (x,y,z,frequency)
-    for freq_index, freq in enumerate(sample_frequencies):
-        for x_loc, y_loc, z_loc, ex, ey, ez in zip(
-            x_locs,
-            y_locs,
-            z_locs,
-            ex_list[:, freq_index],
-            ey_list[:, freq_index],
-            ez_list[:, freq_index],
-        ):
-            x_index = np.where(x_sample_location_array == x_loc)[0][0]
-            y_index = np.where(y_sample_location_array == y_loc)[0][0]
-            z_index = np.where(z_sample_location_array == z_loc)[0][0]
+    # Find to insert field values in e_field array
+    x_idx = np.searchsorted(x_sample_location_array, x_locs)
+    y_idx = np.searchsorted(y_sample_location_array, y_locs)
+    z_idx = np.searchsorted(z_sample_location_array, z_locs)
 
-            e_field[:, x_index, y_index, z_index, freq_index] = ex, ey, ez
+    for f_idx in range(sample_frequencies.size):
+        e_field[0, x_idx, y_idx, z_idx, f_idx] = ex_list[:, f_idx]
+        e_field[1, x_idx, y_idx, z_idx, f_idx] = ey_list[:, f_idx]
+        e_field[2, x_idx, y_idx, z_idx, f_idx] = ez_list[:, f_idx]
 
     fields = xr.Dataset(
         {
