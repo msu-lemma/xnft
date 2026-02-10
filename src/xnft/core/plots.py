@@ -1,25 +1,17 @@
 """
 Handle xnft plotting actions.
 
-Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
+Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
+University.
 """
 
 import logging
-from typing import List
-
 import numpy as np
-
 import pyqtgraph as pg
-
-# import pyqtgraph.opengl as gl
-
-from pyqtgraph.dockarea.Dock import Dock  # Dock is here
-from pyqtgraph.dockarea.DockArea import DockArea
 
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import (
     QWidget,
-    QLabel,
     QListWidget,
     QListWidgetItem,
     QVBoxLayout,
@@ -41,7 +33,8 @@ class Plot2D(QWidget):
         Parameters
         ----------
         field : xr.Dataset
-            Far field dataset containing E and H fields and respective components.
+            Far field dataset containing E and H fields and respective
+            components.
         """
         super().__init__(parent)
 
@@ -66,21 +59,42 @@ class Plot2D(QWidget):
         # -- Add 2D Field View --
         self.field_view = pg.GraphicsLayoutWidget()
         plot = self.field_view.addPlot()
-        self.img = pg.ImageItem()
+        self.field_view.addItem(plot, 0, 0, 1, 1)
+        # self.img = pg.ImageItem()
+        # plot.addItem(self.img)
+
+        # Create autoscaling image item
+        edgecolors = None
+        antialiasing = False
+        cmap = pg.colormap.get("viridis")
+        levels = (
+            -2,
+            2,
+        )  # Will be overwritten unless enableAutoLevels is set to False
+        self.img = pg.PColorMeshItem(
+            edgecolors=edgecolors,
+            antialiasing=antialiasing,
+            colorMap=cmap,
+            levels=levels,
+            enableAutoLevels=True,
+        )
+        self.theta_grid, self.phi_grid = np.meshgrid(
+            self.field.data.theta, self.field.data.phi
+        )
         plot.addItem(self.img)
 
-        hist = pg.HistogramLUTItem()
-        hist.setImageItem(self.img)
-        self.field_view.addItem(hist)
+        # hist = pg.HistogramLUTItem()
+        # hist.setImageItem(self.img)
+        # self.field_view.addItem(hist)
 
         # Add colorbar
-        # bar = pg.ColorBarItem(
-        #     label="Z value [arbitrary unit]",
-        #     interactive=True,
-        #     rounding=0.1,
-        # )
-        # bar.setImageItem([self.field_view_img_item])
-        # self.field_view.addItem(bar, 0, 1, 1, 1)
+        bar = pg.ColorBarItem(
+            label="Z value [arbitrary unit]",
+            interactive=True,
+            rounding=0.1,
+        )
+        bar.setImageItem([self.img])
+        self.field_view.addItem(bar, 0, 1, 1, 1)
 
         # Add split layout for frequency and plot
         self.layout = QSplitter(Qt.Orientation.Horizontal)
@@ -117,11 +131,15 @@ class Plot2D(QWidget):
 
     def _update_plot(self):
         selected_frequency_list = self.lw_frequency_range.selectedItems()
-        selected_frequency = [x.data(Qt.UserRole) for x in selected_frequency_list]
-        
+        selected_frequency = [
+            x.data(Qt.UserRole) for x in selected_frequency_list
+        ]
+
         field_data = self.field.data.sel(
             frequency=selected_frequency,
         )
 
         e_mag = np.linalg.norm(np.abs(field_data["E"]), ord=2, axis=0)
-        self.img.setImage(10 * np.log10(e_mag))
+        # self.img.setImage(10 * np.log10(e_mag))
+
+        self.img.setData(self.phi_grid, self.theta_grid, 10 * np.log10(e_mag))

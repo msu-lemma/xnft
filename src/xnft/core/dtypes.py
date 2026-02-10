@@ -1,7 +1,11 @@
 """
-Module providing classes specific to xnft.
+Module providing data types specific to xnft.
 
-Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
+TODO: need to standardize these data types throughout the code. Currently
+      these data types are not used and not very elegant.
+
+Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
+University.
 """
 
 import numpy as np
