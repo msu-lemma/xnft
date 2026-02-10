@@ -1,5 +1,5 @@
 """
-Handle xnft project actions.
+Base Node classes and actions for Project tree.
 
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
@@ -10,12 +10,11 @@ from uuid import uuid4
 import inspect
 import logging
 from ...types import NodeType
-
+from enum import StrEnum
 
 logger = logging.getLogger(__name__)
 
 
-# --- Action metadata + decorator ---
 @dataclass
 class ContextAction:
     """A structured data class for right-click menu context ctions"""
@@ -43,6 +42,14 @@ def context_action(
 ):
     """Decorator to add a ContextAction (right-click menu item) to a method.
 
+    For further details on implementation, see xnft/gui/project_tree_view.py
+    where a QAction is constructed using these parameters, or xnft/gui/main.py
+    where the QAction is executed.
+
+    TODO: Create a more uniform method of handling context actions that unifies
+          the processing location to a single file and handles both right-click
+          menus as well as window menus.
+
     Parameters
     ----------
     label : str
@@ -57,11 +64,14 @@ def context_action(
         Value to set order displayed in context menu (lowest first),
         by default 100
     action : str, optional
-        Type of special action to be performed
+        Type of special action to be performed. Available actions are:
+            `ui_action`, `close_project`
+            TODO: these seem somewhat specific; consider generalizing this
+                  somehow to avoid special actions.
     helper_dialog : QDialog, optional
         Helper dialog to input data for function to be invoked, by default None
     separator : bool, optional
-        Add a separator before this item, by default False
+        Add a separator _before_ this item, by default False
     """
 
     def decorator(func):
@@ -80,16 +90,11 @@ def context_action(
     return decorator
 
 
-# === Project Nodes ===
-
-
 @dataclass
 class Node:
     """Base class for a node in the project hierarchy."""
 
     # Node values
-    id: str = field(default_factory=lambda: str(uuid4()))
-    name: str = "None"
     type: NodeType = NodeType.UNKNOWN
     name_editable: Optional[bool] = False
     attributes: Optional[dict] = field(default_factory=dict)
@@ -100,7 +105,7 @@ class Node:
     _parent: Optional["Node"] = None
     _children: List["Node"] = field(default_factory=list)
 
-    # -- Parents --
+    # -- Parents ------------
 
     @property
     def parent(self):
@@ -115,19 +120,21 @@ class Node:
                 f"Node 'parent' must be of type 'Node'" f" got {type(parent)}."
             )
 
-    # -- Children --
+    # -- Children ------------
 
     @property
-    def children(self):
+    def children(self) -> List["Node"]:
+        """Return list of this node's children."""
         return self._children
 
     @children.setter
-    def children(self, children):
-        # Check type of children
+    def children(self, children: List["Node"]):
+        """Add children from list of Nodes."""
         for child in children:
             self.add_child(child)
 
     def add_child(self, child):
+        """Add a single child Node."""
         if isinstance(child, Node):
             child.parent = self
             self._children.append(child)
@@ -137,6 +144,7 @@ class Node:
             )
 
     def remove_child(self, child):
+        """Remove a single child Node."""
         if not isinstance(child, Node):
             raise TypeError(
                 f"Node children must be of type 'Node'," f" got {type(child)}."
@@ -148,37 +156,44 @@ class Node:
         self._children.remove(child)
 
     @property
-    def child_count(self):
+    def child_count(self) -> int:
+        """Return the number of this node's children."""
         return len(self._children)
 
-    # -- Node properties --
+    # -- Node properties --------
 
     @property
-    def is_leaf(self):
+    def is_leaf(self) -> bool:
+        """Return if this node is a leaf (has no children)."""
         return len(self._children) == 0
 
     @property
-    def is_root(self):
+    def is_root(self) -> bool:
+        """Return if this node is a root (has no parent)."""
         return False if self.parent else True
 
-    def get_child_by_index(self, index):
+    def get_child_by_index(self, index) -> "Node":
+        """Get a child Node by its index below this node."""
         return self._children[index]
 
-    def index_of_node(self, node: "Node"):
+    def index_of_node(self, node: "Node") -> int:
+        """Get the index of a Node below this node."""
         return self._children.index(node)
 
     @property
-    def root(self):
+    def root(self) -> "Node":
+        """Return the root Node above this node."""
         root = self
         while not root.is_root:
             root = root.parent
         return root
 
     @property
-    def display_type(self):
+    def display_type(self) -> StrEnum:
+        """Return display type of node."""
         return self.type
 
-    # -- Menu actions --
+    # -- Menu actions -------------
 
     @property
     def context_actions(self) -> list[ContextAction]:
@@ -194,11 +209,6 @@ class Node:
         for name, function in inspect.getmembers(
             self.__class__, predicate=inspect.isfunction
         ):
-            # Check if __context_action__ attribute is available before
-            # continuing
-            if name == "context_actions":
-                continue
-
             meta = getattr(function, "__context_action__", None)
             if not meta:
                 continue
@@ -219,17 +229,19 @@ class Node:
                 )
             )
 
-        # Sort by order then label
-        actions.sort(key=lambda a: (a.order, a.label))
+        # Sort by order provided
+        actions.sort(key=lambda a: a.order)
         return actions
 
 
 @dataclass(kw_only=True)
-class LeafNode(Node):
+class DataNode(Node):
     """
     Specialization of Node class with default helper context/helper functions
     unique to leaf nodes.
     """
+
+    name: str | None = None
 
     @context_action(
         label="Edit",
@@ -241,16 +253,21 @@ class LeafNode(Node):
     def edit(self):
         pass
 
-
     @context_action(
-        label="Rename", icon_name="format-text-strikethrough", enabled=False, order=1001
+        label="Rename",
+        icon_name="format-text-strikethrough",
+        enabled=False,
+        order=1001,
     )
     def rename(self):
         pass
 
     @context_action(
-        label="Delete", icon_name="edit-delete", enabled=False, order=1002, action='ui_action'
+        label="Delete",
+        icon_name="edit-delete",
+        enabled=False,
+        order=1002,
+        action="ui_action",
     )
     def delete(self):
         pass
-

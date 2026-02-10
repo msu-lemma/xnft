@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 @dataclass(kw_only=True)
 class ModelNode(Node):
-    name: str = "Model"
     icon_name: str = "src/xnft/resources/icons/model.svg"
     type: NodeType = NodeType.MODEL
 

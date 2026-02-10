@@ -1,5 +1,5 @@
 """
-Handle xnft project actions.
+Handle xnft fields actions.
 
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
@@ -12,7 +12,7 @@ from ....gui.dialogs.fields.new_field_measurement_dialog import (
     NewFieldMeasurementDialog,
 )
 from ....loaders.file_registry import registry
-from .node import Node, LeafNode, NodeType, context_action
+from .node import Node, DataNode, NodeType, context_action
 from .coordinates import CoordinateNode
 
 from ...types import CoordinateSystem, FieldType
@@ -22,7 +22,6 @@ logger = logging.getLogger(__name__)
 
 @dataclass(kw_only=True)
 class FieldsNode(Node):
-    name: str = "Fields"
     icon_name: str = "src/xnft/resources/icons/fields.svg"
     type: NodeType = NodeType.FIELDS
 
@@ -55,10 +54,9 @@ class FieldsNode(Node):
         # coordinates associated with it)
         coordinates_node = None
         for tmp_node in self.parent.children:
-            if tmp_node.name == "Coordinates":
+            if tmp_node.type == NodeType.COORDINATES:
                 coordinates_node = tmp_node
                 break
-        assert coordinates_node is not None
 
         coordinate_data = field_data.coords
         coordinate_node = CoordinateNode(
@@ -71,7 +69,6 @@ class FieldsNode(Node):
                 else CoordinateSystem.SPHERICAL
             ),
         )
-        # coordinates_node.add_child(coordinate_node)
 
         field_node.coordinates = coordinate_node
 
@@ -91,7 +88,7 @@ class FieldsNode(Node):
 
 
 @dataclass(kw_only=True)
-class FieldNode(LeafNode):
+class FieldNode(DataNode):
     source_type: str
     measured: Optional[bool] = False
     coordinates: Optional[Node] = None

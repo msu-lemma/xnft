@@ -1,5 +1,5 @@
 """
-Handle xnft project actions.
+Handle create/modify analysis (field transforms).
 
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
@@ -16,7 +16,7 @@ from ...algorithms import (
     planar_near_field_transform,
 )
 
-from .node import Node, LeafNode, context_action
+from .node import Node, DataNode, context_action
 from .fields import FieldNode
 from ...types import NodeType, FieldType, DataSourceType
 
@@ -25,7 +25,6 @@ logger = logging.getLogger(__name__)
 
 @dataclass(kw_only=True)
 class AnalysisNode(Node):
-    name: str = "Analysis"
     icon_name: str = "src/xnft/resources/icons/function.svg"
     type: NodeType = NodeType.ANALYSIS
 
@@ -43,16 +42,12 @@ class AnalysisNode(Node):
         source_field,
         far_field,
         probe_correction,
-        fft_x_size,
-        fft_y_size,
         frequencies,
     ):
         # Perform the near to far field transform
         data = planar_near_field_transform(
             near_field=source_field.data,
             far_field=far_field.data if far_field else None,
-            xfft_size=fft_x_size,
-            yfft_size=fft_y_size,
             probe_correction=probe_correction,
             frequencies=frequencies,
         )
@@ -71,7 +66,7 @@ class AnalysisNode(Node):
         # Get the fields root node to add far field node to
         fields_node = None
         for tmp_node in self.parent.children:
-            if tmp_node.name == "Fields":
+            if tmp_node.type == NodeType.FIELDS:
                 fields_node = tmp_node
                 break
         assert fields_node is not None
@@ -121,5 +116,5 @@ class AnalysisNode(Node):
 
 
 @dataclass(kw_only=True)
-class TransformNode(LeafNode):
+class TransformNode(DataNode):
     name_editable: Optional[bool] = True
