@@ -25,7 +25,7 @@ noarch = false
 mlx = ["mlx"]
 cuda = ["cuda"]
 
-dev = ["test", "dev"]
+dev = ["test", "docs", "dev"]
 dev-mlx = ["test", "dev", "mlx", "dev-mlx"]
 dev-cuda = ["test", "dev", "cuda", "dev-cuda"]
 
@@ -76,7 +76,7 @@ build-docs = { depends-on = ["build-html-docs", "build-pdf-docs"] }
 format = { cmd = ["black", "$PIXI_PROJECT_ROOT", "--line-length", "79"] }
 
 [dependencies]
-python = ">=3.13.11,<3.15"
+python = ">=3.13.12,<3.15"
 ipympl = ">=0.10.0,<0.11"
 jupyter = ">=1.1.1,<2"
 matplotlib = ">=3.10.8,<4"
@@ -85,12 +85,12 @@ seaborn = ">=0.13.2,<0.14"
 pandas = ">=3.0.0,<4"
 numpy = ">=2.3.5,<3"
 numba = ">=0.63.1,<0.64"
-pip = ">=25.3,<26"
+pip = ">=26.0.1,<27"
 clang = ">=21.1.8,<22"
 xarray = ">=2026.1.0,<2027"
-uv = ">=0.9.28,<0.10"
+uv = ">=0.10.2,<0.11"
 click = ">=8.3.1,<9"
-pyside6 = ">=6.10.1,<7"
+pyside6 = ">=6.10.2,<7"
 pyqtgraph = ">=0.14.0,<0.15"
 pyyaml = ">=6.0.3,<7"
 quantiphy = ">=2.21,<3"
@@ -108,10 +108,10 @@ rocket-fft = ">=0.3.1, <0.4"
 platforms = ["osx-arm64", "linux-64"]
 
 [feature.mlx.target.osx-arm64.dependencies]
-mlx = ">=0.30.4,<0.31"
+mlx = ">=0.30.6,<0.31"
 
 [feature.mlx.target.linux-64.pypi-dependencies]
-mlx = { version = ">=0.30.4, <0.31", extras = ["cuda"] }
+mlx = { version = ">=0.30.6, <0.31", extras = ["cuda"] }
 
 [feature.cuda]
 # TODO: Add support for win-64
@@ -139,7 +139,7 @@ flake8 = ">=7.3.0,<8"
 pyflakes = ">=3.4.0,<4"
 black = ">=26.1.0,<27"
 scipy-stubs = ">=1.17.0.2,<2"
-pandas-stubs = ">=2.3.3.260113,<3"
+pandas-stubs = ">=3.0.0.260204,<4"
 
 [feature.jupyter.dependencies]
 jupyter = ">=1.1.1,<2"

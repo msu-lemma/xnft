@@ -14,5 +14,8 @@
     "mypy-type-checker.args": [
         "--ignore-missing-imports",
         "--follow-imports=normal"
-    ]
+    ],
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "python-envs.defaultPackageManager": "ms-python.python:pip",
+    "python-envs.pythonProjects": []
 }

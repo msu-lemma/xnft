@@ -20,4 +20,18 @@ Issues = "https://gitlab.msu.edu/ece-lemma/near-field/-/issues"
 # === PyTest Configuration ===
 
 [tool.pytest.ini_options]
-addopts = "--cov=xnft --cov-report term --cov-report xml:coverage.xml -n auto"
+addopts = "--cov-report term --cov-report xml:coverage.xml -n auto"
+
+[tool.coverage.run]
+source = ["src", "xnft"]
+omit = [
+  "**/.pixi/**",
+  "**/tests/**",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "if TYPE_CHECKING:",
+  "if __name__ == .__main__.:",
+]
