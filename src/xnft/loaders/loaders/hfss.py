@@ -7,37 +7,55 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 from pathlib import Path
 import logging
 import io
-import string
+from typing import List
 
-import pandas as pd
 import numpy as np
 import xarray as xr
 import scipy.constants as spc
 
-from .file_registry import registry
-from ..core.types import DataSourceType, FieldType, CoordinateSystem
-
+from ..file_registry import file_registry
+from ...core.types import (
+    DataSourceType,
+    FieldType,
+    PolarizationType,
+    FileInfo,
+    CoordinateSystemType,
+    DataPolarizationType,
+)
 
 logger = logging.getLogger(__name__)
 
 
-@registry.register(
-    source=DataSourceType.HFSS, field=FieldType.NEAR, extension=".nfd"
+@file_registry.register(
+    source=DataSourceType.HFSS,
+    field=FieldType.NEAR,
+    data_polarization=DataPolarizationType.COMBO_POL,
+    extension=".nfd",
 )
-def load_hfss_near_field_ndf(file_path: Path) -> xr.Dataset:
+def load_hfss_near_field_ndf(file_list: List[FileInfo]) -> xr.Dataset:
     """
     Load near-field file data.
 
     Parameters
     ----------
-    file_path : Path
-        Path to near-field data file (.nfd).
+    file_list : List[FileInfo]
+        List of FieldInfo objects pointing to the near-field data files (.nfd).
 
     Returns
     -------
     xarray.Dataset
         Dataset containing "E" and "H" fields.
     """
+    if len(file_list) != 1:
+        raise ValueError("HFSS .nfd loader accepts exactly one file.")
+
+    if file_list[0].polarization != {PolarizationType.CO_POL, PolarizationType.CROSS_POL}:
+        raise ValueError(
+            "HFSS .nfd loader only accepts files containing both co-pol and cross-pol."
+        )
+
+    file_path = file_list[0].path
+
     if file_path.suffix != ".nfd":
         raise TypeError(f"File type must be '.nfd', got '{file_path.suffix}'.")
 
@@ -74,9 +92,7 @@ def load_hfss_near_field_ndf(file_path: Path) -> xr.Dataset:
                     logger.debug("Found num_frequencies = %i", num_frequencies)
                 if "Frequency" in line:
                     current_frequency = float(line.split(" ")[1])
-                    logger.debug(
-                        "Found current_frequency = %e Hz", current_frequency
-                    )
+                    logger.debug("Found current_frequency = %e Hz", current_frequency)
             else:  # all other lines are regularly formatted data
                 tokens = [float(x) for x in line.split(",")]
                 # logger.debug(tokens)
@@ -163,7 +179,7 @@ def load_hfss_near_field_ndf(file_path: Path) -> xr.Dataset:
         attrs={
             "data_source_type": DataSourceType.HFSS,
             "field": FieldType.NEAR,
-            "coordinate_system": CoordinateSystem.CARTESIAN,
+            "coordinate_system": CoordinateSystemType.CARTESIAN,
         },
     )
 
@@ -174,135 +190,36 @@ def load_hfss_near_field_ndf(file_path: Path) -> xr.Dataset:
     return fields
 
 
-@registry.register(
-    source=DataSourceType.HFSS, field=FieldType.FAR, extension=".csv"
+@file_registry.register(
+    source=DataSourceType.HFSS,
+    field=FieldType.FAR,
+    data_polarization=DataPolarizationType.COMBO_POL,
+    extension=".ffd",
 )
-def load_hfss_far_field_csv(file_path: Path) -> xr.Dataset:
+def load_hfss_far_field_ffd(file_list: List[FileInfo]) -> xr.Dataset:
     """
     Load far-field file data.
 
     Parameters
     ----------
-    file_path : Path
-        Path to far-field data file (.csv).
+    file_list : List[FileInfo]
+        List of FieldInfo objects pointing to the near-field data files (.nfd).
 
     Returns
     -------
     xarray.Dataset
         Dataset containing "E" and "H" fields.
     """
-    if file_path.suffix != ".csv":
-        raise TypeError(f"File type must be '.csv', got '{file_path.suffix}'.")
+    if len(file_list) != 1:
+        raise ValueError("HFSS .ffd loader accepts exactly one file.")
 
-    logger.debug('Loading HFSS far-field file "%s".', file_path)
+    if file_list[0].polarization != {PolarizationType.CO_POL, PolarizationType.CROSS_POL}:
+        raise ValueError(
+            "HFSS .ffd loader only accepts files containing both co-pol and cross-pol."
+        )
 
-    df = pd.read_csv(file_path)
-    # Strip whitespace and units from parentheses in column names
-    df.columns = df.columns.str.replace(
-        r"\s*\(.*\)\s*", "", regex=True
-    ).str.strip()
-    df.rename(columns={"Variation": "Frequency"}, inplace=True)
+    file_path = file_list[0].path
 
-    df["Frequency"] = df["Frequency"].apply(
-        lambda x: float(x.split("'")[1].strip(string.ascii_letters)) * 1e9
-    )
-
-    df["rEphi"] = df["rEphi"].apply(
-        lambda x: float(x.split(" ")[0]) * np.exp(1j * float(x.split(" ")[0]))
-    )
-
-    df["rEtheta"] = df["rEtheta"].apply(
-        lambda x: float(x.split(" ")[0]) * np.exp(1j * float(x.split(" ")[0]))
-    )
-
-    # === Post-process FFD File Data ===
-
-    phi_sample_location_array = np.sort(np.array(list(set(df["Phi"]))))
-    theta_sample_location_array = np.sort(np.array(list(set(df["Theta"]))))
-    sample_frequency_array = np.sort(np.array(list(set(df["Frequency"]))))
-
-    fields_shape = (
-        2,  # 2 for phi, theta components of the field
-        phi_sample_location_array.size,
-        theta_sample_location_array.size,
-        sample_frequency_array.size,
-    )
-    logger.debug("fields_shape: %s", fields_shape)
-    e_field = np.empty(fields_shape, dtype=np.complex128)
-
-    # Re-run over data and re-organize measured data into appropriate
-    # format (x,y,z,frequency)
-    for e_phi, e_theta, phi, theta, frequency in zip(
-        np.nditer(df["rEphi"]),
-        np.nditer(df["rEtheta"]),
-        np.nditer(df["Phi"]),
-        np.nditer(df["Theta"]),
-        np.nditer(df["Frequency"]),
-    ):
-        phi_index = np.where(phi_sample_location_array == phi)[0][0]
-        theta_index = np.where(theta_sample_location_array == theta)[0][0]
-        freq_index = np.where(sample_frequency_array == frequency)[0][0]
-
-        e_field[:, phi_index, theta_index, freq_index] = e_phi, e_theta
-        # h_field[:, x_index, y_index, z_index, freq_index] = hx, hy, hz
-
-    eta = (spc.mu_0 / spc.epsilon_0) ** 0.5
-    h_theta = -e_phi / eta
-    h_phi = e_theta / eta
-
-    e_field = np.stack([e_phi, e_theta])
-    h_field = np.stack([h_phi, h_theta])
-
-    fields = xr.Dataset(
-        {
-            "E": (
-                ("component", "phi", "theta", "frequency"),
-                e_field,
-                {"Units": "V/m"},
-            ),
-            "H": (
-                ("component", "phi", "theta", "frequency"),
-                h_field,
-                {"Units": "A/m"},
-            ),
-        },
-        coords={
-            "component": ["phi", "theta"],
-            "phi": phi_sample_location_array,
-            "theta": theta_sample_location_array,
-            "frequency": sample_frequency_array,
-        },
-        attrs={
-            "data_source_type": DataSourceType.HFSS,
-            "field": FieldType.FAR,
-            "coordinate_system": CoordinateSystem.SPHERICAL,
-        },
-    )
-
-    fields_buffer = io.StringIO()
-    fields.info(buf=fields_buffer)
-    logger.debug(fields_buffer.getvalue())
-
-    return fields
-
-
-@registry.register(
-    source=DataSourceType.HFSS, field=FieldType.FAR, extension=".ffd"
-)
-def load_hfss_far_field_ffd(file_path: Path) -> xr.Dataset:
-    """
-    Load far-field file data.
-
-    Parameters
-    ----------
-    file_path : Path
-        Path to far-field data file (.ffd).
-
-    Returns
-    -------
-    xarray.Dataset
-        Dataset containing "E" and "H" fields.
-    """
     if file_path.suffix != ".ffd":
         raise TypeError(f"File type must be '.ffd', got '{file_path.suffix}'.")
 
@@ -332,19 +249,13 @@ def load_hfss_far_field_ffd(file_path: Path) -> xr.Dataset:
                     float(x.strip()) for x in line.split(" ")
                 ]
                 theta_sample_location_array = np.radians(
-                    np.linspace(
-                        theta_start_deg, theta_stop_deg, int(theta_num_steps)
-                    )
+                    np.linspace(theta_start_deg, theta_stop_deg, int(theta_num_steps))
                 )
             # Azimuth (Phi)
             elif line_idx == 1:
-                phi_start_deg, phi_stop_deg, phi_num_steps = [
-                    float(x) for x in line.split(" ")
-                ]
+                phi_start_deg, phi_stop_deg, phi_num_steps = [float(x) for x in line.split(" ")]
                 phi_sample_location_array = np.radians(
-                    np.linspace(
-                        phi_start_deg, phi_stop_deg, int(phi_num_steps)
-                    )
+                    np.linspace(phi_start_deg, phi_stop_deg, int(phi_num_steps))
                 )
 
             # Extract number of frequencies from header
@@ -369,12 +280,10 @@ def load_hfss_far_field_ffd(file_path: Path) -> xr.Dataset:
                 if "Frequency" in line:
                     # Increment frequency index
                     frequency_index += 1
-                    
+
                     current_frequency = float(line.split(" ")[1])
                     sample_frequency_array[frequency_index] = current_frequency
-                    logger.debug(
-                        "Found current_frequency = %e Hz", current_frequency
-                    )
+                    logger.debug("Found current_frequency = %e Hz", current_frequency)
 
                     # Reset data_index to -1 (counts sample offset for a
                     # given frequency), increments at end of loop
@@ -432,7 +341,7 @@ def load_hfss_far_field_ffd(file_path: Path) -> xr.Dataset:
         attrs={
             "data_source_type": DataSourceType.HFSS,
             "field": FieldType.FAR,
-            "coordinate_system": CoordinateSystem.SPHERICAL,
+            "coordinate_system": CoordinateSystemType.SPHERICAL,
         },
     )
 

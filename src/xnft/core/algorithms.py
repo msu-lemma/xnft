@@ -17,7 +17,7 @@ import finufft
 
 from quantiphy import Quantity
 
-from ..core.types import DataSourceType, FieldType, CoordinateSystem
+from ..core.types import DataSourceType, FieldType, CoordinateSystemType
 
 # fmt: off
 MLX_AVAILABLE = False
@@ -295,7 +295,7 @@ def planar_near_field_transform(
         attrs={
             "data_source_type": DataSourceType.XNFT,
             "field": FieldType.FAR,
-            "coordinate_system": CoordinateSystem.SPHERICAL,
+            "coordinate_system": CoordinateSystemType.SPHERICAL,
         },
     )
 
@@ -559,7 +559,7 @@ def planar_near_field_transform_fft(
         attrs={
             "data_source_type": DataSourceType.XNFT,
             "field": FieldType.FAR,
-            "coordinate_system": CoordinateSystem.SPHERICAL,
+            "coordinate_system": CoordinateSystemType.SPHERICAL,
         },
     )
 

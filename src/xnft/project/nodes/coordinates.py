@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from typing import Optional
 import logging
 from .node import Node, DataNode, context_action
-from ...types import NodeType
+from ...core.types import NodeType
 
 logger = logging.getLogger(__name__)
 

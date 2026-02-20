@@ -28,14 +28,19 @@ from PySide6.QtWidgets import (
 )
 
 
-from ....core.types import ReportType, FieldType
+from ....core.types import ReportType, FieldType, NodeType
 
 
 class NewFieldReport(QDialog):
     """
     Input dialog for field report.
 
-    Includes basic data validation.
+    Parameters
+    ----------
+    parent : QWidget | None, optional
+        Parent widget for dialog, by default None
+    target_node : Node | None, optional
+        Target node invoking this dialog, by default None
     """
 
     def __init__(
@@ -160,7 +165,7 @@ class NewFieldReport(QDialog):
 
         self.fields_node = None
         for tmp_node in self.target_node.parent.children:
-            if tmp_node.name == "Fields":
+            if tmp_node.type == NodeType.FIELDS:
                 self.fields_node = tmp_node
                 break
         assert self.fields_node is not None

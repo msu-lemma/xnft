@@ -7,8 +7,11 @@ University.
 from compression import zstd
 import pickle
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-from .nodes.project import Project
+# Only imports Projec tfor type checking
+if TYPE_CHECKING:
+    from .nodes.project import Project
 
 
 def write_project(project: Project, compression_level=10):

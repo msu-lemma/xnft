@@ -28,7 +28,12 @@ class NewProjectDialog(QDialog):
     """
     Input dialog for project name and path.
 
-    Includes basic data validation.
+    Parameters
+    ----------
+    parent : QWidget | None, optional
+        Parent widget for dialog, by default None
+    target_node : Node | None, optional
+        Target node invoking this dialog, by default None
     """
 
     def __init__(self, parent: QWidget | None = None):
@@ -134,9 +139,20 @@ class NewProjectDialog(QDialog):
         return True
 
     def _try_accept(self) -> None:
+        """
+        Wrapper for QDialog `accept` function.
+
+        Silently check if inputs are valid before accepting.
+        """
         if self._is_input_valid(silent=True):
             self.accept()
 
     def _on_accept(self) -> None:
+
+        """
+        Wrapper for QDialog `accept` function.
+
+        Check if inputs are valid before accepting with message box on failure.
+        """
         if self._is_input_valid(silent=False):
             self.accept()

@@ -13,11 +13,11 @@ from PySide6.QtWidgets import QMdiSubWindow
 
 from .node import Node, DataNode, NodeType, context_action
 
-from ....gui.dialogs.reports.new_field_report_dialog import (
+from ...gui.dialogs.reports.new_field_report_dialog import (
     NewFieldReport,
 )
-from ...types import ReportType
-from ...plots import Plot2D
+from ...core.types import ReportType
+from ...core.plots import Plot2D
 
 logger = logging.getLogger(__name__)
 

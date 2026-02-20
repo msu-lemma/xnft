@@ -9,17 +9,17 @@ from dataclasses import dataclass
 from typing import Optional
 import logging
 
-from ....gui.dialogs.analysis.new_planar_nft_dialog import (
+from ...gui.dialogs.analysis.new_planar_nft_dialog import (
     NewPlanarNearFieldTransform,
 )
 
-from ...algorithms import (
+from ...core.algorithms import (
     planar_near_field_transform,
 )
 
 from .node import Node, DataNode, context_action
 from .fields import FieldNode
-from ...types import NodeType, FieldType, DataSourceType
+from ...core.types import NodeType, FieldType, DataSourceType
 
 logger = logging.getLogger(__name__)
 

@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (
 )
 
 
-from ..core.project import manager
+from ..project import manager
 
 
 class ProjectTreeView(QTreeView):
@@ -39,7 +39,7 @@ class ProjectTreeView(QTreeView):
         Context menu actions `context_actions` are added via decorators applied
         to nodes in the xnft/core/project/nodes classes.
 
-        TODO: should come up with a more unified framework for adding project
+        TODO: should implement a more unified framework for adding project
               menu items based on context menu actions. Currently, menu items
               don't automatically populate and this section of could would need
               to be duplicated elsewhere to achieve this.

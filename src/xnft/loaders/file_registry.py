@@ -4,21 +4,21 @@ Handle loading of data files.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
-from typing import Literal
 import logging
 from pathlib import Path
-from collections import defaultdict
-from ..core.types import FieldType, DataSourceType
+from ..core.types import FieldType, DataSourceType, FileInfo, DataPolarizationType
+from typing import List
 
 logger = logging.getLogger(__name__)
 
 
 class FileLoaderRegistry:
     """
-    File loader registry class to handle various file types.
+    File loader registry class to handle addition of new data loaders dynamically.
     """
 
     def __init__(self):
+        # Dict to store loader functions into
         self._loaders = {}
 
     def loader_key(self, source, field, extension):
@@ -29,11 +29,16 @@ class FileLoaderRegistry:
         self,
         source: DataSourceType,
         field: FieldType,
+        data_polarization: DataPolarizationType,
         extension: str,
+        has_sp: bool = False,
     ):
         """
         Decorator to register a loader function for a given source and field
         type.
+
+        Generates a key based on measurements source, field type, and file
+        extension, then assigns the value to the loader function.
 
         Parameters
         ----------
@@ -43,21 +48,38 @@ class FileLoaderRegistry:
             Field type of measurement.
             - FieldType.NEAR : Near-field measurement.
             - FieldType.FAR : Far-field measurement.
+        data_polarization : DataPolarizationType
+            - DataPolarizationType.SINGLE_POL : Single polarization per file
+            - DataPolarizationType.COMBO_POL : Combined polarization in file
         extension : str
             File extension (e.g., .csv, .nfd, .ffd, etc.).
+        has_sp : bool, optional
+            File has s-parameters to select from, by default False
         """
 
         def decorator(func):
-            self._loaders[
-                self.loader_key(
-                    source=source, field=field, extension=extension
-                )
-            ] = func
+            # Generate entry in loader dicionary
+            self._loaders[self.loader_key(source=source, field=field, extension=extension)] = func
+
+            # Add declared attributes of the loader
+            func.__attributes__ = {
+                "source": source,
+                "field": field,
+                "extension": extension,
+                "data_polarization": data_polarization,
+                "has_sp": has_sp,
+            }
+
             return func
 
         return decorator
 
-    def load(self, source: DataSourceType, field: FieldType, path: str):
+    def load(
+        self,
+        source: DataSourceType,
+        field: FieldType,
+        file_list: List[FileInfo],
+    ):
         """
         Load a file using appropriate loader.
 
@@ -69,21 +91,28 @@ class FileLoaderRegistry:
             Field type of measurement.
             - FieldType.NEAR : Near-field measurement.
             - FieldType.FAR : Far-field measurement.
-        path : str
-            String representing the path to a file.
+        file_list : List[FileInfo]
+            List of FileInfo objects containing files and measurement information.
         """
-        extension = Path(path).suffix
-        loader_key = self.loader_key(
-            source=source, field=field, extension=extension
-        )
+        extension = Path(file_list[0].path).suffix
 
-        # with open(path, "r", encoding="utf-8") as f:
+        # Check all files exist and extensions are the same
+        for file in file_list:
+            file_path = Path(file.path)
+            if not file_path.exists():
+                raise FileNotFoundError(f"File not found: {str(file_path)}")
+            if file_path.suffix != extension:
+                raise TypeError("All file extensions must be of the same type.")
+
+        loader_function = self.get_loader(source, field, extension)
+
+        return_value = loader_function(file_list)
+
+        return return_value
+
+    def get_loader(self, source, field, extension):
+        loader_key = self.loader_key(source=source, field=field, extension=extension)
         logger.debug("Available loaders: %s", self._loaders)
-
-        file_path = Path(path)
-
-        if not file_path.exists():
-            raise FileNotFoundError(f"File not found: {str(file_path)}")
 
         try:
             loader_function = self._loaders[loader_key]
@@ -94,27 +123,7 @@ class FileLoaderRegistry:
                 f" extension: '{extension}' }} ({loader_key}). "
                 f"Available options are {self._loaders}. {exc}"
             ) from exc
-
-        return_value = loader_function(file_path)
-
-        return return_value
-
-    @property
-    def loaders(self):
-        """
-        Return dictionary of field type, source type and accepted file
-        extensions.
-        """
-        loader_dict = {
-            FieldType.NEAR: defaultdict(list),
-            FieldType.FAR: defaultdict(list),
-        }
-
-        for key in self._loaders.keys():
-            source, field, extension = key
-            loader_dict[field][source].append(extension)
-
-        return loader_dict
+        return loader_function
 
 
-registry = FileLoaderRegistry()
+file_registry = FileLoaderRegistry()

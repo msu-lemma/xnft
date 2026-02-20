@@ -50,9 +50,9 @@ import importlib.metadata
 
 
 from .. import __version__
-from ..core.project import manager
-from ..core.project.nodes.project import Project
-from ..core.project.project_loader import read_project
+from ..project import manager
+from ..project.nodes.project import Project
+from ..project.project_loader import read_project
 
 from .dialogs.project.new_project_dialog import NewProjectDialog
 from .project_tree_model import ProjectManagerTreeModel

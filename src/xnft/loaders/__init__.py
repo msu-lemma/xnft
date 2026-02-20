@@ -7,5 +7,6 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 import importlib
 import pkgutil
 
-for module_info in pkgutil.iter_modules(__path__):
-    importlib.import_module(f"{__name__}.{module_info.name}")
+path = [__path__[0] + '/loaders']
+for module_info in pkgutil.iter_modules(path):
+    importlib.import_module(f"{__name__}.loaders.{module_info.name}")

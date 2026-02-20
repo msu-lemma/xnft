@@ -10,8 +10,8 @@ from PySide6.QtGui import QIcon
 
 from functools import cache
 
-from ..core.project.nodes.project import Project
-from ..core.project.nodes.node import Node, DataNode
+from ..project.nodes.project import Project
+from ..project.nodes.node import Node, DataNode
 
 
 class ProjectManagerTreeModel(QAbstractItemModel):

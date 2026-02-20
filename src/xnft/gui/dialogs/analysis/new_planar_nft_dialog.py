@@ -1,13 +1,11 @@
 """
 Define new planar near field transform dialog window.
 
-Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
+Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
+University.
 """
 
 from __future__ import annotations
-import numpy as np
-from typing import List, Tuple
-from pathlib import Path
 
 from quantiphy import Quantity
 
@@ -20,21 +18,24 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QWidget,
     QComboBox,
-    QLabel,
     QMessageBox,
-    QSpinBox,
     QListWidget,
     QListWidgetItem,
 )
 
-# from ...core.project import Node
+from ....core.types import FieldType, NodeType
 
 
 class NewPlanarNearFieldTransform(QDialog):
     """
     Input dialog for planar near field transform.
 
-    Includes basic data validation.
+    Parameters
+    ----------
+    parent : QWidget | None, optional
+        Parent widget for dialog, by default None
+    target_node : Node | None, optional
+        Target node invoking this dialog, by default None
     """
 
     def __init__(
@@ -46,20 +47,20 @@ class NewPlanarNearFieldTransform(QDialog):
         self.setWindowTitle("New Planar Near Field Transform")
         self.setMinimumWidth(480)
 
-        # Load all options from active project
+        # Load all source field options (near and far) from active project
 
         fields_node = None
         for tmp_node in target_node.parent.children:
-            if tmp_node.name == "Fields":
+            if tmp_node.type == NodeType.FIELDS:
                 fields_node = tmp_node
                 break
         assert fields_node is not None
 
-        source_field_options: list[Tuple[str, object]] = [
+        source_field_options = [
             (f"{x.name} ({x.display_type})", x) for x in fields_node.children
         ]
 
-        # --- Widgets ---
+        # --- Create Widgets ---
         self.cb_source_field = QComboBox()
         self.cb_far_field = QComboBox()
         self.cb_probe_corrections = QComboBox()
@@ -69,14 +70,12 @@ class NewPlanarNearFieldTransform(QDialog):
 
         # Populate Combo Boxes
         for label, item in source_field_options:
-            if item.type == "Near Field":
+            if item.type == FieldType.NEAR:
                 self.cb_source_field.addItem(label, item)
-                # A probe correction can be any near field measurement
-                self.cb_probe_corrections.addItem(label, item)
-
-        for label, item in source_field_options:
-            if item.type == "Far Field":
+            if item.type == FieldType.FAR:
                 self.cb_far_field.addItem(label, item)
+                # A probe correction can be any far field measurement
+                self.cb_probe_corrections.addItem(label, item)
 
         self.lw_frequencies = QListWidget(self)
         self.lw_frequencies.setSelectionMode(QListWidget.ExtendedSelection)
@@ -88,24 +87,6 @@ class NewPlanarNearFieldTransform(QDialog):
             "Enter the name for the transform"
         )
 
-        self.sb_fft_x_size = QSpinBox(self)
-        self.sb_fft_x_size.correctionMode = True
-        self.sb_fft_x_size.setMinimum(2)
-        self.sb_fft_x_size.setMaximum(int(2**20))
-        self.sb_fft_x_size.setValue(4096)
-
-        self.sb_fft_y_size = QSpinBox(self)
-        self.sb_fft_y_size.correctionMode = True
-        self.sb_fft_y_size.setMinimum(2)
-        self.sb_fft_y_size.setMaximum(int(2**20))
-        self.sb_fft_y_size.setValue(4096)
-
-        self.help_label = QLabel(
-            "FFT sizes will be truncated down from the next largest "
-            "power of 2."
-        )
-        self.help_label.setStyleSheet("color: #777")
-
         # Buttons
         self.buttons = QDialogButtonBox(
             QDialogButtonBox.Ok | QDialogButtonBox.Cancel, Qt.Horizontal, self
@@ -113,7 +94,7 @@ class NewPlanarNearFieldTransform(QDialog):
         self.buttons.button(QDialogButtonBox.Ok).setText("Create")
         self.buttons.button(QDialogButtonBox.Cancel).setText("Cancel")
 
-        # --- Layout ---
+        # --- Populate Layout ---
         form_layout = QFormLayout()
         form_layout.setFieldGrowthPolicy(QFormLayout.ExpandingFieldsGrow)
 
@@ -135,34 +116,20 @@ class NewPlanarNearFieldTransform(QDialog):
             "Probe Corrections:",
             self.cb_probe_corrections,
         )
-        form_layout.addRow(
-            "FFT X Size:",
-            self.sb_fft_x_size,
-        )
-        form_layout.addRow(
-            "FFT Y Size:",
-            self.sb_fft_y_size,
-        )
 
         layout = QVBoxLayout(self)
         layout.addLayout(form_layout)
-        form_layout.addRow(self.help_label)
 
         layout.addWidget(self.buttons)
 
-        # --- Connections ---
+        # --- Add Connections ---
         self.cb_source_field.currentTextChanged.connect(
             self._update_frequencies
         )
         self.buttons.accepted.connect(self._on_accept)
         self.buttons.rejected.connect(self.reject)
-
-        # Enter key creates if valid
-        self.sb_fft_x_size.returnPressed.connect(self._try_accept)
-        self.sb_fft_y_size.returnPressed.connect(self._try_accept)
         self.le_transform_name.returnPressed.connect(self._try_accept)
 
-    # --- Public Methods ---
     def get_selections(self) -> dict:
         """Return values chosen by the user."""
         return {
@@ -170,17 +137,14 @@ class NewPlanarNearFieldTransform(QDialog):
             "source_field": self.cb_source_field.currentData(),
             "far_field": self.cb_far_field.currentData(),
             "probe_correction": self.cb_probe_corrections.currentData(),
-            "fft_x_size": self.sb_fft_x_size.value(),
-            "fft_y_size": self.sb_fft_y_size.value(),
             "frequencies": [
                 x.data(Qt.UserRole)
                 for x in self.lw_frequencies.selectedItems()
             ],
         }
 
-    # --- Private Methods ---
-
-    def _update_frequencies(self):
+    def _update_frequencies(self) -> None:
+        """Update frequencies in `lw_frequencies`."""
         # Remove all items before updating items
         self.lw_frequencies.clear()
 
@@ -197,7 +161,19 @@ class NewPlanarNearFieldTransform(QDialog):
             item.setData(Qt.UserRole, data)
             self.lw_frequencies.addItem(item)
 
-    def _is_input_valid(self, silent: bool) -> bool:
+    def _is_input_valid(self, silent=True) -> bool:
+        """Check if inputs are valid.
+
+        Parameters
+        ----------
+        silent : bool, optional
+            Whether to generate message boxes, by default True
+
+        Returns
+        -------
+        bool
+            If input is valid.
+        """
         name = self.le_transform_name.text().strip()
 
         if not name:
@@ -219,9 +195,20 @@ class NewPlanarNearFieldTransform(QDialog):
         return True
 
     def _try_accept(self) -> None:
+        """
+        Wrapper for QDialog `accept` function.
+
+        Silently check if inputs are valid before accepting.
+        """
         if self._is_input_valid(silent=True):
             self.accept()
 
     def _on_accept(self) -> None:
+
+        """
+        Wrapper for QDialog `accept` function.
+
+        Check if inputs are valid before accepting with message box on failure.
+        """
         if self._is_input_valid(silent=False):
             self.accept()

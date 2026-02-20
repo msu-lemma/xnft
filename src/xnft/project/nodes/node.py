@@ -6,10 +6,11 @@ University.
 """
 
 from dataclasses import dataclass, field
+from uuid import uuid4, UUID
 from typing import List, Optional, Callable
 import inspect
 import logging
-from ...types import NodeType
+from ...core.types import NodeType
 from enum import StrEnum
 
 logger = logging.getLogger(__name__)
@@ -95,6 +96,7 @@ class Node:
     """Base class for a node in the project hierarchy."""
 
     # Node values
+    id: UUID = uuid4()
     type: NodeType = NodeType.UNKNOWN
     name_editable: Optional[bool] = False
     attributes: Optional[dict] = field(default_factory=dict)
@@ -232,6 +234,9 @@ class Node:
         # Sort by order provided
         actions.sort(key=lambda a: a.order)
         return actions
+    
+    def __eq__(self, node):
+        return self.id == node.id
 
 
 @dataclass(kw_only=True)

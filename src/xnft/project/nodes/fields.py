@@ -9,14 +9,14 @@ from dataclasses import dataclass
 from typing import Optional
 import logging
 
-from ....gui.dialogs.fields.new_field_measurement_dialog import (
+from ...gui.dialogs.fields.new_field_measurement_dialog import (
     NewFieldMeasurementDialog,
 )
-from ....loaders.file_registry import registry
+from ...loaders.file_registry import file_registry
 from .node import Node, DataNode, NodeType, context_action
 from .coordinates import CoordinateNode
 
-from ...types import CoordinateSystem, FieldType
+from ...core.types import CoordinateSystemType, FieldType
 
 logger = logging.getLogger(__name__)
 
@@ -34,18 +34,18 @@ class FieldsNode(Node):
         action="ui_action",
         helper_dialog=NewFieldMeasurementDialog,
     )
-    def new_measured_field(self, field_type, source_type, field_name, path):
+    def new_measured_field(self, field_type, source_type, field_name, file_info_list):
 
         # Read measured field file
-        field_data = registry.load(
-            source=source_type, field=field_type, path=path
+        field_data = file_registry.load(
+            source=source_type, field=field_type, file_list=file_info_list
         )
 
         field_node = FieldNode(
             name=field_name,
             source_type=source_type,
             measured=True,
-            attributes={"path": path},
+            attributes={"path": file_info_list},
             icon_name="text-x-generic",
             data=field_data,
             type=field_type,
@@ -65,9 +65,9 @@ class FieldsNode(Node):
             source=field_node,
             data=coordinate_data,
             type=(  # TODO: Add better detection of coordinate system
-                CoordinateSystem.CARTESIAN
+                CoordinateSystemType.CARTESIAN
                 if field_type == FieldType.NEAR
-                else CoordinateSystem.SPHERICAL
+                else CoordinateSystemType.SPHERICAL
             ),
         )
 

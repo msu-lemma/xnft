@@ -12,6 +12,7 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 
 from pathlib import Path
 import logging
+from typing import List
 
 import yaml
 import numpy as np
@@ -19,29 +20,46 @@ import xarray as xr
 
 import scipy.constants as spc
 
-from .file_registry import registry
-from ..core.types import DataSourceType, FieldType, CoordinateSystem
+from ..file_registry import file_registry
+from ...core.types import (
+    DataSourceType,
+    FieldType,
+    CoordinateSystemType,
+    PolarizationType,
+    FileInfo,
+    DataPolarizationType,
+)
 
 logger = logging.getLogger(__name__)
 
 
-@registry.register(
-    source=DataSourceType.THEORY, field=FieldType.NEAR, extension=".yaml"
+@file_registry.register(
+    source=DataSourceType.THEORY,
+    field=FieldType.NEAR,
+    data_polarization=DataPolarizationType.COMBO_POL,
+    extension=".yaml",
 )
-def load_theory_near_field_yaml(file_path: Path) -> xr.Dataset:
+def load_theory_near_field_yaml(file_list: List[FileInfo]) -> xr.Dataset:
     """
     Generate theoretical near-field based on simple description file.
 
     Parameters
     ----------
-    file_path : Path
-        Path to theory description file.
+    file_path : List
+        List of FieldInfo objects pointing to the near-field theory files.
 
     Returns
     -------
     xr.Dataset
         Dataset containing "E" and "H" fields.
     """
+    if len(file_list) != 1:
+        raise ValueError("Theory loader accepts exactly one file.")
+
+    if file_list[0].polarization != {PolarizationType.CO_POL, PolarizationType.CROSS_POL}:
+        raise ValueError("Theory loader only accepts files containing both co-pol and cross-pol.")
+
+    file_path = file_list[0].path
 
     with open(file_path, "r", encoding="utf-8") as file:
         fd = yaml.safe_load(file)
@@ -63,15 +81,9 @@ def load_theory_near_field_yaml(file_path: Path) -> xr.Dataset:
 
     e_0 = fd["antenna"]["excitation"]["e_0"]
 
-    e_x = e_z = np.zeros(
-        (x_size, y_size, 1, sample_frequency_array.size), np.float64
-    )
-    e_y = e_0 * np.ones(
-        (x_size, y_size, 1, sample_frequency_array.size), np.float64
-    )
-    h_x = h_y = h_z = np.zeros(
-        (x_size, y_size, 1, sample_frequency_array.size), np.float64
-    )
+    e_x = e_z = np.zeros((x_size, y_size, 1, sample_frequency_array.size), np.float64)
+    e_y = e_0 * np.ones((x_size, y_size, 1, sample_frequency_array.size), np.float64)
+    h_x = h_y = h_z = np.zeros((x_size, y_size, 1, sample_frequency_array.size), np.float64)
 
     yy, xx = np.meshgrid(y_sample_location_array, x_sample_location_array)
 
@@ -97,13 +109,10 @@ def load_theory_near_field_yaml(file_path: Path) -> xr.Dataset:
         pass  # Nothing needed for uniform
     elif excitation_distribution == "te10":
         # Taper fields based on TE-10 mode
-        e_y *= np.cos(np.pi / (aperture_x_max - aperture_x_min) * xx)[
-            :, :, None, None
-        ]
+        e_y *= np.cos(np.pi / (aperture_x_max - aperture_x_min) * xx)[:, :, None, None]
     else:
         raise NotImplementedError(
-            f"Excitation distribution {excitation_distribution} is not yet "
-            "implemented."
+            f"Excitation distribution {excitation_distribution} is not yet " "implemented."
         )
 
     e_field = np.stack([e_x, e_y, e_z])
@@ -132,30 +141,40 @@ def load_theory_near_field_yaml(file_path: Path) -> xr.Dataset:
         attrs={
             "data_source_type": DataSourceType.THEORY,
             "field": FieldType.NEAR,
-            "coordinate_system": CoordinateSystem.CARTESIAN,
+            "coordinate_system": CoordinateSystemType.CARTESIAN,
         },
     )
 
     return fields
 
 
-@registry.register(
-    source=DataSourceType.THEORY, field=FieldType.FAR, extension=".yaml"
+@file_registry.register(
+    source=DataSourceType.THEORY,
+    field=FieldType.FAR,
+    data_polarization=DataPolarizationType.COMBO_POL,
+    extension=".yaml",
 )
-def load_theory_far_field_yaml(file_path: Path) -> xr.Dataset:
+def load_theory_far_field_yaml(file_list: List[FileInfo]) -> xr.Dataset:
     """
     Generate theoretical far-field based on simple description file.
 
     Parameters
     ----------
-    file_path : Path
-        Path to theory description file.
+    file_path : List
+        List of FieldInfo objects pointing to the near-field theory files.
 
     Returns
     -------
     xr.Dataset
         Dataset containing "E" and "H" fields.
     """
+    if len(file_list) != 1:
+        raise ValueError("Theory loader accepts exactly one file.")
+
+    if file_list[0].polarization != {PolarizationType.CO_POL, PolarizationType.CROSS_POL}:
+        raise ValueError("Theory loader only accepts files containing both co-pol and cross-pol.")
+
+    file_path = file_list[0].path
 
     with open(file_path, "r", encoding="utf-8") as file:
         fd = yaml.safe_load(file)
@@ -168,12 +187,8 @@ def load_theory_far_field_yaml(file_path: Path) -> xr.Dataset:
     theta_min = fd["samples"]["far_field"]["theta"]["length"][0]
     theta_size = fd["samples"]["far_field"]["theta"]["size"]
 
-    phi_sample_location_array = (
-        np.linspace(phi_min, phi_max, phi_size) * np.pi / 180
-    )
-    theta_sample_location_array = (
-        np.linspace(theta_min, theta_max, theta_size) * np.pi / 180
-    )
+    phi_sample_location_array = np.linspace(phi_min, phi_max, phi_size) * np.pi / 180
+    theta_sample_location_array = np.linspace(theta_min, theta_max, theta_size) * np.pi / 180
     sample_frequency_array = np.array(fd["samples"]["frequency"])
 
     ap_x_min = fd["antenna"]["x"]["length"][0]
@@ -186,9 +201,7 @@ def load_theory_far_field_yaml(file_path: Path) -> xr.Dataset:
 
     # Create sampling grid
 
-    theta_grid, phi_grid = np.meshgrid(
-        theta_sample_location_array, phi_sample_location_array
-    )
+    theta_grid, phi_grid = np.meshgrid(theta_sample_location_array, phi_sample_location_array)
     phi_grid = phi_grid[:, :, np.newaxis]
     theta_grid = theta_grid[:, :, np.newaxis]
 
@@ -222,13 +235,10 @@ def load_theory_far_field_yaml(file_path: Path) -> xr.Dataset:
         cx = np.cos(x_ff) / (x_ff**2 - (np.pi / 2) ** 2)
         cy = np.sinc(y_ff / np.pi)
         e_theta = -np.pi / 2 * c_ff * np.sin(phi_grid) * cx * cy
-        e_phi = (
-            -np.pi / 2 * c_ff * np.cos(theta_grid) * np.cos(phi_grid) * cx * cy
-        )
+        e_phi = -np.pi / 2 * c_ff * np.cos(theta_grid) * np.cos(phi_grid) * cx * cy
     else:
         raise NotImplementedError(
-            f"Excitation distribution {excitation_distribution} is not yet "
-            "implemented."
+            f"Excitation distribution {excitation_distribution} is not yet " "implemented."
         )
 
     h_theta = -e_phi / eta
@@ -259,7 +269,7 @@ def load_theory_far_field_yaml(file_path: Path) -> xr.Dataset:
         attrs={
             "data_source_type": DataSourceType.THEORY,
             "field": FieldType.FAR,
-            "coordinate_system": CoordinateSystem.SPHERICAL,
+            "coordinate_system": CoordinateSystemType.SPHERICAL,
         },
     )
 
