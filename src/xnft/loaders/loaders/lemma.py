@@ -15,15 +15,15 @@ import xarray as xr
 # import scipy.constants as spc
 
 from ..file_registry import file_registry
-from ...core.types import (
+from ...core.enums import (
     DataSourceType,
     FieldType,
     CoordinateSystemType,
     SParameterType,
     PolarizationType,
     DataPolarizationType,
-    FileInfo
 )
+from ...core.types import FileInfo
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +49,8 @@ def load_lemma_h5(file_list: List[FileInfo]) -> xr.Dataset:
             cx_file_info = file_info
         else:
             raise TypeError(
-                "LEmmA loader only accepts polarization types CO_POL and CROSS_POL, not both or none"
+                "LEmmA loader only accepts polarization types CO_POL and CROSS_POL, not both "
+                "or none"
             )
 
     if co_file_info is None and cx_file_info is None:
@@ -64,7 +65,13 @@ def load_lemma_h5(file_list: List[FileInfo]) -> xr.Dataset:
             y_locs = sample_locations[:, 2]
             z_locs = sample_locations[:, 1] + 0.069
 
-            field_amplitude = dataset["S21real"][()] + 1.0j * dataset["S21imag"][()]
+            # NOTE: We're only taking the first item in the set
+            if file_info.s_parameters != set():
+                sp = list(file_info.s_parameters)[0]
+            else:
+                sp = SParameterType.S21
+
+            field_amplitude = dataset[f"{sp}real"][()] + 1.0j * dataset[f"{sp}imag"][()]
 
             if file_info.polarization == PolarizationType.CO_POL:
                 ex_array = field_amplitude

@@ -21,9 +21,12 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QListWidget,
     QListWidgetItem,
+    QLabel,
 )
 
-from ....core.types import FieldType, NodeType
+import platform
+
+from ....core.enums import FieldType, NodeType
 
 
 class NewPlanarNearFieldTransform(QDialog):
@@ -56,13 +59,11 @@ class NewPlanarNearFieldTransform(QDialog):
                 break
         assert fields_node is not None
 
-        source_field_options = [
-            (f"{x.name} ({x.display_type})", x) for x in fields_node.children
-        ]
+        source_field_options = [(f"{x.name} ({x.display_type})", x) for x in fields_node.children]
 
         # --- Create Widgets ---
         self.cb_source_field = QComboBox()
-        self.cb_far_field = QComboBox()
+        # self.cb_far_field = QComboBox()
         self.cb_probe_corrections = QComboBox()
 
         # The user may elect to use no probe corrections
@@ -72,20 +73,25 @@ class NewPlanarNearFieldTransform(QDialog):
         for label, item in source_field_options:
             if item.type == FieldType.NEAR:
                 self.cb_source_field.addItem(label, item)
-            if item.type == FieldType.FAR:
-                self.cb_far_field.addItem(label, item)
-                # A probe correction can be any far field measurement
-                self.cb_probe_corrections.addItem(label, item)
+            # if item.type == FieldType.FAR:
+            #     self.cb_far_field.addItem(label, item)
+            #     # A probe correction can be any far field measurement
+            #     self.cb_probe_corrections.addItem(label, item)
 
         self.lw_frequencies = QListWidget(self)
         self.lw_frequencies.setSelectionMode(QListWidget.ExtendedSelection)
         self._update_frequencies()
 
+        # Generate help label based on platform type
+        mod_key = "⌘" if platform.system() == "Darwin" else "ctrl"
+        label_freq_help = QLabel(
+            f"To select multiple frequencies hold {mod_key} or shift, or {mod_key}-A to select all."
+        )
+        label_freq_help.setStyleSheet("color: #777")
+
         self.le_transform_name = QLineEdit(self)
         self.le_transform_name.setText("Planar Near Field Transform")
-        self.le_transform_name.setPlaceholderText(
-            "Enter the name for the transform"
-        )
+        self.le_transform_name.setPlaceholderText("Enter the name for the transform")
 
         # Buttons
         self.buttons = QDialogButtonBox(
@@ -100,22 +106,14 @@ class NewPlanarNearFieldTransform(QDialog):
 
         form_layout.addRow("Transform Name:", self.le_transform_name)
 
-        form_layout.addRow(
-            "Source Field:",
-            self.cb_source_field,
-        )
-        form_layout.addRow(
-            "Far Field (Reference):",
-            self.cb_far_field,
-        )
-        form_layout.addRow(
-            "Frequencies:",
-            self.lw_frequencies,
-        )
-        form_layout.addRow(
-            "Probe Corrections:",
-            self.cb_probe_corrections,
-        )
+        form_layout.addRow("Source Field:", self.cb_source_field)
+        # form_layout.addRow(
+        #     "Far Field (Reference):",
+        #     self.cb_far_field,
+        # )
+        form_layout.addRow("Frequencies:", self.lw_frequencies)
+        form_layout.addRow(label_freq_help)
+        form_layout.addRow("Probe Corrections:", self.cb_probe_corrections)
 
         layout = QVBoxLayout(self)
         layout.addLayout(form_layout)
@@ -123,9 +121,7 @@ class NewPlanarNearFieldTransform(QDialog):
         layout.addWidget(self.buttons)
 
         # --- Add Connections ---
-        self.cb_source_field.currentTextChanged.connect(
-            self._update_frequencies
-        )
+        self.cb_source_field.currentTextChanged.connect(self._update_frequencies)
         self.buttons.accepted.connect(self._on_accept)
         self.buttons.rejected.connect(self.reject)
         self.le_transform_name.returnPressed.connect(self._try_accept)
@@ -135,12 +131,8 @@ class NewPlanarNearFieldTransform(QDialog):
         return {
             "transform_name": self.le_transform_name.text().strip(),
             "source_field": self.cb_source_field.currentData(),
-            "far_field": self.cb_far_field.currentData(),
             "probe_correction": self.cb_probe_corrections.currentData(),
-            "frequencies": [
-                x.data(Qt.UserRole)
-                for x in self.lw_frequencies.selectedItems()
-            ],
+            "frequencies": [x.data(Qt.UserRole) for x in self.lw_frequencies.selectedItems()],
         }
 
     def _update_frequencies(self) -> None:
@@ -148,14 +140,8 @@ class NewPlanarNearFieldTransform(QDialog):
         # Remove all items before updating items
         self.lw_frequencies.clear()
 
-        frequencies = (
-            self.cb_source_field.currentData()
-            .data.coords["frequency"]
-            .values.tolist()
-        )
-        frequencies_items = [
-            (str(Quantity(x, units="Hz")), x) for x in frequencies
-        ]
+        frequencies = self.cb_source_field.currentData().data.coords["frequency"].values.tolist()
+        frequencies_items = [(str(Quantity(x, units="Hz")), x) for x in frequencies]
         for label, data in frequencies_items:
             item = QListWidgetItem(label)
             item.setData(Qt.UserRole, data)
@@ -178,9 +164,7 @@ class NewPlanarNearFieldTransform(QDialog):
 
         if not name:
             if not silent:
-                QMessageBox.warning(
-                    self, "Missing Name", "Please enter a transform node name."
-                )
+                QMessageBox.warning(self, "Missing Name", "Please enter a transform node name.")
             return False
 
         if not self.lw_frequencies.selectedItems():
@@ -204,7 +188,6 @@ class NewPlanarNearFieldTransform(QDialog):
             self.accept()
 
     def _on_accept(self) -> None:
-
         """
         Wrapper for QDialog `accept` function.
 

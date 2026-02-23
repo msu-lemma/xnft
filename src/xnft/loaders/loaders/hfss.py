@@ -4,24 +4,22 @@ Loader functions for Ansys HFSS files.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
-from pathlib import Path
 import logging
 import io
 from typing import List
 
 import numpy as np
 import xarray as xr
-import scipy.constants as spc
 
 from ..file_registry import file_registry
-from ...core.types import (
+from ...core.enums import (
     DataSourceType,
     FieldType,
     PolarizationType,
-    FileInfo,
     CoordinateSystemType,
     DataPolarizationType,
 )
+from ...core.types import FileInfo
 
 logger = logging.getLogger(__name__)
 

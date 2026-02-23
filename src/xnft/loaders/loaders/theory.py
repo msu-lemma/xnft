@@ -21,14 +21,14 @@ import xarray as xr
 import scipy.constants as spc
 
 from ..file_registry import file_registry
-from ...core.types import (
+from ...core.enums import (
     DataSourceType,
     FieldType,
     CoordinateSystemType,
     PolarizationType,
-    FileInfo,
     DataPolarizationType,
 )
+from ...core.types import FileInfo
 
 logger = logging.getLogger(__name__)
 

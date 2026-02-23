@@ -83,7 +83,6 @@ class NewProjectDialog(QDialog):
         self.buttons.accepted.connect(self._on_accept)
         self.buttons.rejected.connect(self.reject)
 
-        # Enter key creates if valid
         self.name_field.returnPressed.connect(self._try_accept)
         self.path_field.returnPressed.connect(self._try_accept)
 

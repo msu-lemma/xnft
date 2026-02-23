@@ -19,7 +19,8 @@ from ...core.algorithms import (
 
 from .node import Node, DataNode, context_action
 from .fields import FieldNode
-from ...core.types import NodeType, FieldType, DataSourceType
+from .coordinates import CoordinateNode
+from ...core.enums import NodeType, FieldType, DataSourceType, CoordinateSystemType
 
 logger = logging.getLogger(__name__)
 
@@ -41,49 +42,56 @@ class AnalysisNode(Node):
         self,
         transform_name,
         source_field,
-        far_field,
         probe_correction,
         frequencies,
     ):
         # Perform the near to far field transform
-        data = planar_near_field_transform(
+        field_data = planar_near_field_transform(
             near_field=source_field.data,
-            far_field=far_field.data if far_field else None,
             probe_correction=probe_correction,
             frequencies=frequencies,
         )
 
-        # Create the transform node and field node
-        far_field_node = FieldNode(
-            name=transform_name,
-            data=data,
-            type=FieldType.FAR,
-            source_type=DataSourceType.XNFT,
-        )
-        transform_node = TransformNode(
-            name=transform_name, data=far_field_node
+        coordinate_data = field_data.coords
+        coordinate_node = CoordinateNode(
+            name=f"{transform_name} Coordinates",
+            data=coordinate_data,
+            type=CoordinateSystemType.SPHERICAL,
         )
 
-        # Get the fields root node to add far field node to
-        fields_node = None
+        # Create the transform node and field node
+        field_node = FieldNode(
+            name=transform_name,
+            data=field_data,
+            type=FieldType.FAR,
+            measured=False,
+            coordinates=coordinate_node,
+            source_type=DataSourceType.XNFT,
+        )
+        transform_node = TransformNode(name=transform_name, data=field_node)
+        coordinate_node.source = field_node
+
+        # Get the fields and coordinates root nodes to add far field node to
+        fields_root_node = None
+        coordinates_root_node = None
         for tmp_node in self.parent.children:
             if tmp_node.type == NodeType.FIELDS:
-                fields_node = tmp_node
-                break
-        assert fields_node is not None
+                fields_root_node = tmp_node
+            if tmp_node.type == NodeType.COORDINATES:
+                coordinates_root_node = tmp_node
+        assert fields_root_node is not None
+        assert coordinates_root_node is not None
 
         node_pair_list = [
             (self, transform_node),
-            (fields_node, far_field_node),
+            (fields_root_node, field_node),
+            (coordinates_root_node, coordinate_node),
         ]
 
         # Status to display on status bar at bottom of window
         status = "Near-to-far Field Transform is not yet implemented."
 
-        result_dict = {
-            "status": status,
-            "nodes": node_pair_list
-        }
+        result_dict = {"status": status, "nodes": node_pair_list}
 
         return result_dict
 
@@ -114,6 +122,16 @@ class AnalysisNode(Node):
     )
     def new_far_field_interpolation(self):
         logger.warning("Far field interpolation is not yet implemented.")
+
+    @context_action(
+        "New Derived Field (Function)",
+        order=50,
+        enabled=False,
+        separator=True,
+        icon_name="document-new",
+    )
+    def new_function(self):
+        logger.warning("Derived are not yet implemented.")
 
 
 @dataclass(kw_only=True)

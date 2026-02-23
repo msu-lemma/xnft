@@ -1,15 +1,14 @@
 """
 Handle xnft coordinates actions.
 
-Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
-University.
+Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
 from dataclasses import dataclass
 from typing import Optional
 import logging
 from .node import Node, DataNode, context_action
-from ...core.types import NodeType
+from ...core.enums import NodeType
 
 logger = logging.getLogger(__name__)
 
@@ -31,5 +30,5 @@ class CoordinatesNode(Node):
 
 @dataclass(kw_only=True)
 class CoordinateNode(DataNode):
-    source: Optional[Node]
+    source: Optional[Node] = None
     name_editable: Optional[bool] = True

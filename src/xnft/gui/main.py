@@ -318,6 +318,8 @@ class MainWindow(QMainWindow):
             A function to callback from the project to perform project action.
         """
 
+        result_dict = None
+
         # If a helper dialog is provided, get args and invoke; else invoke without args
         if helper_dialog is not None:
             dialog = helper_dialog(self, target_node=target_node)
@@ -335,6 +337,9 @@ class MainWindow(QMainWindow):
         # UI actions
         #
         # tasks = result_dict["tasks"]
+
+        if result_dict is None:
+            return
 
         # Set status bar text
         status = result_dict.get("status", None)

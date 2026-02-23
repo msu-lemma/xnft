@@ -17,7 +17,7 @@ import finufft
 
 from quantiphy import Quantity
 
-from ..core.types import DataSourceType, FieldType, CoordinateSystemType
+from .enums import DataSourceType, FieldType, CoordinateSystemType
 
 # fmt: off
 MLX_AVAILABLE = False
@@ -52,14 +52,15 @@ def gen_near_field_sampling_grid():
 
 def planar_near_field_transform(
     near_field,
-    far_field,
     probe_correction=None,
     frequencies=None,
-    device="gpu",
+    device="cpu",
 ):
     # =========================================================================
     # Select Frequencies From Source File
-    # TODO: Add multi-frequency processing
+    #
+    #  TODO: Add multi-frequency processing
+    #
     # The loaded source files above contain multiple frequency data.  Select a
     # single frequency to process.
 
@@ -247,12 +248,8 @@ def planar_near_field_transform(
         * (fe_x * ns.cos(phi_grid_target) + fe_y * ns.sin(phi_grid_target))
     )
 
-    # Compute magnitude of E-field to plot
-    e_total = ns.sqrt(e_phi**2 + e_theta**2)
-
     # If using GPU memory, create view of memory for numpy
     if device == "gpu":
-        e_total = np.array(e_total, copy=False)
         theta_grid_target = np.array(theta_grid_target, copy=False)
         phi_grid_target = np.array(phi_grid_target, copy=False)
         e_phi = np.array(e_phi, copy=False)

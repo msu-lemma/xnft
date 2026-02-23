@@ -1,8 +1,7 @@
 """
 Handle xnft fields actions.
 
-Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
-University.
+Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
 from dataclasses import dataclass
@@ -16,7 +15,7 @@ from ...loaders.file_registry import file_registry
 from .node import Node, DataNode, NodeType, context_action
 from .coordinates import CoordinateNode
 
-from ...core.types import CoordinateSystemType, FieldType
+from ...core.enums import CoordinateSystemType, FieldType
 
 logger = logging.getLogger(__name__)
 
@@ -91,8 +90,8 @@ class FieldsNode(Node):
 @dataclass(kw_only=True)
 class FieldNode(DataNode):
     source_type: str
-    measured: Optional[bool] = False
-    coordinates: Optional[Node] = None
+    coordinates: Node
+    measured: bool
     name_editable: Optional[bool] = True
 
     @property

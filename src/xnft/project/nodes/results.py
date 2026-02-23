@@ -13,11 +13,11 @@ from PySide6.QtWidgets import QMdiSubWindow
 
 from .node import Node, DataNode, NodeType, context_action
 
-from ...gui.dialogs.reports.new_field_report_dialog import (
-    NewFieldReport,
+from ...gui.dialogs.reports.new_2d_field_report_dialog import (
+    New2DFieldReport,
 )
-from ...core.types import ReportType
-from ...core.plots import Plot2D
+from ...core.enums import ReportType
+from ...core.plots.plot_2d import Plot2D
 
 logger = logging.getLogger(__name__)
 
@@ -28,20 +28,18 @@ class ResultsNode(Node):
     type: NodeType = NodeType.RESULTS
 
     @context_action(
-        "New Field Report",
+        "New 2D Field Report",
         order=20,
         enabled=True,
         action="ui_action",
-        helper_dialog=NewFieldReport,
+        helper_dialog=New2DFieldReport,
         icon_name="document-new",
     )
-    def new_field_report(self, **kwargs):
+    def new_2d_field_report(self, **kwargs):
         report_node = ReportNode(
             name=kwargs["report_name"],
-            type=kwargs["report_type"],
-            field_type=kwargs["field_type"],
+            type=ReportType.PLOT_2D,
             fields=kwargs["fields"],
-            frequencies=kwargs["frequencies"],
             args=kwargs,
         )
 
@@ -74,9 +72,7 @@ class ResultsNode(Node):
 
 @dataclass(kw_only=True)
 class ReportNode(DataNode):
-    field_type: str | None = None
     fields: list = field(default_factory=list)
-    frequencies: list = field(default_factory=list)
     name_editable: Optional[bool] = True
     icon_name: str = "utilities-system-monitor"
     args: dict = field(default_factory=dict)
@@ -90,9 +86,7 @@ class ReportNode(DataNode):
         """Open/view the report in an MDI window."""
 
         if self.type == ReportType.PLOT_2D:
-            plot_widget = Plot2D(
-                self.fields[0], projection="uv"
-            )  # TODO FIXME should only be one field
+            plot_widget = Plot2D(self.fields[0])  # TODO FIXME should only be one field
 
         # TODO: Ideally the Qt code would live outside of this module
         win = QMdiSubWindow()

@@ -10,7 +10,7 @@ from uuid import uuid4, UUID
 from typing import List, Optional, Callable
 import inspect
 import logging
-from ...core.types import NodeType
+from ...core.enums import NodeType
 from enum import StrEnum
 
 logger = logging.getLogger(__name__)

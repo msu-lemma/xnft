@@ -1,7 +1,5 @@
 """Test theory file loader."""
-import pytest
 
-from xnft.core.types import FieldType, DataSourceType, FileInfo, PolarizationType
 from xnft.project import manager
 from xnft.project.nodes.project import Project
 
@@ -14,7 +12,7 @@ def test_init_project_manager():
 def test_add_project():
     pm = manager.Manager()
     project = Project()
-    
+
     pm.add_project(project)
 
     assert pm.project_count == 1

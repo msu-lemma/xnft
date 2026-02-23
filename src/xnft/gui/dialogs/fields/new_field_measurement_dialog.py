@@ -30,14 +30,14 @@ from PySide6.QtWidgets import (
 
 from ....loaders.file_registry import file_registry
 from ....project.nodes.node import Node
-from ....core.types import (
+from ....core.enums import (
     FieldType,
     DataPolarizationType,
-    FileInfo,
     SParameterType,
     DataSourceType,
     PolarizationType,
 )
+from ....core.types import FileInfo
 
 
 class NewFieldMeasurementDialog(QDialog):
@@ -96,10 +96,10 @@ class NewFieldMeasurementDialog(QDialog):
             parent=self,
         )
 
-        self.help_label = QLabel(
+        self.label_file_help = QLabel(
             f"Available extensions are: " f"{', '.join(self._get_available_extensions())}"
         )
-        self.help_label.setStyleSheet("color: #777")
+        self.label_file_help.setStyleSheet("color: #777")
 
         # Buttons
         self.buttons = QDialogButtonBox(
@@ -124,7 +124,7 @@ class NewFieldMeasurementDialog(QDialog):
 
         layout = QVBoxLayout(self)
         layout.addLayout(self.form_layout)
-        self.form_layout.addRow(self.help_label)
+        self.form_layout.addRow(self.label_file_help)
 
         self._update_source_polarization_formats()
         self._update_file_fields_shown()
@@ -148,26 +148,29 @@ class NewFieldMeasurementDialog(QDialog):
 
     def get_selections(self) -> dict:
         """Return values chosen by user."""
-        data_polarization = self.cb_data_polarization.currentData()[0]
+        data_polarization = self.cb_data_polarization.currentData()
+        print(f'{self.fe_combined.cb_sp.currentData()[0]=}')
+        print(f'{self.fe_co_pol.cb_sp.currentData()[0]=}')
+        print(f'{self.fe_cx_pol.cb_sp.currentData()[0]=}')
 
         if data_polarization == DataPolarizationType.COMBO_POL:
             file_info_list = [
                 FileInfo(
                     path=self.fe_combined.le_path.text().strip(),
                     polarization={PolarizationType.CO_POL, PolarizationType.CROSS_POL},
-                    s_parameters=(self.fe_combined.cb_sp.currentData()[0]))
+                    s_parameters=set(self.fe_combined.cb_sp.currentData()))
             ]
         else:
             file_info_list = [
                 FileInfo(
                     path=Path(self.fe_co_pol.le_path.text().strip()),
                     polarization=PolarizationType.CO_POL,
-                    s_parameters=(self.fe_co_pol.cb_sp.currentData()[0]),
+                    s_parameters=set(self.fe_co_pol.cb_sp.currentData()),
                 ),
                 FileInfo(
                     path=Path(self.fe_cx_pol.le_path.text().strip()),
                     polarization=PolarizationType.CROSS_POL,
-                    s_parameters=(self.fe_cx_pol.cb_sp.currentData()[0]),
+                    s_parameters=set(self.fe_cx_pol.cb_sp.currentData()),
                 ),
             ]
 
@@ -210,11 +213,6 @@ class NewFieldMeasurementDialog(QDialog):
         polarization_formats = []
         for key, loader in loaders.items():
             attributes = getattr(loader, "__attributes__")
-            print(attributes)
-            print(
-                repr(source_type), repr(attributes["source"]), source_type == attributes["source"]
-            )
-            print(repr(field_type), repr(attributes["field"]), field_type == attributes["field"])
             if attributes["source"] == source_type and attributes["field"] == field_type:
                 polarization_formats.append(attributes["data_polarization"])
 
@@ -245,7 +243,7 @@ class NewFieldMeasurementDialog(QDialog):
             self.form_layout.setRowVisible(self.fe_cx_pol, True)
 
     def _update_help_label(self) -> None:
-        self.help_label.setText(
+        self.label_file_help.setText(
             f"Available extensions are: " f"{', '.join(self._get_available_extensions())}"
         )
 
@@ -379,7 +377,7 @@ class FileEntryRow(QWidget):
         self.cb_sp = QComboBox(self)
         self.cb_sp.setHidden(not self._show_sp)
         for idx, sp_type in enumerate(SParameterType):
-            self.cb_sp.addItem(sp_type.value, sp_type)
+            self.cb_sp.addItem(sp_type.value, (sp_type,))
             if sp_type == SParameterType.S21:
                 s21_idx = idx
 
@@ -416,11 +414,10 @@ class FileEntryRow(QWidget):
         extension = Path(self.le_path.text()).suffix
 
         try:
-            print(extension)
             loader = file_registry.get_loader(source_format, field_type, extension)
             self.show_sp = loader.__attributes__["has_sp"]
-        except Exception as e:
-            print(e)
+        except Exception:
+            pass
 
     @property
     def show_sp(self):
