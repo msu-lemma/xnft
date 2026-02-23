@@ -81,9 +81,9 @@ def load_theory_near_field_yaml(file_list: List[FileInfo]) -> xr.Dataset:
 
     e_0 = fd["antenna"]["excitation"]["e_0"]
 
-    e_x = e_z = np.zeros((x_size, y_size, 1, sample_frequency_array.size), np.float64)
-    e_y = e_0 * np.ones((x_size, y_size, 1, sample_frequency_array.size), np.float64)
-    h_x = h_y = h_z = np.zeros((x_size, y_size, 1, sample_frequency_array.size), np.float64)
+    e_x = e_z = np.zeros((x_size, y_size, 1, sample_frequency_array.size), np.complex128)
+    e_y = e_0 * np.ones((x_size, y_size, 1, sample_frequency_array.size), np.complex128)
+    h_x = h_y = h_z = np.zeros((x_size, y_size, 1, sample_frequency_array.size), np.complex128)
 
     yy, xx = np.meshgrid(y_sample_location_array, x_sample_location_array)
 

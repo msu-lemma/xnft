@@ -144,6 +144,7 @@ pandas-stubs = ">=3.0.0.260204,<4"
 [feature.jupyter.dependencies]
 jupyter = ">=1.1.1,<2"
 ipympl = ">=0.10.0,<0.11"
+tqdm = ">=4.67.3,<5"
 
 [feature.dev-mlx]
 
