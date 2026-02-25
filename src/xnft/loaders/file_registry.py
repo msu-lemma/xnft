@@ -95,6 +95,7 @@ class FileLoaderRegistry:
         file_list : List[FileInfo]
             List of FileInfo objects containing files and measurement information.
         """
+        logger.debug(f'{file_list}')
         extension = Path(file_list[0].path).suffix
 
         # Check all files exist and extensions are the same

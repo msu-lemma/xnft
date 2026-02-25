@@ -30,7 +30,7 @@ from PySide6.QtWidgets import (
     QFormLayout,
     QLabel,
 )
-from ..enums import CoordinateSystemType
+from ..enums import CoordinateSystemType, Units
 
 from .functions import PlotFunctions
 from .scales import PlotScales
@@ -134,8 +134,8 @@ class Plot2D(QWidget):
 
         # === Add 2D Field View ===
         self.glw = pg.GraphicsLayoutWidget()
-        plot = self.glw.addPlot()
-        self.vb = plot.getViewBox()
+        self.plot = self.glw.addPlot()
+        self.vb = self.plot.getViewBox()
 
         # Store temp plot items for uniformly sampled image and mesh item
         # (pcolormesh is much slower tha imageitem)
@@ -309,11 +309,49 @@ class Plot2D(QWidget):
             )
 
             self.vb.setAspectLocked(True, 1.0)
+            self.image_item.setImage(field_fun_scaled)
+            self.image_item.setRect((-1,1,-2,2))
+            self.plot.setLabel('left', text='Uy', units=None)
+            self.plot.setLabel('bottom', text='Ux', units=None)
+
 
         else:
             self.vb.setAspectLocked(False)
 
-        self.image_item.setImage(field_fun_scaled)
+            # Set Labels
+            components = self.field.data.coords["component"]
 
-        # TODO: Add units / axis labels
+            ordinate = components[1].values.item()
+            abscissa = components[0].values.item()
+
+            yaxis_label = str.title(ordinate)
+            yaxis_units = self.field.data.attrs['component_units']
+
+            xaxis_label = str.title(abscissa)
+            xaxis_units = self.field.data.attrs['component_units']
+
+            axis_scale = 1.0
+
+            # Convert radians to degrees
+            if xaxis_units == Units.RADIANS:
+                xaxis_units = Units.DEGREES
+                yaxis_units = Units.DEGREES
+                axis_scale = 180 / np.pi
+
+            self.plot.setLabel('left', text=yaxis_label, units=yaxis_units)
+            self.plot.setLabel('bottom', text=xaxis_label, units=xaxis_units)
+            
+            self.image_item.setImage(field_fun_scaled)
+
+            upper_left_x = self.field.data.coords[abscissa].min() * axis_scale
+            upper_left_y = self.field.data.coords[ordinate].max() * axis_scale
+
+            width = axis_scale * (self.field.data.coords[abscissa].max() - self.field.data.coords[abscissa].min() )
+            height = - axis_scale * (self.field.data.coords[ordinate].max() - self.field.data.coords[ordinate].min())
+
+            print((upper_left_x, upper_left_y, width, height))
+
+            self.image_item.setRect((upper_left_x, upper_left_y, width, height))
+
+
 

@@ -18,6 +18,7 @@ from ...core.enums import (
     PolarizationType,
     CoordinateSystemType,
     DataPolarizationType,
+    Units
 )
 from ...core.types import FileInfo
 
@@ -53,6 +54,8 @@ def load_hfss_near_field_ndf(file_list: List[FileInfo]) -> xr.Dataset:
         )
 
     file_path = file_list[0].path
+
+    logger.debug(f'{file_path=}')
 
     if file_path.suffix != ".nfd":
         raise TypeError(f"File type must be '.nfd', got '{file_path.suffix}'.")
@@ -178,6 +181,8 @@ def load_hfss_near_field_ndf(file_list: List[FileInfo]) -> xr.Dataset:
             "data_source_type": DataSourceType.HFSS,
             "field": FieldType.NEAR,
             "coordinate_system": CoordinateSystemType.CARTESIAN,
+            "component_units": Units.METERS
+
         },
     )
 
@@ -340,6 +345,7 @@ def load_hfss_far_field_ffd(file_list: List[FileInfo]) -> xr.Dataset:
             "data_source_type": DataSourceType.HFSS,
             "field": FieldType.FAR,
             "coordinate_system": CoordinateSystemType.SPHERICAL,
+            "component_units": Units.RADIANS
         },
     )
 

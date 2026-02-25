@@ -52,7 +52,7 @@ dev = ["test", "docs", "dev"]
 # dev-mlx = ["test", "dev", "mlx", "dev-mlx"]
 # dev-cuda = ["test", "dev", "cuda", "dev-cuda"]
 
-jupyter = ["dev", "jupyter"]
+jupyter = ["dev", "test", "jupyter"]
 # jupyter-mlx = ["dev", "mlx", "jupyter"]
 # jupyter-cuda = ["dev", "cuda", "jupyter"]
 

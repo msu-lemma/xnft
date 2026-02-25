@@ -22,6 +22,7 @@ from ...core.enums import (
     SParameterType,
     PolarizationType,
     DataPolarizationType,
+    Units
 )
 from ...core.types import FileInfo
 
@@ -148,6 +149,7 @@ def load_lemma_h5(file_list: List[FileInfo]) -> xr.Dataset:
             "data_source_type": DataSourceType.HFSS,
             "field": FieldType.NEAR,
             "coordinate_system": CoordinateSystemType.CARTESIAN,
+            "component_units": Units.METERS
         },
     )
 

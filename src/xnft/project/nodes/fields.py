@@ -40,16 +40,6 @@ class FieldsNode(Node):
             source=source_type, field=field_type, file_list=file_info_list
         )
 
-        field_node = FieldNode(
-            name=field_name,
-            source_type=source_type,
-            measured=True,
-            attributes={"path": file_info_list},
-            icon_name="text-x-generic",
-            data=field_data,
-            type=field_type,
-        )
-
         # Add pointer to coordinates (All measured data should have intrinsic
         # coordinates associated with it)
         coordinates_node = None
@@ -61,7 +51,6 @@ class FieldsNode(Node):
         coordinate_data = field_data.coords
         coordinate_node = CoordinateNode(
             name=f"{field_name} Coordinates",
-            source=field_node,
             data=coordinate_data,
             type=(  # TODO: Add better detection of coordinate system
                 CoordinateSystemType.CARTESIAN
@@ -70,7 +59,19 @@ class FieldsNode(Node):
             ),
         )
 
-        field_node.coordinates = coordinate_node
+        field_node = FieldNode(
+            name=field_name,
+            source_type=source_type,
+            measured=True,
+            attributes={"path": file_info_list},
+            icon_name="text-x-generic",
+            data=field_data,
+            type=field_type,
+            coordinates=coordinate_node
+        )
+
+        # field_node.coordinates = coordinate_node
+        coordinate_node.source = field_node
 
         status = f"Successfully created {field_type.lower()} node."
 

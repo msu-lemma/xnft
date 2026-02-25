@@ -148,15 +148,13 @@ class NewFieldMeasurementDialog(QDialog):
 
     def get_selections(self) -> dict:
         """Return values chosen by user."""
-        data_polarization = self.cb_data_polarization.currentData()
-        print(f'{self.fe_combined.cb_sp.currentData()[0]=}')
-        print(f'{self.fe_co_pol.cb_sp.currentData()[0]=}')
-        print(f'{self.fe_cx_pol.cb_sp.currentData()[0]=}')
+        data_polarization = self.cb_data_polarization.currentData()[0]
+        print(f'{data_polarization}')
 
         if data_polarization == DataPolarizationType.COMBO_POL:
             file_info_list = [
                 FileInfo(
-                    path=self.fe_combined.le_path.text().strip(),
+                    path=Path(self.fe_combined.le_path.text().strip()),
                     polarization={PolarizationType.CO_POL, PolarizationType.CROSS_POL},
                     s_parameters=set(self.fe_combined.cb_sp.currentData()))
             ]

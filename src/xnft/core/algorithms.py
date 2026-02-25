@@ -17,7 +17,7 @@ import finufft
 
 from quantiphy import Quantity
 
-from .enums import DataSourceType, FieldType, CoordinateSystemType
+from .enums import DataSourceType, FieldType, CoordinateSystemType, Units
 
 # fmt: off
 MLX_AVAILABLE = False
@@ -208,7 +208,7 @@ def planar_near_field_transform_xarray(
     frequencies=None,
     device="cpu",
     nthreads=0,
-) -> xr.DataArray:
+) -> xr.Dataset:
     # =========================================================================
     # Select Frequencies From Source File
     #
@@ -218,9 +218,9 @@ def planar_near_field_transform_xarray(
     # single frequency to process.
 
     # List all frequencies available in file
-    frequency_list = [
-        str(Quantity(x, "Hz")) for x in near_field.frequency.values
-    ]
+    # frequency_list = [
+    #     str(Quantity(x, "Hz")) for x in near_field.frequency.values
+    # ]
     # print(f"Available frequencies: {', '.join(frequency_list)}")
 
     # Find nearest available frequency to the target frequency
@@ -246,14 +246,14 @@ def planar_near_field_transform_xarray(
     # =========================================================================
     # Create the near field spatial Sampling Grid
 
-    x_length = (near_field.x.max() - near_field.x.min()).values.item()
-    y_length = (near_field.y.max() - near_field.y.min()).values.item()
+    # x_length = (near_field.x.max() - near_field.x.min()).values.item()
+    # y_length = (near_field.y.max() - near_field.y.min()).values.item()
 
-    # print(f"x = {Quantity(x_length, 'm')}")
-    # print(f"y = {Quantity(y_length, 'm')}")
+    # # print(f"x = {Quantity(x_length, 'm')}")
+    # # print(f"y = {Quantity(y_length, 'm')}")
 
-    dx = (near_field.x[1] - near_field.x[0]).values.item()
-    dy = (near_field.y[1] - near_field.y[0]).values.item()
+    # dx = (near_field.x[1] - near_field.x[0]).values.item()
+    # dy = (near_field.y[1] - near_field.y[0]).values.item()
 
     # print(f"dx = {Quantity(dx, 'm')}")
     # print(f"dy = {Quantity(dy, 'm')}")
@@ -264,11 +264,8 @@ def planar_near_field_transform_xarray(
     n_theta = 361
     n_phi = 361
 
-    theta_range = [-np.pi / 2, np.pi / 2]
-    phi_range = [0, np.pi]
-
-    theta_target = np.linspace(*theta_range, n_theta)
-    phi_target = np.linspace(*phi_range, n_phi)
+    theta_target = np.linspace(-np.pi / 2, np.pi / 2, n_theta)
+    phi_target = np.linspace(0, np.pi, n_phi)
 
     theta_grid_target, phi_grid_target = np.meshgrid(theta_target, phi_target)
 
@@ -446,6 +443,7 @@ def planar_near_field_transform_xarray(
             "data_source_type": DataSourceType.XNFT,
             "field": FieldType.FAR,
             "coordinate_system": CoordinateSystemType.SPHERICAL,
+            "component_units": Units.RADIANS
         },
     )
 

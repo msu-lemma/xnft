@@ -27,6 +27,7 @@ from ...core.enums import (
     CoordinateSystemType,
     PolarizationType,
     DataPolarizationType,
+    Units
 )
 from ...core.types import FileInfo
 
@@ -142,6 +143,7 @@ def load_theory_near_field_yaml(file_list: List[FileInfo]) -> xr.Dataset:
             "data_source_type": DataSourceType.THEORY,
             "field": FieldType.NEAR,
             "coordinate_system": CoordinateSystemType.CARTESIAN,
+            "component_units": Units.METERS
         },
     )
 
@@ -270,6 +272,7 @@ def load_theory_far_field_yaml(file_list: List[FileInfo]) -> xr.Dataset:
             "data_source_type": DataSourceType.THEORY,
             "field": FieldType.FAR,
             "coordinate_system": CoordinateSystemType.SPHERICAL,
+            "component_units": Units.RADIANS
         },
     )
 

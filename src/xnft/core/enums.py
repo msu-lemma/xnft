@@ -110,3 +110,8 @@ class Scale(StrEnum):
     LINEAR = "Linear"
     DB = "Decibels"
 
+
+class Units(StrEnum):
+    METERS = "m"
+    RADIANS = "rad"
+    DEGREES = "deg"

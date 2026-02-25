@@ -14,7 +14,7 @@ from ...gui.dialogs.analysis.new_planar_nft_dialog import (
 )
 
 from ...core.algorithms import (
-    planar_near_field_transform,
+    planar_near_field_transform_xarray,
 )
 
 from .node import Node, DataNode, context_action
@@ -46,8 +46,8 @@ class AnalysisNode(Node):
         frequencies,
     ):
         # Perform the near to far field transform
-        field_data = planar_near_field_transform(
-            near_field=source_field.data,
+        field_data = planar_near_field_transform_xarray(
+            near_field=source_field.data["E"],  # Perform transform using E-field data
             probe_correction=probe_correction,
             frequencies=frequencies,
         )
