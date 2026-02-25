@@ -10,12 +10,18 @@ maintainers = [{ name = "Jason Merlo", email = "merlojas@msu.edu" }]
 readme = "README.md"
 description = "Near-field to far-field antenna measurement transformation software."
 
+requires-python = ">=3.13,<3.15"
+
 [project.scripts]
 xnft = "xnft.gui.main:main"
 
 [project.urls]
 Homepage = "https://gitlab.msu.edu/ece-lemma/near-field"
 Issues = "https://gitlab.msu.edu/ece-lemma/near-field/-/issues"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
 
 # === PyTest Configuration ===
 

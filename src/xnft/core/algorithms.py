@@ -50,12 +50,165 @@ def gen_near_field_sampling_grid():
     pass
 
 
+
 def planar_near_field_transform(
-    near_field,
+    e_x, e_y,
+    x_locs, y_locs,
+    frequency,
+    probe_correction=None,
+    device="cpu",
+    nthreads=0,
+    n_theta=361,
+    n_phi=361
+):
+    """
+    Returns: e_phi, e_theta, phi_grid_target, theta_grid_target
+    """
+
+    wavelength = spc.c / frequency
+    k0 = 2.0 * np.pi / wavelength
+
+    # =========================================================================
+    # Compute uniform Theta, Phi grid for target NUDFT points
+
+    theta_range = [-np.pi / 2, np.pi / 2]
+    phi_range = [0, np.pi]
+
+    theta_target = np.linspace(*theta_range, n_theta)
+    phi_target = np.linspace(*phi_range, n_phi)
+
+    theta_grid_target, phi_grid_target = np.meshgrid(theta_target, phi_target)
+
+    # =========================================================================
+    # ## Compute the near to far-field transform
+    # Select either CPU (via Numpy) or GPU (via CUDA).
+    #
+    # The following proceeds from [§12.9, 1].
+    # [1] C. A. Balanis, Antenna theory: analysis and design, 3. ed. Hoboken,
+    #     N.J: Wiley-Interscience, 2005.
+
+    # === Perform FFTs =========================
+
+    # Select device for FFT
+    device = "cpu"  # 'cpu' or 'gpu'
+
+    # Start performance timer
+    t_start = time.perf_counter()
+
+    # Perform setup for CPU and GPU
+    if device == "gpu" and CUFINUFFT_AVAILABLE:
+        device = "gpu"
+        # --- CUDA GPU Implementation ---------------
+        # Set namespace to cupy
+        ns = cp
+        nufft = cufinufft
+    else:
+        # --- Numpy CPU Implementation -------------
+        # Set namespace to numpy
+        device = "cpu"
+        ns = np
+        nufft = finufft
+
+    # print(f"Device: {device.upper()}")
+
+    # fiNUFFT Reference: https://finufft.readthedocs.io/en/latest/math.html
+    # Scale source sample locations along aperture to input of finufft \
+    # [-pi/2, pi/2)
+
+    # eps = 1e-12  # small epsilon to avoid aliasing at pi
+    x_scale = (
+        2.0
+        * ns.pi
+        / (ns.max(x_locs) - ns.min(x_locs))
+    )
+    y_scale = (
+        2.0
+        * ns.pi
+        / (ns.max(y_locs) - ns.min(y_locs))
+    )
+
+    near_field_yy, near_field_xx = ns.meshgrid(
+        y_locs, x_locs
+    )
+
+    near_field_x_scaled = (x_scale * near_field_xx).ravel()
+    near_field_y_scaled = (y_scale * near_field_yy).ravel()
+
+    # Create target sample locations in k-space based on sample points in
+    # (theta, phi)
+    kx_target = k0 * ns.sin(theta_grid_target) * ns.cos(phi_grid_target)
+    ky_target = k0 * ns.sin(theta_grid_target) * ns.sin(phi_grid_target)
+
+    kx_target_scaled = (kx_target / x_scale).ravel()
+    ky_target_scaled = (ky_target / y_scale).ravel()
+
+    # Compute NUFFT
+    precision = 1e-12
+
+    # print(f'{nthreads=}')
+
+    plan = nufft.Plan(
+        nufft_type=3,
+        n_modes_or_dim=2,
+        eps=precision,
+        nthreads=nthreads,
+        dtype="complex128",
+    )
+
+    plan.setpts(
+        x=near_field_x_scaled.astype(np.float64),
+        y=near_field_y_scaled.astype(np.float64),
+        s=kx_target_scaled.astype(np.float64),
+        t=ky_target_scaled.astype(np.float64),
+    )
+
+    field_values_x = e_x.ravel().astype(np.complex128)
+    field_values_y = e_y.ravel().astype(np.complex128)
+
+    fe_x = plan.execute(field_values_x).reshape(theta_grid_target.shape)
+    fe_y = plan.execute(field_values_y).reshape(phi_grid_target.shape)
+
+    # Phase correction term such that phase at measured radius is constant
+    r_ff = 100  # TODO: compute based on aperture size
+    greens_func = ns.exp(-1j * k0 * r_ff) / r_ff
+    c = k0 / (2.0 * np.pi)
+
+    e_phi = (
+        1j
+        * c
+        * greens_func
+        * ns.cos(theta_grid_target)
+        * (-fe_x * ns.sin(phi_grid_target) + fe_y * ns.cos(phi_grid_target))
+    )
+    e_theta = (
+        1j
+        * c
+        * greens_func
+        * (fe_x * ns.cos(phi_grid_target) + fe_y * ns.sin(phi_grid_target))
+    )
+
+    # If using GPU memory, create view of memory for numpy
+    if device == "gpu":
+        theta_grid_target = np.array(theta_grid_target, copy=False)
+        phi_grid_target = np.array(phi_grid_target, copy=False)
+        e_phi = np.array(e_phi, copy=False)
+        e_theta = np.array(e_theta, copy=False)
+        fe_x = np.array(fe_x, copy=False)
+        fe_y = np.array(fe_y, copy=False)
+
+    t_end = time.perf_counter()
+    elapsed_time = Quantity(t_end - t_start, "s")
+    # print("Far-field transform:", elapsed_time)
+
+    return e_phi, e_theta, phi_grid_target, theta_grid_target
+
+def planar_near_field_transform_xarray(
+    near_field: xr.DataArray,
     probe_correction=None,
     frequencies=None,
     device="cpu",
-):
+    nthreads=0,
+) -> xr.DataArray:
     # =========================================================================
     # Select Frequencies From Source File
     #
@@ -68,7 +221,7 @@ def planar_near_field_transform(
     frequency_list = [
         str(Quantity(x, "Hz")) for x in near_field.frequency.values
     ]
-    print(f"Available frequencies: {', '.join(frequency_list)}")
+    # print(f"Available frequencies: {', '.join(frequency_list)}")
 
     # Find nearest available frequency to the target frequency
     target_frequency = frequencies[0]
@@ -84,12 +237,11 @@ def planar_near_field_transform(
     wavelength = spc.c / frequency
     k0 = 2.0 * np.pi / wavelength.item()
 
-    print(f"{' Selected Values ':{'-'}^{80}}")
-    print(f"Frequency: {Quantity(frequency, 'Hz')}")
-    print(f"Wavelength: {Quantity(wavelength, 'm')}")
-    print(f"k0: {Quantity(k0, 'rad/m')}")
+    # print(f"{' Selected Values ':{'-'}^{80}}")
+    # print(f"Frequency: {Quantity(frequency, 'Hz')}")
+    # print(f"Wavelength: {Quantity(wavelength, 'm')}")
+    # print(f"k0: {Quantity(k0, 'rad/m')}")
 
-    print(f"{near_field}")
 
     # =========================================================================
     # Create the near field spatial Sampling Grid
@@ -97,14 +249,14 @@ def planar_near_field_transform(
     x_length = (near_field.x.max() - near_field.x.min()).values.item()
     y_length = (near_field.y.max() - near_field.y.min()).values.item()
 
-    print(f"x = {Quantity(x_length, 'm')}")
-    print(f"y = {Quantity(y_length, 'm')}")
+    # print(f"x = {Quantity(x_length, 'm')}")
+    # print(f"y = {Quantity(y_length, 'm')}")
 
     dx = (near_field.x[1] - near_field.x[0]).values.item()
     dy = (near_field.y[1] - near_field.y[0]).values.item()
 
-    print(f"dx = {Quantity(dx, 'm')}")
-    print(f"dy = {Quantity(dy, 'm')}")
+    # print(f"dx = {Quantity(dx, 'm')}")
+    # print(f"dy = {Quantity(dy, 'm')}")
 
     # =========================================================================
     # Compute uniform Theta, Phi grid for target NUDFT points
@@ -139,8 +291,8 @@ def planar_near_field_transform(
     # === Perform FFTs =========================
 
     # Load E-field data
-    e_x = near_field["E"].sel(component="x")[:, :, 0, f_idx].values
-    e_y = near_field["E"].sel(component="y")[:, :, 0, f_idx].values
+    e_x = near_field.sel(component="x")[:, :, 0, f_idx].values
+    e_y = near_field.sel(component="y")[:, :, 0, f_idx].values
 
     # Select device for FFT
     device = "cpu"  # 'cpu' or 'gpu'
@@ -162,7 +314,7 @@ def planar_near_field_transform(
         ns = np
         nufft = finufft
 
-    print(f"Device: {device.upper()}")
+    # print(f"Device: {device.upper()}")
 
     # fiNUFFT Reference: https://finufft.readthedocs.io/en/latest/math.html
     # Scale source sample locations along aperture to input of finufft \
@@ -187,14 +339,14 @@ def planar_near_field_transform(
     near_field_x_scaled = (x_scale * near_field_xx).ravel()
     near_field_y_scaled = (y_scale * near_field_yy).ravel()
 
-    print(
-        f"near_field_x_scaled:\t\t[{np.min(near_field_x_scaled) / np.pi}, \
-            {np.max(near_field_x_scaled) / np.pi}] π"
-    )
-    print(
-        f"near_field_x_scaled:\t\t[{np.min(near_field_x_scaled) / np.pi}, \
-            {np.max(near_field_x_scaled) / np.pi}] π"
-    )
+    # print(
+    #     f"near_field_x_scaled:\t\t[{np.min(near_field_x_scaled) / np.pi}, \
+    #         {np.max(near_field_x_scaled) / np.pi}] π"
+    # )
+    # print(
+    #     f"near_field_x_scaled:\t\t[{np.min(near_field_x_scaled) / np.pi}, \
+    #         {np.max(near_field_x_scaled) / np.pi}] π"
+    # )
 
     # Create target sample locations in k-space based on sample points in
     # (theta, phi)
@@ -205,8 +357,9 @@ def planar_near_field_transform(
     ky_target_scaled = (ky_target / y_scale).ravel()
 
     # Compute NUFFT
-    nthreads = 0  # 0 uses maximum available
     precision = 1e-12
+
+    # print(f'{nthreads=}')
 
     plan = nufft.Plan(
         nufft_type=3,
@@ -259,7 +412,7 @@ def planar_near_field_transform(
 
     t_end = time.perf_counter()
     elapsed_time = Quantity(t_end - t_start, "s")
-    print("Far-field transform:", elapsed_time)
+    # print("Far-field transform:", elapsed_time)
 
     # -- Generate field output --
 
@@ -317,7 +470,7 @@ def planar_near_field_transform_fft(
     frequency_list = [
         str(Quantity(x, "Hz")) for x in near_field.frequency.values
     ]
-    print(f"Available frequencies: {', '.join(frequency_list)}")
+    # print(f"Available frequencies: {', '.join(frequency_list)}")
 
     # Find nearest available frequency to the target frequency
     target_frequency = frequencies[0]
@@ -333,10 +486,10 @@ def planar_near_field_transform_fft(
     wavelength = spc.c / frequency
     k0 = 2.0 * np.pi / wavelength.item()
 
-    print(f"{' Selected Values ':{'-'}^{80}}")
-    print(f"Frequency: {Quantity(frequency, 'Hz')}")
-    print(f"Wavelength: {Quantity(wavelength, 'm')}")
-    print(f"k0: {Quantity(k0, 'rad/m')}")
+    # print(f"{' Selected Values ':{'-'}^{80}}")
+    # print(f"Frequency: {Quantity(frequency, 'Hz')}")
+    # print(f"Wavelength: {Quantity(wavelength, 'm')}")
+    # print(f"k0: {Quantity(k0, 'rad/m')}")
 
     # =========================================================================
     # ## Create the Spatial Sampling Grid
@@ -344,14 +497,14 @@ def planar_near_field_transform_fft(
     x_length = (near_field.x.max() - near_field.x.min()).values.item()
     y_length = (near_field.y.max() - near_field.y.min()).values.item()
 
-    print(f"x = {Quantity(x_length, 'm')}")
-    print(f"y = {Quantity(y_length, 'm')}")
+    # print(f"x = {Quantity(x_length, 'm')}")
+    # print(f"y = {Quantity(y_length, 'm')}")
 
     dx = (near_field.x[1] - near_field.x[0]).values.item()
     dy = (near_field.y[1] - near_field.y[0]).values.item()
 
-    print(f"dx = {Quantity(dx, 'm')}")
-    print(f"dy = {Quantity(dy, 'm')}")
+    # print(f"dx = {Quantity(dx, 'm')}")
+    # print(f"dy = {Quantity(dy, 'm')}")
 
     xx, yy = np.meshgrid(near_field.x, near_field.y)
 
@@ -387,15 +540,15 @@ def planar_near_field_transform_fft(
 
     kz = np.emath.sqrt(k0**2 - kx**2 - ky**2).real
 
-    print(f"max(kx) = {kx.max().item()} rad/m")
-    print(f"max(ky) = {ky.max().item()} rad/m")
-    print(f"max(kz) = {kz.max().item()} rad/m")
+    # print(f"max(kx) = {kx.max().item()} rad/m")
+    # print(f"max(ky) = {ky.max().item()} rad/m")
+    # print(f"max(kz) = {kz.max().item()} rad/m")
 
     dkx = kx[1] - kx[0]
     dky = ky[1] - ky[0]
 
-    print(f"dkx = {dkx.item()} rad/m")
-    print(f"dky = {dky.item()} rad/m")
+    # print(f"dkx = {dkx.item()} rad/m")
+    # print(f"dky = {dky.item()} rad/m")
 
     kxx, kyy = np.meshgrid(kx, ky)
     kzz = np.emath.sqrt(k0**2 - kxx**2 - kyy**2)
@@ -431,8 +584,8 @@ def planar_near_field_transform_fft(
     # === Perform IFFTs =========================
 
     # Load E-field data
-    e_x = near_field["E"].sel(component="x")[:, :, 0, f_idx].values
-    e_y = near_field["E"].sel(component="y")[:, :, 0, f_idx].values
+    e_x = near_field.sel(component="x")[:, :, 0, f_idx].values
+    e_y = near_field.sel(component="y")[:, :, 0, f_idx].values
 
     # Select device for FFT
     print(f"Device: {device.upper()}")
@@ -456,10 +609,10 @@ def planar_near_field_transform_fft(
 
         win = mx.array(win)
         e_x = mx.array(
-            near_field["E"].sel(component="x")[:, :, 0, f_idx].values
+            near_field.sel(component="x")[:, :, 0, f_idx].values
         )
         e_y = mx.array(
-            near_field["E"].sel(component="y")[:, :, 0, f_idx].values
+            near_field.sel(component="y")[:, :, 0, f_idx].values
         )
     else:
         # --- Numpy CPU Implementation -------------
