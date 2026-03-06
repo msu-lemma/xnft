@@ -10,7 +10,6 @@ aperture [§12, 1].
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
-from pathlib import Path
 import logging
 from typing import List
 
@@ -96,10 +95,10 @@ def load_theory_near_field_yaml(file_list: List[FileInfo]) -> xr.Dataset:
     aperture_y_max = fd["antenna"]["y"]["length"][1]
 
     cond = (
-        (xx < aperture_x_max)
-        & (xx > aperture_x_min)
-        & (yy < aperture_y_max)
-        & (yy > aperture_y_min)
+        (xx <= aperture_x_max)
+        & (xx >= aperture_x_min)
+        & (yy <= aperture_y_max)
+        & (yy >= aperture_y_min)
     )
 
     e_y *= np.where(cond, 1.0, 0.0)[:, :, None, None]
