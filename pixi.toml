@@ -43,6 +43,12 @@ noarch = false
 #     "cxx",
 # ]
 
+
+[activation.env]
+# Workaround to enforce editable installation -- see:
+# https://pixi.prefix.dev/dev/build/backends/pixi-build-python/#editable-installations
+BUILD_EDITABLE_PYTHON = "true"
+
 [environments]
 
 # mlx = ["mlx"]
@@ -99,7 +105,9 @@ build-docs = { depends-on = ["build-html-docs", "build-pdf-docs"] }
 format = { cmd = ["black", "$PIXI_PROJECT_ROOT", "--line-length", "79"] }
 
 [dependencies]
-xnft = { path = "." }
+# Editable installation not yet supported -- see:
+# https://pixi.prefix.dev/dev/build/backends/pixi-build-python/#editable-installations
+xnft = { path = "." } 
 git-lfs = ">=3.7.1,<4"
 # TODO: build finufft from source for better performance
 #   See notes for feature.cuda support on win-64
