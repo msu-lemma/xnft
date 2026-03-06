@@ -7,6 +7,7 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 import logging
 import io
 from typing import List
+from pathlib import Path
 
 import numpy as np
 import xarray as xr
@@ -53,7 +54,8 @@ def load_hfss_near_field_ndf(file_list: List[FileInfo]) -> xr.Dataset:
             "HFSS .nfd loader only accepts files containing both co-pol and cross-pol."
         )
 
-    file_path = file_list[0].path
+    # Ensure file_list.path is a Path
+    file_path = Path(file_list[0].path)
 
     logger.debug(f'{file_path=}')
 
@@ -221,7 +223,8 @@ def load_hfss_far_field_ffd(file_list: List[FileInfo]) -> xr.Dataset:
             "HFSS .ffd loader only accepts files containing both co-pol and cross-pol."
         )
 
-    file_path = file_list[0].path
+    # Ensure file_list.path is a Path
+    file_path = Path(file_list[0].path)
 
     if file_path.suffix != ".ffd":
         raise TypeError(f"File type must be '.ffd', got '{file_path.suffix}'.")
