@@ -1,3 +1,5 @@
+*/figures/*
+
 # pixi environments
 .pixi/*
 !.pixi/config.toml
