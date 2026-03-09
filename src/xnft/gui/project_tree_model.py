@@ -300,7 +300,7 @@ class ProjectManagerTreeModel(QAbstractItemModel):
 
         # Only allow user to rename DataNodes (user-created nodes with data)
         node = index.internalPointer()
-        if not isinstance(node, DataNode):
+        if not isinstance(node, (DataNode, Project)):
             return False
 
         is_editable = getattr(node, "name_editable", False)
