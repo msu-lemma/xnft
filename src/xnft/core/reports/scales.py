@@ -15,4 +15,4 @@ class PlotScales(Enum):
     LINEAR = PlotScale(name="Linear", function=lambda x: x, unit=None)
     DECIBELS = PlotScale(name="Decibels", function=lambda x: 20 * np.log10(x), unit="dB")
     DEGREES = PlotScale(name="Degrees", function=lambda x: np.rad2deg(x), unit="°")
-    RADIANS = PlotScale(name="Radians", function=lambda x: x / np.pi, unit="π")
+    RADIANS = PlotScale(name="Radians", function=lambda x: x, unit="rad")

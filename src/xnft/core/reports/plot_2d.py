@@ -79,6 +79,7 @@ class Plot2D(QWidget):
             )
 
         self.field = field
+        self.last_domain = coordinates_type
 
         # == Add control widgets ==
 
@@ -102,10 +103,10 @@ class Plot2D(QWidget):
 
         # -- Add Coordinates Selection --
 
-        self.cb_plot_coordinates_type = QComboBox()
-        self.cb_plot_coordinates_type.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        layout_controls.addWidget(QLabel("Coordinates"))
-        layout_controls.addWidget(self.cb_plot_coordinates_type)
+        self.cb_plot_domain = QComboBox()
+        self.cb_plot_domain.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        layout_controls.addWidget(QLabel("Domain"))
+        layout_controls.addWidget(self.cb_plot_domain)
 
         # -- Add Function Selection --
 
@@ -127,7 +128,7 @@ class Plot2D(QWidget):
         self.lw_frequency_range.setCurrentRow(0)
 
         self._update_report_field_components()
-        self._update_plotting_coordainte_options()
+        self._update_plotting_domain_options()
 
         self._update_plotting_function_options()
         self._update_plotting_scale_options()
@@ -178,7 +179,7 @@ class Plot2D(QWidget):
         # ---- Connections ----
         self.lw_frequency_range.itemSelectionChanged.connect(self._update_plot)
         self.cb_field_component.currentTextChanged.connect(self._update_plot)
-        self.cb_plot_coordinates_type.currentTextChanged.connect(self._update_plot)
+        self.cb_plot_domain.currentTextChanged.connect(self._update_plot)
         self.cb_plot_function.currentTextChanged.connect(self._update_plot)
 
         self.cb_plot_function.currentTextChanged.connect(self._update_plotting_scale_options)
@@ -219,10 +220,10 @@ class Plot2D(QWidget):
         for scale in plot_function.value.scales:
             self.cb_plot_scale.addItem(scale.value.name, scale)
 
-    def _update_plotting_coordainte_options(self):
+    def _update_plotting_domain_options(self):
         # Remove all items before updating items
-        for _ in range(self.cb_plot_coordinates_type.count()):
-            self.cb_plot_coordinates_type.removeItem(0)
+        for _ in range(self.cb_plot_domain.count()):
+            self.cb_plot_domain.removeItem(0)
 
         # Get selected field source coordinates
         source_coordiante_system = self.field.data.attrs["coordinate_system"]
@@ -230,7 +231,7 @@ class Plot2D(QWidget):
         valid_plot_coordinates = self.__coordinates__[source_coordiante_system]
 
         for coordinates_type in valid_plot_coordinates:
-            self.cb_plot_coordinates_type.addItem(coordinates_type.value, (coordinates_type,))
+            self.cb_plot_domain.addItem(coordinates_type.value, (coordinates_type,))
 
     def _update_frequency_options(self):
         # Remove all items before updating items
@@ -281,12 +282,12 @@ class Plot2D(QWidget):
 
         # -- Apply selected coordinate transform --
         # TODO: Add coordinate transform
-        selected_coordinates = self.cb_plot_coordinates_type.currentData()[0]
-        print(f"{selected_coordinates=}")
+        selected_domain = self.cb_plot_domain.currentData()[0]
+        print(f"{selected_domain=}")
 
-        # NOTE: Native coordinate system is spherical
+        # NOTE: Native domain is spherical
         # Direction cosines require nonlinear transformation so we need to use pcolormesh for
-        if selected_coordinates == CoordinateSystemType.DIRECTION_COSINE:
+        if selected_domain == CoordinateSystemType.DIRECTION_COSINE:
 
             # Get phi and theta as numpy arrays
             phi = self.field.data.phi.values
@@ -298,9 +299,9 @@ class Plot2D(QWidget):
             num_x_samples, num_y_samples = 2048, 2048
             x_idx = np.linspace(ux_vals.min(), ux_vals.max(), num_x_samples)
             y_idx = np.linspace(uy_vals.min(), uy_vals.max(), num_y_samples)
-            x_idx_mesh, y_idx_mesh = np.meshgrid(x_idx, y_idx, indexing='ij')
-            
-            # TODO: implement faster interpolator using pre-computed Delaunay triangulation
+            x_idx_mesh, y_idx_mesh = np.meshgrid(x_idx, y_idx, indexing="ij")
+
+            # TODO/FIXME: implement faster interpolator using pre-computed Delaunay triangulation
             field_fun_scaled = griddata(
                 points=np.column_stack([ux_vals.ravel(), uy_vals.ravel()]),
                 values=field_fun_scaled.ravel(),
@@ -308,12 +309,12 @@ class Plot2D(QWidget):
                 method="cubic",
             )
 
-            self.vb.setAspectLocked(True, 1.0)
             self.image_item.setImage(field_fun_scaled)
-            self.image_item.setRect((-1,1,-2,2))
-            self.plot.setLabel('left', text='Uy', units=None)
-            self.plot.setLabel('bottom', text='Ux', units=None)
-
+            self.image_item.setRect((-1, 1, 2, -2))
+            self.plot.setLabel("left", text="U<sub>y</sub>", units=None)
+            self.plot.setLabel("bottom", text="U<sub>x</sub>", units=None)
+            self.vb.setLimits(xMin=-25, yMax=+25, xMax=+25, yMin=-25)
+            self.vb.setAspectLocked(True, 1.0)
 
         else:
             self.vb.setAspectLocked(False)
@@ -324,11 +325,21 @@ class Plot2D(QWidget):
             ordinate = components[1].values.item()
             abscissa = components[0].values.item()
 
-            yaxis_label = str.title(ordinate)
-            yaxis_units = self.field.data.attrs['component_units']
+            # Map names to symbols
+            if ordinate.lower() == 'theta':
+                ordinate_label = "θ"
+            if ordinate.lower() == 'phi':
+                ordinate_label = "φ"
+            if abscissa.lower() == 'theta':
+                abscissa_label = "θ"
+            if abscissa.lower() == 'phi':
+                abscissa_label = "φ"
 
-            xaxis_label = str.title(abscissa)
-            xaxis_units = self.field.data.attrs['component_units']
+            yaxis_label = str.title(ordinate_label)
+            yaxis_units = self.field.data.attrs["component_units"]
+
+            xaxis_label = str.title(abscissa_label)
+            xaxis_units = self.field.data.attrs["component_units"]
 
             axis_scale = 1.0
 
@@ -338,20 +349,39 @@ class Plot2D(QWidget):
                 yaxis_units = Units.DEGREES
                 axis_scale = 180 / np.pi
 
-            self.plot.setLabel('left', text=yaxis_label, units=yaxis_units)
-            self.plot.setLabel('bottom', text=xaxis_label, units=xaxis_units)
-            
-            self.image_item.setImage(field_fun_scaled)
+            self.plot.setLabel("left", text=yaxis_label, units=yaxis_units)
+            self.plot.setLabel("bottom", text=xaxis_label, units=xaxis_units)
 
-            upper_left_x = self.field.data.coords[abscissa].min() * axis_scale
+            # Shift phi to be centered
+            phi_roll_idx = field_fun_scaled.shape[0]//2
+            x_range = self.field.data.coords[abscissa].max() - self.field.data.coords[abscissa].min()
+
+            # Set image
+            self.image_item.setImage(np.roll(field_fun_scaled, phi_roll_idx, axis=0))
+
+            # Set extents
+            upper_left_x = (self.field.data.coords[abscissa].min() - x_range / 2) * axis_scale
             upper_left_y = self.field.data.coords[ordinate].max() * axis_scale
 
-            width = axis_scale * (self.field.data.coords[abscissa].max() - self.field.data.coords[abscissa].min() )
-            height = - axis_scale * (self.field.data.coords[ordinate].max() - self.field.data.coords[ordinate].min())
+            width = axis_scale * (
+                self.field.data.coords[abscissa].max() - self.field.data.coords[abscissa].min()
+            )
+            height = -axis_scale * (
+                self.field.data.coords[ordinate].max() - self.field.data.coords[ordinate].min()
+            )
 
             print((upper_left_x, upper_left_y, width, height))
 
             self.image_item.setRect((upper_left_x, upper_left_y, width, height))
+            self.vb.setLimits(
+                xMin=upper_left_x,
+                yMax=upper_left_y,
+                xMax=upper_left_x + width,
+                yMin=upper_left_y + height,
+            )
 
+        # AutoRange after domain changed
+        if self.last_domain != selected_domain:
+            self.vb.autoRange()
 
-
+        self.last_domain = selected_domain

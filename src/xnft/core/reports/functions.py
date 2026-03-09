@@ -32,7 +32,7 @@ def plot_phase(field: xr.DataArray):
 
 def plot_phase_l3_ref(field: xr.DataArray):
     """Ludwig-3 Ref Polarization"""
-    phi_grid, theta_grid = np.meshgrid(field.phi, field.theta)
+    phi_grid, theta_grid = np.meshgrid(field.phi, field.theta, indexing='ij')
     e_theta = field.sel(component="theta")
     e_phi = field.sel(component="phi")
     phi_grid -= np.pi/2
@@ -41,7 +41,7 @@ def plot_phase_l3_ref(field: xr.DataArray):
 
 def plot_phase_l3_cross(field: xr.DataArray):
     """Ludwig-3 Cross Polarization"""
-    phi_grid, theta_grid = np.meshgrid(field.phi, field.theta)
+    phi_grid, theta_grid = np.meshgrid(field.phi, field.theta, indexing='ij')
     e_theta = field.sel(component="theta")
     e_phi = field.sel(component="phi")
     phi_grid -= np.pi/2
