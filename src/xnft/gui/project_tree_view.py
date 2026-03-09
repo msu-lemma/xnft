@@ -4,8 +4,7 @@ Custom QTreeView subclass to extend context menu actions.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
-from PySide6.QtGui import QAction, QIcon, QContextMenuEvent
-from PySide6.QtCore import QSize
+from PySide6.QtGui import QAction, QContextMenuEvent
 from PySide6.QtWidgets import (
     QTreeView,
     QMenu,
