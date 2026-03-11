@@ -4,7 +4,10 @@
 
 ## Download and Installation
 
-### Prerequisites
+<details>
+<summary>
+Prerequisites
+</summary>
 
 1. Install Pixi package manager: https://pixi.prefix.dev/latest/installation/
 2. Install `git`. This may be installed via the OS package manager or pixi. Choose one option below: 
@@ -26,7 +29,7 @@
     ```sh
     apt install git
     ```
-
+</details>
 
 ### Download
 
