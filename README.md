@@ -1,6 +1,30 @@
 # LEmmA Near Field Measurement System
 
-## Installation
+## Download and Installation
+
+**Download**
+
+<details><summary>Prerequisite: Install Git Source Code Management (SCM) [Click to expand]</summary>
+    - Windows: In any "PowerShell" run:
+        ```PowerShell
+        winget install --id Git.Git -e --source winget
+        ```
+    - macOS: In terminal install via xcode-select or [Homebrew](https://brew.sh):
+        ```sh
+        xcode-select --install
+        # or
+        brew install git
+        ```
+    - Ubuntu: In terminal install via apt:
+        ```sh
+        apt install git
+        ```
+    - For more info see: https://git-scm.com
+    </details>
+
+Clone this repository via: `git clone `
+
+**Installation**
 
 To quickly install the environment to run `xnft`, follow the steps below:
 
@@ -12,6 +36,12 @@ To quickly install the environment to run `xnft`, follow the steps below:
 Step 2 will install all packages necessary then run `xnft` in the `default` environment.
 > [!NOTE]
 > On the first run of `xnft` it may take some time to open as packages are compiled. These compiled packages will be cached and it will open and run much faster on subsequent launches.
+
+3. [Optional] Download test data (stored in git LFS). The default pixi environment includes `git-lfs` so you can run
+    ```sh
+    git lfs pull
+    ```
+    to pull the remaining test datasets.
 
 ### Running Jupyter Notebooks (Optional)
 
