@@ -4,7 +4,7 @@
 
 ## Download and Installation
 
-**Download**
+### Download
 
 <details>
 <summary>Prerequisite: Install Git Source Code Management (SCM) [Click to expand]</summary>
@@ -32,7 +32,7 @@
     git clone https://gitlab.msu.edu/ece-lemma/xnft.git
     ```
 
-**Installation**
+### Installation
 
 To quickly install the environment to run `xnft`, follow the steps below:
 
@@ -50,6 +50,21 @@ Step 2 will install all packages necessary then run `xnft` in the `default` envi
     git lfs pull
     ```
     to pull the remaining test datasets.
+
+### Updating
+
+If no uncommitted changes have been made to tracked files, simply update the source once it's been downloaded, simply run:
+```sh
+git pull
+```
+
+If any changes to tracked files have been made to your local copy, you may need to commit your changes or stash and reapply these changes to successfully pull and merge in the new upstream changes, e.g.:
+```sh
+git stash        # Pushes local changes onto the stash stack and resets the local working tree to last commit HEAD
+git pull         # Pulls upstream changes and applies to local working tree moving the local HEAD to the same point as the remote
+git stash apply  # Pops changes from the top of the stash stack and applies to the local working tree
+```
+
 
 ### Running Jupyter Notebooks (Optional)
 
