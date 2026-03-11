@@ -1,5 +1,7 @@
 # LEmmA Near Field Measurement System
 
+![xnft Screenshot](docs/source/assets/xnft_screenshot_2026-02-25.png)
+
 ## Download and Installation
 
 **Download**
