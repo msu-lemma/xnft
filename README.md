@@ -22,7 +22,8 @@
     - For more info see: https://git-scm.com
     </details>
 
-Clone this repository via: `git clone `
+
+Clone this repository via: `git clone https://gitlab.msu.edu/ece-lemma/xnft.git`
 
 **Installation**
 
@@ -44,9 +45,6 @@ Step 2 will install all packages necessary then run `xnft` in the `default` envi
     to pull the remaining test datasets.
 
 ### Running Jupyter Notebooks (Optional)
-
-**Prerequisites**
-1. Install and configure Git and SSH keys ([Follow instructions on wiki](https://gitlab.msu.edu/groups/delta/internal/-/wikis/Configuring-Your-Git-Environment))
 
 To run the Jupter notebooks included with this project, a `jupter` pixi environment is provided.
 1. [Recommended] Install Microsoft Visual Studio Code (VS Code): https://code.visualstudio.com
