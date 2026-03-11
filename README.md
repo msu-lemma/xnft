@@ -11,7 +11,7 @@ To quickly install the environment to run `xnft`, follow the steps below:
     ```
 Step 2 will install all packages necessary then run `xnft` in the `default` environment.
 > [!NOTE]
-> On the first run of `xnft` it may take some time to open as packages are compiled—these will be cached and it will open and run much faster on subsequent launches.
+> On the first run of `xnft` it may take some time to open as packages are compiled. These compiled packages will be cached and it will open and run much faster on subsequent launches.
 
 ### Running Jupyter Notebooks (Optional)
 
