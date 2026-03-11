@@ -4,26 +4,31 @@
 
 **Download**
 
-<details><summary>Prerequisite: Install Git Source Code Management (SCM) [Click to expand]</summary>
-    - Windows: In any "PowerShell" run:
-        ```PowerShell
-        winget install --id Git.Git -e --source winget
-        ```
-    - macOS: In terminal install via xcode-select or [Homebrew](https://brew.sh):
-        ```sh
-        xcode-select --install
-        # or
-        brew install git
-        ```
-    - Ubuntu: In terminal install via apt:
-        ```sh
-        apt install git
-        ```
-    - For more info see: https://git-scm.com
-    </details>
+<details>
+<summary>Prerequisite: Install Git Source Code Management (SCM) [Click to expand]</summary>
 
+- Windows: In any "PowerShell" run:
+    ```PowerShell
+    winget install --id Git.Git -e --source winget
+    ```
+- macOS: In terminal install via xcode-select or [Homebrew](https://brew.sh):
+    ```sh
+    xcode-select --install
+    # or
+    brew install git
+    ```
+- Ubuntu: In terminal install via apt:
+    ```sh
+    apt install git
+    ```
+- For more info see: https://git-scm.com
+</details>
 
-Clone this repository via: `git clone https://gitlab.msu.edu/ece-lemma/xnft.git`
+1. Open a terminal/PowerShell and navigate to the location where you would like to download the project
+2. Clone this repository via: 
+    ```sh
+    git clone https://gitlab.msu.edu/ece-lemma/xnft.git
+    ```
 
 **Installation**
 
