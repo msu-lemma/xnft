@@ -45,7 +45,7 @@ Step 2 will install all packages necessary then run `xnft` in the `default` envi
 > [!NOTE]
 > On the first run of `xnft` it may take some time to open as packages are compiled. These compiled packages will be cached and it will open and run much faster on subsequent launches.
 
-3. [Optional] Download test data (stored in git LFS). The default pixi environment includes `git-lfs` so you can run
+3. [Optional] Download test data (stored in git LFS) in the `tests/data/...` and `analysis/data/...` folders. The default pixi environment includes `git-lfs` so you can run
     ```sh
     git lfs pull
     ```
@@ -83,7 +83,7 @@ To run the Jupter notebooks included with this project, a `jupter` pixi environm
 
 **Running**
 
-1. Open the desired Jupyter notebook `.ipynb` file from the `Notebooks` folder
+1. Open the desired Jupyter notebook `.ipynb` file from the `notebooks` or `analysis` folders
 2. In the upper-right corner, press "Select Kernel"'
 3. At the top of the screen select "Python Environments..." then select:
     ```
