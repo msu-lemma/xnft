@@ -5,18 +5,47 @@
 To quickly install the environment to run `xnft`, follow the steps below:
 
 1. Install Pixi package manager: https://pixi.prefix.dev/latest/installation/
-2. Install the `default` environment by running: 
-    ```shell
-    pixi install
-    ```
-3. Launch `xnft` by running: 
+2. Launch `xnft` by running: 
     ```shell
     pixi run xnft
     ```
+Step 2 will install all packages necessary then run `xnft` in the `default` environment.
+> [!NOTE]
+> On the first run of `xnft` it may take some time to open as packages are compiled—these will be cached and it will open and run much faster on subsequent launches.
+
+### Running Jupyter Notebooks (Optional)
+
+**Prerequisites**
+1. Install and configure Git and SSH keys ([Follow instructions on wiki](https://gitlab.msu.edu/groups/delta/internal/-/wikis/Configuring-Your-Git-Environment))
+
+To run the Jupter notebooks included with this project, a `jupter` pixi environment is provided.
+1. [Recommended] Install Microsoft Visual Studio Code (VS Code): https://code.visualstudio.com
+2. Install Pixi package manager: https://pixi.prefix.dev/latest/installation/
+3. Install the `default` Pixi environment by running: 
+    ```shell
+    pixi install -e jupyter
+    ```
+    > [!NOTE] 
+    > This command may be run from any terminal.  To use the built-in terminal in VS Code, drag up from the bottom of the VS Code window, or select "Terminal > New Terminal" from the file menu.
+4. [If using VS Code] install the "Workspace Extensions" from the extensions tab on the menu bar on the left side of the screen (four blocks icon):
+    - Python
+    - Jupyter
+
+**Running**
+
+1. Open the desired Jupyter notebook `.ipynb` file from the `Notebooks` folder
+2. In the upper-right corner, press "Select Kernel"'
+3. At the top of the screen select "Python Environments..." then select:
+    ```
+    Python 3.xx.x `.../xnft/.pixi/envs/jupyter/bin/python
+    ```
+    If it does not appear, you may need to choose "Browse..." and navigate to the python executable in the `.pixi` folder as shown above.
+4. Press "Run All" from the tool bar at the top of the window to run the notebook
+
 
 ## Development
 
-...
+TODO...
 
 ### Upgrading Dependencies
 
