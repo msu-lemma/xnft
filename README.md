@@ -4,27 +4,31 @@
 
 ## Download and Installation
 
-### Download
+### Prerequisites
 
-<details>
-<summary>Prerequisite: Install Git Source Code Management (SCM) [Click to expand]</summary>
-
-- Windows: In any "PowerShell" run:
+1. Install Pixi package manager: https://pixi.prefix.dev/latest/installation/
+2. Install `git`. This may be installed via the OS package manager or pixi. Choose one option below: 
+- **Any System:** in a terminal/PowerShell run:
+    ```sh
+    pixi global install git git-lfs
+    ```
+- **Windows:** In any "PowerShell" run:
     ```PowerShell
     winget install --id Git.Git -e --source winget
     ```
-- macOS: In terminal install via xcode-select or [Homebrew](https://brew.sh):
+- **macOS:** In terminal install via xcode-select or [Homebrew](https://brew.sh):
     ```sh
     xcode-select --install
     # or
     brew install git
     ```
-- Ubuntu: In terminal install via apt:
+- **Ubuntu:** In terminal install via apt:
     ```sh
     apt install git
     ```
-- For more info see: https://git-scm.com
-</details>
+
+
+### Download
 
 1. Open a terminal/PowerShell and navigate to the location where you would like to download the project
 2. Clone this repository via: 
@@ -32,11 +36,11 @@
     git clone https://gitlab.msu.edu/ece-lemma/xnft.git
     ```
 
+
 ### Installation
 
 To quickly install the environment to run `xnft`, follow the steps below:
 
-1. Install Pixi package manager: https://pixi.prefix.dev/latest/installation/
 2. Launch `xnft` by running: 
     ```shell
     pixi run xnft
