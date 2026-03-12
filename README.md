@@ -2,6 +2,10 @@
 
 ![xnft Screenshot](docs/source/assets/xnft_screenshot_2026-02-25.png)
 
+
+> [!CAUTION] ⚠️ xNFT is in active development
+> xNFT is in active development and is not yet being packaged. The development environment uses the Pixi package manager (https://pixi.prefix.dev/latest/) and git (https://git-scm.com) to manage the envrionment and source code. It may be helpful to have a basic understanding of Pixi and git to install and use this software.
+
 ## Download and Installation
 
 <details>
@@ -10,11 +14,12 @@ Prerequisites
 </summary>
 
 1. Install Pixi package manager: https://pixi.prefix.dev/latest/installation/
-2. Install `git`. This may be installed via the OS package manager or pixi. Choose one option below: 
+2. Install `git`. This may be installed via the OS package manager or pixi. Choose **one** option below: 
 - **Any System:** in a terminal/PowerShell run:
     ```sh
-    pixi global install git git-lfs
+    pixi global install --environment git --expose git git-lfs
     ```
+    This will add the `git` and `git-lfs` executables to a global directory (typically in your home folder) and add the `git` executable to your terminal's search path.
 - **Windows:** In any "PowerShell" run:
     ```PowerShell
     winget install --id Git.Git -e --source winget
@@ -42,17 +47,17 @@ Prerequisites
 
 ### Installation
 
-To quickly install the environment to run `xnft`, follow the steps below:
+To quickly install the environment to run xNFT, follow the steps below:
 
-2. Launch `xnft` by running: 
+1. Launch `xnft` by running: 
     ```shell
     pixi run xnft
     ```
-Step 2 will install all packages necessary then run `xnft` in the `default` environment.
-> [!NOTE]
-> On the first run of `xnft` it may take some time to open as packages are compiled. These compiled packages will be cached and it will open and run much faster on subsequent launches.
+   This will install all packages necessary into the `default` Pixi environment, then run xNFT in the environment.
+    > [!NOTE]
+    > On the first run of `xnft` it may take some time to open as packages are compiled to Python bytecode. These compiled packages will be cached and it will open and run much faster on subsequent launches.
 
-3. [Optional] Download test data (stored in git LFS) in the `tests/data/...` and `analysis/data/...` folders. The default pixi environment includes `git-lfs` so you can run
+2. [Optional] Download test data (stored in git LFS) in the `tests/data/...` and `analysis/data/...` folders. Note that these archives contain sevaral gigabytes of data. The default pixi environment includes `git-lfs` so you can run
     ```sh
     git lfs pull
     ```
