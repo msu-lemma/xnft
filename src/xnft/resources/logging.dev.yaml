@@ -15,7 +15,5 @@ root:
 
 # Set log level of submodules
 loggers:
-  xnft.loaders:
+  xnft:
     level: DEBUG
-  xnft.core:
-    level: INFO
