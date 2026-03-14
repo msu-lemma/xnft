@@ -49,9 +49,9 @@ class ScanType(StrEnum):
 class CoordinateSystemType(StrEnum):
     """Available coordinate system types."""
 
-    CARTESIAN = "Cartesian"
-    CYLINDRICAL = "Cylindrical"
-    SPHERICAL = "Spherical"
+    CARTESIAN = "Cartesian (x,y,z)"
+    CYLINDRICAL = "Cylindrical (φ,z)"
+    SPHERICAL = "Spherical (φ,θ)"
     DIRECTION_COSINE = "Direction Cosine (u,v)"
     SPHERICAL_AZEL = "Azimuth/Elevation"
     UNKNOWN = "Unknown"
@@ -60,10 +60,9 @@ class CoordinateSystemType(StrEnum):
 class AnalysisType(StrEnum):
     """Available analysis types."""
 
-    TRANSFORM = "Transform"
-    INTERPOLATION = "Interpolation"
+    PLANAR_TRANSFORM = "Planar Near Field Transform"
+    SPHERICAL_TRANSFORM = "Spherical Near Field Transform"
     UNKNOWN = "Unknown"
-
 
 class DataSourceType(StrEnum):
     """Available source file types."""
@@ -74,6 +73,7 @@ class DataSourceType(StrEnum):
     NSI_MEAS = "NSI-MI Scanner"
     NSI_REF = "NSI-MI Reference"
     LEMMA = "LEmmA Scanner"
+    UNKNOWN = "Unknown"
 
 
 class DataPolarizationType(StrEnum):

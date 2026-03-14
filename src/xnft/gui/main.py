@@ -171,7 +171,7 @@ class MainWindow(QMainWindow):
 
     def create_project_manager_widgets(self, pm):
 
-        # Create project manager tree
+        # == Create project manager tree ==
 
         pm_dock = QDockWidget("Project Manager", self)
         pm_dock.setObjectName("DockProjectManager")  # Used for restore
@@ -187,7 +187,9 @@ class MainWindow(QMainWindow):
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, pm_dock)
         self._view_menu.addAction(pm_dock.toggleViewAction())
 
-        # Create node info table
+        # == Create node info table ==
+        # TODO: update to QTableWidget subclass in separate file to pull out custom logic from main gui
+        
         properties_dock = QDockWidget("Properties", self)
         properties_dock.setObjectName("DockProperties")  # Used for restore
 
@@ -216,25 +218,48 @@ class MainWindow(QMainWindow):
             )
 
     def _node_info_from_index(self, index: QModelIndex):
-
+        # TODO/FIXME: REVISE
         node = index.internalPointer()
-
-        # May be None if project was released from memory
-        if node is not None:
-            properties_dict = node.__dict__
-
-            # Fill table
+        if node is None:
             self.properties_table.setRowCount(0)
+            return
 
-            for row, (key, value) in enumerate(properties_dict.items()):
-                self.properties_table.insertRow(row)
-                key_item = QTableWidgetItem(str(key))
-                value_item = QTableWidgetItem("" if value is None else str(value))
-                
-                for item in (key_item, value_item):
-                    item.setFlags(item.flags() & ~Qt.ItemIsEditable)
-                self.properties_table.setItem(row, 0, key_item)
-                self.properties_table.setItem(row, 1, value_item)
+        # Filter by decorator properties
+        props = []
+        for name in dir(node.__class__):
+            attr = getattr(node.__class__, name, None)
+            # NOTE: fget is the getter of a property
+            if isinstance(attr, property) and getattr(attr.fget, "__gui_property__", False):
+                label = attr.fget.__gui_property__['label']
+                order = attr.fget.__gui_property__['order']
+                formatter = attr.fget.__gui_property__['formatter']
+                button = attr.fget.__gui_property__['button']
+
+                value = getattr(node, name)
+                if formatter:
+                    value = formatter(value)
+
+                props.append((order, label, value, name, button))
+
+        props.sort(key=lambda x: x[0])
+
+        # Populate table
+        self.properties_table.setRowCount(len(props))
+
+        for row, (_, label, value, name, button) in enumerate(props):
+            label_item = QTableWidgetItem(label)
+            value_item = QTableWidgetItem(str(value))
+
+            for item in (label_item, value_item):
+                item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+
+            self.properties_table.setItem(row, 0, label_item)
+            self.properties_table.setItem(row, 1, value_item)
+
+            if button:
+                btn = QPushButton("Edit…")
+                btn.clicked.connect(lambda _, n=node, field=name: self.open_edit_dialog(n, field))
+                self.properties_table.setCellWidget(row, 2, btn)
 
     def _about(self):
         meta = importlib.metadata.metadata("xnft")
@@ -285,7 +310,7 @@ class MainWindow(QMainWindow):
             )
 
             # Create the underlying project object
-            new_project = Project(name=name, path=project_path)
+            new_project = Project(name=name, _path=project_path)
             model_index = self.model.insert_project(new_project)
 
             # Expand rows in tree and highlight

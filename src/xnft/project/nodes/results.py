@@ -5,19 +5,19 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, InitVar
 from typing import Optional
 import logging
 
 from PySide6.QtWidgets import QMdiSubWindow
 
-from .node import Node, DataNode, NodeType, context_action
+from .node import Node, DataNode, NodeType, context_action, gui_property
 
 from ...gui.dialogs.reports.new_2d_field_report_dialog import (
     New2DFieldReport,
 )
 from ...core.enums import ReportType
-from ...core.plots.plot_2d import Plot2D
+from ...core.reports.plot_2d import Plot2D
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,12 @@ logger = logging.getLogger(__name__)
 @dataclass(kw_only=True)
 class ResultsNode(Node):
     icon_name: str = "src/xnft/resources/icons/plot.svg"
-    type: NodeType = NodeType.RESULTS
+
+    def __post_init__(self, *args, **kwargs):
+        super().__post_init__(*args, **kwargs)
+
+        self._node_type = NodeType.RESULTS
+        self._name = NodeType.RESULTS
 
     @context_action(
         "New 2D Field Report",
@@ -36,11 +41,13 @@ class ResultsNode(Node):
         icon_name="document-new",
     )
     def new_2d_field_report(self, **kwargs):
+        logger.debug(f'{kwargs=}')
         report_node = ReportNode(
             name=kwargs["report_name"],
-            type=ReportType.PLOT_2D,
+            report_type=ReportType.PLOT_2D,
             fields=kwargs["fields"],
             args=kwargs,
+            source=kwargs["fields"][0],
         )
 
         node_pair_list = [
@@ -72,10 +79,37 @@ class ResultsNode(Node):
 
 @dataclass(kw_only=True)
 class ReportNode(DataNode):
+
+    report_type: InitVar[Optional[ReportType]] = None
+
     fields: list = field(default_factory=list)
     name_editable: Optional[bool] = True
     icon_name: str = "utilities-system-monitor"
     args: dict = field(default_factory=dict)
+
+    def __post_init__(
+            self, 
+            name: Optional[str] = None, 
+            node_type: Optional[NodeType] = NodeType.UNKNOWN,
+            source: Optional[Node | None] = None,
+            report_type: Optional[ReportType] = ReportType.UNKNOWN,
+        ):
+        super().__post_init__(name=name, node_type=node_type, source=source)
+        
+        self.node_type = NodeType.ANALYSIS
+        self.report_type = report_type
+
+    @property
+    @gui_property(label="Report Type", order=10)
+    def report_type(self):
+        return self._report_type
+    
+    @report_type.setter
+    def report_type(self, report: ReportType):
+        if not isinstance(report, ReportType):
+            raise TypeError(f'Argument "report_type" must be of type {ReportType} got {type(report)}')
+        self._report_type = report
+
 
     @context_action(
         label="View Report",
@@ -85,7 +119,7 @@ class ReportNode(DataNode):
     def open(self):
         """Open/view the report in an MDI window."""
 
-        if self.type == ReportType.PLOT_2D:
+        if self.report_type == ReportType.PLOT_2D:
             plot_widget = Plot2D(self.fields[0])  # TODO FIXME should only be one field
 
         # TODO: Ideally the Qt code would live outside of this module

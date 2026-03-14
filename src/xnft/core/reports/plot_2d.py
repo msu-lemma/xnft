@@ -30,7 +30,7 @@ from PySide6.QtWidgets import (
     QFormLayout,
     QLabel,
 )
-from ..enums import CoordinateSystemType, Units
+from ..enums import CoordinateSystemType, Units, FieldType
 
 from .functions import PlotFunctions
 from .scales import PlotScales
@@ -203,7 +203,7 @@ class Plot2D(QWidget):
         for _ in range(self.cb_field_component.count()):
             self.cb_field_component.removeItem(0)
 
-        print(self.field.data)
+        # logger.debug(self.field.data)
 
         field_components = ["All"]
         field_components += self.field.data.coords["component"].data.tolist()
@@ -258,17 +258,16 @@ class Plot2D(QWidget):
         else:
             component = self.field.data.coords["component"]
 
-        print(f"{component=}")
+        logger.debug(f"{component=}")
 
         field_data = self.field.data.sel(frequency=selected_frequency, component=component)
-        print(field_data)
 
         # -- Apply selected plotting function --
         plot_function = self.cb_plot_function.currentData().value.function
-        print(plot_function)
+        logger.debug(plot_function)
 
         field_fun = plot_function(field_data["E"])
-        print(f"{field_fun.shape=}")
+        logger.debug(f"{field_fun.shape=}")
 
         if isinstance(field_fun, xr.DataArray):
             field_fun = field_fun.values
@@ -276,14 +275,14 @@ class Plot2D(QWidget):
         # -- Apply selected scale --
 
         scale_function = self.cb_plot_scale.currentData().value.function
-        print(plot_function)
+        logger.debug(plot_function)
 
         field_fun_scaled = scale_function(field_fun)
 
         # -- Apply selected coordinate transform --
         # TODO: Add coordinate transform
         selected_domain = self.cb_plot_domain.currentData()[0]
-        print(f"{selected_domain=}")
+        logger.debug(f"{selected_domain=}")
 
         # NOTE: Native domain is spherical
         # Direction cosines require nonlinear transformation so we need to use pcolormesh for
@@ -325,6 +324,13 @@ class Plot2D(QWidget):
             ordinate = components[1].values.item()
             abscissa = components[0].values.item()
 
+            abscissa_values = self.field.data.coords[abscissa].values
+            ordinate_values = self.field.data.coords[ordinate].values
+
+            # Initialize labels
+            ordinate_label = ordinate
+            abscissa_label = abscissa
+
             # Map names to symbols
             if ordinate.lower() == 'theta':
                 ordinate_label = "θ"
@@ -352,25 +358,43 @@ class Plot2D(QWidget):
             self.plot.setLabel("left", text=yaxis_label, units=yaxis_units)
             self.plot.setLabel("bottom", text=xaxis_label, units=xaxis_units)
 
-            # Shift phi to be centered
-            phi_roll_idx = field_fun_scaled.shape[0]//2
-            x_range = self.field.data.coords[abscissa].max() - self.field.data.coords[abscissa].min()
+            # Shift to make abscissa and ordinate centered about zero
+            abscissa_midpoint_idx = round(abscissa_values.size / 2)
+            logger.debug(f'{abscissa_midpoint_idx=}')
+            abscissa_min_idx = np.argmin(np.abs(abscissa_values))
+            logger.debug(f'{abscissa_min_idx=}')
+            abscissa_roll_idx = abscissa_min_idx - abscissa_midpoint_idx
+            logger.debug(f'{abscissa_roll_idx=}')
 
+            ordinate_midpoint_idx = round(ordinate_values.size / 2)
+            logger.debug(f'{ordinate_midpoint_idx=}')
+            ordinate_min_idx = np.argmin(np.abs(ordinate_values))
+            logger.debug(f'{ordinate_min_idx=}')
+            ordinate_roll_idx = ordinate_min_idx - ordinate_midpoint_idx
+            logger.debug(f'{ordinate_roll_idx=}')
+
+            # Roll phi values in spherical coordinates
+            logger.debug(f'{self.field.field_type=}')
+            if self.field.field_type == FieldType.FAR:
+                roll_val = abscissa_values[abscissa_roll_idx]
+                logger.debug(f'{roll_val=}')
+                abscissa_values = abscissa_values - roll_val
+                # ordinate_values = ordinate_values - ordinate_values[ordinate_roll_idx]
+            
             # Set image
-            self.image_item.setImage(np.roll(field_fun_scaled, phi_roll_idx, axis=0))
+            self.image_item.setImage(np.roll(field_fun_scaled, (abscissa_roll_idx, ordinate_roll_idx), axis=(0,1)))
 
             # Set extents
-            upper_left_x = (self.field.data.coords[abscissa].min() - x_range / 2) * axis_scale
-            upper_left_y = self.field.data.coords[ordinate].max() * axis_scale
+            x_range = abscissa_values.max() - abscissa_values.min()
+            y_range = ordinate_values.max() - ordinate_values.min()
 
-            width = axis_scale * (
-                self.field.data.coords[abscissa].max() - self.field.data.coords[abscissa].min()
-            )
-            height = -axis_scale * (
-                self.field.data.coords[ordinate].max() - self.field.data.coords[ordinate].min()
-            )
+            upper_left_x = axis_scale * abscissa_values.min()
+            upper_left_y = axis_scale * ordinate_values.max()
 
-            print((upper_left_x, upper_left_y, width, height))
+            width = axis_scale * x_range
+            height = -axis_scale * y_range
+
+            # logger.debug((upper_left_x, upper_left_y, width, height))
 
             self.image_item.setRect((upper_left_x, upper_left_y, width, height))
             self.vb.setLimits(

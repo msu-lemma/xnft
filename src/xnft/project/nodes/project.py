@@ -10,7 +10,7 @@ from typing import Optional
 from pathlib import Path
 import logging
 
-from .node import Node, NodeType, context_action
+from .node import Node, NodeType, context_action, gui_property
 from .fields import FieldsNode
 from .analysis import AnalysisNode
 from .results import ResultsNode
@@ -25,13 +25,14 @@ logger = logging.getLogger(__name__)
 class Project(Node):
     """Project Node subclass to handle projects."""
 
-    path: Optional[Path] = None
+    _path: Optional[Path] = None
     version: int = 1
-    type: NodeType = NodeType.PROJECT
     icon_name: str = "folder"
-    name: str | None = None
+    # name: str | None = None
 
-    def __post_init__(self):
+    def __post_init__(self, *args, **kwargs):
+        super().__post_init__(*args, **kwargs)
+
         # Add default project nodes
         self.add_child(FieldsNode())
         self.add_child(AnalysisNode())
@@ -41,6 +42,16 @@ class Project(Node):
 
         # Allow projects to be renamed in the Project Manager
         self.name_editable = True
+        self.node_type = NodeType.PROJECT
+
+    @property
+    @gui_property(label="File Path", order=3)
+    def path(self):
+        return self._path
+    
+    @path.setter
+    def path(self, new_path):
+        self._path = Path(new_path)
 
     @context_action(
         "Save Project", order=10, enabled=True, icon_name="document-save"
@@ -59,13 +70,13 @@ class Project(Node):
             Status message to display in status bar in main window.
         """
         if path is not None:
-            self.path = path
+            self._path = path
 
         try:
             write_project(self, compression_level=10)
-            return f"Saved project {self.name} to path: {self.path}"
+            return f"Saved project {self.name} to path: {self._path}"
         except Exception:
-            return f"Failed to save {self.name} to path: {self.path}"
+            return f"Failed to save {self.name} to path: {self._path}"
 
     @context_action(
         "Save Project As...",

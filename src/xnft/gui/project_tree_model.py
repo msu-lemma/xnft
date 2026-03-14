@@ -131,7 +131,7 @@ class ProjectManagerTreeModel(QAbstractItemModel):
             if isinstance(node, (DataNode, Project)):
                 label = node.name
             else:
-                label = node.type
+                label = node.node_type
             return label
 
         # Return icons for tree items

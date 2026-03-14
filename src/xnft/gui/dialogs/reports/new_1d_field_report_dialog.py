@@ -212,7 +212,7 @@ class New2DFieldReport(QDialog):
 
     #     # Get selected field source coordinates
     #     source_coordiante_system = (
-    #         self.lw_report_fields.selectedItems()[0].data(Qt.UserRole).coordinates.type
+    #         self.lw_report_fields.selectedItems()[0].data(Qt.UserRole).coordinates.node_type
     #     )
 
     #     valid_plot_coordinates = Plot2D.__coordinates__[source_coordiante_system]
@@ -225,7 +225,7 @@ class New2DFieldReport(QDialog):
 
         self.fields_node = None
         for tmp_node in self.target_node.parent.children:
-            if tmp_node.type == NodeType.FIELDS:
+            if tmp_node.node_type == NodeType.FIELDS:
                 self.fields_node = tmp_node
                 break
         assert self.fields_node is not None
@@ -233,7 +233,7 @@ class New2DFieldReport(QDialog):
         field_options = [
             (f"{x.name}", x)
             for x in self.fields_node.children
-            # if x.type == self.cb_field_type.currentData()
+            # if x.node_type == self.cb_field_type.currentData()
         ]
 
         for label, data in field_options:

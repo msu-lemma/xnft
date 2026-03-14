@@ -54,7 +54,7 @@ class NewPlanarNearFieldTransform(QDialog):
 
         fields_node = None
         for tmp_node in target_node.parent.children:
-            if tmp_node.type == NodeType.FIELDS:
+            if tmp_node.node_type == NodeType.FIELDS:
                 fields_node = tmp_node
                 break
         assert fields_node is not None
@@ -71,9 +71,10 @@ class NewPlanarNearFieldTransform(QDialog):
 
         # Populate Combo Boxes
         for label, item in source_field_options:
-            if item.type == FieldType.NEAR:
+            print(f'{label}: {item.node_type}')
+            if item.node_type == NodeType.FIELDS and item.field_type == FieldType.NEAR:
                 self.cb_source_field.addItem(label, item)
-            # if item.type == FieldType.FAR:
+            # if item.node_type == FieldType.FAR:
             #     self.cb_far_field.addItem(label, item)
             #     # A probe correction can be any far field measurement
             #     self.cb_probe_corrections.addItem(label, item)

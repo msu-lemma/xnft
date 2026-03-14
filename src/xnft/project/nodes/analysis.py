@@ -5,7 +5,7 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, InitVar
 from typing import Optional
 import logging
 
@@ -17,10 +17,10 @@ from ...core.algorithms import (
     planar_near_field_transform_xarray,
 )
 
-from .node import Node, DataNode, context_action
+from .node import Node, DataNode, context_action, gui_property
 from .fields import FieldNode
 from .coordinates import CoordinateNode
-from ...core.enums import NodeType, FieldType, DataSourceType, CoordinateSystemType
+from ...core.enums import NodeType, FieldType, DataSourceType, CoordinateSystemType, AnalysisType
 
 logger = logging.getLogger(__name__)
 
@@ -28,8 +28,13 @@ logger = logging.getLogger(__name__)
 @dataclass(kw_only=True)
 class AnalysisNode(Node):
     icon_name: str = "src/xnft/resources/icons/function.svg"
-    type: NodeType = NodeType.ANALYSIS
 
+    def __post_init__(self, name: Optional[str] = None, node_type: NodeType = NodeType.UNKNOWN):
+        super().__post_init__(name, node_type)
+
+        self._node_type = NodeType.ANALYSIS
+        self._name = NodeType.ANALYSIS
+    
     @context_action(
         "New Planar Near-to-far Field Transform",
         order=10,
@@ -56,28 +61,34 @@ class AnalysisNode(Node):
         coordinate_node = CoordinateNode(
             name=f"{transform_name} Coordinates",
             data=coordinate_data,
-            type=CoordinateSystemType.SPHERICAL,
+            coordinate_type=CoordinateSystemType.SPHERICAL,
+            source=None,
         )
 
         # Create the transform node and field node
         field_node = FieldNode(
             name=transform_name,
             data=field_data,
-            type=FieldType.FAR,
-            measured=False,
-            coordinates=coordinate_node,
+            node_type=NodeType.FIELDS,
+            field_type=FieldType.FAR,
+            coordinates_node=coordinate_node,
             source_type=DataSourceType.XNFT,
         )
-        transform_node = TransformNode(name=transform_name, data=field_node)
+        transform_node = TransformNode(
+            name=transform_name, 
+            data=field_node,
+            source=source_field,
+            analysis_type=AnalysisType.PLANAR_TRANSFORM,
+        )
         coordinate_node.source = field_node
 
         # Get the fields and coordinates root nodes to add far field node to
         fields_root_node = None
         coordinates_root_node = None
         for tmp_node in self.parent.children:
-            if tmp_node.type == NodeType.FIELDS:
+            if tmp_node.node_type == NodeType.FIELDS:
                 fields_root_node = tmp_node
-            if tmp_node.type == NodeType.COORDINATES:
+            if tmp_node.node_type == NodeType.COORDINATES:
                 coordinates_root_node = tmp_node
         assert fields_root_node is not None
         assert coordinates_root_node is not None
@@ -136,4 +147,29 @@ class AnalysisNode(Node):
 
 @dataclass(kw_only=True)
 class TransformNode(DataNode):
+    analysis_type: InitVar[Optional[AnalysisType]] = None
+
     name_editable: Optional[bool] = True
+
+    def __post_init__(
+            self, 
+            name: Optional[str] = None, 
+            node_type: Optional[NodeType] = NodeType.UNKNOWN,
+            source: Optional[Node | None] = None,
+            analysis_type: Optional[AnalysisType] = AnalysisType.UNKNOWN,
+        ):
+        super().__post_init__(name=name, node_type=node_type, source=source)
+
+        self.analysis_type = analysis_type
+        self.node_type = NodeType.ANALYSIS
+
+    @property
+    @gui_property(label="Analysis Type", order=2)
+    def analysis_type(self):
+        return self._analysis_type
+    
+    @analysis_type.setter
+    def analysis_type(self, analysis: AnalysisType):
+        if not isinstance(analysis, AnalysisType):
+            raise TypeError(f'Argument "analysis_type" must be of type {AnalysisType} got {type(self.analysis)}')
+        self._analysis_type = analysis

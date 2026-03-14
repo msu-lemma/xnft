@@ -5,7 +5,7 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, InitVar
 from uuid import uuid4, UUID
 from typing import List, Optional, Callable
 import inspect
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class ContextAction:
-    """A structured data class for right-click menu context ctions"""
+    """A structured data class for right-click menu context ctions."""
 
     label: str
     invoke: Callable[[], None]
@@ -91,13 +91,27 @@ def context_action(
     return decorator
 
 
+def gui_property(label=None, order=0, tooltip=None, formatter=None, button=False):
+    def decorator(func):
+        func.__gui_property__ = {
+            "label": label or func.__name__.replace("_", " ").title(),
+            "order": order,
+            "tooltip": tooltip,
+            "formatter": formatter,
+            "button": button,
+        }
+        return func
+    return decorator
+
+
 @dataclass
 class Node:
     """Base class for a node in the project hierarchy."""
 
     # Node values
     id: UUID = uuid4()
-    type: NodeType = NodeType.UNKNOWN
+    name: InitVar[Optional[str]] = None
+    node_type: InitVar[Optional[NodeType]] = NodeType.UNKNOWN
     name_editable: Optional[bool] = False
     attributes: Optional[dict] = field(default_factory=dict)
     data: Optional[object] = None
@@ -106,6 +120,30 @@ class Node:
     # Node traversal pointers
     _parent: Optional["Node"] = None
     _children: List["Node"] = field(default_factory=list)
+
+    def __post_init__(self, name: Optional[str] = None, node_type: NodeType = NodeType.UNKNOWN):
+        self._name = name
+        self._node_type = node_type    
+
+    # -- Node Property Getter/Setters (GUI) -----------
+
+    @property
+    @gui_property(label="Name", order=0)
+    def name(self):
+        return self._name
+    
+    @name.setter
+    def name(self, name):
+        self._name = name
+
+    @property
+    @gui_property(label="Node Type", order=1)
+    def node_type(self):
+        return self._node_type
+    
+    @node_type.setter
+    def node_type(self, node_type):
+        self._node_type = node_type
 
     # -- Parents ------------
 
@@ -195,7 +233,7 @@ class Node:
         """Return display type of node."""
         return self.type
 
-    # -- Menu actions -------------
+    # -- Context Menu Actions -------------
 
     @property
     def context_actions(self) -> list[ContextAction]:
@@ -235,6 +273,8 @@ class Node:
         actions.sort(key=lambda a: a.order)
         return actions
     
+    # -- Basic Actions ----------------
+
     def __eq__(self, node):
         return self.id == node.id
 
@@ -246,7 +286,29 @@ class DataNode(Node):
     unique to leaf nodes.
     """
 
-    name: str | None = None
+    source: InitVar[Optional[Node]] = None
+
+    def __post_init__(
+            self, 
+            name: Optional[str] = None, 
+            node_type: Optional[NodeType] = NodeType.UNKNOWN,
+            source: Optional[Node | None] = None,
+        ):
+        super().__post_init__(name=name, node_type=node_type)
+        
+        self.source = source
+
+    @property
+    @gui_property(label="Source Node", order=3, formatter=lambda x : x.name if x else "")
+    def source(self):
+        return self._source
+    
+    @source.setter
+    def source(self, source_node: Node | None):
+        if source_node is not None and not isinstance(source_node, (Node)):
+            raise TypeError(f'Argument "source_node" must be of type {Node} or None got {type(source_node)}')
+        logger.debug(f'{source_node=}')
+        self._source = source_node
 
     @context_action(
         label="Edit",
