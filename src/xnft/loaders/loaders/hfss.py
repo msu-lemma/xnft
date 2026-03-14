@@ -299,8 +299,8 @@ def load_hfss_far_field_ffd(file_list: List[FileInfo]) -> xr.Dataset:
                 tokens = [float(x) for x in line.split(" ")]
 
                 # Format: magnitude * exp(j * angle)
-                e_phi = tokens[0] + 1j * tokens[1]
-                e_theta = tokens[2] + 1j * tokens[3]
+                e_phi = tokens[2] + 1j * tokens[3]
+                e_theta = tokens[0] + 1j * tokens[1]
 
                 phi_index = int(data_index % phi_num_steps)
                 theta_index = int(data_index // phi_num_steps)
