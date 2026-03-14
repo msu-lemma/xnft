@@ -24,8 +24,8 @@ def write_project(project: Project, compression_level=10):
     compression_level : int, optional
         Compression level for `zstd` to use when writing, by default 10.
     """
-    if project.path is not None:
-        with zstd.open(project.path, mode="wb", level=compression_level) as f:
+    if project._path is not None:
+        with zstd.open(project._path, mode="wb", level=compression_level) as f:
             pickle.dump(project, f)
     else:
         raise TypeError('Project path must be specified. Got `None`.')
