@@ -80,9 +80,10 @@ git stash apply  # Pops changes from the top of the stash stack and applies to t
 
 ### Running Jupyter Notebooks (Optional)
 
+**Installation**
+
 To run the Jupter notebooks included with this project, a `jupter` pixi environment is provided.
 1. [Recommended] Install Microsoft Visual Studio Code (VS Code): https://code.visualstudio.com
-2. Install Pixi package manager: https://pixi.prefix.dev/latest/installation/
 3. Install the `default` Pixi environment by running: 
     ```shell
     pixi install -e jupyter
