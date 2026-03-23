@@ -13,7 +13,7 @@
 Prerequisites
 </summary>
 
-1. Install Pixi package manager: https://pixi.prefix.dev/latest/installation/
+1. Install Pixi package manager by following the steps at: https://pixi.prefix.dev/latest/installation/
 2. Install `git`. This may be installed via the OS package manager or pixi. Choose **one** option below: 
 - **Any System:** in a terminal/PowerShell run:
     ```sh
@@ -45,23 +45,23 @@ Prerequisites
     ```
 
 
-### Installation
+### Install and Run
 
-To quickly install the environment to run xNFT, follow the steps below:
+To quickly install the environment to run xNFT, run: 
+```shell
+pixi run xnft
+```
+This will install all packages necessary into the `default` Pixi environment, then run xNFT in the environment.
+> [!NOTE]
+> On the first run of `xnft` it may take some time to open as packages are compiled to Python bytecode. These compiled packages will be cached and it will open and run much faster on subsequent launches.
 
-1. Launch `xnft` by running: 
-    ```shell
-    pixi run xnft
-    ```
-   This will install all packages necessary into the `default` Pixi environment, then run xNFT in the environment.
-    > [!NOTE]
-    > On the first run of `xnft` it may take some time to open as packages are compiled to Python bytecode. These compiled packages will be cached and it will open and run much faster on subsequent launches.
+**Download Test Data (Optional)**
 
-2. [Optional] Download test data (stored in git LFS) in the `tests/data/...` and `analysis/data/...` folders. Note that these archives contain sevaral gigabytes of data. The default pixi environment includes `git-lfs` so you can run
-    ```sh
-    git lfs pull
-    ```
-    to pull the remaining test datasets.
+Optional test data (stored in git LFS) in the `tests/data/...` and `analysis/data/...` folders may be downloaded using `git lfs`. Note that these archives contain sevaral gigabytes of data and are thus not downloaded by default. The default pixi environment includes `git-lfs` so you can run
+```sh
+git lfs pull
+```
+to pull the remaining test datasets.
 
 ### Updating
 
