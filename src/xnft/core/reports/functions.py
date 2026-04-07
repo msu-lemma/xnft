@@ -13,7 +13,7 @@ from .scales import PlotScales
 from ..enums import FieldType
 
 PlotFunction = namedtuple("PlotFunction", ("name", "function", "scales", "field_types"))
-
+FieldQuantity = namedtuple("FieldQuantity", ("name", "function", "units", "field_types"))
 
 def plot_mag(field: xr.DataArray):
     if len(field.shape) > 2:
@@ -55,6 +55,7 @@ class PlotFunctions(Enum):
         scales=(PlotScales.DECIBELS, PlotScales.LINEAR),
         field_types={FieldType.NEAR, FieldType.FAR},
     )
+
     PHASE = PlotFunction(
         name="Phase",
         function=plot_phase,
@@ -65,13 +66,32 @@ class PlotFunctions(Enum):
     PHASE_L3_REF = PlotFunction(
         name="E-ref (Ludwig-3)",
         function=plot_phase_l3_ref,
-        scales=(PlotScales.LINEAR,),
+        scales=(PlotScales.LINEAR, PlotScales.DECIBELS),
         field_types={FieldType.FAR},
     )
 
     PHASE_L3_CROSS = PlotFunction(
         name="E-cross (Ludwig-3)",
         function=plot_phase_l3_cross,
-        scales=(PlotScales.LINEAR,),
+        scales=(PlotScales.LINEAR, PlotScales.DECIBELS),
         field_types={FieldType.FAR},
     )
+
+
+# -------------- Field Quantities ------------------
+
+
+def plot_gain():
+    raise NotImplementedError('plot_gain is not yet implemented.')
+
+class FieldQuantities(Enum):
+    GAIN = FieldQuantity(
+        name='Gain',
+        function=plot_gain,
+        units=None,  # ratio
+        field_types={FieldType.FAR}
+    )
+    # E_FIELD = FieldQuantity(
+    #     name="E-field",
+
+    # )

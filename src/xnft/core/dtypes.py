@@ -21,13 +21,13 @@ import unyt
 # Allowed coordinate system types for near/far-field
 
 NEAR_FIELD_CS_TYPES = {
-    CoordinateSystemType.CARTESIAN: (unyt.meter, unyt.meter, unyt.meter),
-    CoordinateSystemType.CYLINDRICAL: (unyt.meter, unyt.radian, unyt.meter),
-    CoordinateSystemType.SPHERICAL: (unyt.meter, unyt.radian, unyt.radian),
+    CoordinateSystemType.CARTESIAN: {"x": unyt.meter, "y": unyt.meter, "z": unyt.meter},
+    CoordinateSystemType.CYLINDRICAL: {"rho": unyt.meter, "phi": unyt.radian, "z": unyt.meter},
+    CoordinateSystemType.SPHERICAL: {"r": unyt.meter, "phi": unyt.radian, "theta": unyt.radian},
 }
 
 FAR_FIELD_CS_TYPES = {
-    CoordinateSystemType.SPHERICAL: (unyt.radian, unyt.radian),
+    CoordinateSystemType.SPHERICAL: {"phi": unyt.radian, "theta": unyt.radian},
 }
 
 class FieldDataset:
@@ -115,6 +115,9 @@ class FieldDataset:
             coordinate_units = NEAR_FIELD_CS_TYPES[coordinate_system]
         else:
             coordinate_units = FAR_FIELD_CS_TYPES[coordinate_system]
+
+        # Add frequency units
+        coordinate_units['frequency'] = unyt.hertz
 
         data_vars = {
             "E": (

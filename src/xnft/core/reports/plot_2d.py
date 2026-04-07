@@ -1,10 +1,9 @@
 """
-Handle xnft plotting actions.
+Handle xnft 2d plotting actions.
 
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 
 TODO: Add colormap selection (based on type of scale user selected)
-TODO: Add units to plot (based on xarray data and scale user selected)
 TODO: Add plot normalization
     - Source units (unnormalized)
     - Relative to local maxima (simply the peak value)
@@ -15,6 +14,7 @@ import logging
 import numpy as np
 import pyqtgraph as pg
 import xarray as xr
+import unyt
 from scipy.interpolate import griddata, CloughTocher2DInterpolator
 import scipy.spatial.qhull as qhull
 
@@ -45,8 +45,8 @@ pg.setConfigOption("useNumba", True)
 
 
 class Plot2D(QWidget):
-    # Mapping of valid source coordinates to plotting coordinates
-    __coordinates__ = {
+    # Mapping of valid source coordinates to plotting domain
+    __coordinate_domains__ = {
         CoordinateSystemType.SPHERICAL: (
             CoordinateSystemType.SPHERICAL,
             CoordinateSystemType.DIRECTION_COSINE,
@@ -57,7 +57,7 @@ class Plot2D(QWidget):
 
     def __init__(
         self,
-        field,
+        report_node,
         coordinates_type=CoordinateSystemType.SPHERICAL,
         parent=None,
     ):
@@ -72,13 +72,13 @@ class Plot2D(QWidget):
         """
         super().__init__(parent)
 
-        if coordinates_type not in self.__coordinates__.keys():
+        if coordinates_type not in self.__coordinate_domains__.keys():
             raise ValueError(
-                f"Plot coordinates must be one of {[x.name for x in self.__coordinates__.keys()]},"
+                f"Plot coordinates must be one of {[x.name for x in self.__coordinate_domains__.keys()]},"
                 f" got {coordinates_type.name}"
             )
 
-        self.field = field
+        self.field = report_node.fields[0]
         self.last_domain = coordinates_type
 
         # == Add control widgets ==
@@ -196,7 +196,10 @@ class Plot2D(QWidget):
             self.cb_plot_function.removeItem(0)
 
         for plot_function in PlotFunctions:
-            self.cb_plot_function.addItem(plot_function.value.name, plot_function)
+            print(self.field.data.attrs)
+            print(plot_function)
+            if self.field.data.attrs['field_type'] in plot_function.value.field_types:
+                self.cb_plot_function.addItem(plot_function.value.name, plot_function)
 
     def _update_report_field_components(self):
         # Remove all items before updating items
@@ -228,10 +231,11 @@ class Plot2D(QWidget):
         # Get selected field source coordinates
         source_coordiante_system = self.field.data.attrs["coordinate_system"]
 
-        valid_plot_coordinates = self.__coordinates__[source_coordiante_system]
+        valid_plot_domains = self.__coordinate_domains__[source_coordiante_system]
 
-        for coordinates_type in valid_plot_coordinates:
-            self.cb_plot_domain.addItem(coordinates_type.value, (coordinates_type,))
+        for coordinates_domain in valid_plot_domains:
+
+            self.cb_plot_domain.addItem(coordinates_domain.value.name, (coordinates_domain,))
 
     def _update_frequency_options(self):
         # Remove all items before updating items
@@ -342,17 +346,18 @@ class Plot2D(QWidget):
                 abscissa_label = "φ"
 
             yaxis_label = str.title(ordinate_label)
-            yaxis_units = self.field.data.attrs["component_units"]
+            yaxis_units = list(self.field.data.attrs["coordinate_units"].values())[1]
 
             xaxis_label = str.title(abscissa_label)
-            xaxis_units = self.field.data.attrs["component_units"]
+            xaxis_units = list(self.field.data.attrs["coordinate_units"].values())[0]
 
             axis_scale = 1.0
 
             # Convert radians to degrees
-            if xaxis_units == Units.RADIANS:
-                xaxis_units = Units.DEGREES
-                yaxis_units = Units.DEGREES
+            print(f"{xaxis_units=}", f"{type(xaxis_units)=}")
+            if xaxis_units == unyt.radian:
+                xaxis_units = unyt.degree
+                yaxis_units = unyt.degree
                 axis_scale = 180 / np.pi
 
             self.plot.setLabel("left", text=yaxis_label, units=yaxis_units)
