@@ -22,9 +22,9 @@ from ...core.enums import (
     SParameterType,
     PolarizationType,
     DataPolarizationType,
-    Units
 )
 from ...core.types import FileInfo
+from ...core.dtypes import FieldDataset
 
 logger = logging.getLogger(__name__)
 
@@ -130,27 +130,40 @@ def load_lemma_h5(file_list: List[FileInfo]) -> xr.Dataset:
         e_field[1, x_idx, y_idx, z_idx, f_idx] = ey_array[:, f_idx]
         e_field[2, x_idx, y_idx, z_idx, f_idx] = ez_array[:, f_idx]
 
-    fields = xr.Dataset(
-        {
-            "E": (
-                ("component", "x", "y", "z", "frequency"),
-                e_field,
-                {"Units": "V/m"},
-            ),
-        },
-        coords={
-            "component": ["x", "y", "z"],
+    # fields = xr.Dataset(
+    #     {
+    #         "E": (
+    #             ("component", "x", "y", "z", "frequency"),
+    #             e_field,
+    #             {"Units": "V/m"},
+    #         ),
+    #     },
+    #     coords={
+    #         "component": ["x", "y", "z"],
+    #         "x": x_sample_location_array,
+    #         "y": y_sample_location_array,
+    #         "z": z_sample_location_array,
+    #         "frequency": sample_frequency_array,
+    #     },
+    #     attrs={
+    #         "data_source_type": DataSourceType.HFSS,
+    #         "field": FieldType.NEAR,
+    #         "coordinate_system": CoordinateSystemType.CARTESIAN,
+    #         "component_units": Units.METERS
+    #     },
+    # )
+    fields = FieldDataset.create(
+        e_field=e_field,
+        h_field=None,
+        spatial_coords={
             "x": x_sample_location_array,
             "y": y_sample_location_array,
             "z": z_sample_location_array,
-            "frequency": sample_frequency_array,
         },
-        attrs={
-            "data_source_type": DataSourceType.HFSS,
-            "field": FieldType.NEAR,
-            "coordinate_system": CoordinateSystemType.CARTESIAN,
-            "component_units": Units.METERS
-        },
+        frequency=sample_frequency_array,
+        coordinate_system=CoordinateSystemType.CARTESIAN,
+        field_type=FieldType.NEAR,
+        data_source=DataSourceType.LEMMA
     )
 
     return fields
