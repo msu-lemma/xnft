@@ -18,6 +18,7 @@ import finufft
 from quantiphy import Quantity
 
 from .enums import DataSourceType, FieldType, CoordinateSystemType, Units
+from .dtypes import FieldDataset
 
 # fmt: off
 MLX_AVAILABLE = False
@@ -420,31 +421,43 @@ def planar_near_field_transform_xarray(
     e_field = np.stack([e_phi, e_theta])[..., np.newaxis]
     h_field = np.stack([h_phi, h_theta])[..., np.newaxis]
 
-    fields = xr.Dataset(
-        {
-            "E": (
-                ("component", "phi", "theta", "frequency"),
-                e_field,
-                {"Units": "V/m"},
-            ),
-            "H": (
-                ("component", "phi", "theta", "frequency"),
-                h_field,
-                {"Units": "A/m"},
-            ),
-        },
-        coords={
-            "component": ["phi", "theta"],
+    # fields = xr.Dataset(
+    #     {
+    #         "E": (
+    #             ("component", "phi", "theta", "frequency"),
+    #             e_field,
+    #             {"Units": "V/m"},
+    #         ),
+    #         "H": (
+    #             ("component", "phi", "theta", "frequency"),
+    #             h_field,
+    #             {"Units": "A/m"},
+    #         ),
+    #     },
+    #     coords={
+    #         "component": ["phi", "theta"],
+    #         "phi": phi_target,
+    #         "theta": theta_target,
+    #         "frequency": [frequency],
+    #     },
+    #     attrs={
+    #         "data_source_type": DataSourceType.XNFT,
+    #         "field": FieldType.FAR,
+    #         "coordinate_system": CoordinateSystemType.SPHERICAL,
+    #         "component_units": Units.RADIANS
+    #     },
+    # )
+    fields = FieldDataset.create(
+        e_field=e_field,
+        h_field=h_field,
+        spatial_coords={
             "phi": phi_target,
             "theta": theta_target,
-            "frequency": [frequency],
         },
-        attrs={
-            "data_source_type": DataSourceType.XNFT,
-            "field": FieldType.FAR,
-            "coordinate_system": CoordinateSystemType.SPHERICAL,
-            "component_units": Units.RADIANS
-        },
+        frequency=[frequency],
+        coordinate_system=CoordinateSystemType.SPHERICAL,
+        field_type=FieldType.FAR,
+        data_source=DataSourceType.HFSS
     )
 
     return fields
@@ -685,30 +698,43 @@ def planar_near_field_transform_fft(
     e_field = np.stack([e_phi, e_theta])[..., np.newaxis]
     h_field = np.stack([h_phi, h_theta])[..., np.newaxis]
 
-    fields = xr.Dataset(
-        {
-            "E": (
-                ("component", "phi", "theta", "frequency"),
-                e_field,
-                {"Units": "V/m"},
-            ),
-            "H": (
-                ("component", "phi", "theta", "frequency"),
-                h_field,
-                {"Units": "A/m"},
-            ),
-        },
-        coords={
-            "component": ["phi", "theta"],
+    # fields = xr.Dataset(
+    #     {
+    #         "E": (
+    #             ("component", "phi", "theta", "frequency"),
+    #             e_field,
+    #             {"Units": "V/m"},
+    #         ),
+    #         "H": (
+    #             ("component", "phi", "theta", "frequency"),
+    #             h_field,
+    #             {"Units": "A/m"},
+    #         ),
+    #     },
+    #     coords={
+    #         "component": ["phi", "theta"],
+    #         "phi": phi,
+    #         "theta": theta,
+    #         "frequency": [frequency],
+    #     },
+    #     attrs={
+    #         "data_source_type": DataSourceType.XNFT,
+    #         "field": FieldType.FAR,
+    #         "coordinate_system": CoordinateSystemType.SPHERICAL,
+    #     },
+    # )
+    fields = FieldDataset.create(
+        e_field=e_field,
+        h_field=h_field,
+        spatial_coords={
             "phi": phi,
             "theta": theta,
-            "frequency": [frequency],
         },
-        attrs={
-            "data_source_type": DataSourceType.XNFT,
-            "field": FieldType.FAR,
-            "coordinate_system": CoordinateSystemType.SPHERICAL,
-        },
+        frequency=[frequency],
+        coordinate_system=CoordinateSystemType.SPHERICAL,
+        field_type=FieldType.FAR,
+        data_source=DataSourceType.HFSS
     )
+    print(fields)
 
     return fields

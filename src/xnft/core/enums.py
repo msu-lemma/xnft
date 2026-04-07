@@ -4,7 +4,12 @@ Module providing structured type enumerations.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
-from enum import StrEnum
+from enum import StrEnum, Enum
+from collections import namedtuple
+import unyt
+
+
+CoordinateSystemTuple = namedtuple("CoordinateSystemTuple", ["name", "components"])
 
 
 class NodeType(StrEnum):
@@ -22,9 +27,9 @@ class NodeType(StrEnum):
 class ReportType(StrEnum):
     """Available report types."""
 
-    PLOT_1D = "1D Plot"
-    PLOT_2D = "2D Plot"
-    PLOT_3D = "3D Plot"
+    PLOT_LINE = "Line Plot"
+    PLOT_SURFACE_2D = "2D Surface Plot"
+    PLOT_SURFACE_3D = "3D Surface Plot"
     TABLE = "Table"
     UNKNOWN = "Unknown"
 
@@ -46,16 +51,27 @@ class ScanType(StrEnum):
     UNKNOWN = "Unknown"
 
 
-class CoordinateSystemType(StrEnum):
+class CoordinateSystemType(Enum):
     """Available coordinate system types."""
 
-    CARTESIAN = "Cartesian (x,y,z)"
-    CYLINDRICAL = "Cylindrical (φ,z)"
-    SPHERICAL = "Spherical (φ,θ)"
-    DIRECTION_COSINE = "Direction Cosine (u,v)"
+    CARTESIAN = CoordinateSystemTuple(
+        name="Cartesian (x,y,z)",
+        components=('x', 'y', 'z'),
+    )
+    CYLINDRICAL = CoordinateSystemTuple(
+        name="Cylindrical (ρ,φ,z)",
+        components=('rho', 'phi', 'z'),
+    )
+    SPHERICAL = CoordinateSystemTuple(
+        name="Spherical (φ,θ)",
+        components=('r', 'phi', 'theta')
+    )
+    DIRECTION_COSINE = CoordinateSystemTuple(
+        name="Direction Cosine (u,v)",
+        components=('u', 'v')
+    )
     SPHERICAL_AZEL = "Azimuth/Elevation"
     UNKNOWN = "Unknown"
-
 
 class AnalysisType(StrEnum):
     """Available analysis types."""
@@ -111,7 +127,11 @@ class Scale(StrEnum):
     DB = "Decibels"
 
 
-class Units(StrEnum):
-    METERS = "m"
-    RADIANS = "rad"
-    DEGREES = "deg"
+class Units(Enum):
+    METERS = unyt.meter
+    RADIANS = unyt.radian
+    DEGREES = unyt.degree
+    HERTZ = unyt.hertz
+    VOLTS = unyt.volt
+    AMPERES = unyt.ampere
+    HENRYS = unyt.henry

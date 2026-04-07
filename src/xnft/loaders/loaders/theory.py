@@ -29,6 +29,7 @@ from ...core.enums import (
     Units
 )
 from ...core.types import FileInfo
+from ...core.dtypes import FieldDataset
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +55,7 @@ def load_theory_near_field_yaml(file_list: List[FileInfo]) -> xr.Dataset:
         Dataset containing "E" and "H" fields.
     """
     if len(file_list) != 1:
-        raise ValueError("Theory loader accepts exactly one file.")
+        raise ValueError(f"Theory loader accepts exactly one file. Got: {file_list}")
 
     if file_list[0].polarization != {PolarizationType.CO_POL, PolarizationType.CROSS_POL}:
         raise ValueError("Theory loader only accepts files containing both co-pol and cross-pol.")
@@ -118,32 +119,45 @@ def load_theory_near_field_yaml(file_list: List[FileInfo]) -> xr.Dataset:
     e_field = np.stack([e_x, e_y, e_z])
     h_field = np.stack([h_x, h_y, h_z])
 
-    fields = xr.Dataset(
-        {
-            "E": (
-                ("component", "x", "y", "z", "frequency"),
-                e_field,
-                {"Units": "V/m"},
-            ),
-            "H": (
-                ("component", "x", "y", "z", "frequency"),
-                h_field,
-                {"Units": "A/m"},
-            ),
-        },
-        coords={
-            "component": ["x", "y", "z"],
+    # fields = xr.Dataset(
+    #     {
+    #         "E": (
+    #             ("component", "x", "y", "z", "frequency"),
+    #             e_field,
+    #             {"Units": "V/m"},
+    #         ),
+    #         "H": (
+    #             ("component", "x", "y", "z", "frequency"),
+    #             h_field,
+    #             {"Units": "A/m"},
+    #         ),
+    #     },
+    #     coords={
+    #         "component": ["x", "y", "z"],
+    #         "x": x_sample_location_array,
+    #         "y": y_sample_location_array,
+    #         "z": z_sample_location_array,
+    #         "frequency": sample_frequency_array,
+    #     },
+    #     attrs={
+    #         "data_source_type": DataSourceType.THEORY,
+    #         "field": FieldType.NEAR,
+    #         "coordinate_system": CoordinateSystemType.CARTESIAN,
+    #         "component_units": Units.METERS
+    #     },
+    # )
+    fields = FieldDataset.create(
+        e_field=e_field,
+        h_field=h_field,
+        spatial_coords={
             "x": x_sample_location_array,
             "y": y_sample_location_array,
             "z": z_sample_location_array,
-            "frequency": sample_frequency_array,
         },
-        attrs={
-            "data_source_type": DataSourceType.THEORY,
-            "field": FieldType.NEAR,
-            "coordinate_system": CoordinateSystemType.CARTESIAN,
-            "component_units": Units.METERS
-        },
+        frequency=sample_frequency_array,
+        coordinate_system=CoordinateSystemType.CARTESIAN,
+        field_type=FieldType.NEAR,
+        data_source=DataSourceType.THEORY
     )
 
     return fields
@@ -170,7 +184,7 @@ def load_theory_far_field_yaml(file_list: List[FileInfo]) -> xr.Dataset:
         Dataset containing "E" and "H" fields.
     """
     if len(file_list) != 1:
-        raise ValueError("Theory loader accepts exactly one file.")
+        raise ValueError(f"Theory loader accepts exactly one file. Got: {file_list}")
 
     if file_list[0].polarization != {PolarizationType.CO_POL, PolarizationType.CROSS_POL}:
         raise ValueError("Theory loader only accepts files containing both co-pol and cross-pol.")
@@ -248,31 +262,43 @@ def load_theory_far_field_yaml(file_list: List[FileInfo]) -> xr.Dataset:
     e_field = np.stack([e_phi, e_theta])
     h_field = np.stack([h_phi, h_theta])
 
-    fields = xr.Dataset(
-        {
-            "E": (
-                ("component", "phi", "theta", "frequency"),
-                e_field,
-                {"Units": "V/m"},
-            ),
-            "H": (
-                ("component", "phi", "theta", "frequency"),
-                h_field,
-                {"Units": "A/m"},
-            ),
-        },
-        coords={
-            "component": ["phi", "theta"],
+    # fields = xr.Dataset(
+    #     {
+    #         "E": (
+    #             ("component", "phi", "theta", "frequency"),
+    #             e_field,
+    #             {"Units": "V/m"},
+    #         ),
+    #         "H": (
+    #             ("component", "phi", "theta", "frequency"),
+    #             h_field,
+    #             {"Units": "A/m"},
+    #         ),
+    #     },
+    #     coords={
+    #         "component": ["phi", "theta"],
+    #         "phi": phi_sample_location_array,
+    #         "theta": theta_sample_location_array,
+    #         "frequency": sample_frequency_array,
+    #     },
+    #     attrs={
+    #         "data_source_type": DataSourceType.THEORY,
+    #         "field": FieldType.FAR,
+    #         "coordinate_system": CoordinateSystemType.SPHERICAL,
+    #         "component_units": Units.RADIANS
+    #     },
+    # )
+    fields = FieldDataset.create(
+        e_field=e_field,
+        h_field=None,
+        spatial_coords={
             "phi": phi_sample_location_array,
             "theta": theta_sample_location_array,
-            "frequency": sample_frequency_array,
         },
-        attrs={
-            "data_source_type": DataSourceType.THEORY,
-            "field": FieldType.FAR,
-            "coordinate_system": CoordinateSystemType.SPHERICAL,
-            "component_units": Units.RADIANS
-        },
+        frequency=sample_frequency_array,
+        coordinate_system=CoordinateSystemType.SPHERICAL,
+        field_type=FieldType.FAR,
+        data_source=DataSourceType.THEORY
     )
 
     return fields
