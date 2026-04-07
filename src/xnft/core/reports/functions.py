@@ -15,6 +15,7 @@ from ..enums import FieldType
 PlotFunction = namedtuple("PlotFunction", ("name", "function", "scales", "field_types"))
 FieldQuantity = namedtuple("FieldQuantity", ("name", "function", "units", "field_types"))
 
+
 def plot_mag(field: xr.DataArray):
     if len(field.shape) > 2:
         return np.linalg.norm(field, axis=0)
@@ -32,19 +33,19 @@ def plot_phase(field: xr.DataArray):
 
 def plot_phase_l3_ref(field: xr.DataArray):
     """Ludwig-3 Ref Polarization"""
-    phi_grid, theta_grid = np.meshgrid(field.phi, field.theta, indexing='ij')
+    phi_grid, theta_grid = np.meshgrid(field.phi, field.theta, indexing="ij")
     e_theta = field.sel(component="theta")
     e_phi = field.sel(component="phi")
-    phi_grid -= np.pi/2
+    phi_grid -= np.pi / 2
     return np.abs(np.sin(phi_grid) * e_theta + np.cos(phi_grid) * e_phi)
 
 
 def plot_phase_l3_cross(field: xr.DataArray):
     """Ludwig-3 Cross Polarization"""
-    phi_grid, theta_grid = np.meshgrid(field.phi, field.theta, indexing='ij')
+    phi_grid, theta_grid = np.meshgrid(field.phi, field.theta, indexing="ij")
     e_theta = field.sel(component="theta")
     e_phi = field.sel(component="phi")
-    phi_grid -= np.pi/2
+    phi_grid -= np.pi / 2
     return np.abs(np.cos(phi_grid) * e_theta - np.sin(phi_grid) * e_phi)
 
 
@@ -63,6 +64,25 @@ class PlotFunctions(Enum):
         field_types={FieldType.NEAR, FieldType.FAR},
     )
 
+
+# -------------- Field Quantities ------------------
+
+
+def plot_gain():
+    raise NotImplementedError("plot_gain is not yet implemented.")
+
+
+class FieldQuantities(Enum):
+    GAIN = FieldQuantity(
+        name="Gain",
+        function=plot_gain,
+        units=None,
+        field_types={FieldType.FAR},  # ratio
+    )
+    # E_FIELD = FieldQuantity(
+    #     name="E-field",
+
+    # )
     PHASE_L3_REF = PlotFunction(
         name="E-ref (Ludwig-3)",
         function=plot_phase_l3_ref,
@@ -76,22 +96,3 @@ class PlotFunctions(Enum):
         scales=(PlotScales.LINEAR, PlotScales.DECIBELS),
         field_types={FieldType.FAR},
     )
-
-
-# -------------- Field Quantities ------------------
-
-
-def plot_gain():
-    raise NotImplementedError('plot_gain is not yet implemented.')
-
-class FieldQuantities(Enum):
-    GAIN = FieldQuantity(
-        name='Gain',
-        function=plot_gain,
-        units=None,  # ratio
-        field_types={FieldType.FAR}
-    )
-    # E_FIELD = FieldQuantity(
-    #     name="E-field",
-
-    # )

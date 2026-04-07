@@ -122,6 +122,13 @@ class Plot2D(QWidget):
         layout_controls.addWidget(QLabel("Scale"))
         layout_controls.addWidget(self.cb_plot_scale)
 
+        # -- Add Normalization Selection --
+
+        self.cb_plot_norm = QComboBox()
+        self.cb_plot_norm.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        layout_controls.addWidget(QLabel("Normalization"))
+        layout_controls.addWidget(self.cb_plot_norm)
+
         # == Update Plotting Options ==
 
         self._update_frequency_options()

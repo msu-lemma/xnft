@@ -9,7 +9,6 @@ from __future__ import annotations
 from quantiphy import Quantity
 
 import numpy as np
-import platform
 import pyqtgraph as pg
 import unyt
 
@@ -24,14 +23,13 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QWidget,
     QComboBox,
-    QMessageBox,
     QListWidget,
     QListWidgetItem,
     QGroupBox,
     QLabel,
     QColorDialog,
     QSpinBox,
-    QPushButton, 
+    QPushButton,
 )
 
 from ....core.enums import NodeType
@@ -48,15 +46,11 @@ class NewTraceDialog(QDialog):
         Parent widget for dialog, by default None
     """
 
-    def __init__(
-        self,
-        parent: QWidget | None = None,
-        project_node: Node = None
-    ):
+    def __init__(self, parent: QWidget | None = None, project_node: Node = None):
         super().__init__(parent)
         self.setWindowTitle("Add/Edit Trace")
         self.setMinimumWidth(480)
-        self.resize(640,800)
+        self.resize(640, 800)
 
         self.parent = parent
         self.project_node = project_node
@@ -70,7 +64,7 @@ class NewTraceDialog(QDialog):
         trace_name.setFlat(True)
         self.le_trace_name = QLineEdit(self)
         self.le_trace_name.setPlaceholderText("Enter a trace name")
-        
+
         # Generate default trace name based on number of traces in plot
         num_traces = len(parent.trace_list)
         self.le_trace_name.setText(f"Trace {num_traces + 1}")
@@ -102,36 +96,34 @@ class NewTraceDialog(QDialog):
         layout_source_selection.addWidget(self.lwt_source_field)
         layout_source_selection.addWidget(self.lwt_abscissa)
 
-
-        # -- Data Slicing -- 
+        # -- Data Slicing --
 
         # NOTE: Data slicing requires one box per axis of data required to slice to achieve a 1D plot
-        # e.g., if axes are x, y, z, f; three boxes would be required to slice. 
+        # e.g., if axes are x, y, z, f; three boxes would be required to slice.
 
         self.layout_slice = QHBoxLayout()
         group_slice = QGroupBox("Slice Parameters")
         group_slice.setLayout(self.layout_slice)
 
-
         # Create a dictionary to hold QListWidgets for slices (updated dynamically)
         self.lwt_slice_dict = dict()
 
-
-        # -- Ordinate -- 
+        # -- Ordinate --
         ordinate_layout = QHBoxLayout()
         group_ordinate = QGroupBox("Ordinate Parameters")
         group_ordinate.setLayout(ordinate_layout)
 
-        self.lwt_category = ListWidgetTitle("Category")
-        self.lwt_value = ListWidgetTitle("Value")
+        self.lwt_component = ListWidgetTitle("Field Component")
+        self.lwt_quantity = ListWidgetTitle("Field Quantity")
         self.lwt_function = ListWidgetTitle("Function")
         self.lwt_scale = ListWidgetTitle("Scale")
+        self.lwt_norm = ListWidgetTitle("Normalization")
 
-        ordinate_layout.addWidget(self.lwt_category)
-        ordinate_layout.addWidget(self.lwt_value)
+        ordinate_layout.addWidget(self.lwt_component)
+        ordinate_layout.addWidget(self.lwt_quantity)
         ordinate_layout.addWidget(self.lwt_function)
         ordinate_layout.addWidget(self.lwt_scale)
-        
+
         # -- Dialog Butons --
 
         self.buttons = QDialogButtonBox(
@@ -164,14 +156,13 @@ class NewTraceDialog(QDialog):
         self.lwt_source_field.lw.setCurrentRow(0)
         self.lwt_abscissa.lw.setCurrentRow(0)
 
-
     # --- Properties ---
     @property
     def selected_field(self):
         # Should only have one selected field
         fields_list = [x.data(Qt.UserRole) for x in self.lwt_source_field.lw.selectedItems()]
         return fields_list[0]
-    
+
     @property
     def selected_abscissa(self):
         # Should only have one selected field
@@ -215,11 +206,9 @@ class NewTraceDialog(QDialog):
 
     def _update_abscissa_options(self):
         self.lwt_abscissa.lw.clear()
-        
+
         abscissa_options = [
-            (f"{x.title()}", x)
-            for x in self.selected_field.data.coords
-            if x != 'component'
+            (f"{x.title()}", x) for x in self.selected_field.data.coords if x != "component"
         ]
 
         # If plot has an abscissa already selected, only allow that abscissa
@@ -237,7 +226,7 @@ class NewTraceDialog(QDialog):
         slice_keys = [
             x
             for x in self.selected_field.data.coords
-            if x != 'component' and x != self.selected_abscissa
+            if x != "component" and x != self.selected_abscissa
         ]
 
         # Remove old list widgets
@@ -255,7 +244,7 @@ class NewTraceDialog(QDialog):
 
                 # Add data to list widget
                 data = self.selected_field.data[key]
-                units = self.selected_field.data.attrs['coordinate_units'][key]
+                units = self.selected_field.data.attrs["coordinate_units"][key]
                 for value in np.nditer(data):
                     if units == unyt.radian:
                         scale = 180 / np.pi
@@ -269,7 +258,6 @@ class NewTraceDialog(QDialog):
 
                 self.lwt_slice_dict[key] = lwt
                 self.layout_slice.addWidget(lwt)
-
 
     # def _is_input_valid(self, silent: bool) -> bool:
     #     name = self.le_trace_name.text().strip()
@@ -297,6 +285,7 @@ class NewTraceDialog(QDialog):
     # def _on_accept(self) -> None:
     #     if self._is_input_valid(silent=False):
     #         self.accept()
+
 
 class ListWidgetTitle(QWidget):
     def __init__(self, label: str, parent=None):
@@ -327,9 +316,7 @@ class TraceStyleGroupBox(QGroupBox):
         self._update_color_button()
         self.color_btn.clicked.connect(self.pick_color)
 
-        layout.addLayout(
-            self._labeled_control("Color", self.color_btn)
-        )
+        layout.addLayout(self._labeled_control("Color", self.color_btn))
 
         # -- Line Style --
         self.cb_line_style = QComboBox()
@@ -339,28 +326,20 @@ class TraceStyleGroupBox(QGroupBox):
             "Dot": Qt.DotLine,
             "Dash Dot": Qt.DashDotLine,
             "Dash Dot Dot": Qt.DashDotDotLine,
-        }        
+        }
         self.cb_line_style.clear()
         for name, style in self.line_styles.items():
             icon = self._make_line_style_icon(style)
             self.cb_line_style.addItem(icon, name)
-            self.cb_line_style.setItemData(
-                self.cb_line_style.count() - 1,
-                style,
-                Qt.UserRole
-            )
+            self.cb_line_style.setItemData(self.cb_line_style.count() - 1, style, Qt.UserRole)
 
-        layout.addLayout(
-            self._labeled_control("Line Style", self.cb_line_style)
-        )
+        layout.addLayout(self._labeled_control("Line Style", self.cb_line_style))
 
         # -- Line Width --
         self.sb_line_width = QSpinBox()
         self.sb_line_width.setRange(1, 10)
         self.sb_line_width.setValue(1)
-        layout.addLayout(
-            self._labeled_control("Width", self.sb_line_width)
-        )
+        layout.addLayout(self._labeled_control("Width", self.sb_line_width))
 
         # -- Marker --
         self.cb_marker = QComboBox()
@@ -378,22 +357,14 @@ class TraceStyleGroupBox(QGroupBox):
         for name, symbol in self.marker_map.items():
             icon = self._make_marker_icon(symbol)
             self.cb_marker.addItem(icon, name)
-            self.cb_marker.setItemData(
-                self.cb_marker.count() - 1,
-                symbol,
-                Qt.UserRole
-            )
-        layout.addLayout(
-            self._labeled_control("Marker", self.cb_marker)
-        )
+            self.cb_marker.setItemData(self.cb_marker.count() - 1, symbol, Qt.UserRole)
+        layout.addLayout(self._labeled_control("Marker", self.cb_marker))
 
         # -- Final Trace Preview --
         self.preview_label = QLabel()
         self.preview_label.setFixedSize(48, 16)
         self.preview_label.setAlignment(Qt.AlignCenter)
-        layout.addLayout(
-            self._labeled_control("Preview", self.preview_label)
-        )
+        layout.addLayout(self._labeled_control("Preview", self.preview_label))
 
         self._update_preview()
 
@@ -438,15 +409,12 @@ class TraceStyleGroupBox(QGroupBox):
 
     def _update_color_button(self):
         """Update color of color selection button."""
-        self.color_btn.setStyleSheet(
-            f"""
+        self.color_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: {self.current_color.name()};
                 border: 1px solid #666;
             }}
-            """
-        )
-
+            """)
 
     def _update_preview(self, width=40, height=20):
         # Get screen dpi to render image properly
@@ -486,23 +454,27 @@ class TraceStyleGroupBox(QGroupBox):
             cx = pm.width() // 2
             s = 3
 
-            if symbol == "o":            # circle
-                painter.drawEllipse(cx - s, y - s, 2*s, 2*s)
-            elif symbol == "s":          # square
-                painter.drawRect(cx - s, y - s, 2*s, 2*s)
-            elif symbol == "t":          # triangle
-                painter.drawPolygon([
-                    QPoint(cx, y - s),
-                    QPoint(cx - s, y + s),
-                    QPoint(cx + s, y + s),
-                ])
-            elif symbol == "d":          # diamond
-                painter.drawPolygon([
-                    QPoint(cx, y - s),
-                    QPoint(cx - s, y),
-                    QPoint(cx, y + s),
-                    QPoint(cx + s, y),
-                ])
+            if symbol == "o":  # circle
+                painter.drawEllipse(cx - s, y - s, 2 * s, 2 * s)
+            elif symbol == "s":  # square
+                painter.drawRect(cx - s, y - s, 2 * s, 2 * s)
+            elif symbol == "t":  # triangle
+                painter.drawPolygon(
+                    [
+                        QPoint(cx, y - s),
+                        QPoint(cx - s, y + s),
+                        QPoint(cx + s, y + s),
+                    ]
+                )
+            elif symbol == "d":  # diamond
+                painter.drawPolygon(
+                    [
+                        QPoint(cx, y - s),
+                        QPoint(cx - s, y),
+                        QPoint(cx, y + s),
+                        QPoint(cx + s, y),
+                    ]
+                )
             elif symbol in ("+", "x"):
                 painter.drawText(pm.rect(), Qt.AlignCenter, symbol)
 
@@ -516,7 +488,7 @@ class TraceStyleGroupBox(QGroupBox):
         pm.fill(Qt.transparent)
 
         painter = QPainter(pm)
-        pen = QPen(color, 2, style) 
+        pen = QPen(color, 2, style)
         painter.setPen(pen)
 
         y = pm.height() // 2
@@ -541,22 +513,26 @@ class TraceStyleGroupBox(QGroupBox):
         cx, cy, s = 10, 10, 4
 
         if symbol == "o":
-            painter.drawEllipse(cx - s, cy - s, 2*s, 2*s)
+            painter.drawEllipse(cx - s, cy - s, 2 * s, 2 * s)
         elif symbol == "s":
-            painter.drawRect(cx - s, cy - s, 2*s, 2*s)
+            painter.drawRect(cx - s, cy - s, 2 * s, 2 * s)
         elif symbol == "t":
-            painter.drawPolygon([
-                QPoint(cx, cy - s),
-                QPoint(cx - s, cy + s),
-                QPoint(cx + s, cy + s),
-            ])
+            painter.drawPolygon(
+                [
+                    QPoint(cx, cy - s),
+                    QPoint(cx - s, cy + s),
+                    QPoint(cx + s, cy + s),
+                ]
+            )
         elif symbol == "d":
-            painter.drawPolygon([
-                QPoint(cx, cy - s),
-                QPoint(cx - s, cy),
-                QPoint(cx, cy + s),
-                QPoint(cx + s, cy),
-            ])
+            painter.drawPolygon(
+                [
+                    QPoint(cx, cy - s),
+                    QPoint(cx - s, cy),
+                    QPoint(cx, cy + s),
+                    QPoint(cx + s, cy),
+                ]
+            )
         elif symbol in ("+", "x"):
             painter.drawText(pm.rect(), Qt.AlignCenter, symbol)
 
