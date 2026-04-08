@@ -7,7 +7,7 @@ University.
 
 from dataclasses import dataclass, field, InitVar
 from uuid import uuid4, UUID
-from typing import List, Optional, Callable
+from typing import List, Optional, Callable, Any
 import inspect
 import logging
 from ...core.enums import NodeType
@@ -114,7 +114,7 @@ class Node:
     node_type: InitVar[Optional[NodeType]] = NodeType.UNKNOWN
     name_editable: Optional[bool] = False
     attributes: Optional[dict] = field(default_factory=dict)
-    data: Optional[object] = None
+    data: Optional[Any] = None
     icon_name: Optional[object] = "text-x-generic"
 
     # Node traversal pointers

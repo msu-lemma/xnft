@@ -8,7 +8,6 @@ from enum import StrEnum, Enum
 from collections import namedtuple
 import unyt
 
-
 CoordinateSystemTuple = namedtuple("CoordinateSystemTuple", ["name", "components"])
 
 
@@ -56,22 +55,17 @@ class CoordinateSystemType(Enum):
 
     CARTESIAN = CoordinateSystemTuple(
         name="Cartesian (x,y,z)",
-        components=('x', 'y', 'z'),
+        components=("x", "y", "z"),
     )
     CYLINDRICAL = CoordinateSystemTuple(
         name="Cylindrical (ρ,φ,z)",
-        components=('rho', 'phi', 'z'),
+        components=("rho", "phi", "z"),
     )
-    SPHERICAL = CoordinateSystemTuple(
-        name="Spherical (φ,θ)",
-        components=('r', 'phi', 'theta')
-    )
-    DIRECTION_COSINE = CoordinateSystemTuple(
-        name="Direction Cosine (u,v)",
-        components=('u', 'v')
-    )
+    SPHERICAL = CoordinateSystemTuple(name="Spherical (φ,θ)", components=("r", "phi", "theta"))
+    DIRECTION_COSINE = CoordinateSystemTuple(name="Direction Cosine (u,v)", components=("u", "v"))
     SPHERICAL_AZEL = "Azimuth/Elevation"
     UNKNOWN = "Unknown"
+
 
 class AnalysisType(StrEnum):
     """Available analysis types."""
@@ -79,6 +73,7 @@ class AnalysisType(StrEnum):
     PLANAR_TRANSFORM = "Planar Near Field Transform"
     SPHERICAL_TRANSFORM = "Spherical Near Field Transform"
     UNKNOWN = "Unknown"
+
 
 class DataSourceType(StrEnum):
     """Available source file types."""
