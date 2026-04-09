@@ -33,7 +33,7 @@ def field_quantity_gain():
 
 class FieldQuantities(Enum):
     RE = FieldQuantity(
-        name="rE",
+        name="E",
         function=field_quantity_re,
         scales=(PlotScales.LINEAR, PlotScales.DECIBELS),
         field_types=(FieldType.NEAR, FieldType.FAR),  # ratio

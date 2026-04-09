@@ -195,7 +195,7 @@ class Plot1D(QWidget):
     def _update_abscissa(self):
         abscissa_name = self.abscissa.title() if isinstance(self.abscissa, str) else None
         abscissa_units = (
-            self.abscissa_units.title() if isinstance(self.abscissa_units, str) else None
+            self.abscissa_units if isinstance(self.abscissa_units, str) else None
         )
         self.plot.setLabel("bottom", text=abscissa_name, units=abscissa_units)
 
@@ -227,9 +227,12 @@ class Plot1D(QWidget):
                     self.abscissa = tp.abscissa
                     abscissa_values = source_field[tp.abscissa]
                     abscissa_units = tp.source_field.data.attrs["coordinate_units"][tp.abscissa]
+                    print(f'{abscissa_units=}')
                     if abscissa_units == unyt.radian:
-                        self.abscissa_units = str(unyt.degree)
+                        abscissa_units = str(unyt.degree)
                         abscissa_values = np.rad2deg(abscissa_values)
+                    
+                    self.abscissa_units = str(abscissa_units)
 
                     # -- Ordinate --
                     ordinate_raw_values = source_field.sel(**tp.slice_dict)
