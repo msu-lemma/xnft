@@ -149,28 +149,36 @@ class NewFieldMeasurementDialog(QDialog):
     def get_selections(self) -> dict:
         """Return values chosen by user."""
         data_polarization = self.cb_data_polarization.currentData()[0]
-        print(f'{data_polarization}')
+        print(f"{data_polarization}")
 
         if data_polarization == DataPolarizationType.COMBO_POL:
             file_info_list = [
                 FileInfo(
                     path=Path(self.fe_combined.le_path.text().strip()),
                     polarization={PolarizationType.CO_POL, PolarizationType.CROSS_POL},
-                    s_parameters=set(self.fe_combined.cb_sp.currentData()))
+                    s_parameters=set(self.fe_combined.cb_sp.currentData()),
+                )
             ]
         else:
-            file_info_list = [
-                FileInfo(
-                    path=Path(self.fe_co_pol.le_path.text().strip()),
-                    polarization=PolarizationType.CO_POL,
-                    s_parameters=set(self.fe_co_pol.cb_sp.currentData()),
-                ),
-                FileInfo(
-                    path=Path(self.fe_cx_pol.le_path.text().strip()),
-                    polarization=PolarizationType.CROSS_POL,
-                    s_parameters=set(self.fe_cx_pol.cb_sp.currentData()),
-                ),
-            ]
+            co_pol_path = self.fe_co_pol.le_path.text().strip()
+            cross_pol_path = self.fe_cx_pol.le_path.text().strip()
+            file_info_list = []
+            if co_pol_path:
+                file_info_list.append(
+                    FileInfo(
+                        path=Path(co_pol_path),
+                        polarization=PolarizationType.CO_POL,
+                        s_parameters=set(self.fe_co_pol.cb_sp.currentData()),
+                    )
+                )
+            if cross_pol_path:
+                file_info_list.append(
+                    FileInfo(
+                        path=Path(cross_pol_path),
+                        polarization=PolarizationType.CROSS_POL,
+                        s_parameters=set(self.fe_cx_pol.cb_sp.currentData()),
+                    )
+                )
 
         return {
             "field_type": self.cb_field_type.currentText().strip(),
