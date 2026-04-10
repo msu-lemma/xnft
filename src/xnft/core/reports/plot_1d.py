@@ -34,6 +34,7 @@ from PySide6.QtWidgets import (
     QPushButton,
     QLabel,
     QDialog,
+    QAbstractItemView
 )
 from PySide6.QtGui import QPixmap, QPainter, QPen, QColor
 
@@ -327,6 +328,13 @@ class TraceList(QTreeWidget):
         self.setAlternatingRowColors(True)
         self.setUniformRowHeights(True)
 
+        # Set editable enabled
+        self.setEditTriggers(
+            QAbstractItemView.DoubleClicked
+            | QAbstractItemView.EditKeyPressed
+            | QAbstractItemView.SelectedClicked
+        )
+
         self.itemChanged.connect(self._update_traces)
 
     def add_trace(self, trace):
@@ -343,6 +351,8 @@ class TraceList(QTreeWidget):
         item = QTreeWidgetItem(self)
         item.setText(0, trace.name())
         item.setData(0, Qt.UserRole, trace)
+
+        item.setFlags(item.flags() | Qt.ItemIsEditable)
 
         # # Checkbox column
         item.setCheckState(2, Qt.Checked if trace.isVisible() else Qt.Unchecked)
@@ -422,6 +432,15 @@ class TraceList(QTreeWidget):
         return label
 
     def _update_traces(self, item, column):
+        # Name column (allow user to update trace name)
+        if column == 0:
+            # Guard against updates before trace is fully populated
+            trace = item.data(0, Qt.UserRole)
+            if trace is not None:
+                x, y = trace.getData()
+                trace.setData(x=x, y=y, name=item.text(0))
+
+        # Trace enabled column
         if column == 2:
             enabled = item.checkState(2) == Qt.Checked
             item.data(0, Qt.UserRole).setVisible(enabled)
