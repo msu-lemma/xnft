@@ -49,6 +49,7 @@ from ....core.reports.field_components import FieldComponent
 from ....core.reports.field_quantities import FieldQuantities, FieldQuantity
 from ....core.reports.functions import PlotFunction
 from ....core.reports.scales import PlotScale
+from ....core.reports.plot_helpers import trace_preview
 
 
 @dataclass
@@ -558,7 +559,12 @@ class TraceStyleGroupBox(QGroupBox):
         }
         self.cb_line_style.clear()
         for name, style in self.line_styles.items():
-            icon = self._make_line_style_icon(style)
+            icon = trace_preview(
+                pen=QPen(Qt.black, 2, style),
+                background=Qt.transparent,
+                width=30,
+                height=20,
+            )
             self.cb_line_style.addItem(icon, name)
             self.cb_line_style.setItemData(self.cb_line_style.count() - 1, style, Qt.UserRole)
 
@@ -584,7 +590,16 @@ class TraceStyleGroupBox(QGroupBox):
         self.cb_marker_symbol.addItems(self.marker_symbol_map.keys())
         self.cb_marker_symbol.clear()
         for name, symbol in self.marker_symbol_map.items():
-            icon = self._make_marker_symbol_icon(symbol)
+            icon = trace_preview(
+                pen=None,
+                symbol=symbol,
+                symbol_brush=pg.mkBrush(QColor("black")),
+                symbol_pen=None,
+                symbol_size=10,
+                background=Qt.transparent,
+                width=20,
+                height=20,
+            )
             self.cb_marker_symbol.addItem(icon, name)
             self.cb_marker_symbol.setItemData(
                 self.cb_marker_symbol.count() - 1, symbol, Qt.UserRole
@@ -599,9 +614,9 @@ class TraceStyleGroupBox(QGroupBox):
 
         self._update_preview()
 
-        self.cb_line_style.currentIndexChanged.connect(self._update_preview)
-        self.sb_line_width.valueChanged.connect(self._update_preview)
-        self.cb_marker_symbol.currentIndexChanged.connect(self._update_preview)
+        self.cb_line_style.currentIndexChanged.connect(lambda _: self._update_preview())
+        self.sb_line_width.valueChanged.connect(lambda _: self._update_preview())
+        self.cb_marker_symbol.currentIndexChanged.connect(lambda _: self._update_preview())
 
         layout.addStretch()
 
@@ -648,69 +663,27 @@ class TraceStyleGroupBox(QGroupBox):
             """)
 
     def _update_preview(self, width=40, height=20):
-        # Get screen dpi to render image properly
-        dpr = QGuiApplication.primaryScreen().devicePixelRatio()
+        """Light wrapper on trace_preview to update preview for menu.
 
-        pixmap = QPixmap(int(width * dpr), int(height * dpr))
-        pixmap.setDevicePixelRatio(dpr)
-        pixmap.fill(Qt.transparent)
-
-        painter = QPainter(pixmap)
-        painter.setRenderHint(QPainter.Antialiasing, False)
-
-        pm = QPixmap(self.preview_label.size())
-
-        pm.fill(Qt.black)
-
-        painter = QPainter(pm)
-        painter.setRenderHint(QPainter.Antialiasing)
-
-        color = self.current_color
-
-        # === Draw line ===
-        pen = QPen(
-            color,
-            self.sb_line_width.value(),
-            self.line_styles[self.cb_line_style.currentText()],
+        Parameters
+        ----------
+        width : int, optional
+            Width of trace preview, by default 40
+        height : int, optional
+            Height of trace preview, by default 20
+        """
+        pixmap = trace_preview(
+            pen=self.get_pen(),
+            symbol=self.marker_symbol_map[self.cb_marker_symbol.currentText()],
+            symbol_brush=pg.mkBrush(self.current_color),
+            symbol_pen=None,
+            symbol_size=10,
+            background=Qt.black,
+            width=width,
+            height=height,
         )
-        painter.setPen(pen)
 
-        y = pm.height() // 2
-        painter.drawLine(2, y, pm.width() - 2, y)
-
-        # === Add marker_symbol ===
-        symbol = self.marker_symbol_map[self.cb_marker_symbol.currentText()]
-        if symbol:
-            painter.setBrush(color)
-            cx = pm.width() // 2
-            s = 3
-
-            if symbol == "o":  # circle
-                painter.drawEllipse(cx - s, y - s, 2 * s, 2 * s)
-            elif symbol == "s":  # square
-                painter.drawRect(cx - s, y - s, 2 * s, 2 * s)
-            elif symbol == "t":  # triangle
-                painter.drawPolygon(
-                    [
-                        QPoint(cx, y + s),
-                        QPoint(cx - s, y - s),
-                        QPoint(cx + s, y - s),
-                    ]
-                )
-            elif symbol == "d":  # diamond
-                painter.drawPolygon(
-                    [
-                        QPoint(cx, y - s),
-                        QPoint(cx - s, y),
-                        QPoint(cx, y + s),
-                        QPoint(cx + s, y),
-                    ]
-                )
-            elif symbol in ("+", "x"):
-                painter.drawText(pm.rect(), Qt.AlignCenter, symbol)
-
-        painter.end()
-        self.preview_label.setPixmap(pm)
+        self.preview_label.setPixmap(pixmap)
 
     @staticmethod
     def _make_line_style_icon(style, color=QColor("black")):
@@ -726,46 +699,4 @@ class TraceStyleGroupBox(QGroupBox):
         painter.drawLine(2, y, pm.width() - 2, y)
         painter.end()
 
-        return pm
-
-    @staticmethod
-    def _make_marker_symbol_icon(symbol, color=QColor("black")):
-        """Generate QListWidget line marker_symbol preview icon."""
-        pm = QPixmap(20, 20)
-        pm.fill(Qt.transparent)
-
-        if not symbol:
-            return pm
-
-        painter = QPainter(pm)
-        painter.setPen(color)
-        painter.setBrush(color)
-
-        cx, cy, s = 10, 10, 4
-
-        if symbol == "o":
-            painter.drawEllipse(cx - s, cy - s, 2 * s, 2 * s)
-        elif symbol == "s":
-            painter.drawRect(cx - s, cy - s, 2 * s, 2 * s)
-        elif symbol == "t":
-            painter.drawPolygon(
-                [
-                    QPoint(cx, cy - s),
-                    QPoint(cx - s, cy + s),
-                    QPoint(cx + s, cy + s),
-                ]
-            )
-        elif symbol == "d":
-            painter.drawPolygon(
-                [
-                    QPoint(cx, cy - s),
-                    QPoint(cx - s, cy),
-                    QPoint(cx, cy + s),
-                    QPoint(cx + s, cy),
-                ]
-            )
-        elif symbol in ("+", "x"):
-            painter.drawText(pm.rect(), Qt.AlignCenter, symbol)
-
-        painter.end()
         return pm

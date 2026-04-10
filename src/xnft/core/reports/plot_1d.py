@@ -17,7 +17,6 @@ import xarray as xr
 from types import NoneType
 import unyt
 
-from pyqtgraph.graphicsItems.ScatterPlotItem import Symbols
 
 
 from PySide6.QtCore import Qt, QTimer
@@ -38,12 +37,13 @@ from PySide6.QtWidgets import (
     QDialog,
     QAbstractItemView,
 )
-from PySide6.QtGui import QPixmap, QPainter, QPen, QColor, QPainterPath, QTransform
 
 from ..enums import CoordinateSystemType
 from ...project.nodes.node import DataNode
 from ...core.reports.scales import PlotScale
 from ...gui.dialogs.reports.new_trace_dialog import NewTraceDialog, TraceParameters
+from .plot_helpers import trace_preview
+
 
 logger = logging.getLogger(__name__)
 
@@ -225,15 +225,12 @@ class Plot1D(QWidget):
                     else:
                         raise RuntimeError("Source field data is not populated.")
 
-                    self.abscissa = tp.abscissa
                     abscissa_values = source_field[tp.abscissa]
                     abscissa_units = tp.source_field.data.attrs["coordinate_units"][tp.abscissa]
 
                     if abscissa_units == unyt.radian:
                         abscissa_units = str(unyt.degree)
                         abscissa_values = np.rad2deg(abscissa_values)
-
-                    self.abscissa_units = str(abscissa_units)
 
                     # -- Ordinate --
                     ordinate_raw_values = source_field.sel(**tp.slice_dict)
@@ -276,6 +273,16 @@ class Plot1D(QWidget):
             # Must add trace to plot before widget to generate trace icon properly for legend
             self.plot.addItem(trace)
             self.trace_list_widget.add_trace(trace)
+
+            # Set Abscissa units
+            tp = trace.trace_parameters
+            self.abscissa = tp.abscissa
+            abscissa_units = tp.source_field.data.attrs["coordinate_units"][tp.abscissa]
+
+            if abscissa_units == unyt.radian:
+                abscissa_units = str(unyt.degree)
+
+            self.abscissa_units = str(abscissa_units)
 
             # Set ordiante units
             # self._update_ordinate()
@@ -399,55 +406,20 @@ class TraceList(QTreeWidget):
             QLabel containing the Pixmap to show in the table widget
         """
         # Get screen dpi to render image properly
-        screen = trace.scene().views()[0].screen()
-        dpr = screen.devicePixelRatio() if screen else 1.0
+        # screen = trace.scene().views()[0].screen()
+        # dpr = screen.devicePixelRatio() if screen else 1.0
 
-        pixmap = QPixmap(int(width * dpr), int(height * dpr))
-        pixmap.setDevicePixelRatio(dpr)
-        pixmap.fill(Qt.transparent)
+        # pixmap = QPixmap(int(width * dpr), int(height * dpr))
+        # pixmap.setDevicePixelRatio(dpr)
 
-        painter = QPainter(pixmap)
-        painter.setRenderHint(QPainter.Antialiasing, False)
-
-        pen = trace.opts.get("pen", None)
-        if pen is not None:
-            pen = pg.mkPen(pen)
-            pen.setCosmetic(True)
-            painter.setPen(pen)
-            y = height // 2
-            painter.drawLine(4, y, width - 4, y)
-
-        symbol = trace.opts.get("symbol", None)
-        if symbol:
-            symbol_pen = pg.mkPen(trace.opts.get("symbolPen"))
-            symbol_brush = pg.mkBrush(trace.opts.get("symbolBrush"))
-            size = trace.opts.get("symbolSize", 10)
-
-            painter.setPen(symbol_pen)
-            painter.setBrush(symbol_brush)
-
-            center_x = width // 2
-            center_y = height // 2
-
-            # drawSymbol(painter, symbol, center_x, center_y, size)
-
-            # Draw marker
-            path_obj = Symbols.get(symbol)
-            if path_obj is None:
-                return None
-
-            if callable(path_obj):
-                path = path_obj(size)
-            else:
-                path = QPainterPath(path_obj)
-                path = QTransform().scale(size, size).map(path)
-
-            painter.save()
-            painter.translate(center_x, center_y)
-            painter.drawPath(path)
-            painter.restore()
-
-        painter.end()
+        pixmap = trace_preview(
+            pen=trace.curve.opts['pen'],
+            symbol=trace.opts['symbol'],
+            symbol_brush=trace.opts['symbolBrush'],
+            symbol_pen=trace.opts['symbolPen'],
+            symbol_size=trace.opts['symbolSize'],
+            background=Qt.black,
+        )
 
         label = QLabel()
         label.setPixmap(pixmap)
