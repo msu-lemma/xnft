@@ -8,7 +8,7 @@ import numpy as np
 from collections import namedtuple
 from enum import Enum
 
-PlotNorm = namedtuple("PlotNorm", ("name", "function", "enabled", "units_modifier"))
+PlotNorm = namedtuple("PlotNorm", ("name", "function", "enabled", "unit_modifier"))
 
 
 def local_maxima(x):
@@ -16,4 +16,4 @@ def local_maxima(x):
 
 
 class PlotNorms(Enum):
-    LOCAL_MAXIMA = PlotNorm(name="Local Maxima", function=lambda x: x / np.max(np.abs(x)), units_modifier=lambda x: "N.U.", enabled=True)
+    LOCAL_MAXIMA = PlotNorm(name="Local Maxima", function=lambda x: x / np.max(np.abs(x)), unit_modifier=lambda x: "N.U.", enabled=True)

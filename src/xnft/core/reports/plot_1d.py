@@ -194,9 +194,7 @@ class Plot1D(QWidget):
 
     def _update_abscissa(self):
         abscissa_name = self.abscissa.title() if isinstance(self.abscissa, str) else None
-        abscissa_units = (
-            self.abscissa_units if isinstance(self.abscissa_units, str) else None
-        )
+        abscissa_units = self.abscissa_units if isinstance(self.abscissa_units, str) else None
         self.plot.setLabel("bottom", text=abscissa_name, units=abscissa_units)
 
     def _update_ordinate(self):
@@ -231,7 +229,7 @@ class Plot1D(QWidget):
                     if abscissa_units == unyt.radian:
                         abscissa_units = str(unyt.degree)
                         abscissa_values = np.rad2deg(abscissa_values)
-                    
+
                     self.abscissa_units = str(abscissa_units)
 
                     # -- Ordinate --
@@ -239,7 +237,18 @@ class Plot1D(QWidget):
                     ordinate_values = tp.ordinate_scale.function(
                         tp.ordinate_function.function(tp.field_norm.function(ordinate_raw_values))
                     )
-                    ordinate_units = tp.field_norm.units_modifier(tp.field_quantity.units)
+
+                    ordinate_units = tp.ordinate_scale.unit_modifier(
+                        tp.field_norm.unit_modifier(tp.field_quantity.units)
+                    )
+
+                    ordinate_name = tp.field_quantity.name
+
+                    # Update ordinate name if a function is applied
+                    if tp.ordinate_function is not None:
+                        ordinate_name = f'{tp.ordinate_function.name_short}({ordinate_name})'
+
+
 
                     # -- Trace ---
                     trace = PlotTrace(
@@ -248,7 +257,7 @@ class Plot1D(QWidget):
                         name=tp.trace_name,
                         source=tp.source_field,
                         trace_parameters=tp,
-                        ordinate_name=tp.field_quantity.name,
+                        ordinate_name=ordinate_name,
                         ordinate_scale=tp.ordinate_scale,
                         ordinate_units=ordinate_units,
                     )

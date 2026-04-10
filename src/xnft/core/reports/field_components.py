@@ -62,7 +62,7 @@ class FieldComponents(Enum):
     TOTAL = FieldComponent(
         name="Total",
         function=lambda x: x,  # Pass everything through
-        scales=(PlotScales.LINEAR, PlotScales.DECIBELS),
+        scales=(PlotScales.LINEAR, PlotScales.DECIBELS_20),
         field_types={FieldType.NEAR, FieldType.FAR},
         plot_functions=PlotFunctions,  # All plot functions valid
         enabled=True,
@@ -70,7 +70,7 @@ class FieldComponents(Enum):
     X = FieldComponent(
         name="X",
         function=field_component_x,
-        scales=(PlotScales.LINEAR, PlotScales.DECIBELS),
+        scales=(PlotScales.LINEAR, PlotScales.DECIBELS_20),
         field_types={FieldType.NEAR, FieldType.FAR},
         plot_functions=PlotFunctions,  # All plot functions valid
         enabled=False,
@@ -78,7 +78,7 @@ class FieldComponents(Enum):
     Y = FieldComponent(
         name="Y",
         function=field_component_y,
-        scales=(PlotScales.LINEAR, PlotScales.DECIBELS),
+        scales=(PlotScales.LINEAR, PlotScales.DECIBELS_20),
         field_types={FieldType.NEAR, FieldType.FAR},
         plot_functions=PlotFunctions,  # All plot functions valid
         enabled=False,
@@ -86,7 +86,7 @@ class FieldComponents(Enum):
     Z = FieldComponent(
         name="Z",
         function=field_component_z,
-        scales=(PlotScales.LINEAR, PlotScales.DECIBELS),
+        scales=(PlotScales.LINEAR, PlotScales.DECIBELS_20),
         field_types={FieldType.NEAR, FieldType.FAR},
         plot_functions=PlotFunctions,  # All plot functions valid
         enabled=False,
@@ -94,7 +94,7 @@ class FieldComponents(Enum):
     R = FieldComponent(
         name="R",
         function=field_component_r,
-        scales=(PlotScales.LINEAR, PlotScales.DECIBELS),
+        scales=(PlotScales.LINEAR, PlotScales.DECIBELS_20),
         field_types={FieldType.NEAR, FieldType.FAR},
         plot_functions=PlotFunctions,  # All plot functions valid
         enabled=False,
@@ -102,7 +102,7 @@ class FieldComponents(Enum):
     THETA = FieldComponent(
         name="Theta",  # "θ",
         function=field_component_theta,
-        scales=(PlotScales.LINEAR, PlotScales.DECIBELS),
+        scales=(PlotScales.LINEAR, PlotScales.DECIBELS_20),
         field_types={FieldType.NEAR, FieldType.FAR},
         plot_functions=PlotFunctions,  # All plot functions valid
         enabled=False,
@@ -110,7 +110,7 @@ class FieldComponents(Enum):
     PHI = FieldComponent(
         name="Phi",  # "φ",
         function=field_component_phi,
-        scales=(PlotScales.LINEAR, PlotScales.DECIBELS),
+        scales=(PlotScales.LINEAR, PlotScales.DECIBELS_20),
         field_types={FieldType.NEAR, FieldType.FAR},
         plot_functions=PlotFunctions,  # All plot functions valid
         enabled=False,
@@ -118,7 +118,7 @@ class FieldComponents(Enum):
     LUDWIG_3_REF = FieldComponent(
         name="L3 Ref.",
         function=field_component_l3_ref,
-        scales=(PlotScales.LINEAR, PlotScales.DECIBELS),
+        scales=(PlotScales.LINEAR, PlotScales.DECIBELS_20),
         field_types={FieldType.FAR},
         plot_functions=PlotFunctions,  # All plot functions valid
         enabled=False,
@@ -126,7 +126,7 @@ class FieldComponents(Enum):
     LUDWIG_3_CROSS = FieldComponent(
         name="L3 Cross",
         function=field_component_l3_cross,
-        scales=(PlotScales.LINEAR, PlotScales.DECIBELS),
+        scales=(PlotScales.LINEAR, PlotScales.DECIBELS_20),
         field_types={FieldType.FAR},
         plot_functions=PlotFunctions,  # All plot functions valid
         enabled=False,

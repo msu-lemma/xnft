@@ -35,7 +35,7 @@ class FieldQuantities(Enum):
     RE = FieldQuantity(
         name="E",
         function=field_quantity_re,
-        scales=(PlotScales.LINEAR, PlotScales.DECIBELS),
+        scales=(PlotScales.LINEAR, PlotScales.DECIBELS_20),
         field_types=(FieldType.NEAR, FieldType.FAR),  # ratio
         field_components=FieldComponents,  # All components valid
         enabled=True,
@@ -44,7 +44,7 @@ class FieldQuantities(Enum):
     GAIN = FieldQuantity(
         name="Gain",
         function=field_quantity_gain,
-        scales=(PlotScales.LINEAR, PlotScales.DECIBELS),
+        scales=(PlotScales.LINEAR, PlotScales.DECIBELS_20),
         field_types=(FieldType.FAR),  # ratio
         field_components=FieldComponents,  # All components valid
         enabled=False,

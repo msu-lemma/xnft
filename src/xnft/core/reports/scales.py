@@ -8,31 +8,37 @@ import numpy as np
 from collections import namedtuple
 from enum import Enum
 
-PlotScale = namedtuple("PlotScale", ("name", "function", "unit", "enabled"))
+PlotScale = namedtuple("PlotScale", ("name", "function", "unit_modifier", "enabled"))
 
 
 class PlotScales(Enum):
     LINEAR = PlotScale(
         name="Linear",
         function=lambda x: x,
-        unit=None,
+        unit_modifier=lambda x: x,
         enabled=True,
     )
-    DECIBELS = PlotScale(
-        name="Decibels",
+    DECIBELS_20 = PlotScale(
+        name="dB (20·log10)",
         function=lambda x: 20 * np.log10(x),
-        unit="dB",
+        unit_modifier=lambda x: f"dB({x})",
+        enabled=True,
+    )
+    DECIBELS_10 = PlotScale(
+        name="dB (10·log10)",
+        function=lambda x: 20 * np.log10(x),
+        unit_modifier=lambda x: f"dB({x})",
         enabled=True,
     )
     DEGREES = PlotScale(
         name="Degrees",
         function=lambda x: np.rad2deg(x),
-        unit="°",
+        unit_modifier=lambda x: "°",
         enabled=True,
     )
     RADIANS = PlotScale(
         name="Radians",
         function=lambda x: x,
-        unit="rad",
+        unit_modifier=lambda x: "rad",
         enabled=True,
     )

@@ -12,7 +12,7 @@ from collections import namedtuple
 from .scales import PlotScales
 from ..enums import FieldType
 
-PlotFunction = namedtuple("PlotFunction", ("name", "function", "scales", "field_types", "enabled"))
+PlotFunction = namedtuple("PlotFunction", ("name", "name_short", "function", "scales", "field_types", "enabled"))
 
 
 def plot_mag(field: xr.DataArray):
@@ -23,7 +23,7 @@ def plot_mag(field: xr.DataArray):
 
 
 def plot_phase(field: xr.DataArray):
-    if len(field.shape) > 2:
+    if len(field.shape) >= 2:
         # Only compute the x-y and phi-theta components (not the z/rho)
         return np.angle(np.sum(field[:2], axis=0))
     else:
@@ -33,14 +33,16 @@ def plot_phase(field: xr.DataArray):
 class PlotFunctions(Enum):
     MAGNITUDE = PlotFunction(
         name="Magnitude",
+        name_short="mag",
         function=plot_mag,
-        scales=(PlotScales.DECIBELS, PlotScales.LINEAR),
+        scales=(PlotScales.DECIBELS_20, PlotScales.LINEAR),
         field_types=(FieldType.NEAR, FieldType.FAR),
         enabled=True,
     )
 
     PHASE = PlotFunction(
         name="Phase",
+        name_short="ang",
         function=plot_phase,
         scales=(PlotScales.DEGREES, PlotScales.RADIANS),
         field_types=(FieldType.NEAR, FieldType.FAR),
