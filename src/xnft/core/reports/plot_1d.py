@@ -17,6 +17,8 @@ import xarray as xr
 from types import NoneType
 import unyt
 
+from pyqtgraph.graphicsItems.ScatterPlotItem import Symbols
+
 
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import (
@@ -34,9 +36,9 @@ from PySide6.QtWidgets import (
     QPushButton,
     QLabel,
     QDialog,
-    QAbstractItemView
+    QAbstractItemView,
 )
-from PySide6.QtGui import QPixmap, QPainter, QPen, QColor
+from PySide6.QtGui import QPixmap, QPainter, QPen, QColor, QPainterPath, QTransform
 
 from ..enums import CoordinateSystemType
 from ...project.nodes.node import DataNode
@@ -247,15 +249,19 @@ class Plot1D(QWidget):
 
                     # Update ordinate name if a function is applied
                     if tp.ordinate_function is not None:
-                        ordinate_name = f'{tp.ordinate_function.name_short}({ordinate_name})'
-
-
+                        ordinate_name = f"{tp.ordinate_function.name_short}({ordinate_name})"
 
                     # -- Trace ---
                     trace = PlotTrace(
+                        # -- PlotDataItem Parameters --
                         x=abscissa_values,
                         y=ordinate_values,
                         name=tp.trace_name,
+                        pen=tp.trace_pen,
+                        symbol=tp.trace_marker_symbol,
+                        symbolBrush=pg.mkBrush(tp.trace_pen.color()),
+                        symbolPen=None,
+                        # -- Added PlotTrace Parameters --
                         source=tp.source_field,
                         trace_parameters=tp,
                         ordinate_name=ordinate_name,
@@ -422,7 +428,24 @@ class TraceList(QTreeWidget):
 
             center_x = width // 2
             center_y = height // 2
-            pg.functions.drawSymbol(painter, symbol, center_x, center_y, size=size)
+
+            # drawSymbol(painter, symbol, center_x, center_y, size)
+
+            # Draw marker
+            path_obj = Symbols.get(symbol)
+            if path_obj is None:
+                return None
+
+            if callable(path_obj):
+                path = path_obj(size)
+            else:
+                path = QPainterPath(path_obj)
+                path = QTransform().scale(size, size).map(path)
+
+            painter.save()
+            painter.translate(center_x, center_y)
+            painter.drawPath(path)
+            painter.restore()
 
         painter.end()
 

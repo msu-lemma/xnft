@@ -43,15 +43,19 @@ from typing import List, Optional, Callable, Any
 from numpy.typing import ArrayLike
 
 from ....core.enums import NodeType
-from ....project.nodes.node import Node
-from ....core.reports.normalizations import PlotNorms
-from ....core.reports.field_quantities import FieldQuantities
+from ....project.nodes.node import Node, DataNode
+from ....core.reports.normalizations import PlotNorms, PlotNorm
+from ....core.reports.field_components import FieldComponent
+from ....core.reports.field_quantities import FieldQuantities, FieldQuantity
+from ....core.reports.functions import PlotFunction
+from ....core.reports.scales import PlotScale
 
 
 @dataclass
 class TraceParameters:
     trace_name: str
-    trace_style_dict: dict[str, Any]
+    trace_pen: QPen
+    trace_marker_symbol: str
     source_field: DataNode
     abscissa: str
     slice_dict: dict[str, ArrayLike]
@@ -259,20 +263,15 @@ class NewTraceDialog(QDialog):
 
             # -- Trace Style --
             if len(slice_list_products) == 1:
-                trace_style_dict = {
-                    "color": self.trace_style.current_color,
-                    "line_style": self.trace_style.cb_line_style.currentData(),
-                    "line_width": self.trace_style.sb_line_width.cleanText(),
-                    "marker": self.trace_style.cb_marker.currentData(),
-                }
+                trace_pen = self.trace_style.get_pen()
+                trace_marker_symbol = self.trace_style.cb_marker_symbol.currentData()
             else:
-                # Cycle over trace colors
-                trace_style_dict = {
-                    "color": QColor(cc.glasbey_light[idx]),
-                    "line_style": Qt.SolidLine,
-                    "line_width": 1.0,
-                    "marker": None,
-                }
+                trace_pen = pg.mkPen(
+                    color=QColor(cc.glasbey_light[idx]),
+                    width=1.0,
+                    style=Qt.SolidLin,
+                )
+                trace_marker_symbol = None
 
             # -- Slice Parameters --
             slice_dict: dict[str, ArrayLike] = {
@@ -281,7 +280,8 @@ class NewTraceDialog(QDialog):
 
             trace_params = TraceParameters(
                 trace_name=trace_name,
-                trace_style_dict=trace_style_dict,
+                trace_pen=trace_pen,
+                trace_marker_symbol=trace_marker_symbol,
                 # -- Source Data --
                 source_field=self.lwt_source_field.lw.selectedItems()[0].data(Qt.UserRole),
                 abscissa=self.lwt_abscissa.lw.selectedItems()[0].data(Qt.UserRole),
@@ -570,9 +570,9 @@ class TraceStyleGroupBox(QGroupBox):
         self.sb_line_width.setValue(1)
         layout.addLayout(self._labeled_control("Width", self.sb_line_width))
 
-        # -- Marker --
-        self.cb_marker = QComboBox()
-        self.marker_map = {
+        # -- marker_symbol --
+        self.cb_marker_symbol = QComboBox()
+        self.marker_symbol_map = {
             "None": None,
             "Circle": "o",
             "Square": "s",
@@ -581,13 +581,15 @@ class TraceStyleGroupBox(QGroupBox):
             "Plus": "+",
             "X": "x",
         }
-        self.cb_marker.addItems(self.marker_map.keys())
-        self.cb_marker.clear()
-        for name, symbol in self.marker_map.items():
-            icon = self._make_marker_icon(symbol)
-            self.cb_marker.addItem(icon, name)
-            self.cb_marker.setItemData(self.cb_marker.count() - 1, symbol, Qt.UserRole)
-        layout.addLayout(self._labeled_control("Marker", self.cb_marker))
+        self.cb_marker_symbol.addItems(self.marker_symbol_map.keys())
+        self.cb_marker_symbol.clear()
+        for name, symbol in self.marker_symbol_map.items():
+            icon = self._make_marker_symbol_icon(symbol)
+            self.cb_marker_symbol.addItem(icon, name)
+            self.cb_marker_symbol.setItemData(
+                self.cb_marker_symbol.count() - 1, symbol, Qt.UserRole
+            )
+        layout.addLayout(self._labeled_control("marker_symbol", self.cb_marker_symbol))
 
         # -- Final Trace Preview --
         self.preview_label = QLabel()
@@ -599,7 +601,7 @@ class TraceStyleGroupBox(QGroupBox):
 
         self.cb_line_style.currentIndexChanged.connect(self._update_preview)
         self.sb_line_width.valueChanged.connect(self._update_preview)
-        self.cb_marker.currentIndexChanged.connect(self._update_preview)
+        self.cb_marker_symbol.currentIndexChanged.connect(self._update_preview)
 
         layout.addStretch()
 
@@ -676,8 +678,8 @@ class TraceStyleGroupBox(QGroupBox):
         y = pm.height() // 2
         painter.drawLine(2, y, pm.width() - 2, y)
 
-        # === Add marker ===
-        symbol = self.marker_map[self.cb_marker.currentText()]
+        # === Add marker_symbol ===
+        symbol = self.marker_symbol_map[self.cb_marker_symbol.currentText()]
         if symbol:
             painter.setBrush(color)
             cx = pm.width() // 2
@@ -690,9 +692,9 @@ class TraceStyleGroupBox(QGroupBox):
             elif symbol == "t":  # triangle
                 painter.drawPolygon(
                     [
-                        QPoint(cx, y - s),
-                        QPoint(cx - s, y + s),
-                        QPoint(cx + s, y + s),
+                        QPoint(cx, y + s),
+                        QPoint(cx - s, y - s),
+                        QPoint(cx + s, y - s),
                     ]
                 )
             elif symbol == "d":  # diamond
@@ -727,8 +729,8 @@ class TraceStyleGroupBox(QGroupBox):
         return pm
 
     @staticmethod
-    def _make_marker_icon(symbol, color=QColor("black")):
-        """Generate QListWidget line marker preview icon."""
+    def _make_marker_symbol_icon(symbol, color=QColor("black")):
+        """Generate QListWidget line marker_symbol preview icon."""
         pm = QPixmap(20, 20)
         pm.fill(Qt.transparent)
 
