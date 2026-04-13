@@ -227,9 +227,7 @@ class Plot1D(QWidget):
 
                     abscissa_values = source_field[tp.abscissa]
                     abscissa_units = tp.source_field.data.attrs["coordinate_units"][tp.abscissa]
-
                     if abscissa_units == unyt.radian:
-                        abscissa_units = str(unyt.degree)
                         abscissa_values = np.rad2deg(abscissa_values)
 
                     # -- Ordinate --
