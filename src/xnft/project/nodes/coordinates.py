@@ -35,31 +35,39 @@ class CoordinatesNode(Node):
 
 @dataclass(kw_only=True)
 class CoordinateNode(DataNode):
-    coordinate_type: InitVar[Optional[CoordinateSystemType]] = None
-
-    # source: InitVar[Optional[Node]] = None
+    _coordinate_type: CoordinateSystemType = field(
+        default=CoordinateSystemType.UNKNOWN,
+        init=False,
+        repr=False,
+    )
 
     name_editable: Optional[bool] = True
 
-    def __post_init__(
-            self, 
-            name: Optional[str] = None, 
-            node_type: Optional[NodeType] = NodeType.UNKNOWN,
-            source: Optional[Node | None] = None,
-            coordinate_type: Optional[CoordinateSystemType] = CoordinateSystemType.UNKNOWN,
-        ):
-        super().__post_init__(name=name, node_type=node_type, source=source)
-
-        self.node_type = NodeType.COORDINATES
+    def __init__(
+        self,
+        *,
+        name: Optional[str] = None,
+        source: Optional[Node] = None,
+        coordinate_type: CoordinateSystemType = CoordinateSystemType.UNKNOWN,
+        **kwargs,
+    ):
+        super().__init__(
+            name=name,
+            node_type=NodeType.COORDINATES,
+            source=source,
+            **kwargs,
+        )
         self.coordinate_type = coordinate_type
 
     @property
     @gui_property(label="System", order=4)
     def coordinate_type(self):
         return self._coordinate_type
-    
+
     @coordinate_type.setter
     def coordinate_type(self, system: CoordinateSystemType):
         if not isinstance(system, CoordinateSystemType):
-            raise TypeError(f'Argument "system" must be of type {CoordinateSystemType} got {type(system)}')
+            raise TypeError(
+                f'Argument "system" must be of type {CoordinateSystemType} got {type(system)}'
+            )
         self._coordinate_type = system

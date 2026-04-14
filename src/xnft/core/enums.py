@@ -18,7 +18,7 @@ class NodeType(StrEnum):
     FIELDS = "Fields"
     ANALYSIS = "Analysis"
     COORDINATES = "Coordinates"
-    RESULTS = "Results"
+    REPORTS = "Reports"
     MODEL = "Model"
     UNKNOWN = "Unknown"
 
@@ -61,7 +61,10 @@ class CoordinateSystemType(Enum):
         name="Cylindrical (ρ,φ,z)",
         components=("rho", "phi", "z"),
     )
-    SPHERICAL = CoordinateSystemTuple(name="Spherical (φ,θ)", components=("r", "phi", "theta"))
+    SPHERICAL = CoordinateSystemTuple(
+        name="Spherical (φ,θ)",
+        components=("r", "phi", "theta"),
+    )
     DIRECTION_COSINE = CoordinateSystemTuple(name="Direction Cosine (u,v)", components=("u", "v"))
     SPHERICAL_AZEL = "Azimuth/Elevation"
     UNKNOWN = "Unknown"

@@ -42,6 +42,8 @@ from uuid import uuid4, UUID
 from typing import List, Optional, Callable, Any
 from numpy.typing import ArrayLike
 
+from ..common import ListWidgetTitle
+
 from ....core.enums import NodeType
 from ....project.nodes.node import Node, DataNode
 from ....core.reports.normalizations import PlotNorms, PlotNorm
@@ -410,11 +412,13 @@ class NewTraceDialog(QDialog):
             field_components = self.selected_field_quantity.field_components
 
             for fc in field_components:
-                item = QListWidgetItem(fc.value.name)
-                item.setData(Qt.UserRole, fc.value)
-                if not fc.value.enabled:
-                    item.setFlags(item.flags() & ~Qt.ItemIsEnabled)
-                self.lwt_field_component.lw.addItem(item)
+                # Only add if field type is valid for that function
+                if self.selected_field.data.attrs['field_type'] in fc.value.field_types:
+                    item = QListWidgetItem(fc.value.name)
+                    item.setData(Qt.UserRole, fc.value)
+                    if not fc.value.enabled:
+                        item.setFlags(item.flags() & ~Qt.ItemIsEnabled)
+                    self.lwt_field_component.lw.addItem(item)
 
             self.lwt_field_component.lw.setCurrentRow(0)
 
@@ -514,21 +518,6 @@ class NewTraceDialog(QDialog):
     def _on_accept(self) -> None:
         if self._is_input_valid(silent=False):
             self.accept()
-
-
-class ListWidgetTitle(QWidget):
-    def __init__(self, label: str, parent=None):
-        super().__init__(parent)
-
-        self.layout = QVBoxLayout(self)
-        self.layout.setContentsMargins(0, 0, 0, 0)
-
-        self.name = label
-        self.label = QLabel(label)
-        self.lw = QListWidget()
-
-        self.layout.addWidget(self.label)
-        self.layout.addWidget(self.lw)
 
 
 class TraceStyleGroupBox(QGroupBox):

@@ -73,9 +73,7 @@ class ProjectManagerTreeModel(QAbstractItemModel):
             parent_node = parent.internalPointer()
             return parent_node.child_count
 
-    def index(
-        self, row: int, column: int, parent=QModelIndex()
-    ) -> QModelIndex:
+    def index(self, row: int, column: int, parent=QModelIndex()) -> QModelIndex:
         """Return QModelIndex at requested location."""
         # Top-level node is project manager
         if not parent.isValid():

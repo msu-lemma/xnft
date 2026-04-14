@@ -13,7 +13,7 @@ import logging
 from .node import Node, NodeType, context_action, gui_property
 from .fields import FieldsNode
 from .analysis import AnalysisNode
-from .results import ResultsNode
+from .reports import ReportsNode
 from .coordinates import CoordinatesNode
 from .model import ModelNode
 from ..project_loader import write_project
@@ -36,7 +36,7 @@ class Project(Node):
         # Add default project nodes
         self.add_child(FieldsNode())
         self.add_child(AnalysisNode())
-        self.add_child(ResultsNode())
+        self.add_child(ReportsNode())
         self.add_child(CoordinatesNode())
         self.add_child(ModelNode())
 
@@ -90,7 +90,7 @@ class Project(Node):
     @context_action(
         "Close Project",
         order=20,
-        enabled=True,
+        enabled=False,
         icon_name="window-close",
         action="close_project",
         separator=True,

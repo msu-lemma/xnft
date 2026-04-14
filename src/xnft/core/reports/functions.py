@@ -12,18 +12,48 @@ from collections import namedtuple
 from .scales import PlotScales
 from ..enums import FieldType
 
-PlotFunction = namedtuple("PlotFunction", ("name", "name_short", "function", "scales", "field_types", "enabled"))
+PlotFunction = namedtuple(
+    "PlotFunction", ("name", "name_short", "function", "scales", "field_types", "enabled")
+)
 
 
-def plot_mag(field: xr.DataArray):
-    if len(field.shape) >= 2:
+def plot_mag(field: xr.DataArray, dim=2):
+    """Plot magnitude of a quantity
+
+    Parameters
+    ----------
+    field : xr.DataArray
+        Field the function is applied to.
+    dim : int, optional
+        Number of dimensions remaining after transform, by default 2
+
+    Returns
+    -------
+    ArrayLike
+        Field value after function is applied
+    """
+    if len(field.shape) >= dim + 1:
         return np.linalg.norm(field, axis=0)
     else:
         return np.abs(field)
 
 
-def plot_phase(field: xr.DataArray):
-    if len(field.shape) >= 2:
+def plot_phase(field: xr.DataArray, dim=2):
+    """Plot phase angle of a quantity
+
+    Parameters
+    ----------
+    field : xr.DataArray
+        Field the function is applied to.
+    dim : int, optional
+        Number of dimensions remaining after transform, by default 2
+
+    Returns
+    -------
+    ArrayLike
+        Field value after function is applied
+    """
+    if len(field.shape) >= dim + 1:
         # Only compute the x-y and phi-theta components (not the z/rho)
         return np.angle(np.sum(field[:2], axis=0))
     else:

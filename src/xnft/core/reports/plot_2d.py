@@ -32,6 +32,10 @@ from PySide6.QtWidgets import (
 )
 from ..enums import CoordinateSystemType, Units, FieldType
 
+
+from .normalizations import PlotNorms, PlotNorm
+from .field_components import FieldComponent
+from .field_quantities import FieldQuantities, FieldQuantity
 from .functions import PlotFunctions
 from .scales import PlotScales
 from ..coordinate_transforms import phitheta_to_unit
@@ -94,6 +98,13 @@ class Plot2D(QWidget):
         layout_controls.addWidget(QLabel("Frequency"))
         layout_controls.addWidget(self.lw_frequency_range)
 
+        # -- Add Field Quantity Selection --
+
+        self.cb_field_quantity = QComboBox()
+        self.cb_field_quantity.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        layout_controls.addWidget(QLabel("Field Quantity"))
+        layout_controls.addWidget(self.cb_field_quantity)
+
         # -- Add Field Component Selection --
 
         self.cb_field_component = QComboBox()
@@ -134,11 +145,13 @@ class Plot2D(QWidget):
         self._update_frequency_options()
         self.lw_frequency_range.setCurrentRow(0)
 
+        self._update_report_field_quantities()
         self._update_report_field_components()
         self._update_plotting_domain_options()
 
         self._update_plotting_function_options()
         self._update_plotting_scale_options()
+        self._update_plotting_norm_options()
 
         # === Add 2D Field View ===
         self.glw = pg.GraphicsLayoutWidget()
@@ -184,10 +197,12 @@ class Plot2D(QWidget):
         main_layout.addWidget(layout)
 
         # ---- Connections ----
+        self.cb_field_quantity.currentTextChanged.connect(self._update_plot)
         self.lw_frequency_range.itemSelectionChanged.connect(self._update_plot)
         self.cb_field_component.currentTextChanged.connect(self._update_plot)
         self.cb_plot_domain.currentTextChanged.connect(self._update_plot)
         self.cb_plot_function.currentTextChanged.connect(self._update_plot)
+        self.cb_plot_norm.currentTextChanged.connect(self._update_plot)
 
         self.cb_plot_function.currentTextChanged.connect(self._update_plotting_scale_options)
         self.cb_plot_scale.currentTextChanged.connect(self._update_plot)
@@ -197,28 +212,102 @@ class Plot2D(QWidget):
 
         QTimer.singleShot(0, lambda: layout.setSizes([100, 1000]))
 
+    # --- Properties ---
+
+    @property
+    def selected_field_quantity(self):
+        return self.cb_field_quantity.currentData()
+
+    @property
+    def selected_field_component(self):
+        return self.cb_field_component.currentData()
+
+    @property
+    def selected_field_function(self):
+        return self.cb_plot_function.currentData()
+
+    @property
+    def selected_field_scale(self):
+        return self.cb_plot_scale.currentData()
+
+    @property
+    def selected_field_norm(self):
+        return self.cb_plot_norm.currentData()
+    
+    # --- Public Methods ---
+    def get_transformed_data(self):
+        # Only one item can be selected at a time
+        selected_frequency = self.lw_frequency_range.selectedItems()[0].data(Qt.UserRole)
+
+        cb_component = self.cb_field_component.currentText()
+        if cb_component in self.field.data.coords["component"]:
+            component = cb_component
+        else:
+            component = self.field.data.coords["component"]
+
+        logger.debug(f"{component=}")
+
+        field_data = self.field.data.sel(frequency=selected_frequency, component=component)
+        logger.debug(f"{type(field_data)=}")
+
+        # -- Apply selected plotting function --
+        plot_function = self.cb_plot_function.currentData().value.function
+
+        # -- Apply selected scale --
+
+        logger.debug(f"{self.selected_field_scale=}")
+        scale_function = self.selected_field_scale.function
+        logger.debug(f"{scale_function=}")
+        logger.debug(f"{plot_function=}")
+
+        print(self.selected_field_component)
+        component_function = self.selected_field_component.function
+        logger.debug(f"{component_function=}")
+
+        # -- Apply selected component / functions --
+        print(f"{field_data['E'].shape=}")
+        field_fun_scaled = scale_function(
+            plot_function(component_function(field_data["E"]), dim=2)
+        )
+
+        return field_fun_scaled
+
+    # --- Private Methods ---
     def _update_plotting_function_options(self):
         # Remove all items before updating items
         for _ in range(self.cb_plot_function.count()):
             self.cb_plot_function.removeItem(0)
 
         for plot_function in PlotFunctions:
-            print(self.field.data.attrs)
-            print(plot_function)
-            if self.field.data.attrs['field_type'] in plot_function.value.field_types:
+            if self.field.data.attrs["field_type"] in plot_function.value.field_types:
                 self.cb_plot_function.addItem(plot_function.value.name, plot_function)
+
+    def _update_report_field_quantities(self):
+        # Remove all items before updating items
+        for _ in range(self.cb_field_quantity.count()):
+            self.cb_field_quantity.removeItem(0)
+
+        # logger.debug(self.field.data)
+
+        field_quantities = FieldQuantities
+
+        for idx, fc in enumerate(field_quantities):
+            self.cb_field_quantity.addItem(fc.value.name, fc.value)
+            self.cb_field_quantity.model().item(idx).setEnabled(fc.value.enabled)
 
     def _update_report_field_components(self):
         # Remove all items before updating items
         for _ in range(self.cb_field_component.count()):
             self.cb_field_component.removeItem(0)
 
-        # logger.debug(self.field.data)
+        if self.selected_field_quantity is not None:
+            field_components = self.selected_field_quantity.field_components
 
-        field_components = ["All"]
-        field_components += self.field.data.coords["component"].data.tolist()
-
-        self.cb_field_component.addItems(field_components)
+            for idx, fc in enumerate(field_components):
+                # Only add if field type is valid for that function
+                if self.field.field_type in fc.value.field_types:
+                    self.cb_field_component.addItem(fc.value.name, fc.value)
+                    self.cb_field_component.model().item(idx).setEnabled(fc.value.enabled)
 
     def _update_plotting_scale_options(self):
         # Remove all items before updating items
@@ -228,7 +317,19 @@ class Plot2D(QWidget):
         plot_function = self.cb_plot_function.currentData()
 
         for scale in plot_function.value.scales:
-            self.cb_plot_scale.addItem(scale.value.name, scale)
+            self.cb_plot_scale.addItem(scale.value.name, scale.value)
+
+    def _update_plotting_norm_options(self):
+        # Remove all items before updating items
+        for _ in range(self.cb_plot_norm.count()):
+            self.cb_plot_norm.removeItem(0)
+
+        if self.selected_field_quantity is not None:
+            field_norms = [x for x in PlotNorms]
+
+            for idx, fc in enumerate(field_norms):
+                self.cb_plot_norm.addItem(fc.value.name, fc.value)
+                self.cb_plot_norm.model().item(idx).setEnabled(fc.value.enabled)
 
     def _update_plotting_domain_options(self):
         # Remove all items before updating items
@@ -259,36 +360,20 @@ class Plot2D(QWidget):
             item.setData(Qt.UserRole, data)
             self.lw_frequency_range.addItem(item)
 
+    def _save_state(self):
+        """Write selection state to parent node."""
+        pass
+
     def _update_plot(self):
-        # Only one item can be selected at a time
-        selected_frequency = self.lw_frequency_range.selectedItems()[0].data(Qt.UserRole)
+        # _update_plot is called whenever state changes, so call save_state here too
+        self._save_state()
 
-        cb_component = self.cb_field_component.currentText()
-        if cb_component in self.field.data.coords["component"]:
-            component = cb_component
-        else:
-            component = self.field.data.coords["component"]
+        field_fun_scaled = self.get_transformed_data()
 
-        logger.debug(f"{component=}")
+        if isinstance(field_fun_scaled, xr.DataArray):
+            field_fun_scaled = field_fun_scaled.values
 
-        field_data = self.field.data.sel(frequency=selected_frequency, component=component)
-
-        # -- Apply selected plotting function --
-        plot_function = self.cb_plot_function.currentData().value.function
-        logger.debug(plot_function)
-
-        field_fun = plot_function(field_data["E"])
-        logger.debug(f"{field_fun.shape=}")
-
-        if isinstance(field_fun, xr.DataArray):
-            field_fun = field_fun.values
-
-        # -- Apply selected scale --
-
-        scale_function = self.cb_plot_scale.currentData().value.function
-        logger.debug(plot_function)
-
-        field_fun_scaled = scale_function(field_fun)
+        print(f"{field_fun_scaled.shape=}")
 
         # -- Apply selected coordinate transform --
         # TODO: Add coordinate transform
@@ -343,13 +428,13 @@ class Plot2D(QWidget):
             abscissa_label = abscissa
 
             # Map names to symbols
-            if ordinate.lower() == 'theta':
+            if ordinate.lower() == "theta":
                 ordinate_label = "θ"
-            if ordinate.lower() == 'phi':
+            if ordinate.lower() == "phi":
                 ordinate_label = "φ"
-            if abscissa.lower() == 'theta':
+            if abscissa.lower() == "theta":
                 abscissa_label = "θ"
-            if abscissa.lower() == 'phi':
+            if abscissa.lower() == "phi":
                 abscissa_label = "φ"
 
             yaxis_label = str.title(ordinate_label)
@@ -372,29 +457,31 @@ class Plot2D(QWidget):
 
             # Shift to make abscissa and ordinate centered about zero
             abscissa_midpoint_idx = round(abscissa_values.size / 2)
-            logger.debug(f'{abscissa_midpoint_idx=}')
+            logger.debug(f"{abscissa_midpoint_idx=}")
             abscissa_min_idx = np.argmin(np.abs(abscissa_values))
-            logger.debug(f'{abscissa_min_idx=}')
+            logger.debug(f"{abscissa_min_idx=}")
             abscissa_roll_idx = abscissa_min_idx - abscissa_midpoint_idx
-            logger.debug(f'{abscissa_roll_idx=}')
+            logger.debug(f"{abscissa_roll_idx=}")
 
             ordinate_midpoint_idx = round(ordinate_values.size / 2)
-            logger.debug(f'{ordinate_midpoint_idx=}')
+            logger.debug(f"{ordinate_midpoint_idx=}")
             ordinate_min_idx = np.argmin(np.abs(ordinate_values))
-            logger.debug(f'{ordinate_min_idx=}')
+            logger.debug(f"{ordinate_min_idx=}")
             ordinate_roll_idx = ordinate_min_idx - ordinate_midpoint_idx
-            logger.debug(f'{ordinate_roll_idx=}')
+            logger.debug(f"{ordinate_roll_idx=}")
 
             # Roll phi values in spherical coordinates
-            logger.debug(f'{self.field.field_type=}')
+            logger.debug(f"{self.field.field_type=}")
             if self.field.field_type == FieldType.FAR:
                 roll_val = abscissa_values[abscissa_roll_idx]
-                logger.debug(f'{roll_val=}')
+                logger.debug(f"{roll_val=}")
                 abscissa_values = abscissa_values - roll_val
                 # ordinate_values = ordinate_values - ordinate_values[ordinate_roll_idx]
-            
+
             # Set image
-            self.image_item.setImage(np.roll(field_fun_scaled, (abscissa_roll_idx, ordinate_roll_idx), axis=(0,1)))
+            self.image_item.setImage(
+                np.roll(field_fun_scaled, (abscissa_roll_idx, ordinate_roll_idx), axis=(0, 1))
+            )
 
             # Set extents
             x_range = abscissa_values.max() - abscissa_values.min()

@@ -5,7 +5,7 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
 
-from dataclasses import dataclass, InitVar
+from dataclasses import dataclass, field
 from typing import Optional
 import logging
 
@@ -69,13 +69,12 @@ class AnalysisNode(Node):
         field_node = FieldNode(
             name=transform_name,
             data=field_data,
-            node_type=NodeType.FIELDS,
             field_type=FieldType.FAR,
             coordinates_node=coordinate_node,
             source_type=DataSourceType.XNFT,
         )
         transform_node = TransformNode(
-            name=transform_name, 
+            name=transform_name,
             data=field_node,
             source=source_field,
             analysis_type=AnalysisType.PLANAR_TRANSFORM,
@@ -147,21 +146,30 @@ class AnalysisNode(Node):
 
 @dataclass(kw_only=True)
 class TransformNode(DataNode):
-    analysis_type: InitVar[Optional[AnalysisType]] = None
+    _analysis_type: AnalysisType = field(
+        default=AnalysisType.UNKNOWN,
+        init=False,
+        repr=False,
+    )
 
     name_editable: Optional[bool] = True
 
-    def __post_init__(
-            self, 
-            name: Optional[str] = None, 
-            node_type: Optional[NodeType] = NodeType.UNKNOWN,
-            source: Optional[Node | None] = None,
-            analysis_type: Optional[AnalysisType] = AnalysisType.UNKNOWN,
-        ):
-        super().__post_init__(name=name, node_type=node_type, source=source)
+    def __init__(
+        self,
+        *,
+        name: Optional[str] = None,
+        source: Optional[Node] = None,
+        analysis_type: AnalysisType = AnalysisType.UNKNOWN,
+        **kwargs,
+    ):
+        super().__init__(
+            name=name,
+            node_type=NodeType.ANALYSIS,
+            source=source,
+            **kwargs,
+        )
 
         self.analysis_type = analysis_type
-        self.node_type = NodeType.ANALYSIS
 
     @property
     @gui_property(label="Analysis Type", order=2)

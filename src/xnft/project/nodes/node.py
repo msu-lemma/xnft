@@ -101,6 +101,7 @@ def gui_property(label=None, order=0, tooltip=None, formatter=None, button=False
             "button": button,
         }
         return func
+
     return decorator
 
 
@@ -123,7 +124,7 @@ class Node:
 
     def __post_init__(self, name: Optional[str] = None, node_type: NodeType = NodeType.UNKNOWN):
         self._name = name
-        self._node_type = node_type    
+        self._node_type = node_type
 
     # -- Node Property Getter/Setters (GUI) -----------
 
@@ -131,7 +132,7 @@ class Node:
     @gui_property(label="Name", order=0)
     def name(self):
         return self._name
-    
+
     @name.setter
     def name(self, name):
         self._name = name
@@ -140,7 +141,7 @@ class Node:
     @gui_property(label="Node Type", order=1)
     def node_type(self):
         return self._node_type
-    
+
     @node_type.setter
     def node_type(self, node_type):
         self._node_type = node_type
@@ -156,9 +157,7 @@ class Node:
         if isinstance(parent, Node):
             self._parent = parent
         else:
-            raise TypeError(
-                f"Node 'parent' must be of type 'Node'" f" got {type(parent)}."
-            )
+            raise TypeError(f"Node 'parent' must be of type 'Node'" f" got {type(parent)}.")
 
     # -- Children ------------
 
@@ -179,20 +178,14 @@ class Node:
             child.parent = self
             self._children.append(child)
         else:
-            raise TypeError(
-                f"Node children must be of type 'Node'," f" got {type(child)}."
-            )
+            raise TypeError(f"Node children must be of type 'Node'," f" got {type(child)}.")
 
     def remove_child(self, child):
         """Remove a single child Node."""
         if not isinstance(child, Node):
-            raise TypeError(
-                f"Node children must be of type 'Node'," f" got {type(child)}."
-            )
+            raise TypeError(f"Node children must be of type 'Node'," f" got {type(child)}.")
         if child not in self._children:
-            raise ValueError(
-                "Attempting to remove item that is not a child of " "node."
-            )
+            raise ValueError("Attempting to remove item that is not a child of " "node.")
         self._children.remove(child)
 
     @property
@@ -246,9 +239,7 @@ class Node:
         """
         actions: list[ContextAction] = []
 
-        for name, function in inspect.getmembers(
-            self.__class__, predicate=inspect.isfunction
-        ):
+        for name, function in inspect.getmembers(self.__class__, predicate=inspect.isfunction):
             meta = getattr(function, "__context_action__", None)
             if not meta:
                 continue
@@ -272,42 +263,58 @@ class Node:
         # Sort by order provided
         actions.sort(key=lambda a: a.order)
         return actions
-    
+
     # -- Basic Actions ----------------
 
     def __eq__(self, node):
         return self.id == node.id
 
 
-@dataclass(kw_only=True)
+# @dataclass(kw_only=True)
+# class DataNode(Node):
+#     """
+#     Specialization of Node class with default helper context/helper functions
+#     unique to leaf nodes.
+#     """
+
+#     source: InitVar[Optional[Node]] = None
+
+#     def __post_init__(
+#             self,
+#             name: Optional[str] = None,
+#             node_type: Optional[NodeType] = NodeType.UNKNOWN,
+#             source: Optional[Node | None] = None,
+#         ):
+#         super().__post_init__(name=name, node_type=node_type)
+
+#         self.source = source
+
+
+@dataclass(kw_only=True, eq=False)
 class DataNode(Node):
-    """
-    Specialization of Node class with default helper context/helper functions
-    unique to leaf nodes.
-    """
+    _source: Optional[Node] = field(default=None, init=False)
 
-    source: InitVar[Optional[Node]] = None
-
-    def __post_init__(
-            self, 
-            name: Optional[str] = None, 
-            node_type: Optional[NodeType] = NodeType.UNKNOWN,
-            source: Optional[Node | None] = None,
-        ):
-        super().__post_init__(name=name, node_type=node_type)
-        
+    def __init__(self, *, source=None, name=None, node_type=NodeType.UNKNOWN, **kwargs):
+        super().__init__(**kwargs)
+        self._name = name
+        self._node_type = node_type
         self.source = source
 
+        if hasattr(type(self), "icon_name"):
+            self.icon_name = type(self).icon_name
+
     @property
-    @gui_property(label="Source Node", order=3, formatter=lambda x : x.name if x else "")
+    @gui_property(label="Source Node", order=3, formatter=lambda x: x.name if x else "")
     def source(self):
         return self._source
-    
+
     @source.setter
     def source(self, source_node: Node | None):
         if source_node is not None and not isinstance(source_node, (Node)):
-            raise TypeError(f'Argument "source_node" must be of type {Node} or None got {type(source_node)}')
-        logger.debug(f'{source_node=}')
+            raise TypeError(
+                f'Argument "source_node" must be of type {Node} or None got {type(source_node)}'
+            )
+        logger.debug(f"{source_node=}")
         self._source = source_node
 
     @context_action(

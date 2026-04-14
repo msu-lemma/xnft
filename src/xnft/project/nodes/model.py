@@ -16,17 +16,11 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass(kw_only=True)
-class ModelNode(DataNode):
-    source: InitVar[Optional[Node]] = None
+class ModelNode(Node):
     icon_name: str = "src/xnft/resources/icons/model.svg"
-    
-    def __post_init__(
-            self, 
-            name: Optional[str] = None, 
-            node_type: Optional[NodeType] = NodeType.UNKNOWN,
-            source: Optional[Node | None] = None,
-    ):
-        super().__post_init__(name=name, node_type=node_type, source=source)
+
+    def __post_init__(self, *args, **kwargs):
+        super().__post_init__(*args, **kwargs)
 
         self._node_type = NodeType.MODEL
         self._name = NodeType.MODEL

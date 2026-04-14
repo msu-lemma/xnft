@@ -4,18 +4,20 @@ Handle xnft fields actions.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
-from dataclasses import dataclass, InitVar
+from dataclasses import dataclass, field
 from typing import Optional
 import logging
+from pathlib import Path
 
-from ...gui.dialogs.fields.new_field_measurement_dialog import (
-    NewFieldMeasurementDialog,
-)
+
+from ...gui.dialogs.fields.new_field_measurement_dialog import NewFieldMeasurementDialog
+from ...gui.dialogs.export_data_dialog import ExportDataDialog
 from ...loaders.file_registry import file_registry
 from .node import Node, DataNode, NodeType, context_action, gui_property
 from .coordinates import CoordinateNode
 
 from ...core.enums import CoordinateSystemType, FieldType, DataSourceType
+from ...core.data_writers import write_hdf5
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +64,7 @@ class FieldsNode(Node):
                 if field_type == FieldType.NEAR
                 else CoordinateSystemType.SPHERICAL
             ),
-            source=None
+            source=None,
         )
 
         field_node = FieldNode(
@@ -72,7 +74,7 @@ class FieldsNode(Node):
             icon_name="text-x-generic",
             data=field_data,
             field_type=field_type,
-            coordinates_node=coordinate_node
+            coordinates_node=coordinate_node,
         )
 
         # field_node.coordinates = coordinate_node
@@ -85,64 +87,64 @@ class FieldsNode(Node):
             (coordinates_node, coordinate_node),
         ]
 
-        result_dict = {
-            "status": status,
-            "nodes": node_pair_list
-        }
+        result_dict = {"status": status, "nodes": node_pair_list}
 
         return result_dict
 
 
 @dataclass(kw_only=True)
 class FieldNode(DataNode):
-    coordinates_node: InitVar[Optional[CoordinateNode | None]] = None
-    field_type: InitVar[Optional[FieldType]] = FieldType.UNKNOWN
-    source_type: InitVar[Optional[DataSourceType | None]] = DataSourceType.UNKNOWN
-    source: InitVar[Optional[Node]] = None
-
+    _coordinates_node: CoordinateNode | None = field(default=None, init=False, repr=False)
+    _field_type: FieldType = field(default=FieldType.UNKNOWN, init=False)
+    _source_type: DataSourceType = field(default=DataSourceType.UNKNOWN, init=False)
 
     name_editable: Optional[bool] = True
+    file_export_types = [".h5", ".csv"]
 
+    def __init__(
+        self,
+        *,
+        name: Optional[str] = None,
+        source: Optional[Node] = None,
+        coordinates_node: Optional[CoordinateNode] = None,
+        field_type: FieldType = FieldType.UNKNOWN,
+        source_type: DataSourceType = DataSourceType.UNKNOWN,
+        **kwargs,
+    ):
+        super().__init__(
+            name=name,
+            node_type=NodeType.FIELDS,
+            source=source,
+            **kwargs,
+        )
 
-    def __post_init__(
-            self, 
-            name: Optional[str] = None, 
-            node_type: Optional[NodeType] = NodeType.UNKNOWN,
-            source: Optional[Node | None] = None,
-            coordinates_node: Optional[CoordinateNode | None] = None,
-            field_type: Optional[FieldType] = FieldType.UNKNOWN,
-            source_type: Optional[DataSourceType] = DataSourceType.UNKNOWN,
-        ):
-        node_type = NodeType.FIELDS
         self.coordinates_node = coordinates_node
         self.field_type = field_type
         self.source_type = source_type
 
-        super().__post_init__(name=name, node_type=node_type, source=source)
-
     @property
-    @gui_property(label='Coordinates', order=5, formatter=lambda x: x.name)
+    @gui_property(label="Coordinates", order=5, formatter=lambda x: x.name)
     def coordinates_node(self):
         return self._coordinates_node
-    
+
     @coordinates_node.setter
     def coordinates_node(self, coords_node):
         self._coordinates_node = coords_node
 
     @property
-    @gui_property(label='Field Type', order=3)
+    @gui_property(label="Field Type", order=3)
     def field_type(self):
         return self._field_type
-    
+
     @field_type.setter
     def field_type(self, field_type):
         self._field_type = field_type
 
     @property
-    @gui_property(label='Source Type', order=5)
+    @gui_property(label="Source Type", order=5)
     def source_type(self):
         return self._source_type
-    
+
     @source_type.setter
     def source_type(self, source_type):
         self._source_type = source_type
@@ -153,3 +155,30 @@ class FieldNode(DataNode):
         #     f"{'Measured ' if self.source_type else ''}{str(self.node_type).title()}"
         # )
         return f"{self.source_type}"
+
+    @context_action(
+        label="Export Field",
+        enabled=True,
+        tooltip="Write field data to file",
+        icon_name="document-save",
+        order=100,
+        separator=True,
+        action="ui_action",
+        helper_dialog=ExportDataDialog,
+    )
+    def export_data(self, file_path: Path):
+        if self.data is None:
+            return None
+
+        file_type = file_path.suffix
+
+        if file_type == ".h5":
+            write_hdf5(self.data, file_path)
+
+        elif file_type == ".csv":
+            self.data.to_dataframe().to_csv(file_path)
+        else:
+            raise NotImplementedError(
+                f"File extention type of {file_type} is not implemented. "
+                f"Available options are {', '.join(self.file_export_types)}"
+            )

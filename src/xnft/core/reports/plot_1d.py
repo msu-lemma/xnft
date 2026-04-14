@@ -233,7 +233,7 @@ class Plot1D(QWidget):
                     # -- Ordinate --
                     ordinate_raw_values = source_field.sel(**tp.slice_dict)
                     ordinate_values = tp.ordinate_scale.function(
-                        tp.ordinate_function.function(tp.field_norm.function(ordinate_raw_values))
+                        tp.ordinate_function.function(tp.field_norm.function(ordinate_raw_values), dim=1)
                     )
 
                     ordinate_units = tp.ordinate_scale.unit_modifier(
