@@ -63,6 +63,7 @@ def load_lemma_h5(file_list: List[FileInfo]) -> xr.Dataset:
             sample_frequencies = dataset["f"][()][0]
             sample_locations = dataset["points"][()] / POINTS_PER_METER
             x_locs = sample_locations[:, 0]
+            # NOTE: Swap y and z axes
             y_locs = sample_locations[:, 2]
             z_locs = sample_locations[:, 1] + 0.069
 
