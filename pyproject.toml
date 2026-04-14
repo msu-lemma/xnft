@@ -20,7 +20,7 @@ Homepage = "https://gitlab.msu.edu/ece-lemma/near-field"
 Issues = "https://gitlab.msu.edu/ece-lemma/near-field/-/issues"
 
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 # === PyTest Configuration ===
