@@ -2,9 +2,9 @@
 name = "xnft"
 dynamic = ["version"]
 authors = [
-    { name = "LEmmA Group, Michigan State University" },
-    { name = "Jason Merlo", email = "merlojas@msu.edu" },
-    { name = "Mauro Ettorre", email = "ettorre@msu.edu" },
+  { name = "LEmmA Group, Michigan State University" },
+  { name = "Jason Merlo", email = "merlojas@msu.edu" },
+  { name = "Mauro Ettorre", email = "ettorre@msu.edu" },
 ]
 maintainers = [{ name = "Jason Merlo", email = "merlojas@msu.edu" }]
 readme = "README.md"
@@ -26,14 +26,11 @@ build-backend = "setuptools.build_meta"
 # === PyTest Configuration ===
 
 [tool.pytest.ini_options]
-addopts = "--cov-report term --cov-report xml:coverage.xml -n auto"
+addopts = "--cov='xnft' --cov-report term --cov-report xml:coverage.xml --junitxml report.xml -n auto"
 
 [tool.coverage.run]
-source = ["src", "xnft"]
-omit = [
-  "**/.pixi/**",
-  "**/tests/**",
-]
+source = ["src"]
+omit = ["**/.pixi/**", "**/tests/**"]
 
 [tool.coverage.report]
 exclude_lines = [
