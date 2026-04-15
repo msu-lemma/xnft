@@ -1,5 +1,11 @@
 # LEmmA Near Field Measurement System
 
+[![Latest Release](/../../badges/release.svg)](/../../releases) 
+[![Test Coverage](https://gitlab.msu.edu/ece-lemma/xnft/badges/main/coverage.svg)
+![Pipeline Status](https://gitlab.msu.edu/ece-lemma/xnft/badges/main/pipeline.svg?ignore_skipped=true&job=test-job)](https://gitlab.msu.edu/ece-lemma/xnft/-/pipelines)
+
+
+
 ![xnft Screenshot](docs/source/assets/xnft_screenshot_2026-04-13.png)
 
 
