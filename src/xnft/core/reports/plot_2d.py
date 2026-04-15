@@ -13,7 +13,8 @@ import xarray as xr
 import unyt
 from quantiphy import Quantity
 
-from scipy.interpolate import griddata  #, CloughTocher2DInterpolator
+from scipy.interpolate import griddata  # , CloughTocher2DInterpolator
+
 # import scipy.spatial.qhull as qhull
 
 from PySide6.QtCore import Qt, QTimer
@@ -36,7 +37,7 @@ from .field_quantities import FieldQuantities, FieldQuantity
 from .functions import PlotFunctions, PlotFunction
 from .scales import PlotScale
 from ..coordinate_transforms import phitheta_to_unit
-from ...project.nodes.node import DataNode
+from ...project.nodes.fields import FieldNode
 
 
 import logging
@@ -46,7 +47,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class SurfacePlot2DParameters:
-    source: DataNode
+    source: FieldNode
     field_quantity: FieldQuantity
     field_component: FieldComponent
     plot_domain: CoordinateSystemType
@@ -166,16 +167,40 @@ class Plot2D(QWidget):
         # --- Load/Create Plot Parameters ---
         if isinstance(self.report_node.data, SurfacePlot2DParameters):
             self.plot_parameters = self.report_node.data
-            
+
             # Update selections from loaded paramters
             # (combobox, value, update_options_function)
             cb_field_map = [
-                (self.cb_field_quantity, self.plot_parameters.field_quantity, self._update_report_field_quantities),
-                (self.cb_field_component, self.plot_parameters.field_component, self._update_report_field_components),
-                (self.cb_plot_domain, self.plot_parameters.plot_domain, self._update_plotting_domain_options),
-                (self.cb_plot_function, self.plot_parameters.applicate_function, self._update_plotting_function_options),
-                (self.cb_plot_scale, self.plot_parameters.applicate_scale, self._update_plotting_scale_options),
-                (self.cb_plot_norm, self.plot_parameters.applicate_norm, self._update_plotting_norm_options),
+                (
+                    self.cb_field_quantity,
+                    self.plot_parameters.field_quantity,
+                    self._update_report_field_quantities,
+                ),
+                (
+                    self.cb_field_component,
+                    self.plot_parameters.field_component,
+                    self._update_report_field_components,
+                ),
+                (
+                    self.cb_plot_domain,
+                    self.plot_parameters.plot_domain,
+                    self._update_plotting_domain_options,
+                ),
+                (
+                    self.cb_plot_function,
+                    self.plot_parameters.applicate_function,
+                    self._update_plotting_function_options,
+                ),
+                (
+                    self.cb_plot_scale,
+                    self.plot_parameters.applicate_scale,
+                    self._update_plotting_scale_options,
+                ),
+                (
+                    self.cb_plot_norm,
+                    self.plot_parameters.applicate_norm,
+                    self._update_plotting_norm_options,
+                ),
             ]
 
             for cb, val, update_cb_options in cb_field_map:
@@ -194,7 +219,7 @@ class Plot2D(QWidget):
                     break
 
         else:
-            print('Created new SurfacePlot2DParameters')
+            print("Created new SurfacePlot2DParameters")
 
             plot_parameters = SurfacePlot2DParameters(
                 source=self.field_node,
@@ -205,7 +230,8 @@ class Plot2D(QWidget):
                 applicate_scale=self.selected_field_scale,
                 applicate_norm=self.selected_field_norm,
                 selected_frequency=self.selected_plot_frequency,
-                gradient_state=(g := pg.GradientEditorItem()).loadPreset("viridis") or g.saveState()
+                gradient_state=(g := pg.GradientEditorItem()).loadPreset("viridis")
+                or g.saveState(),
             )
             self.plot_parameters = plot_parameters
             self.report_node.data = self.plot_parameters
@@ -301,42 +327,6 @@ class Plot2D(QWidget):
     def selected_field_norm(self):
         return self.cb_plot_norm.currentData()
 
-    # --- Public Methods ---
-    def get_transformed_data(self):
-        # Only one item can be selected at a time
-        selected_frequency = self.lw_frequency_range.selectedItems()[0].data(Qt.UserRole)
-
-        cb_component = self.cb_field_component.currentText()
-        if cb_component in self.field_node.data.coords["component"]:
-            component = cb_component
-        else:
-            component = self.field_node.data.coords["component"]
-
-        logger.debug(f"{component=}")
-
-        field_data = self.field_node.data.sel(frequency=selected_frequency, component=component)
-        logger.debug(f"{type(field_data)=}")
-
-        # -- Apply selected plotting function --
-        plot_function = self.cb_plot_function.currentData().value.function
-
-        # -- Apply selected scale --
-
-        logger.debug(f"{self.selected_field_scale=}")
-        scale_function = self.selected_field_scale.function
-        logger.debug(f"{scale_function=}")
-        logger.debug(f"{plot_function=}")
-
-        component_function = self.selected_field_component.function
-        logger.debug(f"{component_function=}")
-
-        # -- Apply selected component / functions --
-        field_fun_scaled = scale_function(
-            plot_function(component_function(field_data["E"]), dim=2)
-        )
-
-        return field_fun_scaled
-
     # --- Private Methods ---
     def _update_plotting_function_options(self):
         # Remove all items before updating items
@@ -345,7 +335,7 @@ class Plot2D(QWidget):
 
         for plot_function in PlotFunctions:
             if self.field_node.data.attrs["field_type"] in plot_function.value.field_types:
-                self.cb_plot_function.addItem(plot_function.value.name, plot_function)
+                self.cb_plot_function.addItem(plot_function.value.name, plot_function.value)
 
     def _update_report_field_quantities(self):
         # Remove all items before updating items
@@ -381,7 +371,7 @@ class Plot2D(QWidget):
 
         plot_function = self.cb_plot_function.currentData()
 
-        for scale in plot_function.value.scales:
+        for scale in plot_function.scales:
             self.cb_plot_scale.addItem(scale.value.name, scale.value)
 
     def _update_plotting_norm_options(self):
@@ -438,7 +428,8 @@ class Plot2D(QWidget):
         # _update_plot is called whenever state changes, so call save_state here too
         self._save_state()
 
-        field_fun_scaled = self.get_transformed_data()
+        # Compute applicate surface from updated plot parameters
+        field_fun_scaled = get_transformed_data(self.plot_parameters)
 
         if isinstance(field_fun_scaled, xr.DataArray):
             field_fun_scaled = field_fun_scaled.values
@@ -550,3 +541,31 @@ class Plot2D(QWidget):
             self.vb.autoRange()
 
         self.last_plot_domain = self.selected_plot_domain
+
+
+def get_transformed_data(spp: SurfacePlot2DParameters):
+
+    field_ds = spp.source.data
+    print(field_ds)
+
+    if not isinstance(field_ds, xr.Dataset):
+        raise TypeError(
+            f"SurfacePlot2DParameters.source.data must be of type xarray.Dataset, not {type(field_ds)}"
+        )
+    
+    if spp.field_component.name in field_ds.coords["component"]:
+        component = spp.field_component.name
+    else:
+        component = field_ds.coords["component"]
+
+    logger.debug(f'{spp.selected_frequency=}')
+    logger.debug(f'{spp.field_component=}')
+
+    field_data = field_ds.sel(frequency=spp.selected_frequency, component=component)
+
+    # -- Apply selected component / functions --
+    field_fun_scaled = spp.applicate_scale.function(
+        spp.applicate_function.function(spp.field_component.function(field_data["E"]), dim=2)
+    )
+
+    return field_fun_scaled
