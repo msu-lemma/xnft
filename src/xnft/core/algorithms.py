@@ -266,7 +266,7 @@ def planar_near_field_transform_xarray(
     n_phi = 361
 
     theta_target = np.linspace(-np.pi / 2, np.pi / 2, n_theta)
-    phi_target = np.linspace(0, np.pi, n_phi)
+    phi_target = np.linspace(-np.pi / 2, np.pi / 2, n_phi)
 
     theta_grid_target, phi_grid_target = np.meshgrid(theta_target, phi_target)
 

@@ -272,7 +272,7 @@ class NewTraceDialog(QDialog):
                 trace_pen = pg.mkPen(
                     color=QColor(cc.glasbey_light[idx]),
                     width=1.0,
-                    style=Qt.SolidLin,
+                    style=Qt.SolidLine,
                 )
                 trace_marker_symbol = None
 

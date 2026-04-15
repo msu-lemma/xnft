@@ -16,7 +16,7 @@ from .analysis import AnalysisNode
 from .reports import ReportsNode
 from .coordinates import CoordinatesNode
 from .model import ModelNode
-from ..project_loader import write_project
+from ..project_io import write_project
 
 logger = logging.getLogger(__name__)
 

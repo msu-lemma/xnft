@@ -3,20 +3,18 @@ Handle xnft 2d plotting actions.
 
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 
-TODO: Add colormap selection (based on type of scale user selected)
-TODO: Add plot normalization
-    - Source units (unnormalized)
-    - Relative to local maxima (simply the peak value)
-    - Relative to global maxima (across all frequencies)
+TODO: Add colormap selection (based on type of scale user selected, e.g., cyclic for phase)
 """
 
-import logging
-import numpy as np
+from dataclasses import dataclass
 import pyqtgraph as pg
+import numpy as np
 import xarray as xr
 import unyt
-from scipy.interpolate import griddata, CloughTocher2DInterpolator
-import scipy.spatial.qhull as qhull
+from quantiphy import Quantity
+
+from scipy.interpolate import griddata  #, CloughTocher2DInterpolator
+# import scipy.spatial.qhull as qhull
 
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import (
@@ -27,25 +25,36 @@ from PySide6.QtWidgets import (
     QSplitter,
     QSizePolicy,
     QComboBox,
-    QFormLayout,
     QLabel,
 )
-from ..enums import CoordinateSystemType, Units, FieldType
+from ..enums import CoordinateSystemType
 
 
 from .normalizations import PlotNorms, PlotNorm
 from .field_components import FieldComponent
 from .field_quantities import FieldQuantities, FieldQuantity
-from .functions import PlotFunctions
-from .scales import PlotScales
+from .functions import PlotFunctions, PlotFunction
+from .scales import PlotScale
 from ..coordinate_transforms import phitheta_to_unit
+from ...project.nodes.node import DataNode
 
-from quantiphy import Quantity
+
+import logging
 
 logger = logging.getLogger(__name__)
 
-# TODO: this should be moved elsewhere
-pg.setConfigOption("useNumba", True)
+
+@dataclass
+class SurfacePlot2DParameters:
+    source: DataNode
+    field_quantity: FieldQuantity
+    field_component: FieldComponent
+    plot_domain: CoordinateSystemType
+    applicate_function: PlotFunction
+    applicate_scale: PlotScale
+    applicate_norm: PlotNorm
+    selected_frequency: float
+    gradient_state: pg.ColorMap
 
 
 class Plot2D(QWidget):
@@ -82,8 +91,9 @@ class Plot2D(QWidget):
                 f" got {coordinates_type.name}"
             )
 
-        self.field = report_node.fields[0]
-        self.last_domain = coordinates_type
+        self.report_node = report_node
+        self.field_node = report_node.fields[0]
+        self.last_plot_domain = coordinates_type
 
         # == Add control widgets ==
 
@@ -153,6 +163,53 @@ class Plot2D(QWidget):
         self._update_plotting_scale_options()
         self._update_plotting_norm_options()
 
+        # --- Load/Create Plot Parameters ---
+        if isinstance(self.report_node.data, SurfacePlot2DParameters):
+            self.plot_parameters = self.report_node.data
+            
+            # Update selections from loaded paramters
+            # (combobox, value, update_options_function)
+            cb_field_map = [
+                (self.cb_field_quantity, self.plot_parameters.field_quantity, self._update_report_field_quantities),
+                (self.cb_field_component, self.plot_parameters.field_component, self._update_report_field_components),
+                (self.cb_plot_domain, self.plot_parameters.plot_domain, self._update_plotting_domain_options),
+                (self.cb_plot_function, self.plot_parameters.applicate_function, self._update_plotting_function_options),
+                (self.cb_plot_scale, self.plot_parameters.applicate_scale, self._update_plotting_scale_options),
+                (self.cb_plot_norm, self.plot_parameters.applicate_norm, self._update_plotting_norm_options),
+            ]
+
+            for cb, val, update_cb_options in cb_field_map:
+                update_cb_options()
+                idx = cb.findData(val)
+                if idx != -1:
+                    cb.setCurrentIndex(idx)
+
+            # Set frequency selection in list widget
+            # Iterate over each item in list by index
+            for i in range(self.lw_frequency_range.count()):
+                item = self.lw_frequency_range.item(i)
+                # Check if data matches selected frequency
+                if item.data(Qt.UserRole) == self.plot_parameters.selected_frequency:
+                    self.lw_frequency_range.setCurrentItem(item)
+                    break
+
+        else:
+            print('Created new SurfacePlot2DParameters')
+
+            plot_parameters = SurfacePlot2DParameters(
+                source=self.field_node,
+                field_quantity=self.selected_field_quantity,
+                field_component=self.selected_field_component,
+                plot_domain=self.selected_plot_domain,
+                applicate_function=self.selected_field_function,
+                applicate_scale=self.selected_field_scale,
+                applicate_norm=self.selected_field_norm,
+                selected_frequency=self.selected_plot_frequency,
+                gradient_state=(g := pg.GradientEditorItem()).loadPreset("viridis") or g.saveState()
+            )
+            self.plot_parameters = plot_parameters
+            self.report_node.data = self.plot_parameters
+
         # === Add 2D Field View ===
         self.glw = pg.GraphicsLayoutWidget()
         self.plot = self.glw.addPlot()
@@ -172,11 +229,11 @@ class Plot2D(QWidget):
         # Add colorbar
         # TODO: Set colormap dynamically based on units selected
         #       i.e., for cyclic data use cyclic colormap as default
-        self.cmap = pg.colormap.get("viridis")
+        # self.cmap = self.plot_parameters.cmap
 
         self.hist = pg.HistogramLUTItem()
         self.hist.setImageItem(self.image_item)
-        self.hist.gradient.loadPreset("viridis")
+        self.hist.gradient.restoreState(self.plot_parameters.gradient_state)
         self.glw.addItem(self.hist)
         self.vb.addItem(self.image_item)
 
@@ -207,12 +264,22 @@ class Plot2D(QWidget):
         self.cb_plot_function.currentTextChanged.connect(self._update_plotting_scale_options)
         self.cb_plot_scale.currentTextChanged.connect(self._update_plot)
 
+        self.hist.gradient.sigGradientChanged.connect(self._save_state)
+
         # Draw initial plot
         self._update_plot()
 
         QTimer.singleShot(0, lambda: layout.setSizes([100, 1000]))
 
     # --- Properties ---
+
+    @property
+    def selected_plot_frequency(self):
+        return self.lw_frequency_range.selectedItems()[0].data(Qt.UserRole)
+
+    @property
+    def selected_plot_domain(self):
+        return self.cb_plot_domain.currentData()
 
     @property
     def selected_field_quantity(self):
@@ -233,21 +300,21 @@ class Plot2D(QWidget):
     @property
     def selected_field_norm(self):
         return self.cb_plot_norm.currentData()
-    
+
     # --- Public Methods ---
     def get_transformed_data(self):
         # Only one item can be selected at a time
         selected_frequency = self.lw_frequency_range.selectedItems()[0].data(Qt.UserRole)
 
         cb_component = self.cb_field_component.currentText()
-        if cb_component in self.field.data.coords["component"]:
+        if cb_component in self.field_node.data.coords["component"]:
             component = cb_component
         else:
-            component = self.field.data.coords["component"]
+            component = self.field_node.data.coords["component"]
 
         logger.debug(f"{component=}")
 
-        field_data = self.field.data.sel(frequency=selected_frequency, component=component)
+        field_data = self.field_node.data.sel(frequency=selected_frequency, component=component)
         logger.debug(f"{type(field_data)=}")
 
         # -- Apply selected plotting function --
@@ -260,12 +327,10 @@ class Plot2D(QWidget):
         logger.debug(f"{scale_function=}")
         logger.debug(f"{plot_function=}")
 
-        print(self.selected_field_component)
         component_function = self.selected_field_component.function
         logger.debug(f"{component_function=}")
 
         # -- Apply selected component / functions --
-        print(f"{field_data['E'].shape=}")
         field_fun_scaled = scale_function(
             plot_function(component_function(field_data["E"]), dim=2)
         )
@@ -279,7 +344,7 @@ class Plot2D(QWidget):
             self.cb_plot_function.removeItem(0)
 
         for plot_function in PlotFunctions:
-            if self.field.data.attrs["field_type"] in plot_function.value.field_types:
+            if self.field_node.data.attrs["field_type"] in plot_function.value.field_types:
                 self.cb_plot_function.addItem(plot_function.value.name, plot_function)
 
     def _update_report_field_quantities(self):
@@ -305,7 +370,7 @@ class Plot2D(QWidget):
 
             for idx, fc in enumerate(field_components):
                 # Only add if field type is valid for that function
-                if self.field.field_type in fc.value.field_types:
+                if self.field_node.field_type in fc.value.field_types:
                     self.cb_field_component.addItem(fc.value.name, fc.value)
                     self.cb_field_component.model().item(idx).setEnabled(fc.value.enabled)
 
@@ -337,19 +402,18 @@ class Plot2D(QWidget):
             self.cb_plot_domain.removeItem(0)
 
         # Get selected field source coordinates
-        source_coordiante_system = self.field.data.attrs["coordinate_system"]
+        source_coordiante_system = self.field_node.data.attrs["coordinate_system"]
 
         valid_plot_domains = self.__coordinate_domains__[source_coordiante_system]
 
         for coordinates_domain in valid_plot_domains:
-
-            self.cb_plot_domain.addItem(coordinates_domain.value.name, (coordinates_domain,))
+            self.cb_plot_domain.addItem(coordinates_domain.value.name, coordinates_domain.value)
 
     def _update_frequency_options(self):
         # Remove all items before updating items
         self.lw_frequency_range.clear()
 
-        frequencies = self.field.data.coords["frequency"].values.tolist()
+        frequencies = self.field_node.data.coords["frequency"].values.tolist()
 
         # Get only unique items
         frequencies = list(set(frequencies))
@@ -361,8 +425,14 @@ class Plot2D(QWidget):
             self.lw_frequency_range.addItem(item)
 
     def _save_state(self):
-        """Write selection state to parent node."""
-        pass
+        self.plot_parameters.field_quantity = self.selected_field_quantity
+        self.plot_parameters.field_component = self.selected_field_component
+        self.plot_parameters.plot_domain = self.selected_plot_domain
+        self.plot_parameters.applicate_function = self.selected_field_function
+        self.plot_parameters.applicate_scale = self.selected_field_scale
+        self.plot_parameters.applicate_norm = self.selected_field_norm
+        self.plot_parameters.selected_frequency = self.selected_plot_frequency
+        self.plot_parameters.gradient_state = self.hist.gradient.saveState()
 
     def _update_plot(self):
         # _update_plot is called whenever state changes, so call save_state here too
@@ -373,20 +443,18 @@ class Plot2D(QWidget):
         if isinstance(field_fun_scaled, xr.DataArray):
             field_fun_scaled = field_fun_scaled.values
 
-        print(f"{field_fun_scaled.shape=}")
-
         # -- Apply selected coordinate transform --
         # TODO: Add coordinate transform
-        selected_domain = self.cb_plot_domain.currentData()[0]
-        logger.debug(f"{selected_domain=}")
+        logger.debug(f"{self.selected_plot_domain=}, {type(self.selected_plot_domain)=}")
+        logger.debug(f"{CoordinateSystemType.DIRECTION_COSINE=}")
 
         # NOTE: Native domain is spherical
         # Direction cosines require nonlinear transformation so we need to use pcolormesh for
-        if selected_domain == CoordinateSystemType.DIRECTION_COSINE:
+        if self.selected_plot_domain == CoordinateSystemType.DIRECTION_COSINE.value:
 
             # Get phi and theta as numpy arrays
-            phi = self.field.data.phi.values
-            theta = self.field.data.theta.values
+            phi = self.field_node.data.phi.values
+            theta = self.field_node.data.theta.values
 
             phi_grid, theta_grid = np.meshgrid(phi, theta, indexing="ij")
             ux_vals, uy_vals, _ = phitheta_to_unit(phi=phi_grid, theta=theta_grid)
@@ -415,13 +483,13 @@ class Plot2D(QWidget):
             self.vb.setAspectLocked(False)
 
             # Set Labels
-            components = self.field.data.coords["component"]
+            components = self.field_node.data.coords["component"]
 
             ordinate = components[1].values.item()
             abscissa = components[0].values.item()
 
-            abscissa_values = self.field.data.coords[abscissa].values
-            ordinate_values = self.field.data.coords[ordinate].values
+            abscissa_values = self.field_node.data.coords[abscissa].values
+            ordinate_values = self.field_node.data.coords[ordinate].values
 
             # Initialize labels
             ordinate_label = ordinate
@@ -438,15 +506,14 @@ class Plot2D(QWidget):
                 abscissa_label = "φ"
 
             yaxis_label = str.title(ordinate_label)
-            yaxis_units = list(self.field.data.attrs["coordinate_units"].values())[1]
+            yaxis_units = list(self.field_node.data.attrs["coordinate_units"].values())[1]
 
             xaxis_label = str.title(abscissa_label)
-            xaxis_units = list(self.field.data.attrs["coordinate_units"].values())[0]
+            xaxis_units = list(self.field_node.data.attrs["coordinate_units"].values())[0]
 
             axis_scale = 1.0
 
             # Convert radians to degrees
-            print(f"{xaxis_units=}", f"{type(xaxis_units)=}")
             if xaxis_units == unyt.radian:
                 xaxis_units = unyt.degree
                 yaxis_units = unyt.degree
@@ -455,33 +522,8 @@ class Plot2D(QWidget):
             self.plot.setLabel("left", text=yaxis_label, units=yaxis_units)
             self.plot.setLabel("bottom", text=xaxis_label, units=xaxis_units)
 
-            # Shift to make abscissa and ordinate centered about zero
-            abscissa_midpoint_idx = round(abscissa_values.size / 2)
-            logger.debug(f"{abscissa_midpoint_idx=}")
-            abscissa_min_idx = np.argmin(np.abs(abscissa_values))
-            logger.debug(f"{abscissa_min_idx=}")
-            abscissa_roll_idx = abscissa_min_idx - abscissa_midpoint_idx
-            logger.debug(f"{abscissa_roll_idx=}")
-
-            ordinate_midpoint_idx = round(ordinate_values.size / 2)
-            logger.debug(f"{ordinate_midpoint_idx=}")
-            ordinate_min_idx = np.argmin(np.abs(ordinate_values))
-            logger.debug(f"{ordinate_min_idx=}")
-            ordinate_roll_idx = ordinate_min_idx - ordinate_midpoint_idx
-            logger.debug(f"{ordinate_roll_idx=}")
-
-            # Roll phi values in spherical coordinates
-            logger.debug(f"{self.field.field_type=}")
-            if self.field.field_type == FieldType.FAR:
-                roll_val = abscissa_values[abscissa_roll_idx]
-                logger.debug(f"{roll_val=}")
-                abscissa_values = abscissa_values - roll_val
-                # ordinate_values = ordinate_values - ordinate_values[ordinate_roll_idx]
-
             # Set image
-            self.image_item.setImage(
-                np.roll(field_fun_scaled, (abscissa_roll_idx, ordinate_roll_idx), axis=(0, 1))
-            )
+            self.image_item.setImage(field_fun_scaled)
 
             # Set extents
             x_range = abscissa_values.max() - abscissa_values.min()
@@ -504,7 +546,7 @@ class Plot2D(QWidget):
             )
 
         # AutoRange after domain changed
-        if self.last_domain != selected_domain:
+        if self.last_plot_domain != self.selected_plot_domain:
             self.vb.autoRange()
 
-        self.last_domain = selected_domain
+        self.last_plot_domain = self.selected_plot_domain

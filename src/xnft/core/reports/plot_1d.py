@@ -2,36 +2,24 @@
 Handle xnft 1d plotting actions.
 
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
-
-TODO: Add colormap selection (based on type of scale user selected)
-TODO: Add plot normalization
-    - Source units (unnormalized)
-    - Relative to local maxima (simply the peak value)
-    - Relative to global maxima (across all frequencies)
 """
 
 import logging
 import numpy as np
 import pyqtgraph as pg
-import xarray as xr
 from types import NoneType
 import unyt
-
 
 
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import (
     QWidget,
-    QListWidget,
-    QListWidgetItem,
     QTreeWidget,
     QTreeWidgetItem,
     QVBoxLayout,
     QHBoxLayout,
     QSplitter,
     QSizePolicy,
-    QComboBox,
-    QFormLayout,
     QPushButton,
     QLabel,
     QDialog,
@@ -44,11 +32,7 @@ from ...core.reports.scales import PlotScale
 from ...gui.dialogs.reports.new_trace_dialog import NewTraceDialog, TraceParameters
 from .plot_helpers import trace_preview
 
-
 logger = logging.getLogger(__name__)
-
-# TODO: this should be moved elsewhere
-pg.setConfigOption("useNumba", True)
 
 
 class Plot1D(QWidget):
@@ -233,7 +217,9 @@ class Plot1D(QWidget):
                     # -- Ordinate --
                     ordinate_raw_values = source_field.sel(**tp.slice_dict)
                     ordinate_values = tp.ordinate_scale.function(
-                        tp.ordinate_function.function(tp.field_norm.function(ordinate_raw_values), dim=1)
+                        tp.ordinate_function.function(
+                            tp.field_norm.function(ordinate_raw_values), dim=1
+                        )
                     )
 
                     ordinate_units = tp.ordinate_scale.unit_modifier(
@@ -411,11 +397,11 @@ class TraceList(QTreeWidget):
         # pixmap.setDevicePixelRatio(dpr)
 
         pixmap = trace_preview(
-            pen=trace.curve.opts['pen'],
-            symbol=trace.opts['symbol'],
-            symbol_brush=trace.opts['symbolBrush'],
-            symbol_pen=trace.opts['symbolPen'],
-            symbol_size=trace.opts['symbolSize'],
+            pen=trace.curve.opts["pen"],
+            symbol=trace.opts["symbol"],
+            symbol_brush=trace.opts["symbolBrush"],
+            symbol_pen=trace.opts["symbolPen"],
+            symbol_size=trace.opts["symbolSize"],
             background=Qt.black,
         )
 
