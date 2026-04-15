@@ -61,8 +61,7 @@ test-job:
 docs-build-job:
   stage: docs-build
   script:
-  - pixi run -e docs build-docs
+  - pixi run -e docs build-html-docs
   artifacts:
     paths:
-      - docs/build/latex
       - docs/build/html
