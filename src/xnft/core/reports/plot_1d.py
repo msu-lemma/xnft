@@ -459,3 +459,27 @@ class PlotTrace(pg.PlotDataItem):
         self.ordinate_name = ordinate_name
         self.ordinate_units = ordinate_units
         self.ordinate_scale = ordinate_scale
+
+    def serialize(self):
+        x_values, y_values = self.getData()
+        plot_data = {"x": x_values, "y": y_values}
+
+        # Create new dict with updated names for attrs dict
+        new_slice_dict = dict()
+        for key, val in self.trace_parameters.slice_dict.items():
+            new_slice_dict[f'slice_{key}'] = val
+
+        attrs = {
+            "name": str(self.name()),
+            "abscissa": self.trace_parameters.abscissa,
+            "field_quantity": self.trace_parameters.field_quantity.name,
+            "field_component": self.trace_parameters.field_component.name,
+            "ordinate_function": self.trace_parameters.ordinate_function.name,
+            "field_norm": self.trace_parameters.field_norm.name,
+            "ordinate_name": self.ordinate_name,
+            "ordinate_units": str(self.ordinate_units),
+            "ordinate_scale": self.ordinate_scale.name,
+            **new_slice_dict,
+        }
+
+        return plot_data, attrs

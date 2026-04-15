@@ -17,7 +17,7 @@ from .node import Node, DataNode, NodeType, context_action, gui_property
 from .coordinates import CoordinateNode
 
 from ...core.enums import CoordinateSystemType, FieldType, DataSourceType
-from ...core.data_writers import write_hdf5
+from ...core.data_writers import write_dataset_hdf5
 
 logger = logging.getLogger(__name__)
 
@@ -173,7 +173,7 @@ class FieldNode(DataNode):
         file_type = file_path.suffix
 
         if file_type == ".h5":
-            write_hdf5(self.data, file_path)
+            write_dataset_hdf5(self.data, file_path)
 
         elif file_type == ".csv":
             self.data.to_dataframe().to_csv(file_path)

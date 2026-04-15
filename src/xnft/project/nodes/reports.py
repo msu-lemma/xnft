@@ -5,6 +5,8 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
 
+import xarray as xr
+import numpy as np
 from dataclasses import dataclass, field, InitVar
 from typing import Optional
 import logging
@@ -14,13 +16,16 @@ from pathlib import Path
 from PySide6.QtWidgets import QMdiSubWindow
 
 from .node import Node, DataNode, NodeType, context_action, gui_property
+from functools import partial
+from collections.abc import Iterable
 
 from ...gui.dialogs.reports.new_field_report_dialog import NewFieldReport
 from ...gui.dialogs.export_data_dialog import ExportDataDialog
+from ...gui.dialogs.export_data_directory_dialog import ExportDataDirectoryDialog
 from ...core.enums import ReportType
-from ...core.reports.plot_2d import Plot2D
-from ...core.reports.plot_1d import Plot1D
-from ...core.data_writers import write_hdf5
+from ...core.reports.plot_2d import Plot2D, get_transformed_data, SurfacePlot2DParameters
+from ...core.reports.plot_1d import Plot1D, PlotTrace
+from ...core.data_writers import write_data_array_hdf5
 
 logger = logging.getLogger(__name__)
 
@@ -201,7 +206,7 @@ class ReportNodeSurfacePlot2D(ReportNode):
         return result_dict
 
     @context_action(
-        label="Export Report",
+        label="Export Report Values",
         enabled=True,
         tooltip="Write report data to file",
         icon_name="document-save",
@@ -213,9 +218,38 @@ class ReportNodeSurfacePlot2D(ReportNode):
     def export_data(self, file_path: Path):
         file_type = file_path.suffix
 
-        report_data = Plot2D(self).get_transformed_data().copy(deep=True)
+        if not isinstance(self.data, SurfacePlot2DParameters):
+            raise TypeError(
+                f"Export data must be of type SurfacePlot2DParameters not {type(self.data)}"
+            )
+
+        field_values, axes_dict = get_transformed_data(self.data)
+        report_data = xr.DataArray(
+            data=np.squeeze(field_values),
+            name="field_value",
+            attrs=self.data.serialize(),
+            coords={
+                "x": (
+                    "x",
+                    axes_dict["x"].values,
+                    {
+                        "long_name": axes_dict["x"].label,
+                        "units": str(axes_dict["x"].units),
+                    },
+                ),
+                "y": (
+                    "y",
+                    axes_dict["y"].values,
+                    {
+                        "long_name": axes_dict["y"].label,
+                        "units": str(axes_dict["y"].units),
+                    },
+                ),
+            },
+        )
+
         if file_type == ".h5":
-            write_hdf5(report_data, file_path)
+            write_data_array_hdf5(report_data, file_path=file_path)
         elif file_type == ".csv":
             report_data.to_dataframe().to_csv(file_path)
         else:
@@ -226,13 +260,27 @@ class ReportNodeSurfacePlot2D(ReportNode):
 
 
 @dataclass(kw_only=True)
-class ReportNodeLinePlot(DataNode):
-    name_editable: Optional[bool] = True
+class ReportNodeLinePlot(ReportNode):
+    # icon_name: str = "utilities-system-monitor"
+
+    # args: dict = field(default_factory=dict)
+
+    # def __init__(
+    #     self,
+    #     *,
+    #     name: Optional[str] = None,
+    #     source: Optional[Node] = None,
+    #     args: Optional[dict] = None,
+    #     **kwargs,
+    # ):
+    #     kwargs.pop("args", None)
+
+    #     super().__init__(name=name, node_type=NodeType.REPORTS, source=source, **kwargs)
+
+    #     self.args = args or {}
+    #     self.report_type = ReportType.PLOT_LINE
+    #     self.file_export_types = [".h5", ".csv"]
     icon_name: str = "utilities-system-monitor"
-
-    args: dict = field(default_factory=dict)
-
-    file_export_types = [".h5", ".csv"]
 
     def __init__(
         self,
@@ -242,12 +290,15 @@ class ReportNodeLinePlot(DataNode):
         args: Optional[dict] = None,
         **kwargs,
     ):
-        kwargs.pop("args", None)
+        super().__init__(
+            name=name,
+            source=source,
+            args=args,
+            report_type=ReportType.PLOT_LINE,
+            **kwargs,
+        )
 
-        super().__init__(name=name, node_type=NodeType.REPORTS, source=source, **kwargs)
-
-        self.args = args or {}
-        self.report_type = ReportType.PLOT_LINE
+        self.file_export_types = [".h5", ".csv"]
 
     @context_action(
         label="View Report", icon_name="utilities-system-monitor", action="ui_action", order=10
@@ -266,25 +317,44 @@ class ReportNodeLinePlot(DataNode):
         return result_dict
 
     @context_action(
-        label="Export Report",
+        label="Export Report Values",
         enabled=True,
-        tooltip="Write report data to file",
+        tooltip="Write report data to files",
         icon_name="document-save",
         order=100,
         # separator=True,
         action="ui_action",
-        helper_dialog=ExportDataDialog,
+        helper_dialog=partial(
+            ExportDataDirectoryDialog,
+            help_str="A single file will be created for each trace in the output directory.",
+        ),
     )
-    def export_data(self, file_path: Path):
-        file_type = file_path.suffix
+    def export_data(self, directory_path: Path, file_type: str):
+        # Iterate over each trace to write to output directory
+        if not isinstance(self.data, Iterable):
+            raise TypeError(f"self.data (traces) must be iterable")
+        for trace in self.data:
+            if not isinstance(trace, PlotTrace):
+                raise TypeError(f"Export traces must be of type PlotTrace not {type(trace)}")
 
-        report_data = Plot2D(self).get_transformed_data().copy(deep=True)
-        if file_type == ".h5":
-            write_hdf5(report_data, file_path)
-        elif file_type == ".csv":
-            report_data.to_dataframe().to_csv(file_path)
-        else:
-            raise NotImplementedError(
-                f"File extention type of {file_type} is not implemented. "
-                f"Available options are {', '.join(self.file_export_types)}"
+            plot_data, attrs = trace.serialize()
+            report_data = xr.DataArray(
+                data=plot_data["y"],
+                name="field_value",
+                attrs=attrs,
+                coords={
+                    "x": ("x", plot_data["x"]),
+                },
             )
+
+            file_path = Path(directory_path) / f'{attrs['name']}{file_type[1:]}'
+
+            if file_type == "*.h5":
+                write_data_array_hdf5(report_data, file_path)
+            elif file_type == "*.csv":
+                report_data.to_dataframe().to_csv(file_path)
+            else:
+                raise NotImplementedError(
+                    f"File extention type of {file_type} is not implemented. "
+                    f"Available options are {', '.join(self.file_export_types)}"
+                )

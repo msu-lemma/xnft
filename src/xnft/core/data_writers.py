@@ -6,10 +6,11 @@ University.
 """
 
 import xarray as xr
+import numpy as np
 from pathlib import Path
 
 
-def write_hdf5(ds: xr.DataSet, file_path: Path):
+def write_dataset_hdf5(ds: xr.Dataset, file_path: Path):
     tmp_ds = ds.copy(deep=True)
 
     # Convert enums to save to file
@@ -28,3 +29,13 @@ def write_hdf5(ds: xr.DataSet, file_path: Path):
             da.attrs["units"] = str(da.attrs["units"])
 
     tmp_ds.to_netcdf(file_path, engine="netcdf4", auto_complex=True)
+
+
+def write_data_array_hdf5(da: xr.DataArray, file_path: Path, attrs=dict()):
+    if isinstance(da, xr.DataArray):
+        if "units" in da.attrs:
+            da.attrs["units"] = str(da.attrs["units"])
+        for key, value in attrs.items():
+            da.attrs[key] = value
+
+    da.to_netcdf(file_path, engine="netcdf4", auto_complex=True)

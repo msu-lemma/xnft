@@ -25,21 +25,14 @@ from PySide6.QtWidgets import (
     QLabel,
 )
 
-# from .common import FileEntryRow
-from ...loaders.file_registry import file_registry
-
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from ...project.nodes.fields import FieldNode
     from ...project.nodes.reports import ReportNode
 from ...core.enums import (
     FieldType,
-    DataPolarizationType,
-    SParameterType,
-    DataSourceType,
-    PolarizationType,
 )
-from ...core.types import FileInfo
 
 
 class ExportDataDialog(QDialog):
@@ -73,7 +66,7 @@ class ExportDataDialog(QDialog):
             get_available_extensions=self._get_available_extensions,
             parent=self,
         )
-       
+
         self.label_file_help = QLabel(
             f"Available file types are: " f"{', '.join(self._get_available_extensions())}."
         )
@@ -112,67 +105,6 @@ class ExportDataDialog(QDialog):
         return {
             "file_path": Path(self.fe_file_location.le_path.text().strip()),
         }
-
-    @property
-    def selected_field(self) -> FieldType:
-        return self.cb_field_type.currentData()[0]
-
-    @property
-    def selected_source_format(self) -> DataSourceType:
-        return self.cb_source_format.currentData()[0]
-
-    def _update_source_file_formats(self) -> None:
-        """Update available source file formats based on field type."""
-        field_type = self.cb_field_type.currentText()
-        source_format_types = self._loaders_info(file_registry)[field_type].keys()
-
-        # Remove all items before updating items
-        for _ in range(self.cb_source_format.count()):
-            self.cb_source_format.removeItem(0)
-
-        for source_format_type in source_format_types:
-            # NOTE: Qt casts StrEnum to plain str which breaks some things;
-            #       we'll wrap this in a tuple here to mitigate this behavior
-            self.cb_source_format.addItem(source_format_type.value, (source_format_type,))
-
-    def _update_source_polarization_formats(self) -> None:
-        """Update available source polarization formats based on source file type."""
-        field_type = self.cb_field_type.currentData()[0]
-        source_type = self.cb_source_format.currentData()[0]
-        loaders = file_registry._loaders
-
-        # Get data polarizations available for source and field type files
-        polarization_formats = []
-        for key, loader in loaders.items():
-            attributes = getattr(loader, "__attributes__")
-            if attributes["source"] == source_type and attributes["field"] == field_type:
-                polarization_formats.append(attributes["data_polarization"])
-
-        # Remove all items before updating items
-        for _ in range(self.cb_data_polarization.count()):
-            self.cb_data_polarization.removeItem(0)
-
-        for polarization_format in polarization_formats:
-            # NOTE: Qt casts StrEnum to plain str which breaks some things;
-            #       we'll wrap this in a tuple here to mitigate this behavior
-            self.cb_data_polarization.addItem(polarization_format.value, (polarization_format,))
-
-    def _update_file_fields_shown(self):
-        # Enable/disable data polarization specific data selection boxes
-        data_polarization = self.cb_data_polarization.currentData()
-        if data_polarization is not None:
-            data_polarization = data_polarization[0]
-        else:
-            return
-
-        if data_polarization == DataPolarizationType.COMBO_POL:
-            self.form_layout.setRowVisible(self.fe_combined, True)
-            self.form_layout.setRowVisible(self.fe_co_pol, False)
-            self.form_layout.setRowVisible(self.fe_cx_pol, False)
-        else:
-            self.form_layout.setRowVisible(self.fe_combined, False)
-            self.form_layout.setRowVisible(self.fe_co_pol, True)
-            self.form_layout.setRowVisible(self.fe_cx_pol, True)
 
     def _update_help_label(self) -> None:
         self.label_file_help.setText(
@@ -215,13 +147,17 @@ class ExportDataDialog(QDialog):
             if not silent:
                 QMessageBox.warning(self, "Invalid File Path", f"Please enter a valid file path.")
             return False
-        
+
         extension_list = self._get_available_extensions(glob_format=False)
 
         if file_type not in extension_list:
             if not silent:
-                QMessageBox.warning(self, "Invalid File Type", f"Please enter a valid file extension. "
-                                    f"Available options are {', '.join(extension_list)}")
+                QMessageBox.warning(
+                    self,
+                    "Invalid File Type",
+                    f"Please enter a valid file extension. "
+                    f"Available options are {', '.join(extension_list)}",
+                )
             return False
 
         return True
@@ -293,4 +229,3 @@ class FileEntryRow(QWidget):
         )
         if chosen[0]:
             self.le_path.setText(chosen[0])
-

@@ -6,6 +6,7 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 TODO: Add colormap selection (based on type of scale user selected, e.g., cyclic for phase)
 """
 
+from collections import namedtuple
 from dataclasses import dataclass
 import pyqtgraph as pg
 import numpy as np
@@ -45,6 +46,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+AxisData = namedtuple("AxisData", ("values", "label", "units"))
+
+
 @dataclass
 class SurfacePlot2DParameters:
     source: FieldNode
@@ -56,6 +60,16 @@ class SurfacePlot2DParameters:
     applicate_norm: PlotNorm
     selected_frequency: float
     gradient_state: pg.ColorMap
+
+    def serialize(self):
+        return {
+            "field_quantity": self.field_quantity.name,
+            "field_component": self.field_component.name,
+            "plot_domain": self.plot_domain.name,
+            "applicate_function": self.applicate_function.name,
+            "applicate_scale": self.applicate_scale.name,
+            "frequency": Quantity(self.selected_frequency, "Hz"),
+        }
 
 
 class Plot2D(QWidget):
@@ -429,15 +443,12 @@ class Plot2D(QWidget):
         self._save_state()
 
         # Compute applicate surface from updated plot parameters
-        field_fun_scaled = get_transformed_data(self.plot_parameters)
+        field_fun_scaled, axis_dict = get_transformed_data(self.plot_parameters)
 
         if isinstance(field_fun_scaled, xr.DataArray):
             field_fun_scaled = field_fun_scaled.values
 
         # -- Apply selected coordinate transform --
-        # TODO: Add coordinate transform
-        logger.debug(f"{self.selected_plot_domain=}, {type(self.selected_plot_domain)=}")
-        logger.debug(f"{CoordinateSystemType.DIRECTION_COSINE=}")
 
         # NOTE: Native domain is spherical
         # Direction cosines require nonlinear transformation so we need to use pcolormesh for
@@ -473,34 +484,28 @@ class Plot2D(QWidget):
         else:
             self.vb.setAspectLocked(False)
 
-            # Set Labels
-            components = self.field_node.data.coords["component"]
-
-            ordinate = components[1].values.item()
-            abscissa = components[0].values.item()
-
-            abscissa_values = self.field_node.data.coords[abscissa].values
-            ordinate_values = self.field_node.data.coords[ordinate].values
+            abscissa_values = axis_dict['x'].values
+            ordinate_values = axis_dict['y'].values
 
             # Initialize labels
-            ordinate_label = ordinate
-            abscissa_label = abscissa
+            ordinate_label = axis_dict['y'].label
+            abscissa_label = axis_dict['x'].label
 
             # Map names to symbols
-            if ordinate.lower() == "theta":
+            if ordinate_label.lower() == "theta":
                 ordinate_label = "θ"
-            if ordinate.lower() == "phi":
+            if ordinate_label.lower() == "phi":
                 ordinate_label = "φ"
-            if abscissa.lower() == "theta":
+            if abscissa_label.lower() == "theta":
                 abscissa_label = "θ"
-            if abscissa.lower() == "phi":
+            if abscissa_label.lower() == "phi":
                 abscissa_label = "φ"
 
             yaxis_label = str.title(ordinate_label)
-            yaxis_units = list(self.field_node.data.attrs["coordinate_units"].values())[1]
+            yaxis_units = axis_dict['y'].units
 
             xaxis_label = str.title(abscissa_label)
-            xaxis_units = list(self.field_node.data.attrs["coordinate_units"].values())[0]
+            xaxis_units = axis_dict['x'].units
 
             axis_scale = 1.0
 
@@ -552,20 +557,39 @@ def get_transformed_data(spp: SurfacePlot2DParameters):
         raise TypeError(
             f"SurfacePlot2DParameters.source.data must be of type xarray.Dataset, not {type(field_ds)}"
         )
-    
+
     if spp.field_component.name in field_ds.coords["component"]:
         component = spp.field_component.name
     else:
         component = field_ds.coords["component"]
 
-    logger.debug(f'{spp.selected_frequency=}')
-    logger.debug(f'{spp.field_component=}')
+    logger.debug(f"{spp.selected_frequency=}")
+    logger.debug(f"{spp.field_component=}")
 
     field_data = field_ds.sel(frequency=spp.selected_frequency, component=component)
 
     # -- Apply selected component / functions --
-    field_fun_scaled = spp.applicate_scale.function(
+    field_scaled = spp.applicate_scale.function(
         spp.applicate_function.function(spp.field_component.function(field_data["E"]), dim=2)
     )
 
-    return field_fun_scaled
+    # -- Get axis values, labels, and units --
+    components = field_ds.coords["component"]
+
+    x_key = components[0].values.item()
+    y_key = components[1].values.item()
+
+    axis_dict = {
+        "x": AxisData(
+            values=field_ds.coords[x_key].values,
+            label=x_key.title(),
+            units=list(field_ds.attrs["coordinate_units"].values())[0],
+        ),
+        "y": AxisData(
+            values=field_ds.coords[y_key].values,
+            label=y_key.title(),
+            units=list(field_ds.attrs["coordinate_units"].values())[1],
+        ),
+    }
+
+    return field_scaled, axis_dict
