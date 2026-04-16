@@ -7,11 +7,11 @@ import logging
 import logging.config
 import yaml
 from importlib.resources import files
-
+from importlib.metadata import version
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
-__version__ = "0.1.0"
+__version__ = version("xnft")
 
 
 def configure_logging(config_name: str = "logging.dev.yaml") -> None:
@@ -27,9 +27,7 @@ def configure_logging(config_name: str = "logging.dev.yaml") -> None:
 
     except Exception:
         logging.basicConfig(level=logging.INFO)
-        logging.getLogger(__name__).exception(
-            "Logging configuration failed; using fallback"
-        )
+        logging.getLogger(__name__).exception("Logging configuration failed; using fallback")
 
 
 configure_logging()

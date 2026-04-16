@@ -21,12 +21,11 @@ channels = ["https://prefix.dev/conda-forge"]
 
 [package.host-dependencies]
 setuptools = ">=82.0.0,<83"
+setuptools_scm = ">=9.2.2,<10"
 
 [package.run-dependencies]
 python = ">=3.14.3,<3.15"
-matplotlib = ">=3.10.8,<4"
 scipy = ">=1.17.1,<2"
-seaborn = ">=0.13.2,<0.14"
 pandas = ">=3.0.1,<4"
 numpy = ">=2.3.5,<3"
 numba = ">=0.63.1,<0.64"
@@ -170,6 +169,8 @@ jupyter = ">=1.1.1,<2"
 ipympl = ">=0.10.0,<0.11"
 tqdm = ">=4.67.3,<5"
 numba-progress = ">=1.1.0,<2"
+matplotlib = ">=3.10.8,<4"
+seaborn = ">=0.13.2,<0.14"
 
 [feature.build.dependencies]
 pyinstaller = "*"

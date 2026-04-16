@@ -23,6 +23,12 @@ Issues = "https://gitlab.msu.edu/ece-lemma/near-field/-/issues"
 requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools_scm]
+version_scheme = "guess-next-dev"
+local_scheme = "node-and-date"
+tag_regex = "^v(?P<version>.*)$"
+
+
 # === PyTest Configuration ===
 
 [tool.pytest.ini_options]
