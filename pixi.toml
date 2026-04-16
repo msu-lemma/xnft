@@ -77,6 +77,10 @@ docs = ["docs"]
 
 build = ["build"]
 
+ci-build = ["build", "ci"]
+ci-test = ["test", "ci"]
+ci-docs = ["docs", "ci"]
+
 
 [tasks]
 
@@ -176,8 +180,11 @@ numba-progress = ">=1.1.0,<2"
 matplotlib = ">=3.10.8,<4"
 seaborn = ">=0.13.2,<0.14"
 
+[feature.ci.dependencies]
+git = ">=2.53.0,<3"
+
 [feature.build.dependencies]
-pyinstaller = "*"
+pyinstaller = ">=6.19.0,<7"
 pillow = ">=12.2.0,<13"
 setuptools_scm = ">=9.2.2,<10"
 uv = ">=0.11.7,<0.12"
@@ -188,7 +195,11 @@ imagemagick = ">=7.1.2_19,<8"
 [feature.build.target.linux.dependencies]
 imagemagick = ">=7.1.2_19,<8"
 
+[feature.build.target.osx-arm64.dependencies]
+imagemagick = ">=7.1.2_19,<8"
 
-# [feature.dev-mlx]
+[feature.build.target.osx-64.dependencies]
+imagemagick = ">=7.1.2_19,<8"
 
-# [feature.dev-cuda]
+[feature.build.target.linux-64.dependencies]
+imagemagick = ">=7.1.2_19,<8"
