@@ -4,9 +4,9 @@ stages:
 
 image: ghcr.io/prefix-dev/pixi:latest
 
-before_script:
-  - apt-get update
-  - apt-get install --no-install-recommends -y git
+# before_script:
+#   - apt-get update
+#   - apt-get install --no-install-recommends -y git
 
 # Store our package cache in our git repo so we can cache it
 variables:
@@ -21,7 +21,7 @@ cache:
 test-job:
   stage: test
   script:
-  - pixi run -e test test
+  - pixi run -e ci-test test
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   artifacts:
     when: always
@@ -65,7 +65,7 @@ test-job:
 docs-build-job:
   stage: docs-build
   script:
-  - pixi run -e docs build-html-docs
+  - pixi run -e ci-docs build-html-docs
   artifacts:
     paths:
       - docs/build/html
