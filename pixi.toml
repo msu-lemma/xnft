@@ -80,10 +80,6 @@ docs = ["docs"]
 
 build = ["build"]
 
-ci-build = ["build", "ci"]
-ci-test = ["test", "ci"]
-ci-docs = ["docs", "ci"]
-
 
 [tasks]
 
@@ -182,9 +178,6 @@ tqdm = ">=4.67.3,<5"
 numba-progress = ">=1.1.0,<2"
 matplotlib = ">=3.10.8,<4"
 seaborn = ">=0.13.2,<0.14"
-
-[feature.ci.dependencies]
-git = ">=2.53.0,<3"
 
 [feature.build.dependencies]
 pyinstaller = ">=6.19.0,<7"
