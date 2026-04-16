@@ -12,6 +12,8 @@ from functools import cache
 
 from ..project.nodes.project import Project
 from ..project.nodes.node import Node, DataNode
+from ..resources.paths import resource_path
+from pathlib import Path
 
 
 class ProjectManagerTreeModel(QAbstractItemModel):
@@ -49,7 +51,8 @@ class ProjectManagerTreeModel(QAbstractItemModel):
         if from_theme:
             icon = QIcon.fromTheme(name)
         else:
-            icon = QIcon(name)
+            file_name = Path(name).name
+            icon = QIcon(str(resource_path("icons", file_name)))
         return icon
 
     def columnCount(self, parent=QModelIndex()) -> int:

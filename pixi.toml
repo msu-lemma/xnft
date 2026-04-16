@@ -7,7 +7,7 @@ preview = ["pixi-build"]
 # Minimum system requirements
 macos = "15.0"
 # cuda = "13"
-libc = { family = "glibc", version = "2.35" }  # Describes the minimum linux system specifications
+libc = { family = "glibc", version = "2.35" } # Describes the minimum linux system specifications
 
 
 [package]
@@ -76,6 +76,8 @@ test = ["test"]
 
 docs = ["docs"]
 
+build = ["build"]
+
 
 [tasks]
 
@@ -86,23 +88,15 @@ test = "pytest -s"
 [feature.docs.tasks]
 
 build-html-docs = { cmd = [
-    "echo",
-    "'Building HTML docs...'",
-    "&&",
-    "sphinx-build",
-    "-M",
-    "html",
+    "echo", "'Building HTML docs...'",
+    "&&", "sphinx-build", "-M", "html",
     "$PIXI_PROJECT_ROOT/docs/source",
     "$PIXI_PROJECT_ROOT/docs/build",
 ] }
 
 build-pdf-docs = { cmd = [
-    "echo",
-    "'Building LaTeX PDF docs...'",
-    "&&",
-    "sphinx-build",
-    "-M",
-    "latexpdf",
+    "echo", "'Building LaTeX PDF docs...'",
+    "&&", "sphinx-build", "-M", "latexpdf",
     "$PIXI_PROJECT_ROOT/docs/source",
     "$PIXI_PROJECT_ROOT/docs/build",
 ] }
@@ -112,10 +106,21 @@ build-docs = { depends-on = ["build-html-docs", "build-pdf-docs"] }
 [feature.dev.tasks]
 format = { cmd = ["black", "$PIXI_PROJECT_ROOT", "--line-length", "79"] }
 
+[feature.build.tasks.build]
+cmd = [
+    "pyinstaller",
+    # "--onedir",
+    "--noconfirm",
+    # "--name", "xnft",
+    # "--windowed",
+    # "src/xnft/gui/entrypoint.py",
+    "xnft.spec"
+]
+
 [dependencies]
 # Editable installation not yet supported -- see:
 # https://pixi.prefix.dev/dev/build/backends/pixi-build-python/#editable-installations
-xnft = { path = "." } 
+xnft = { path = "." }
 git-lfs = ">=3.7.1,<4"
 
 [pypi-dependencies]
@@ -143,21 +148,21 @@ git-lfs = ">=3.7.1,<4"
 # cufinufft = ">=2.4.1,<3"
 
 [feature.test.dependencies]
-pytest = ">=9.0.2,<10"
-pytest-cov = ">=7.0.0,<8"
+pytest = ">=9.0.3,<10"
+pytest-cov = ">=7.1.0,<8"
 pytest-xdist = ">=3.8.0,<4"
-types-pyyaml = ">=6.0.12.20250915,<7"
+types-pyyaml = ">=6.0.12.20260408,<7"
 
 [feature.docs.dependencies]
 sphinx = ">=9.1.0,<10"
-pydata-sphinx-theme = ">=0.16.1,<0.17"
+pydata-sphinx-theme = ">=0.17.0,<0.18"
 
 [feature.dev.dependencies]
-mypy = ">=1.19.1,<2"
+mypy = ">=1.20.1,<2"
 flake8 = ">=7.3.0,<8"
 pyflakes = ">=3.4.0,<4"
 black = ">=26.1.0,<27"
-scipy-stubs = ">=1.17.1.0,<2"
+scipy-stubs = ">=1.17.1.4,<2"
 pandas-stubs = ">=3.0.0.260204,<4"
 
 [feature.jupyter.dependencies]
@@ -166,7 +171,10 @@ ipympl = ">=0.10.0,<0.11"
 tqdm = ">=4.67.3,<5"
 numba-progress = ">=1.1.0,<2"
 
+[feature.build.dependencies]
+pyinstaller = "*"
+pillow = ">=12.2.0,<13"
+
 # [feature.dev-mlx]
 
 # [feature.dev-cuda]
-

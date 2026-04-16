@@ -453,7 +453,7 @@ def center_window(window: QWindow, target_size_ratio: float = 0.7):
         window.move(x, y)
 
 
-def main():
+def run_gui():
     """
     Main GUI entrypoint.
     """
@@ -468,4 +468,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    run_gui()
