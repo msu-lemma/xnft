@@ -6,9 +6,6 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 
 import sys
 from pathlib import Path
-import pyqtgraph as pg
-
-from PySide6 import QtGui
 
 from PySide6.QtCore import (
     Qt,
@@ -26,9 +23,8 @@ from PySide6.QtGui import (
     QIcon,
     QKeySequence,
     QWindow,
-    QPainter,
-    QPixmap,
-    QImage,
+    QColor,
+    QPalette,
 )
 from PySide6.QtWidgets import (
     QApplication,
@@ -459,6 +455,11 @@ def run_gui():
     """
     app = QApplication(sys.argv)
     app.setAttribute(Qt.AA_UseHighDpiPixmaps)
+
+    # Fix for windows text selection in QTreeView not inverting properly
+    palette = app.palette()
+    palette.setColor(QPalette.Highlight, QColor("#3874f2"))
+    palette.setColor(QPalette.HighlightedText, QColor("white"))
 
     pm = manager.Manager()
     window = MainWindow(pm)
