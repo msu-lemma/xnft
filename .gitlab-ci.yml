@@ -4,6 +4,10 @@ stages:
 
 image: ghcr.io/prefix-dev/pixi:latest
 
+before_script:
+  - apt-get update
+  - apt-get install -y git
+
 # Store our package cache in our git repo so we can cache it
 variables:
   TAG_LATEST: $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_NAME:latest
