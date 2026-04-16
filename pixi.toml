@@ -12,7 +12,7 @@ libc = { family = "glibc", version = "2.35" } # Describes the minimum linux syst
 
 [package]
 name = "xnft"
-version = "0.1.0"
+version = "0.0.0.dev0"
 
 [package.build.backend]
 name = "pixi-build-python"
@@ -105,15 +105,19 @@ build-docs = { depends-on = ["build-html-docs", "build-pdf-docs"] }
 [feature.dev.tasks]
 format = { cmd = ["black", "$PIXI_PROJECT_ROOT", "--line-length", "79"] }
 
-[feature.build.tasks.build]
+[feature.build.tasks.gen-icon]
+cmd = "magick src/xnft/resources/icons/xnft.png -define icon:auto-resize=16,32,48,256 src/xnft/resources/icons/xnft.ico"
+
+[feature.build.tasks.build-pyinstaller]
 cmd = [
     "pyinstaller",
-    # "--onedir",
     "--noconfirm",
-    # "--name", "xnft",
-    # "--windowed",
-    # "src/xnft/gui/entrypoint.py",
     "xnft.spec"
+]
+
+[feature.build.tasks.build-wheel]
+cmd = [
+    "uv", "build"
 ]
 
 [dependencies]
@@ -175,6 +179,15 @@ seaborn = ">=0.13.2,<0.14"
 [feature.build.dependencies]
 pyinstaller = "*"
 pillow = ">=12.2.0,<13"
+setuptools_scm = ">=9.2.2,<10"
+uv = ">=0.11.7,<0.12"
+
+[feature.build.target.osx.dependencies]
+imagemagick = ">=7.1.2_19,<8"
+
+[feature.build.target.linux.dependencies]
+imagemagick = ">=7.1.2_19,<8"
+
 
 # [feature.dev-mlx]
 
