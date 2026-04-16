@@ -48,7 +48,7 @@ release-job:
   needs: 
     - job: test-job
   rules:
-    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+(a\d+|b\d+|rc\d+)?$/'
   before_script: []
   script:
     - echo "Createing release..."
