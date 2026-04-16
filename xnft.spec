@@ -48,7 +48,6 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    version=app_version,
     icon="src/xnft/resources/icons/xnft.ico",
 )
 
