@@ -49,6 +49,7 @@ from .. import __version__
 from ..project import manager
 from ..project.nodes.project import Project
 from ..project.project_io import read_project
+from ..resources.paths import resource_path
 
 from .dialogs.project.new_project_dialog import NewProjectDialog
 from .project_tree_model import ProjectManagerTreeModel
@@ -455,6 +456,7 @@ def run_gui():
     """
     app = QApplication(sys.argv)
     app.setAttribute(Qt.AA_UseHighDpiPixmaps)
+    app.setWindowIcon(QIcon(str(resource_path("icons", "xnft.svg"))))
 
     # Fix for windows text selection in QTreeView not inverting properly
     palette = app.palette()
