@@ -19,6 +19,9 @@ name = "pixi-build-python"
 version = "*"
 channels = ["https://prefix.dev/conda-forge"]
 
+[package.build-dependencies]
+git = ">=2.53.0,<3"
+
 [package.host-dependencies]
 setuptools = ">=82.0.0,<83"
 setuptools_scm = ">=9.2.2,<10"
