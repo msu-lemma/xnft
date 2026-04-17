@@ -4,6 +4,7 @@ import sys
 from PyInstaller.utils.hooks import (
     collect_data_files,
     collect_dynamic_libs,
+    collect_submodules
 )
 from importlib.metadata import version
 
@@ -13,6 +14,7 @@ is_mac = sys.platform == "darwin"
 is_win = sys.platform == "win32"
 is_linux = sys.platform.startswith("linux")
 
+hiddenimports = collect_submodules("xnft.loaders")
 datas = collect_data_files("xnft.resources", includes=["**/*"])
 
 binaries = collect_dynamic_libs("finufft")
@@ -22,7 +24,7 @@ a = Analysis(
     pathex=[],
     binaries=binaries,
     datas=datas,
-    hiddenimports=[],
+    hiddenimports=hiddenimports,
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
