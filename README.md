@@ -6,7 +6,7 @@
 
 
 
-![xnft Screenshot](docs/source/assets/xnft_screenshot_2026-04-13.png)
+![xnft Screenshot](docs/source/assets/xnft_screenshot_2026-04-17.png)
 
 
 > [!CAUTION] ⚠️ xNFT is in active development

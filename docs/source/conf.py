@@ -7,7 +7,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "Near-Field Antenna Measurement System"
-copyright = "2025, LEmmA Group, Michigan State University"
+copyright = "2025-2026, LEmmA Group, Michigan State University"
 author = "LEmmA Group, Michigan State University"
 release = "0.1.0"
 
