@@ -456,7 +456,7 @@ def run_gui():
     """
     app = QApplication(sys.argv)
     app.setAttribute(Qt.AA_UseHighDpiPixmaps)
-    app.setWindowIcon(QIcon(str(resource_path("icons", "xnft.svg"))))
+    app.setWindowIcon(QIcon(str(resource_path("icons", "xnft.png"))))
 
     # Fix for windows text selection in QTreeView not inverting properly
     palette = app.palette()

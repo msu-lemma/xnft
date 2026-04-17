@@ -108,10 +108,33 @@ build-docs = { depends-on = ["build-html-docs", "build-pdf-docs"] }
 [feature.dev.tasks]
 format = { cmd = ["black", "$PIXI_PROJECT_ROOT", "--line-length", "79"] }
 
-[feature.build.tasks.gen-icon]
-cmd = "magick src/xnft/resources/icons/xnft.png -define icon:auto-resize=16,32,48,256 src/xnft/resources/icons/xnft.ico"
+[feature.build.tasks.gen-icons]
+cmd = ["bash", "-c", """
+set -e
 
-[feature.build.tasks.build-pyinstaller]
+PNG_PATH="src/xnft/resources/icons/xnft.png"
+ICO_PATH="src/xnft/resources/icons/xnft.ico"
+ICNS_PATH="src/xnft/resources/icons/xnft.iconset"
+
+# Windows
+magick "${PNG_PATH}" -define icon:auto-resize=16,32,48,256 "${ICO_PATH}"
+
+# macOS
+mkdir -p "${ICNS_PATH}"
+
+sizes="16:32 32:64 128:256 256:512 512:1024"
+for pair in ${sizes}; do
+  base=${pair%:*}
+  retina=${pair#*:}
+
+  magick "${PNG_PATH}" -resize ${base}x${base} "${ICNS_PATH}/icon_${base}x${base}.png"
+  magick "${PNG_PATH}" -resize ${retina}x${retina} "${ICNS_PATH}/icon_${base}x${base}@2x.png"
+done
+
+iconutil -c icns "${ICNS_PATH}"
+"""]
+
+[feature.build.tasks.build-exe]
 cmd = [
     "pyinstaller",
     "--noconfirm",
