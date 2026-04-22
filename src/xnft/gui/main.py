@@ -458,11 +458,6 @@ def run_gui():
     app.setAttribute(Qt.AA_UseHighDpiPixmaps)
     app.setWindowIcon(QIcon(str(resource_path("icons", "xnft.png"))))
 
-    # Fix for windows text selection in QTreeView not inverting properly
-    palette = app.palette()
-    palette.setColor(QPalette.Highlight, QColor("#3874f2"))
-    palette.setColor(QPalette.HighlightedText, QColor("white"))
-
     pm = manager.Manager()
     window = MainWindow(pm)
     window.show()

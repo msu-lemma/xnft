@@ -11,7 +11,7 @@ import xarray as xr
 from xnft.core.enums import FieldType, DataSourceType, PolarizationType
 from xnft.core.types import FileInfo
 from xnft.loaders.file_registry import file_registry
-from xnft.core.algorithms import planar_near_field_transform_xarray
+from xnft.core.algorithms import planar_near_field_transform
 
 test_dir = Path(__file__).parent.parent
 test_dict = {
@@ -82,10 +82,10 @@ def test_file_loader(load_test_file: tuple[Any, Any]):
 )
 def test_planar_near_field_transform(load_test_file: tuple[Any, Any]):
     source_field, params = load_test_file
-    result = planar_near_field_transform_xarray(
+    result = planar_near_field_transform(
         near_field=source_field["E"],
         probe_correction=None,
-        frequencies=[0],  # pnft should pick the nearest frequency
+        frequencies=source_field.frequency.values[:3],  # pnft should pick the first 3 frequencies
     )
     try:
         assert isinstance(result, xr.Dataset)
