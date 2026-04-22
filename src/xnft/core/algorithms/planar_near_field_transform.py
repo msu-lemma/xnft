@@ -20,9 +20,9 @@ import logging
 import warnings
 import time
 
-from typing import Callable
-from numpy.typing import ArrayLike
-
+from typing import Callable, List
+# from numpy.typing import ArrayLike
+ 
 from ..enums import DataSourceType, FieldType, CoordinateSystemType
 from ..dtypes import FieldDataset
 
@@ -119,7 +119,7 @@ def planar_near_field_transform_t3(
 
 def planar_near_field_transform(
     near_field: xr.DataArray,
-    frequencies: ArrayLike,
+    frequencies: List[float],
     probe_correction: None | xr.DataArray = None,
     n_phi: int = 361,  # 0.5°/sample
     n_theta: int = 361,  # 0.5°/sample
@@ -135,7 +135,7 @@ def planar_near_field_transform(
     ----------
     near_field : xr.DataArray
         Planar near-field measured values to transform to far-field.
-    frequencies : ArrayLike
+    frequencies : List[float]
         Frequencies in Hertz to perform the near-to-far field transform at.  If the provided frequency is not
         found in the `near_field` input, the nearest frequency present will be used instead and a warning will
         be raised to the user.
@@ -154,8 +154,8 @@ def planar_near_field_transform(
 
     Returns
     -------
-    xr.Dataset | Tuple[ArrayLike]
-        _description_
+    xr.Dataset
+        Far-field transformed fields stored in an xarray DataSet.
 
     References
     ----------
