@@ -16,7 +16,7 @@
 
 ## Latest Release 
 
-The simplest method to use xNFT is to install the lasted packaged release for Windows or macOS from the [releases page](https://gitlab.msu.edu/ece-lemma/xnft/-/releases) or at the link below.
+The recommended method to use xNFT is to install the lasted packaged release for Windows or macOS from the [releases page](https://gitlab.msu.edu/ece-lemma/xnft/-/releases) or at the link below.
 
 [![Latest Release](/../../badges/release.svg)](/../../releases) 
 
