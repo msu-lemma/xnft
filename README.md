@@ -12,7 +12,21 @@
 > [!CAUTION] ⚠️ xNFT is in active development
 > xNFT is in active development and is not yet being packaged. The development environment uses the Pixi package manager (https://pixi.prefix.dev/latest/) and git (https://git-scm.com) to manage the envrionment and source code. It may be helpful to have a basic understanding of Pixi and git to install and use this software.
 
-## Download and Installation
+# Installation
+
+## Latest Release 
+
+The simplest method to use xNFT is to install the lasted packaged release for Windows or macOS from the [releases page](https://gitlab.msu.edu/ece-lemma/xnft/-/releases) or at the link below.
+
+[![Latest Release](/../../badges/release.svg)](/../../releases) 
+
+
+## From Source 
+
+For the latest development features progress, and bug fixes, install from source.
+
+> [!WARNING] 
+> Installing from the `main` branch may be unstable.  For the most stable operation, install the latest release.
 
 <details>
 <summary>
