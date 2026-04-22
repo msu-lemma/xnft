@@ -147,8 +147,8 @@ def planar_near_field_transform(
     n_theta : int, optional
         Number of uniform theta sample points in the returned far-field, by default 361
     window : Callable, optional
-        Window generating function used to spatially weight input sample points before transforming, by
-        default scipy.windows.boxcar
+        Window generating function used to spatially weight input sample points before transforming, by default
+        scipy.signal.windows.boxcar.  Further windows can be found in the scipy.signal.windows module.
     r_far_field : int, optional
         Distance in meters to return the far field values at, by default 1000. This value is arbitrary, but may
         be helpful for comparing phase values derived from various sources.
