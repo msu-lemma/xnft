@@ -5,7 +5,6 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
 
-import numpy as np
 from numpy.typing import ArrayLike
 import xarray as xr
 
@@ -13,10 +12,6 @@ from typing import Dict, Optional
 import unyt
 
 from .enums import FieldType, CoordinateSystemType, DataSourceType
-
-import xarray as xr
-import unyt
-
 
 # Allowed coordinate system types for near/far-field
 
@@ -29,6 +24,7 @@ NEAR_FIELD_CS_TYPES = {
 FAR_FIELD_CS_TYPES = {
     CoordinateSystemType.SPHERICAL: {"phi": unyt.radian, "theta": unyt.radian},
 }
+
 
 class FieldDataset:
     """
@@ -76,7 +72,7 @@ class FieldDataset:
         # Ignore first dimension (radial) if in far-field
         if field_type is FieldType.FAR:
             components = components[1:]
-        
+
         spatial_dims = components
         dims = ("component", *spatial_dims, "frequency")
         print(dims)
@@ -87,22 +83,23 @@ class FieldDataset:
             raise ValueError("Far-field must use spherical coordinates")
 
         if field_type is FieldType.NEAR and coordinate_system not in NEAR_FIELD_CS_TYPES:
-            raise ValueError(f"Invalid coordinate system for near-field. Must be one of {','.join([x.name for x in NEAR_FIELD_CS_TYPES])}")
+            raise ValueError(
+                f"Invalid coordinate system for near-field. Must be one of {','.join([x.name for x in NEAR_FIELD_CS_TYPES])}"
+            )
 
         expected_ndim = len(dims)
         if e_field.ndim != expected_ndim:
-            raise ValueError(
-                f"Field ndim={e_field.ndim}, expected {expected_ndim}"
-            )
-        
+            raise ValueError(f"Field ndim={e_field.ndim}, expected {expected_ndim}")
+
         for dim in spatial_dims:
             if dim not in spatial_coords:
                 raise ValueError(f"Missing coordinate '{dim}' in spatial_coords")
-        
+
         if h_field is not None:
             if e_field.shape != h_field.shape:
-                raise ValueError("E- and H-field shapes must match, otherwise H-field must be None")
-
+                raise ValueError(
+                    "E- and H-field shapes must match, otherwise H-field must be None"
+                )
 
         # --- Create Dataset ---
         coords = {
@@ -110,21 +107,21 @@ class FieldDataset:
             **spatial_coords,
             "frequency": frequency,
         }
-        
+
         if field_type is FieldType.NEAR:
             coordinate_units = NEAR_FIELD_CS_TYPES[coordinate_system]
         else:
             coordinate_units = FAR_FIELD_CS_TYPES[coordinate_system]
 
         # Add frequency units
-        coordinate_units['frequency'] = unyt.hertz
+        coordinate_units["frequency"] = unyt.hertz
 
         data_vars = {
             "E": (
-                    dims,
-                    e_field,
-                    {"units": unyt.volt / unyt.meter},
-                )
+                dims,
+                e_field,
+                {"units": unyt.volt / unyt.meter},
+            )
         }
 
         if h_field is not None:
@@ -141,6 +138,6 @@ class FieldDataset:
                 "data_source_type": data_source,
                 "field_type": field_type,
                 "coordinate_system": coordinate_system,
-                "coordinate_units": coordinate_units
+                "coordinate_units": coordinate_units,
             },
         )

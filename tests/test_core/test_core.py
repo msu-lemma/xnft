@@ -11,7 +11,7 @@ import xarray as xr
 from xnft.core.enums import FieldType, DataSourceType, PolarizationType
 from xnft.core.types import FileInfo
 from xnft.loaders.file_registry import file_registry
-from xnft.core.algorithms import planar_near_field_transform
+from xnft.core.algorithms.planar_near_field_transform import planar_near_field_transform
 
 test_dir = Path(__file__).parent.parent
 test_dict = {

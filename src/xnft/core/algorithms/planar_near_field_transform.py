@@ -20,11 +20,11 @@ import logging
 import warnings
 import time
 
-from typing import Tuple
+from typing import Callable
 from numpy.typing import ArrayLike
 
-from .enums import DataSourceType, FieldType, CoordinateSystemType
-from .dtypes import FieldDataset
+from ..enums import DataSourceType, FieldType, CoordinateSystemType
+from ..dtypes import FieldDataset
 
 # fmt: off
 # MLX_AVAILABLE = False
@@ -66,7 +66,7 @@ def planar_near_field_transform_t3(
     e_y,
     r_far_field=1000,
 ):
-    # TODO: Update to type-2 NUFFT for improved performance (GPU won't be effective with type-3)
+    # TODO: Add a type-2 NUFFT implementation for improved performance (GPU won't be effective with type-3)
 
     # Create target sample locations in k-space based on sample points in
     # (theta, phi)
@@ -119,77 +119,74 @@ def planar_near_field_transform_t3(
 
 def planar_near_field_transform(
     near_field: xr.DataArray,
-    probe_correction=None,
-    frequencies=None,
-    device="cpu",
-    nthreads=0,
-    return_xarray=True,
-    n_phi=361,  # 0.5°/sample
-    n_theta=361,  # 0.5°/sample
-    window=windows.boxcar,
+    frequencies: ArrayLike,
+    probe_correction: None | xr.DataArray = None,
+    n_phi: int = 361,  # 0.5°/sample
+    n_theta: int = 361,  # 0.5°/sample
+    window: Callable = windows.boxcar,
     r_far_field=1000,  # meters
-) -> xr.Dataset | Tuple[ArrayLike]:
-    # =========================================================================
-    # Select Frequencies From Source File
-    #
-    #  TODO: Add multi-frequency processing
-    #
-    # The loaded source files above contain multiple frequency data.  Select a
-    # single frequency to process.
+) -> xr.Dataset:
+    """Compute the near to far-field transform via non-uniform fast Fourier transform (NUFFT).
 
-    # List all frequencies available in file
+    The NUFFT performed here uses the fiNUFFT package [1], [2], [3]. The plnar near-to-far field transform
+    implementation proceeds from [§12.9, 4] and the derivation included in the documentation [citation needed].
+
+    Parameters
+    ----------
+    near_field : xr.DataArray
+        Planar near-field measured values to transform to far-field.
+    frequencies : ArrayLike
+        Frequencies in Hertz to perform the near-to-far field transform at.  If the provided frequency is not
+        found in the `near_field` input, the nearest frequency present will be used instead and a warning will
+        be raised to the user.
+    probe_correction : None or xr.DataArray, optional
+        Probe correction fields to use, if any. Must be far-field representations, by default None
+    n_phi : int, optional
+        Number of uniform phi sample points in the returned far-field, by default 361
+    n_theta : int, optional
+        Number of uniform theta sample points in the returned far-field, by default 361
+    window : Callable, optional
+        Window generating function used to spatially weight input sample points before transforming, by
+        default scipy.windows.boxcar
+    r_far_field : int, optional
+        Distance in meters to return the far field values at, by default 1000. This value is arbitrary, but may
+        be helpful for comparing phase values derived from various sources.
+
+    Returns
+    -------
+    xr.Dataset | Tuple[ArrayLike]
+        _description_
+
+    References
+    ----------
+    [1] fiNUFFT Mathematical definitions of transforms. Online: https://finufft.readthedocs.io/en/latest/math.html
+    [2] A. H. Barnett, J. F. Magland, and L. af Klinteberg, A parallel non-uniform fast Fourier transform library
+        based on an “exponential of semicircle” kernel. SIAM J. Sci. Comput. 41(5), C479-C504 (2019).
+        Online: https://arxiv.org/abs/1808.06736
+    [3] A. H. Barnett, Aliasing error of the exp(𝛽√1-z2) kernel in the nonuniform fast Fourier transform.  Appl.
+        Comput. Harmon. Anal. 51, 1-16 (2021). Online: https://arxiv.org/abs/2001.09405
+    [4] C. A. Balanis, Antenna theory: analysis and design, 3. ed. Hoboken, N.J: Wiley-Interscience, 2005.
+    """
+
+    # [Debug] List all frequencies available in file
     logger.debug(f"Available frequencies: {', '.join([
         str(Quantity(x, "Hz")) for x in near_field.frequency.values
     ])}")
 
-    # Find nearest available frequency to the target frequency
-    # target_frequency = frequencies[0]
-    # if len(frequencies) > 1:
-    #     logger.warning(
-    #         f"Only single frequency planar near field "
-    #         f"transforms are currently suppoerted.  Selecting "
-    #         f"{str(Quantity(target_frequency, "Hz"))}"
-    #     )
-
-    # f_idx = np.argmin(np.abs(near_field.frequency.values - target_frequency))
-    # frequency = near_field.frequency[f_idx]
-    # wavelength = spc.c / frequency
-    # k0 = 2.0 * np.pi / wavelength.item()
-
-    # logger.debug(f"{' Selected Values ':{'-'}^{80}}")
-    # logger.debug(f"Frequency: {Quantity(frequency, 'Hz')}")
-    # logger.debug(f"Wavelength: {Quantity(wavelength, 'm')}")
-    # logger.debug(f"k0: {Quantity(k0, 'rad/m')}")
-
-    # =========================================================================
-    # Compute uniform Theta, Phi grid for target NUDFT points
-
+    # Compute uniform Theta, Phi grid for target field points
     theta_target = np.linspace(-np.pi / 2, np.pi / 2, n_theta)
     phi_target = np.linspace(-np.pi / 2, np.pi / 2, n_phi)
 
     theta_grid_target, phi_grid_target = np.meshgrid(theta_target, phi_target)
 
-    # =========================================================================
-    # Compute the near to far-field transform via non-uniform Fourier
-    # transform (NUFFT)
-    #
-    # Select either CPU (via Numpy) or GPU (via CUDA).
-    #
-    # The following proceeds from [§12.9, 1].
-    # [1] C. A. Balanis, Antenna theory: analysis and design, 3. ed. Hoboken,
-    #     N.J: Wiley-Interscience, 2005.
+    # Generate windowing function (rectangular by default)
     win_x = window(near_field.x.size)
     win_y = window(near_field.y.size)
 
     # Normalize window
     win = np.sqrt(np.outer(win_x, win_y))
 
-    # === Perform FFTs =========================
-
-    # fiNUFFT Reference: https://finufft.readthedocs.io/en/latest/math.html
-    # Scale source sample locations along aperture to input of finufft \
-    # [-pi/2, pi/2)
-
+    # Scale source sample locations along aperture to input of finufft in the range [-pi/2, pi/2)
     x_scale = 2.0 * np.pi / (np.max(near_field.x.values) - np.min(near_field.x.values))
     y_scale = 2.0 * np.pi / (np.max(near_field.y.values) - np.min(near_field.y.values))
 
@@ -204,10 +201,14 @@ def planar_near_field_transform(
     # Generate parallel function call arguments
     args_list = []
     z_val = near_field.coords["z"].item()  # should only have one z-height value
+
     for freq in frequencies:
+
         f_idx = np.argmin(np.abs(near_field.frequency.values - freq))
         nearest_freq = near_field.frequency.values[f_idx]
+
         if nearest_freq != freq:
+
             warnings.warn(
                 "Provided frequency {:} not in available frequencies, using nearest frequency {:} instead".format(
                     Quantity(freq, "Hz"), Quantity(nearest_freq, "Hz")
@@ -255,18 +256,11 @@ def planar_near_field_transform(
     elapsed_time = Quantity(time.perf_counter() - t_start, "s")
     logger.debug("Far-field transform: {:}".format(elapsed_time))
 
-    # -- Generate field output --
-
-    eta = (spc.mu_0 / spc.epsilon_0) ** 0.5
-    h_theta = -e_phi / eta
-    h_phi = e_theta / eta
-
+    # Generate field output
     e_field = np.stack([e_phi, e_theta], axis=0)
-    h_field = np.stack([h_phi, h_theta], axis=0)
 
     fields = FieldDataset.create(
         e_field=e_field,
-        h_field=h_field,
         spatial_coords={
             "phi": phi_target,
             "theta": theta_target,

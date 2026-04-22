@@ -13,7 +13,7 @@ from ...gui.dialogs.analysis.new_planar_nft_dialog import (
     NewPlanarNearFieldTransform,
 )
 
-from ...core.algorithms import (
+from ...core.algorithms.planar_near_field_transform import (
     planar_near_field_transform,
 )
 
