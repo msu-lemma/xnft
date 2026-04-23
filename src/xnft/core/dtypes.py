@@ -4,7 +4,7 @@ Module providing data types specific to xnft.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
-
+from __future__ import annotations
 from numpy.typing import ArrayLike
 import xarray as xr
 
@@ -38,9 +38,9 @@ class FieldDataset:
         h_field: Optional[ArrayLike | None] = None,
         spatial_coords: Dict[ArrayLike],
         frequency: ArrayLike,
-        coordinate_system: CoordinateSystemType,
-        field_type: FieldType,
-        data_source: DataSourceType,
+        coordinate_system: "CoordinateSystemType",
+        field_type: "FieldType",
+        data_source: "DataSourceType",
     ) -> xr.Dataset:
         """Create xarray field dataset with data validation.
 

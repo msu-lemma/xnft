@@ -4,6 +4,7 @@ Field transform algorithms.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
+from __future__ import annotations
 
 import numpy as np
 import xarray as xr

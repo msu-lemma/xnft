@@ -5,6 +5,7 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
 
+from __future__ import annotations
 from pathlib import Path
 
 from PySide6.QtCore import Qt
@@ -46,7 +47,7 @@ class ExportDataDirectoryDialog(QDialog):
     def __init__(
         self,
         parent: QWidget | None = None,
-        target_node: FieldNode | ReportNode | None = None,
+        target_node: "FieldNode" | "ReportNode" | None = None,
         help_str: str = ""
     ):
         super().__init__(parent)

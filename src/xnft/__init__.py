@@ -1,6 +1,7 @@
 """
-Copyright 2025-2026
-LEmmA, Electromagnetics Research Group, Michigan State University
+xNFT - Antenna Measurement Software
+
+Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University
 """
 
 import sys

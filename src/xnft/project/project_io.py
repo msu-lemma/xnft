@@ -4,6 +4,7 @@ Handle reading and writing xNFT projects.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
+from __future__ import annotations
 
 from compression import zstd
 import pickle
@@ -17,7 +18,7 @@ if TYPE_CHECKING:
     from .nodes.project import Project
 
 
-def write_project(project: Project, compression_level=10):
+def write_project(project: "Project", compression_level=10):
     """Write `project` to disk at specified `compression_level`.
 
     Parameters
@@ -54,7 +55,7 @@ def write_project(project: Project, compression_level=10):
             tmp_path.unlink(missing_ok=True)
 
 
-def read_project(project_path: Path) -> Project:
+def read_project(project_path: Path) -> "Project":
     """Read project from `project_path` and return object.
 
     Parameters

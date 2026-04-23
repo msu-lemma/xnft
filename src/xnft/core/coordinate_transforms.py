@@ -4,6 +4,7 @@ Transformations between coordinate systems.
 Copyright 2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
+from __future__ import annotations
 
 import numpy as np
 import numba as nb

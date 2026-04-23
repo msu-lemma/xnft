@@ -74,10 +74,9 @@ class NewPlanarNearFieldTransform(QDialog):
             print(f'{label}: {item.node_type}')
             if item.node_type == NodeType.FIELDS and item.field_type == FieldType.NEAR:
                 self.cb_source_field.addItem(label, item)
-            # if item.node_type == FieldType.FAR:
-            #     self.cb_far_field.addItem(label, item)
-            #     # A probe correction can be any far field measurement
-            #     self.cb_probe_corrections.addItem(label, item)
+            if item.node_type == NodeType.FIELDS and item.field_type == FieldType.FAR:
+                # A probe correction can be any far field measurement
+                self.cb_probe_corrections.addItem(label, item)
 
         self.lw_frequencies = QListWidget(self)
         self.lw_frequencies.setSelectionMode(QListWidget.ExtendedSelection)

@@ -4,6 +4,7 @@ Data writers for xarray formatted data.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
+from __future__ import annotations
 
 import xarray as xr
 import numpy as np

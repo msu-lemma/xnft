@@ -221,6 +221,8 @@ types-pyyaml = ">=6.0.12.20260408,<7"
 [feature.docs.dependencies]
 sphinx = ">=9.1.0,<10"
 pydata-sphinx-theme = ">=0.17.0,<0.18"
+numpydoc = ">=1.10.0,<2"
+sphinx-copybutton = ">=0.5.2,<0.6"
 
 [feature.dev.dependencies]
 mypy = ">=1.20.1,<2"

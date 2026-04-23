@@ -4,6 +4,7 @@ Helper dialog to export data to various file types.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
+from __future__ import annotations
 
 from pathlib import Path
 from collections import defaultdict
@@ -50,7 +51,7 @@ class ExportDataDialog(QDialog):
     def __init__(
         self,
         parent: QWidget | None = None,
-        target_node: FieldNode | ReportNode | None = None,
+        target_node: "FieldNode" | "ReportNode" | None = None,
     ):
         super().__init__(parent)
         self.setWindowTitle("Export Data to File")
