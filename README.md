@@ -133,6 +133,14 @@ To run the Jupter notebooks included with this project, a `jupter` pixi environm
 
 TODO...
 
+### API Documentation
+
+#### Pre-built docs
+
+The latest automated docs build can be downloaded here: [**Download Latest Documentation**](https://gitlab.msu.edu/api/v4/projects/28094/jobs/artifacts/main/download?job=docs-build-job)
+
+Once downloaded, unzip the archive and navigate to **`_build/index.html`** to access the documentation.
+
 ### Upgrading Dependencies
 
 > [!warning] 
