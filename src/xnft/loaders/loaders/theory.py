@@ -225,7 +225,6 @@ def load_theory_far_field_yaml(file_list: List[FileInfo]) -> xr.Dataset:
     # Compute far-field constants
     wavelength = spc.c / sample_frequency_array
     k_0 = 2.0 * np.pi / wavelength
-    eta = (spc.mu_0 / spc.epsilon_0) ** 0.5
 
     # Compute far-field distance based on aperture at spec. frequency
     d_2 = ap_x**2 + ap_y**2  # Maximum aperture extents, squared
@@ -256,41 +255,10 @@ def load_theory_far_field_yaml(file_list: List[FileInfo]) -> xr.Dataset:
             f"Excitation distribution {excitation_distribution} is not yet " "implemented."
         )
 
-    h_theta = -e_phi / eta
-    h_phi = e_theta / eta
-
     e_field = np.stack([e_phi, e_theta])
-    h_field = np.stack([h_phi, h_theta])
 
-    # fields = xr.Dataset(
-    #     {
-    #         "E": (
-    #             ("component", "phi", "theta", "frequency"),
-    #             e_field,
-    #             {"Units": "V/m"},
-    #         ),
-    #         "H": (
-    #             ("component", "phi", "theta", "frequency"),
-    #             h_field,
-    #             {"Units": "A/m"},
-    #         ),
-    #     },
-    #     coords={
-    #         "component": ["phi", "theta"],
-    #         "phi": phi_sample_location_array,
-    #         "theta": theta_sample_location_array,
-    #         "frequency": sample_frequency_array,
-    #     },
-    #     attrs={
-    #         "data_source_type": DataSourceType.THEORY,
-    #         "field": FieldType.FAR,
-    #         "coordinate_system": CoordinateSystemType.SPHERICAL,
-    #         "component_units": Units.RADIANS
-    #     },
-    # )
     fields = FieldDataset.create(
         e_field=e_field,
-        h_field=None,
         spatial_coords={
             "phi": phi_sample_location_array,
             "theta": theta_sample_location_array,

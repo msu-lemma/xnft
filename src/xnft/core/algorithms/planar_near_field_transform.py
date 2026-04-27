@@ -55,6 +55,33 @@ from ..dtypes import FieldDataset
 logger = logging.getLogger(__name__)
 
 
+def get_correction_marix(
+    far_field: xr.DataArray
+):
+    """
+    Generate the correction matrix given a far-field antenna pattern.
+
+    NOTE/TODO/FIXME: There are many assumptions here to be fixed:
+    1. The far_field matrix must be square and equally spaced in both axes
+    2. The requested shapes/frequencies must match the downstream fields' dimenstions exactly
+
+    Paramters
+    ---------
+    far_field : xr.DataArray
+        Far-field E-field pattern of the measurement probe of shape `(2,n_phi,n_theta)`.
+        It is assumed the polarization is in the y-hat direction (the reference polarization).
+    
+    Returns
+    -------
+    NDArray[np.complex128]
+        Output array of shape `(2,2,n_phi,n_theta)`
+    """
+    return np.vstack([
+        far_field,
+        np.rot90(far_field, -1)  # rotate clockwise 90°
+    ])
+
+
 def planar_near_field_transform_t3(
     theta_grid_target,
     phi_grid_target,
@@ -68,6 +95,38 @@ def planar_near_field_transform_t3(
     e_y,
     r_far_field=1000,
 ):
+    """Compute the planar near-to-far field transform for a single frequency
+
+    Parameters
+    ----------
+    theta_grid_target : ArrayLike
+        2D grid of theta sample points for output.
+    phi_grid_target : ArrayLike
+        2D phi of theta sample points for output.
+    k0 : float
+        Wavenumber to compute output for
+    win : ArrayLike
+        2D windowing function to apply to input field.
+    near_field_x_scaled : ArrayLike
+        Displacement along x-axis, normalized from -pi/2,pi/2 for NUFFT
+    near_field_y_scaled : ArrayLike
+        Displacement along y-axis, normalized from -pi/2,pi/2 for NUFFT
+    x_scale : float
+        Scaling factor for x-component for NUFFT 
+    y_scale : float
+        Scaling factor for x-component for NUFFT
+    e_x : ArrayLike
+        E-field x-component
+    e_y : ArrayLike
+        E-field y-component
+    r_far_field : int, optional
+        Far-field radius compute transform at, by default 1000
+
+    Returns
+    -------
+    Tuple[ArrayLike]
+        Typle of $E_\mathrm{phi}$ and $E_\mathrm{theta}$ fields
+    """
     # TODO: Add a type-2 NUFFT implementation for improved performance (GPU won't be effective with type-3)
 
     # Create target sample locations in k-space based on sample points in

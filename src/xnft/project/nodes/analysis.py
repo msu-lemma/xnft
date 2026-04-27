@@ -99,7 +99,7 @@ class AnalysisNode(Node):
         ]
 
         # Status to display on status bar at bottom of window
-        status = "Near-to-far Field Transform is not yet implemented."
+        status = "Planar near-to-far field transform finished."
 
         result_dict = {"status": status, "nodes": node_pair_list}
 
@@ -112,7 +112,7 @@ class AnalysisNode(Node):
         icon_name="document-new",
     )
     def new_spherical_nft(self):
-        logger.warning("Near-to-far Field Transform is not yet implemented.")
+        logger.warning("Spherical near-to-far Field transform is not yet implemented.")
 
     @context_action(
         "New Near Field Interpolation",
