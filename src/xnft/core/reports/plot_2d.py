@@ -372,11 +372,13 @@ class Plot2D(QWidget):
         if self.selected_field_quantity is not None:
             field_components = self.selected_field_quantity.field_components
 
-            for idx, fc in enumerate(field_components):
+            newitem_index = 0
+            for fc in field_components:
                 # Only add if field type is valid for that function
                 if self.field_node.field_type in fc.value.field_types:
                     self.cb_field_component.addItem(fc.value.name, fc.value)
-                    self.cb_field_component.model().item(idx).setEnabled(fc.value.enabled)
+                    self.cb_field_component.model().item(newitem_index).setEnabled(fc.value.enabled)
+                    newitem_index += 1
 
     def _update_plotting_scale_options(self):
         # Remove all items before updating items

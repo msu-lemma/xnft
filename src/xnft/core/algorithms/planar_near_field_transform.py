@@ -116,7 +116,7 @@ def planar_near_field_transform_t3(
     )
     # fmt: on
 
-    return e_theta, e_phi
+    return e_phi, e_theta
 
 
 def planar_near_field_transform(
