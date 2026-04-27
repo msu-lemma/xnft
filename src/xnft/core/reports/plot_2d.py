@@ -244,7 +244,7 @@ class Plot2D(QWidget):
                 applicate_scale=self.selected_field_scale,
                 applicate_norm=self.selected_field_norm,
                 selected_frequency=self.selected_plot_frequency,
-                gradient_state=(g := pg.GradientEditorItem()).loadPreset("viridis")
+                gradient_state=(g := pg.GradientEditorItem()).loadPreset("turbo")
                 or g.saveState(),
             )
             self.plot_parameters = plot_parameters

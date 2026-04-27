@@ -33,8 +33,8 @@ def field_component_y(field: xr.DataArray):
     e_phi = field.sel(component="phi")
     e_r = field.sel(component="r") if "r" in field.component else 0
     phi_grid -= np.pi / 2
-    return np.sin(theta_grid) * np.cos(phi_grid) * e_r \
-        + np.cos(theta_grid) * np.cos(phi_grid) * e_theta \
+    return np.sin(theta_grid) * np.sin(phi_grid) * e_r \
+        + np.cos(theta_grid) * np.sin(phi_grid) * e_theta \
         + np.cos(phi_grid) * e_phi
 
 
