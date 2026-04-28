@@ -79,13 +79,14 @@ class NewPlanarNearFieldTransform(QDialog):
                 self.cb_probe_corrections.addItem(label, item)
 
         self.lw_frequencies = QListWidget(self)
+        self.lw_frequencies.setFocusPolicy(Qt.StrongFocus)
         self.lw_frequencies.setSelectionMode(QListWidget.ExtendedSelection)
         self._update_frequencies()
 
         # Generate help label based on platform type
-        mod_key = "⌘" if platform.system() == "Darwin" else "ctrl"
+        mod_key = "⌘" if platform.system() == "Darwin" else "Ctrl"
         label_freq_help = QLabel(
-            f"To select multiple frequencies hold {mod_key} or shift, or {mod_key}-A to select all."
+            f"To select multiple frequencies hold {mod_key} or Shift, or {mod_key}-A to select all."
         )
         label_freq_help.setStyleSheet("color: #777")
 

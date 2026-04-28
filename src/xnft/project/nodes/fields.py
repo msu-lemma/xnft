@@ -39,6 +39,7 @@ class FieldsNode(Node):
         icon_name="document-new",
         action="ui_action",
         helper_dialog=NewFieldMeasurementDialog,
+        spawn_thread=True,
     )
     def new_measured_field(self, field_type, source_type, field_name, file_info_list):
 
@@ -165,6 +166,7 @@ class FieldNode(DataNode):
         separator=True,
         action="ui_action",
         helper_dialog=ExportDataDialog,
+        spawn_thread=True,
     )
     def export_data(self, file_path: Path):
         if self.data is None:

@@ -68,6 +68,6 @@ if is_mac:
         coll,
         name="xnft.app",
         icon="src/xnft/resources/icons/xnft.png",
-        bundle_identifier="edu.msu.ece.lemma.xnft",
+        bundle_identifier="edu.msu.engineering.lemma.xnft",
         version=app_version,
     )

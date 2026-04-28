@@ -86,6 +86,7 @@ class ProjectTreeView(QTreeView):
             if context_action.action == "ui_action":
                 helper_dialog = context_action.helper_dialog
                 invoke_function = context_action.invoke
+                spawn_thread = context_action.spawn_thread
                 # fmt: off
                 action.triggered.connect(
                     lambda
@@ -94,7 +95,7 @@ class ProjectTreeView(QTreeView):
                     target_node=node,
                     invoke_function=invoke_function,
                     main=self.window():
-                    main._ui_action(helper_dialog, target_node, invoke_function)
+                    main._ui_action(helper_dialog, target_node, invoke_function, spawn_thread=spawn_thread)
                 )
                 # fmt: on
             elif context_action.action == "close_project" and isinstance(

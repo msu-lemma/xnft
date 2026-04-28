@@ -42,6 +42,7 @@ class AnalysisNode(Node):
         action="ui_action",
         helper_dialog=NewPlanarNearFieldTransform,
         icon_name="document-new",
+        spawn_thread=True,
     )
     def new_planar_nft(
         self,
@@ -110,6 +111,7 @@ class AnalysisNode(Node):
         order=20,
         enabled=False,
         icon_name="document-new",
+        spawn_thread=True,
     )
     def new_spherical_nft(self):
         logger.warning("Spherical near-to-far Field transform is not yet implemented.")
@@ -120,6 +122,7 @@ class AnalysisNode(Node):
         enabled=False,
         separator=True,
         icon_name="document-new",
+        spawn_thread=True,
     )
     def new_near_field_interpolation(self):
         logger.warning("Near field interpolation is not yet implemented.")
@@ -129,6 +132,7 @@ class AnalysisNode(Node):
         order=40,
         enabled=False,
         icon_name="document-new",
+        spawn_thread=True,
     )
     def new_far_field_interpolation(self):
         logger.warning("Far field interpolation is not yet implemented.")
@@ -139,6 +143,7 @@ class AnalysisNode(Node):
         enabled=False,
         separator=True,
         icon_name="document-new",
+        spawn_thread=True,
     )
     def new_function(self):
         logger.warning("Derived are not yet implemented.")

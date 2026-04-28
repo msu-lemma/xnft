@@ -302,7 +302,7 @@ def planar_near_field_transform(
         )
 
     # Call planar near-field transform in parallel
-    results = Parallel(n_jobs=-1)(
+    results = Parallel(n_jobs=-1, backend="multiprocessing")(
         delayed(planar_near_field_transform_t3)(**args) for args in args_list
     )
 

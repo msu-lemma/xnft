@@ -7,24 +7,21 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 import sys
 from pathlib import Path
 
+import logging
+import importlib.metadata
+
 from PySide6.QtCore import (
     Qt,
     QModelIndex,
-    QSize,
-    QRect,
-    QRectF,
-    QSizeF,
-    QPointF,
     QSettings,
     QCoreApplication,
+    QThread,
 )
 from PySide6.QtGui import (
     QAction,
     QIcon,
     QKeySequence,
     QWindow,
-    QColor,
-    QPalette,
 )
 from PySide6.QtWidgets import (
     QApplication,
@@ -32,32 +29,27 @@ from PySide6.QtWidgets import (
     QDialog,
     QMessageBox,
     QDockWidget,
-    QMdiSubWindow,
-    QMdiArea,
     QTextEdit,
     QTableWidget,
     QTableWidgetItem,
     QFileDialog,
     QToolBar,
+    QProgressBar,
 )
-
-import logging
-import importlib.metadata
-
-
-from .. import __version__
-from ..project import manager
-from ..project.nodes.project import Project
-from ..project.project_io import read_project
-from ..resources.paths import resource_path
 
 from .dialogs.project.new_project_dialog import NewProjectDialog
 from .project_tree_model import ProjectManagerTreeModel
 from .project_tree_view import ProjectTreeView
 from .mdi_area import QMdiAreaWatermark
 
+from .worker import SpawnWorker
+
+from ..project import manager
+from ..project.nodes.project import Project
+from ..project.project_io import read_project
+from ..resources.paths import resource_path
+
 # Registers all loaders
-import xnft.loaders  # noqa: F401  # pylint: disable=unused-import
 
 logger = logging.getLogger(__name__)
 
@@ -77,7 +69,7 @@ class MainWindow(QMainWindow):
         QCoreApplication.setApplicationName("xNFT")
         self.settings = QSettings()
 
-        self.setWindowTitle(f"xNFT - version {__version__}")
+        self.setWindowTitle(f"xNFT - version {importlib.metadata.version('xnft')}")
         self.project_manager = project_manager
 
         self._text_edit = QTextEdit()
@@ -94,6 +86,8 @@ class MainWindow(QMainWindow):
 
     def create_actions(self):
 
+        # TODO: Handle project action function calls on separate thread helper using signals/slots
+        #       similar to _ui_action; unify worker function calling framework
 
         self._new_project_act = QAction(
             QIcon.fromTheme("document-new"),
@@ -164,7 +158,15 @@ class MainWindow(QMainWindow):
         self.addToolBar(self._file_tool_bar)
 
     def create_status_bar(self):
+        # Add status message
         self.statusBar().showMessage("Ready")
+
+        # Add progress bar
+        self.progress = QProgressBar(self)
+        # self.progress.setTextVisible(False)
+        self.progress.setRange(0, 1)
+        self.progress.setFixedWidth(350)
+        self.statusBar().addPermanentWidget(self.progress)
 
     def create_project_manager_widgets(self, pm):
 
@@ -186,7 +188,7 @@ class MainWindow(QMainWindow):
 
         # == Create node info table ==
         # TODO: update to QTableWidget subclass in separate file to pull out custom logic from main gui
-        
+
         properties_dock = QDockWidget("Properties", self)
         properties_dock.setObjectName("DockProperties")  # Used for restore
 
@@ -201,17 +203,13 @@ class MainWindow(QMainWindow):
         self.properties_table.horizontalHeader().setStretchLastSection(True)
 
         properties_dock.setWidget(self.properties_table)
-        self.addDockWidget(
-            Qt.DockWidgetArea.LeftDockWidgetArea, properties_dock
-        )
+        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, properties_dock)
         self._view_menu.addAction(properties_dock.toggleViewAction())
 
         selection_model = self.project_tree.selectionModel()
         if selection_model is not None:
             selection_model.currentChanged.connect(
-                lambda current_index, _: self._node_info_from_index(
-                    current_index
-                )
+                lambda current_index, _: self._node_info_from_index(current_index)
             )
 
     def _node_info_from_index(self, index: QModelIndex):
@@ -227,10 +225,10 @@ class MainWindow(QMainWindow):
             attr = getattr(node.__class__, name, None)
             # NOTE: fget is the getter of a property
             if isinstance(attr, property) and getattr(attr.fget, "__gui_property__", False):
-                label = attr.fget.__gui_property__['label']
-                order = attr.fget.__gui_property__['order']
-                formatter = attr.fget.__gui_property__['formatter']
-                button = attr.fget.__gui_property__['button']
+                label = attr.fget.__gui_property__["label"]
+                order = attr.fget.__gui_property__["order"]
+                formatter = attr.fget.__gui_property__["formatter"]
+                button = attr.fget.__gui_property__["button"]
 
                 value = getattr(node, name)
                 if formatter:
@@ -261,14 +259,12 @@ class MainWindow(QMainWindow):
     def _about(self):
         meta = importlib.metadata.metadata("xnft")
 
-        authors = "\n".join(
-            [meta.get("Author"), *meta.get("Author-email").split(", ")]
-        )
+        authors = "\n".join([meta.get("Author"), *meta.get("Author-email").split(", ")])
 
         QMessageBox.about(
             self,
             "About xNFT",
-            f"xNFT Version {__version__}\n\n"
+            f"xNFT Version {meta.get("Version")}\n\n"
             f"{meta.get("Summary")}\n\n"
             "Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.\n\n"
             f"Authors:\n{authors}",
@@ -302,9 +298,7 @@ class MainWindow(QMainWindow):
         if dialog.exec() == QDialog.Accepted:
             name, path = dialog.get_project_info()
             project_path = Path(path) / f"{name}.xnft"
-            self.statusBar().showMessage(
-                f"New Project Path: {str(project_path)}"
-            )
+            self.statusBar().showMessage(f"New Project Path: {str(project_path)}")
 
             # Create the underlying project object
             new_project = Project(name=name, _path=project_path)
@@ -323,7 +317,7 @@ class MainWindow(QMainWindow):
         else:
             self.statusBar().showMessage("No project selected to save.")
 
-    def _ui_action(self, helper_dialog, target_node, invoke_function):
+    def _ui_action(self, helper_dialog, target_node, invoke_function, spawn_thread=False):
         """Perform actions that interact with the UI from external models
             (e.g., nodes).
         Examples:
@@ -340,28 +334,53 @@ class MainWindow(QMainWindow):
             A function to callback from the project to perform project action.
         """
 
-        result_dict = None
+        invoke_kwargs = {}
+        run_function = True
 
         # If a helper dialog is provided, get args and invoke; else invoke without args
         if helper_dialog is not None:
             dialog = helper_dialog(self, target_node=target_node)
             if dialog.exec() == QDialog.Accepted:
                 invoke_kwargs = dialog.get_selections()
+            else:
+                # If the user selects "Cancel", don't run the function
+                run_function = False
 
-                # Call bound function with kwargs returned from helper_dialog
+        if run_function:
+            if spawn_thread:
+                # Run operation on separate non-gui thread to avoid blocking
+                self._invoke_thread = QThread(self)
+                self._invoke_worker = SpawnWorker(invoke_function, invoke_kwargs)
+                self._invoke_worker.moveToThread(self._invoke_thread)
+                self._invoke_thread.started.connect(self._invoke_worker.run)
+                self._invoke_worker.finished.connect(self._on_invoke_finished)
+                self._invoke_worker.error.connect(self._on_invoke_error)
+
+                # Tear down thread
+                self._invoke_worker.finished.connect(self._invoke_thread.quit)
+                self._invoke_worker.finished.connect(self._invoke_worker.deleteLater)
+                self._invoke_thread.finished.connect(self._invoke_thread.deleteLater)
+
+                self.statusBar().showMessage("Working...")
+                self.progress.setRange(0, 0)
+                self.progress.show()
+
+                self._invoke_thread.start()
+            else:
                 result_dict = invoke_function(**invoke_kwargs)
+                self._on_invoke_finished(result_dict)
 
-        else:
-            result_dict = invoke_function()
-
-        # TODO: handle long-running asynchronous tasks
-        # will reqiure callbacks when tasks finish to perform further
-        # UI actions
-        #
-        # tasks = result_dict["tasks"]
+    def _on_invoke_finished(self, result_dict):
 
         if result_dict is None:
             return
+
+        # Reset progress bar to idle
+        self.progress.setRange(0, 1)
+
+        status = result_dict.get("status")
+        if status:
+            self.statusBar().showMessage(status)
 
         # Set status bar text
         status = result_dict.get("status", None)
@@ -398,6 +417,12 @@ class MainWindow(QMainWindow):
                 sub = self.mdi_area.addSubWindow(win)
                 sub.show()
 
+    def _on_invoke_error(self, exc):
+        # Reset progress bar to idle
+        self.progress.setRange(0, 1)
+        # Disable error for now as "cancel" is not handled properly
+        # self.statusBar().showMessage(f"Error: {exc}")
+
     def restore_all(self):
         if self.settings.contains("geometry"):
             self.restoreGeometry(self.settings.value("geometry"))
@@ -420,6 +445,9 @@ def center_window(window: QWindow, target_size_ratio: float = 0.7):
     target_size_ratio : float, optional
         Fraction of the display to resize the window to, by default 0.7
     """
+    min_width = 768  # px
+    min_height = 576  # px
+
     # Get window geometry
     screen = window.screen()
 
@@ -432,9 +460,6 @@ def center_window(window: QWindow, target_size_ratio: float = 0.7):
         target_width = int(available_geometry.width() * target_size_ratio)
         target_height = int(available_geometry.height() * target_size_ratio)
 
-        min_width = 640  # px
-        min_height = 480  # px
-
         width = max(target_width, min_width)
         height = max(target_height, min_height)
 
@@ -442,18 +467,20 @@ def center_window(window: QWindow, target_size_ratio: float = 0.7):
 
         # Center the window
         x = available_geometry.x() + (available_geometry.width() - width) // 2
-        y = (
-            available_geometry.y()
-            + (available_geometry.height() - height) // 2
-        )
+        y = available_geometry.y() + (available_geometry.height() - height) // 2
 
         window.move(x, y)
+
+        window.setMinimumWidth(min_width)
+        window.setMinimumHeight(min_height)
 
 
 def run_gui():
     """
     Main GUI entrypoint.
     """
+    import xnft.loaders  # noqa: F401  # pylint: disable=unused-import
+
     app = QApplication(sys.argv)
     app.setAttribute(Qt.AA_UseHighDpiPixmaps)
     app.setWindowIcon(QIcon(str(resource_path("icons", "xnft.png"))))
@@ -462,8 +489,13 @@ def run_gui():
     window = MainWindow(pm)
     window.show()
 
-    sys.exit(app.exec())
+    exit_code = app.exec()
 
+    # Clean up joblib workers
+    try:
+        from joblib.externals.loky import stop_executor
+        stop_executor()
+    except ImportError:
+        pass
 
-if __name__ == "__main__":
-    run_gui()
+    sys.exit(exit_code)

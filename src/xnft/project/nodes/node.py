@@ -29,6 +29,7 @@ class ContextAction:
     helper_dialog: Optional[object] = None
     order: int = 100
     separator: bool = False
+    spawn_thread: bool = False
 
 
 def context_action(
@@ -40,6 +41,7 @@ def context_action(
     action: Optional[str] = None,
     helper_dialog: Optional[object | None] = None,
     separator: Optional[bool] = False,
+    spawn_thread: Optional[bool] = False,
 ):
     """Decorator to add a ContextAction (right-click menu item) to a method.
 
@@ -73,6 +75,8 @@ def context_action(
         Helper dialog to input data for function to be invoked, by default None
     separator : bool, optional
         Add a separator _before_ this item, by default False
+    spawn_thread : bool, optional
+        Spawn function in separate worker thread off main GUI thread.  Recommended for non-GUI operations.
     """
 
     def decorator(func):
@@ -85,6 +89,7 @@ def context_action(
             "action": action,
             "helper_dialog": helper_dialog,
             "separator": separator,
+            "spawn_thread": spawn_thread
         }
         return func
 
@@ -257,6 +262,7 @@ class Node:
                     action=meta["action"],
                     helper_dialog=meta["helper_dialog"],
                     separator=meta["separator"],
+                    spawn_thread=meta["spawn_thread"],
                 )
             )
 
