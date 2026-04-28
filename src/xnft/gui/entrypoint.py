@@ -11,7 +11,11 @@ import os
 import sys
 import multiprocessing
 
-print(f"--- Process Starting: {sys.argv} ---", flush=True)
+# Handle noconsole mode on Windows
+if sys.stdout is None:
+    sys.stdout = open(os.devnull, "w")
+if sys.stderr is None:
+    sys.stderr = open(os.devnull, "w")
 
 
 def is_worker():
@@ -44,12 +48,12 @@ if __name__ == "__main__":
 
     if is_worker():
         sys.exit(0)
+    else:
+        try:
+            multiprocessing.set_start_method("spawn", force=True)
+        except RuntimeError:
+            pass
 
-    try:
-        multiprocessing.set_start_method("spawn", force=True)
-    except RuntimeError:
-        pass
+        from xnft.gui.app import run_gui
 
-    from xnft.gui.app import run_gui
-
-    run_gui()
+        run_gui()
