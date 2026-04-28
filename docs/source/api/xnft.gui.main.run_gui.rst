@@ -1,5 +1,5 @@
-xnft.gui.main.run_gui
+xnft.gui.app.run_gui
 =====================
 
-.. autofunction:: xnft.gui.main.run_gui
+.. autofunction:: xnft.gui.app.run_gui
     

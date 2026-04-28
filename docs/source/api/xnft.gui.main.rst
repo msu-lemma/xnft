@@ -1,7 +1,7 @@
-xnft.gui.main
+xnft.gui.app
 =============
 
-.. automodule:: xnft.gui.main
+.. automodule:: xnft.gui.app
    :no-members:
    :no-inherited-members:
 

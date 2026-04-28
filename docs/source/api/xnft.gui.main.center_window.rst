@@ -1,5 +1,5 @@
-xnft.gui.main.center_window
+xnft.gui.app.center_window
 ===========================
 
-.. autofunction:: xnft.gui.main.center_window
+.. autofunction:: xnft.gui.app.center_window
     
