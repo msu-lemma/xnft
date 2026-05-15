@@ -241,20 +241,19 @@ class MainWindow(QMainWindow):
                 label = attr.fget.__gui_property__["label"]
                 order = attr.fget.__gui_property__["order"]
                 formatter = attr.fget.__gui_property__["formatter"]
-                button = attr.fget.__gui_property__["button"]
 
                 value = getattr(node, name)
                 if formatter:
                     value = formatter(value)
 
-                props.append((order, label, value, name, button))
+                props.append((order, label, value, name))
 
         props.sort(key=lambda x: x[0])
 
         # Populate table
         self.properties_table.setRowCount(len(props))
 
-        for row, (_, label, value, name, button) in enumerate(props):
+        for row, (_, label, value, name) in enumerate(props):
             label_item = QTableWidgetItem(label)
             value_item = QTableWidgetItem(str(value))
 
@@ -263,11 +262,6 @@ class MainWindow(QMainWindow):
 
             self.properties_table.setItem(row, 0, label_item)
             self.properties_table.setItem(row, 1, value_item)
-
-            if button:
-                btn = QPushButton("Edit…")
-                btn.clicked.connect(lambda _, n=node, field=name: self.open_edit_dialog(n, field))
-                self.properties_table.setCellWidget(row, 2, btn)
 
     def _about(self):
         meta = importlib.metadata.metadata("xnft")
@@ -496,7 +490,7 @@ def run_gui():
 
     app = QApplication(sys.argv)
     app.setAttribute(Qt.AA_UseHighDpiPixmaps)
-    app.setWindowIcon(QIcon(str(resource_path("icons", "xnft.png"))))
+    app.setWindowIcon(QIcon(str(resource_path("icons", "xnft_flat.png"))))
 
     pm = manager.Manager()
     window = MainWindow(pm)
@@ -504,10 +498,9 @@ def run_gui():
 
     exit_code = app.exec()
 
-    # Clean up joblib workers
+    # Clean up joblib workers, if any (from core compuatations)
     try:
         from joblib.externals.loky import stop_executor
-
         stop_executor()
     except ImportError:
         pass

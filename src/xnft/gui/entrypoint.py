@@ -42,7 +42,7 @@ def is_worker():
     return False
 
 
-if __name__ == "__main__":
+def main():
     # Must be first
     multiprocessing.freeze_support()
 
@@ -57,3 +57,7 @@ if __name__ == "__main__":
         from xnft.gui.app import run_gui
 
         run_gui()
+
+
+if __name__ == "__main__":
+    main()
