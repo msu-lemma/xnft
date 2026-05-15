@@ -159,6 +159,7 @@ class MainWindow(QMainWindow):
         self._file_tool_bar.addAction(self._new_project_act)
         self._file_tool_bar.addAction(self._save_act)
         self._file_tool_bar.addAction(self._open_act)
+        self._file_tool_bar.addAction(self._about_act)
         self.addToolBar(self._file_tool_bar)
 
     def create_status_bar(self):
@@ -275,7 +276,8 @@ class MainWindow(QMainWindow):
             f"xNFT Version {meta.get("Version")}\n\n"
             f"{meta.get("Summary")}\n\n"
             "Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.\n\n"
-            f"Authors:\n{authors}",
+            f"Authors:\n{authors}\n\n"
+            f"License: {meta.get("License")}",
         )
 
     def create_plot_area(self):
@@ -449,9 +451,15 @@ def run_gui():
     """
     import xnft.loaders  # noqa: F401  # pylint: disable=unused-import
 
+    sys.argv[0] = "xNFT"  # Overwrite name of command to show application name
+
     app = QApplication(sys.argv)
     app.setAttribute(Qt.AA_UseHighDpiPixmaps)
     app.setWindowIcon(QIcon(str(resource_path("icons", "xnft_flat.png"))))
+
+    app.setApplicationName("xnft")
+    app.setApplicationDisplayName("xNFT")
+    app.setOrganizationName("LEmmA, Electromagnetics Research Group, Michigan State University")
 
     pm = manager.Manager()
     window = MainWindow(pm)
