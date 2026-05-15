@@ -20,7 +20,7 @@ datas = collect_data_files("xnft.resources", includes=["**/*"])
 binaries = collect_dynamic_libs("finufft")
 
 a = Analysis(
-    ["src/xnft/gui/entrypoint.py"],
+    ["src/xnft/gui/pkg_entrypoint.py"],
     pathex=[],
     binaries=binaries,
     datas=datas,

@@ -1,5 +1,5 @@
 """
-Main entrypoint for packaged application.
+Main entrypoint for the packaged application.
 
 Isolates entrypoint from relative imports used in the rest of the package which can't be adequately handled
 using PyInstaller.
