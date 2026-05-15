@@ -13,48 +13,67 @@ from .scales import PlotScales
 from ..enums import FieldType
 from .functions import PlotFunctions
 
-FieldComponent = namedtuple("FieldComponent", ("name", "function", "scales", "field_types", "plot_functions", "enabled"))
+FieldComponent = namedtuple(
+    "FieldComponent", ("name", "function", "scales", "field_types", "plot_functions", "enabled")
+)
 
 
 def field_component_x(field: xr.DataArray):
-    phi_grid, theta_grid = np.meshgrid(field.phi, field.theta, indexing="ij")
-    e_theta = field.sel(component="theta")
-    e_phi = field.sel(component="phi")
-    e_r = field.sel(component="r") if "r" in field.component else 0
-    phi_grid -= np.pi / 2
-    return np.sin(theta_grid) * np.cos(phi_grid) * e_r \
-        + np.cos(theta_grid) * np.cos(phi_grid) * e_theta \
-        - np.sin(phi_grid) * e_phi
+    print(field)
+    if field.attrs["field_type"] == FieldType.FAR:
+        phi_grid, theta_grid = np.meshgrid(field.phi, field.theta, indexing="ij")
+        e_theta = field.sel(component="theta")
+        e_phi = field.sel(component="phi")
+        e_r = field.sel(component="r") if "r" in field.component else 0
+        phi_grid -= np.pi / 2
+        return (
+            np.sin(theta_grid) * np.cos(phi_grid) * e_r
+            + np.cos(theta_grid) * np.cos(phi_grid) * e_theta
+            - np.sin(phi_grid) * e_phi
+        )
+    elif field.attrs["field_type"] == FieldType.NEAR:
+        return field.sel(component="x")
 
 
 def field_component_y(field: xr.DataArray):
-    phi_grid, theta_grid = np.meshgrid(field.phi, field.theta, indexing="ij")
-    e_theta = field.sel(component="theta")
-    e_phi = field.sel(component="phi")
-    e_r = field.sel(component="r") if "r" in field.component else 0
-    phi_grid -= np.pi / 2
-    return np.sin(theta_grid) * np.sin(phi_grid) * e_r \
-        + np.cos(theta_grid) * np.sin(phi_grid) * e_theta \
-        + np.cos(phi_grid) * e_phi
+    if field.attrs["field_type"] == FieldType.FAR:
+        phi_grid, theta_grid = np.meshgrid(field.phi, field.theta, indexing="ij")
+        e_theta = field.sel(component="theta")
+        e_phi = field.sel(component="phi")
+        e_r = field.sel(component="r") if "r" in field.component else 0
+        phi_grid -= np.pi / 2
+        return (
+            np.sin(theta_grid) * np.sin(phi_grid) * e_r
+            + np.cos(theta_grid) * np.sin(phi_grid) * e_theta
+            + np.cos(phi_grid) * e_phi
+        )
+    elif field.attrs["field_type"] == FieldType.NEAR:
+        return field.sel(component="y")
 
 
 def field_component_z(field: xr.DataArray):
-    phi_grid, theta_grid = np.meshgrid(field.phi, field.theta, indexing="ij")
-    e_theta = field.sel(component="theta")
-    e_r = field.sel(component="r") if "r" in field.component else 0
-    phi_grid -= np.pi / 2
-    return np.cos(theta_grid) * e_r - np.sin(theta_grid) * e_theta
+    if field.attrs["field_type"] == FieldType.FAR:
+        phi_grid, theta_grid = np.meshgrid(field.phi, field.theta, indexing="ij")
+        e_theta = field.sel(component="theta")
+        e_r = field.sel(component="r") if "r" in field.component else 0
+        phi_grid -= np.pi / 2
+        return np.cos(theta_grid) * e_r - np.sin(theta_grid) * e_theta
+    elif field.attrs["field_type"] == FieldType.NEAR:
+        return field.sel(component="z")
 
 
 def field_component_r(field: xr.DataArray):
+    # FIXME: Handle Near-field
     return field.sel(component="r")
 
 
 def field_component_phi(field: xr.DataArray):
+    # FIXME: Handle Near-field
     return field.sel(component="phi")
 
 
 def field_component_theta(field: xr.DataArray):
+    # FIXME: Handle Near-field
     return field.sel(component="theta")
 
 

@@ -572,7 +572,7 @@ def get_transformed_data(spp: SurfacePlot2DParameters):
 
     # -- Apply selected component / functions --
     field_scaled = spp.applicate_scale.function(
-        spp.applicate_function.function(spp.field_component.function(field_data["E"]), dim=2)
+        spp.applicate_function.function(spp.field_component.function(field_data)["E"], dim=2)
     )
 
     # -- Get axis values, labels, and units --

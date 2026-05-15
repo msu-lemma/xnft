@@ -15,7 +15,7 @@ from xnft.core.algorithms.planar_near_field_transform import planar_near_field_t
 
 test_dir = Path(__file__).parent.parent
 test_dict = {
-    "source": [DataSourceType.HFSS, DataSourceType.THEORY, DataSourceType.LEMMA],
+    "source": [DataSourceType.HFSS, DataSourceType.ANALYTIC, DataSourceType.LEMMA],
     "field": [FieldType.NEAR, FieldType.FAR],
 }
 

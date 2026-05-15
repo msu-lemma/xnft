@@ -1,8 +1,7 @@
 """
-Loader functions for 'theory' files.
+Loader functions for analytic 'theory' files.
 
-Theory files contain information to generate a theoretical ideal
-aperture [§12, 1].
+Theory files contain information to generate a theoretical ideal aperture [§12, 1].
 
 [1] C. A. Balanis, Antenna theory: analysis and design, 3. ed. Hoboken,
     N.J: Wiley-Interscience, 2005.
@@ -35,7 +34,7 @@ logger = logging.getLogger(__name__)
 
 
 @file_registry.register(
-    source=DataSourceType.THEORY,
+    source=DataSourceType.ANALYTIC,
     field=FieldType.NEAR,
     data_polarization=DataPolarizationType.COMBO_POL,
     extension=".yaml",
@@ -157,14 +156,14 @@ def load_theory_near_field_yaml(file_list: List[FileInfo]) -> xr.Dataset:
         frequency=sample_frequency_array,
         coordinate_system=CoordinateSystemType.CARTESIAN,
         field_type=FieldType.NEAR,
-        data_source=DataSourceType.THEORY
+        data_source=DataSourceType.ANALYTIC
     )
 
     return fields
 
 
 @file_registry.register(
-    source=DataSourceType.THEORY,
+    source=DataSourceType.ANALYTIC,
     field=FieldType.FAR,
     data_polarization=DataPolarizationType.COMBO_POL,
     extension=".yaml",
@@ -266,7 +265,7 @@ def load_theory_far_field_yaml(file_list: List[FileInfo]) -> xr.Dataset:
         frequency=sample_frequency_array,
         coordinate_system=CoordinateSystemType.SPHERICAL,
         field_type=FieldType.FAR,
-        data_source=DataSourceType.THEORY
+        data_source=DataSourceType.ANALYTIC
     )
 
     return fields

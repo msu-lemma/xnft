@@ -82,7 +82,7 @@ class DataSourceType(StrEnum):
     """Available source file types."""
 
     XNFT = "xNFT"
-    THEORY = "Ideal Aperture"
+    ANALYTIC = "Ideal Aperture"
     HFSS = "Ansys HFSS"
     NSI_MEAS = "NSI-MI Scanner"
     NSI_REF = "NSI-MI Reference"
