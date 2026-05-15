@@ -35,6 +35,9 @@ from PySide6.QtWidgets import (
     QFileDialog,
     QToolBar,
     QProgressBar,
+    QWidget,
+    QHBoxLayout,
+    QSizePolicy
 )
 
 from .dialogs.project.new_project_dialog import NewProjectDialog
@@ -158,15 +161,25 @@ class MainWindow(QMainWindow):
         self.addToolBar(self._file_tool_bar)
 
     def create_status_bar(self):
-        # Add status message
-        self.statusBar().showMessage("Ready")
+        
+        status = self.statusBar()
+        status.showMessage("Ready")
 
-        # Add progress bar
+        # Add progress bar in container to set margins properly
+        progress_container = QWidget()
+        progress_container.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
+
+        progress_layout = QHBoxLayout(progress_container)
+        progress_layout.setContentsMargins(10, 0, 10, 0)
+        progress_layout.setSpacing(0)
+
         self.progress = QProgressBar(self)
-        # self.progress.setTextVisible(False)
         self.progress.setRange(0, 1)
         self.progress.setFixedWidth(350)
-        self.statusBar().addPermanentWidget(self.progress)
+
+        progress_layout.addWidget(self.progress)
+        progress_container.setFixedWidth(350 + 10 + 10)
+        status.addPermanentWidget(progress_container)
 
     def create_project_manager_widgets(self, pm):
 
@@ -494,6 +507,7 @@ def run_gui():
     # Clean up joblib workers
     try:
         from joblib.externals.loky import stop_executor
+
         stop_executor()
     except ImportError:
         pass
