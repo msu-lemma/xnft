@@ -1,7 +1,7 @@
-xnft.gui.entrypoint
+xnft.gui.pkg_entrypoint
 ===================
 
-.. automodule:: xnft.gui.entrypoint
+.. automodule:: xnft.gui.pkg_entrypoint
    :no-members:
    :no-inherited-members:
 
