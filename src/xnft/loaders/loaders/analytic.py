@@ -1,10 +1,5 @@
 """
-Loader functions for analytic 'theory' files.
-
-Theory files contain information to generate a theoretical ideal aperture [§12, 1].
-
-[1] C. A. Balanis, Antenna theory: analysis and design, 3. ed. Hoboken,
-    N.J: Wiley-Interscience, 2005.
+Loader functions for analytic "ideal aperture" files.
 
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
@@ -30,6 +25,8 @@ from ...core.enums import (
 from ...core.types import FileInfo
 from ...core.dtypes import FieldDataset
 
+from ...core.apertures.rectangular import rect_far_field
+
 logger = logging.getLogger(__name__)
 
 
@@ -39,9 +36,9 @@ logger = logging.getLogger(__name__)
     data_polarization=DataPolarizationType.COMBO_POL,
     extension=".yaml",
 )
-def load_theory_near_field_yaml(file_list: List[FileInfo]) -> xr.Dataset:
+def load_analytic_near_field_yaml(file_list: List[FileInfo]) -> xr.Dataset:
     """
-    Generate theoretical near-field based on simple description file.
+    Generate analytic near-field based on simple description file.
 
     Parameters
     ----------
@@ -52,12 +49,17 @@ def load_theory_near_field_yaml(file_list: List[FileInfo]) -> xr.Dataset:
     -------
     xr.Dataset
         Dataset containing "E" and "H" fields.
+
+    TODO
+    ----
+    1. Refactor near-field to core.apertures.rectangular rect_near_field()
     """
+
     if len(file_list) != 1:
-        raise ValueError(f"Theory loader accepts exactly one file. Got: {file_list}")
+        raise ValueError(f"Analytic loader accepts exactly one file. Got: {file_list}")
 
     if file_list[0].polarization != {PolarizationType.CO_POL, PolarizationType.CROSS_POL}:
-        raise ValueError("Theory loader only accepts files containing both co-pol and cross-pol.")
+        raise ValueError("Analytic loader only accepts files containing both co-pol and cross-pol.")
 
     file_path = file_list[0].path
 
@@ -118,33 +120,6 @@ def load_theory_near_field_yaml(file_list: List[FileInfo]) -> xr.Dataset:
     e_field = np.stack([e_x, e_y, e_z])
     h_field = np.stack([h_x, h_y, h_z])
 
-    # fields = xr.Dataset(
-    #     {
-    #         "E": (
-    #             ("component", "x", "y", "z", "frequency"),
-    #             e_field,
-    #             {"Units": "V/m"},
-    #         ),
-    #         "H": (
-    #             ("component", "x", "y", "z", "frequency"),
-    #             h_field,
-    #             {"Units": "A/m"},
-    #         ),
-    #     },
-    #     coords={
-    #         "component": ["x", "y", "z"],
-    #         "x": x_sample_location_array,
-    #         "y": y_sample_location_array,
-    #         "z": z_sample_location_array,
-    #         "frequency": sample_frequency_array,
-    #     },
-    #     attrs={
-    #         "data_source_type": DataSourceType.THEORY,
-    #         "field": FieldType.NEAR,
-    #         "coordinate_system": CoordinateSystemType.CARTESIAN,
-    #         "component_units": Units.METERS
-    #     },
-    # )
     fields = FieldDataset.create(
         e_field=e_field,
         h_field=h_field,
@@ -183,10 +158,10 @@ def load_theory_far_field_yaml(file_list: List[FileInfo]) -> xr.Dataset:
         Dataset containing "E" and "H" fields.
     """
     if len(file_list) != 1:
-        raise ValueError(f"Theory loader accepts exactly one file. Got: {file_list}")
+        raise ValueError(f"Analytic loader accepts exactly one file. Got: {file_list}")
 
     if file_list[0].polarization != {PolarizationType.CO_POL, PolarizationType.CROSS_POL}:
-        raise ValueError("Theory loader only accepts files containing both co-pol and cross-pol.")
+        raise ValueError("Analytic loader only accepts files containing both co-pol and cross-pol.")
 
     file_path = file_list[0].path
 
@@ -213,59 +188,22 @@ def load_theory_far_field_yaml(file_list: List[FileInfo]) -> xr.Dataset:
     ap_x = ap_x_max - ap_x_min
     ap_y = ap_y_max - ap_y_min
 
-    # Create sampling grid
-
-    theta_grid, phi_grid = np.meshgrid(theta_sample_location_array, phi_sample_location_array)
-    phi_grid = phi_grid[:, :, np.newaxis]
-    theta_grid = theta_grid[:, :, np.newaxis]
-
-    e_0 = fd["antenna"]["excitation"]["e_0"]
-
     # Compute far-field constants
     wavelength = spc.c / sample_frequency_array
-    k_0 = 2.0 * np.pi / wavelength
 
     # Compute far-field distance based on aperture at spec. frequency
     d_2 = ap_x**2 + ap_y**2  # Maximum aperture extents, squared
     r_ff = 2.0 * d_2 / wavelength  # Far-field radius (m)
 
-    # Constants from [Table 12.1, 1]
-
-    greens_func_ff = np.exp(-1j * k_0 * r_ff) / (2.0 * np.pi * r_ff)
-    c_ff = 1j * ap_x * ap_y * k_0 * e_0 * greens_func_ff
-
-    x_ff = k_0 * ap_x / 2 * np.sin(theta_grid) * np.cos(phi_grid)
-    y_ff = k_0 * ap_y / 2 * np.sin(theta_grid) * np.sin(phi_grid)
-
-    excitation_distribution = fd["antenna"]["excitation"]["distribution"]
-
-    if excitation_distribution == "uniform":
-        cx = np.sinc(x_ff / np.pi)
-        cy = np.sinc(y_ff / np.pi)
-        e_theta = c_ff * np.sin(phi_grid) * cx * cy
-        e_phi = c_ff * np.cos(theta_grid) * np.cos(phi_grid) * cx * cy
-    elif excitation_distribution == "te10":
-        cx = np.cos(x_ff) / (x_ff**2 - (np.pi / 2) ** 2)
-        cy = np.sinc(y_ff / np.pi)
-        e_theta = -np.pi / 2 * c_ff * np.sin(phi_grid) * cx * cy
-        e_phi = -np.pi / 2 * c_ff * np.cos(theta_grid) * np.cos(phi_grid) * cx * cy
-    else:
-        raise NotImplementedError(
-            f"Excitation distribution {excitation_distribution} is not yet " "implemented."
-        )
-
-    e_field = np.stack([e_phi, e_theta])
-
-    fields = FieldDataset.create(
-        e_field=e_field,
-        spatial_coords={
-            "phi": phi_sample_location_array,
-            "theta": theta_sample_location_array,
-        },
-        frequency=sample_frequency_array,
-        coordinate_system=CoordinateSystemType.SPHERICAL,
-        field_type=FieldType.FAR,
-        data_source=DataSourceType.ANALYTIC
+    fields = rect_far_field(
+        ap_x=ap_x,
+        ap_y=ap_y,
+        wavelength_array=wavelength,
+        phi_sample_locs=phi_sample_location_array,
+        theta_sample_locs=theta_sample_location_array,
+        r_ff=r_ff,
+        amplitude=fd["antenna"]["excitation"]["e_0"],
+        excitation=fd["antenna"]["excitation"]["distribution"],
     )
 
     return fields

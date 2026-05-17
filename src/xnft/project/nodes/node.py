@@ -229,7 +229,7 @@ class Node:
     @property
     def display_type(self) -> StrEnum:
         """Return display type of node."""
-        return self.type
+        return self._node_type
 
     # -- Context Menu Actions -------------
 

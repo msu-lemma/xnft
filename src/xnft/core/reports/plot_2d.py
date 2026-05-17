@@ -233,8 +233,6 @@ class Plot2D(QWidget):
                     break
 
         else:
-            print("Created new SurfacePlot2DParameters")
-
             plot_parameters = SurfacePlot2DParameters(
                 source=self.field_node,
                 field_quantity=self.selected_field_quantity,
@@ -551,9 +549,7 @@ class Plot2D(QWidget):
 
 
 def get_transformed_data(spp: SurfacePlot2DParameters):
-
     field_ds = spp.source.data
-    print(field_ds)
 
     if not isinstance(field_ds, xr.Dataset):
         raise TypeError(

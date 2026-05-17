@@ -19,7 +19,6 @@ FieldComponent = namedtuple(
 
 
 def field_component_x(field: xr.DataArray):
-    print(field)
     if field.attrs["field_type"] == FieldType.FAR:
         phi_grid, theta_grid = np.meshgrid(field.phi, field.theta, indexing="ij")
         e_theta = field.sel(component="theta")

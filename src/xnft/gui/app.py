@@ -36,7 +36,7 @@ from PySide6.QtWidgets import (
     QProgressBar,
     QWidget,
     QHBoxLayout,
-    QSizePolicy
+    QSizePolicy,
 )
 
 from xnft.gui.utils import center_window
@@ -163,7 +163,7 @@ class MainWindow(QMainWindow):
         self.addToolBar(self._file_tool_bar)
 
     def create_status_bar(self):
-        
+
         status = self.statusBar()
         status.showMessage("Ready")
 
@@ -248,7 +248,8 @@ class MainWindow(QMainWindow):
                 if formatter:
                     value = formatter(value)
 
-                props.append((order, label, value, name))
+                if value:
+                    props.append((order, label, value, name))
 
         props.sort(key=lambda x: x[0])
 
@@ -371,7 +372,7 @@ class MainWindow(QMainWindow):
                 self._invoke_worker.finished.connect(self._invoke_worker.deleteLater)
                 self._invoke_thread.finished.connect(self._invoke_thread.deleteLater)
 
-                self.statusBar().showMessage("Working...")
+                self.statusBar().showMessage(f"{target_node.name}: Working...")
                 self.progress.setRange(0, 0)
                 self.progress.show()
 
@@ -470,6 +471,7 @@ def run_gui():
     # Clean up joblib workers, if any (from core compuatations)
     try:
         from joblib.externals.loky import stop_executor
+
         stop_executor()
     except ImportError:
         pass

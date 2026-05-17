@@ -16,10 +16,19 @@ class NodeType(StrEnum):
 
     PROJECT = "Project"
     FIELDS = "Fields"
+    PROBES = "Probes"
     ANALYSIS = "Analysis"
     COORDINATES = "Coordinates"
     REPORTS = "Reports"
     MODEL = "Model"
+    UNKNOWN = "Unknown"
+
+
+class ProbeType(StrEnum):
+    """Available measurement probe types."""
+
+    IDEAL_RECT = "Ideal Rectangular Probe"
+    MEASURED = "Measured Probe"
     UNKNOWN = "Unknown"
 
 

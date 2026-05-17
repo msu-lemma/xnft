@@ -18,7 +18,8 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QComboBox,
     QLabel,
-    QListWidget
+    QListWidget,
+    QSizePolicy
 )
 
 from ...core.enums import SParameterType
@@ -37,6 +38,41 @@ class ListWidgetTitle(QWidget):
 
         self.layout.addWidget(self.label)
         self.layout.addWidget(self.lw)
+
+
+class LabeledWidget(QWidget):
+    def __init__(self, label: str, widget: QWidget, parent=None, layout_cls=QHBoxLayout, compact=False):
+        super().__init__(parent)
+
+        self._layout = layout_cls(self)
+        self._layout.setContentsMargins(0, 0, 0, 0)
+        self._layout.setSpacing(6)
+
+        self.name = label
+        self.label = QLabel(label)
+        self.widget = widget
+
+        if compact == True:
+            # Widget and label are minimum size
+            self.widget.setSizePolicy(
+                QSizePolicy.Fixed,
+                self.widget.sizePolicy().verticalPolicy(),
+            )
+
+            self._layout.addWidget(self.label, 0)
+            self._layout.addWidget(self.widget, 0)
+            self._layout.addStretch(1)
+
+        else:
+            # Label is minimum size and widget expands to fill remaining space
+            self.widget.setSizePolicy(
+                QSizePolicy.Expanding,
+                self.widget.sizePolicy().verticalPolicy(),
+            )
+
+            self._layout.addWidget(self.label, 0)
+            self._layout.addWidget(self.widget, 1)
+
 
 
 class FileEntryRow(QWidget):

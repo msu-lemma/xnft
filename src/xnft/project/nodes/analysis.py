@@ -20,7 +20,15 @@ from ...core.algorithms.planar_near_field_transform import (
 from .node import Node, DataNode, context_action, gui_property
 from .fields import FieldNode
 from .coordinates import CoordinateNode
-from ...core.enums import NodeType, FieldType, DataSourceType, CoordinateSystemType, AnalysisType
+from ...core.enums import (
+    NodeType,
+    FieldType,
+    DataSourceType,
+    CoordinateSystemType,
+    AnalysisType,
+    ProbeType,
+)
+from ...core.apertures.probes import MeasurementProbe, RectWaveguide
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +42,7 @@ class AnalysisNode(Node):
 
         self._node_type = NodeType.ANALYSIS
         self._name = NodeType.ANALYSIS
-    
+
     @context_action(
         "New Planar Near-to-far Field Transform",
         order=10,
@@ -79,6 +87,7 @@ class AnalysisNode(Node):
             data=field_node,
             source=source_field,
             analysis_type=AnalysisType.PLANAR_TRANSFORM,
+            probe_correction=probe_correction,
         )
         coordinate_node.source = field_node
 
@@ -156,6 +165,13 @@ class TransformNode(DataNode):
         init=False,
         repr=False,
     )
+    _probe_correction: MeasurementProbe = field(
+        default=MeasurementProbe(
+            "Unknown", RectWaveguide(float("nan"), float("nan"), (float("nan"), float("nan")))
+        ),
+        init=False,
+        repr=False,
+    )
 
     name_editable: Optional[bool] = True
 
@@ -165,24 +181,35 @@ class TransformNode(DataNode):
         name: Optional[str] = None,
         source: Optional[Node] = None,
         analysis_type: AnalysisType = AnalysisType.UNKNOWN,
+        probe_correction: MeasurementProbe = MeasurementProbe(
+            "Unknown", RectWaveguide(float("nan"), float("nan"), (float("nan"), float("nan")))
+        ),
         **kwargs,
     ):
         super().__init__(
             name=name,
             node_type=NodeType.ANALYSIS,
             source=source,
-            **kwargs,
+            # **kwargs,
         )
 
         self.analysis_type = analysis_type
+        self._probe_correction = probe_correction
 
     @property
     @gui_property(label="Analysis Type", order=2)
     def analysis_type(self):
         return self._analysis_type
-    
+
     @analysis_type.setter
     def analysis_type(self, analysis: AnalysisType):
         if not isinstance(analysis, AnalysisType):
-            raise TypeError(f'Argument "analysis_type" must be of type {AnalysisType} got {type(self.analysis)}')
+            raise TypeError(
+                f'Argument "analysis_type" must be of type {AnalysisType} got {type(self.analysis)}'
+            )
         self._analysis_type = analysis
+
+    @property
+    @gui_property(label="Probe Correction", order=3)
+    def probe_correction(self):
+        return f"{self._probe_correction.name} ({self._probe_correction.correction_type})"

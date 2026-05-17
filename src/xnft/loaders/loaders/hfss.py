@@ -324,8 +324,6 @@ def load_hfss_far_field_ffd(file_list: List[FileInfo]) -> xr.Dataset:
         data_source=DataSourceType.HFSS
     )
 
-    print(fields)
-
     fields_buffer = io.StringIO()
     fields.info(buf=fields_buffer)
     logger.debug(fields_buffer.getvalue())

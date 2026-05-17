@@ -16,6 +16,7 @@ from .analysis import AnalysisNode
 from .reports import ReportsNode
 from .coordinates import CoordinatesNode
 from .model import ModelNode
+from .probes import ProbesNode
 from ..project_io import write_project
 
 logger = logging.getLogger(__name__)
@@ -35,10 +36,11 @@ class Project(Node):
 
         # Add default project nodes
         self.add_child(FieldsNode())
+        self.add_child(ProbesNode())
         self.add_child(AnalysisNode())
         self.add_child(ReportsNode())
         self.add_child(CoordinatesNode())
-        self.add_child(ModelNode())
+        # self.add_child(ModelNode())  # Not yet implemented
 
         # Allow projects to be renamed in the Project Manager
         self.name_editable = True

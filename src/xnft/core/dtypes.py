@@ -75,7 +75,6 @@ class FieldDataset:
 
         spatial_dims = components
         dims = ("component", *spatial_dims, "frequency")
-        print(dims)
 
         # --- Validate Inputs ---
 

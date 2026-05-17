@@ -149,7 +149,6 @@ class NewFieldMeasurementDialog(QDialog):
     def get_selections(self) -> dict:
         """Return values chosen by user."""
         data_polarization = self.cb_data_polarization.currentData()[0]
-        print(f"{data_polarization}")
 
         if data_polarization == DataPolarizationType.COMBO_POL:
             file_info_list = [
