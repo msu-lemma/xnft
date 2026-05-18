@@ -20,5 +20,7 @@ Classes
 
    FileEntryRow
 
+   LabeledWidget
+
    ListWidgetTitle
 

@@ -1,4 +1,4 @@
-xnft.loaders.loaders
+﻿xnft.loaders.loaders
 ====================
 
 .. automodule:: xnft.loaders.loaders
@@ -15,13 +15,13 @@ Submodules
    :nosignatures:
 
 
+   analytic
+
    hfss
 
    lemma
 
    nsi
-
-   theory
 
 
 

@@ -34,6 +34,8 @@ Classes
 
    PolarizationType
 
+   ProbeType
+
    ReportType
 
    SParameterType

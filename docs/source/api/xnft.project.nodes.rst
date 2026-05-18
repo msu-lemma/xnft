@@ -1,4 +1,4 @@
-xnft.project.nodes
+﻿xnft.project.nodes
 ==================
 
 .. automodule:: xnft.project.nodes
@@ -24,6 +24,8 @@ Submodules
    model
 
    node
+
+   probes
 
    project
 

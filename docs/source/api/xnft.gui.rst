@@ -1,4 +1,4 @@
-xnft.gui
+﻿xnft.gui
 ========
 
 .. automodule:: xnft.gui
@@ -15,17 +15,21 @@ Submodules
    :nosignatures:
 
 
+   app
+
    dialogs
 
-   entrypoint
-
-   main
-
    mdi_area
+
+   pkg_entrypoint
 
    project_tree_model
 
    project_tree_view
+
+   utils
+
+   worker
 
 
 

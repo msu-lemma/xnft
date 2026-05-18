@@ -25,6 +25,8 @@ Submodules
 
    fields
 
+   probes
+
    project
 
    reports

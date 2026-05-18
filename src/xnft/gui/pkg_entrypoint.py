@@ -1,8 +1,7 @@
 """
 Main entrypoint for the packaged application.
 
-Isolates entrypoint from relative imports used in the rest of the package which can't be adequately handled
-using PyInstaller.
+Isolates entrypoint from relative imports used in the rest of the package which can't be adequately handled using PyInstaller.
 
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
