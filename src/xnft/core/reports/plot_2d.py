@@ -60,6 +60,7 @@ class SurfacePlot2DParameters:
     applicate_norm: PlotNorm
     selected_frequency: float
     gradient_state: pg.ColorMap
+    cyclic_gradient_state: pg.ColorMap
 
     def serialize(self):
         return {
@@ -70,6 +71,9 @@ class SurfacePlot2DParameters:
             "applicate_scale": self.applicate_scale.name,
             "frequency": Quantity(self.selected_frequency, "Hz"),
         }
+
+
+from PySide6.QtCore import QEvent
 
 
 class Plot2D(QWidget):
@@ -242,8 +246,12 @@ class Plot2D(QWidget):
                 applicate_scale=self.selected_field_scale,
                 applicate_norm=self.selected_field_norm,
                 selected_frequency=self.selected_plot_frequency,
-                gradient_state=(g := pg.GradientEditorItem()).loadPreset("turbo")
-                or g.saveState(),
+                gradient_state=(g := pg.GradientEditorItem()).loadPreset("turbo") or g.saveState(),
+                cyclic_gradient_state=(
+                    g := pg.GradientEditorItem(),
+                    g.setColorMap(pg.colormap.get("CET-C2")),
+                    g.saveState(),
+                )[-1],
             )
             self.plot_parameters = plot_parameters
             self.report_node.data = self.plot_parameters
@@ -271,7 +279,6 @@ class Plot2D(QWidget):
 
         self.hist = pg.HistogramLUTItem()
         self.hist.setImageItem(self.image_item)
-        self.hist.gradient.restoreState(self.plot_parameters.gradient_state)
         self.glw.addItem(self.hist)
         self.vb.addItem(self.image_item)
 
@@ -298,7 +305,6 @@ class Plot2D(QWidget):
         self.cb_plot_domain.currentTextChanged.connect(self._update_plot)
         self.cb_plot_function.currentTextChanged.connect(self._update_plot)
         self.cb_plot_norm.currentTextChanged.connect(self._update_plot)
-
         self.cb_plot_function.currentTextChanged.connect(self._update_plotting_scale_options)
         self.cb_plot_scale.currentTextChanged.connect(self._update_plot)
 
@@ -375,7 +381,9 @@ class Plot2D(QWidget):
                 # Only add if field type is valid for that function
                 if self.field_node.field_type in fc.value.field_types:
                     self.cb_field_component.addItem(fc.value.name, fc.value)
-                    self.cb_field_component.model().item(newitem_index).setEnabled(fc.value.enabled)
+                    self.cb_field_component.model().item(newitem_index).setEnabled(
+                        fc.value.enabled
+                    )
                     newitem_index += 1
 
     def _update_plotting_scale_options(self):
@@ -436,9 +444,22 @@ class Plot2D(QWidget):
         self.plot_parameters.applicate_scale = self.selected_field_scale
         self.plot_parameters.applicate_norm = self.selected_field_norm
         self.plot_parameters.selected_frequency = self.selected_plot_frequency
-        self.plot_parameters.gradient_state = self.hist.gradient.saveState()
+        if self.selected_field_function == PlotFunctions.MAGNITUDE.value:
+            self.plot_parameters.gradient_state = self.hist.gradient.saveState()
+        if self.selected_field_function == PlotFunctions.PHASE.value:
+            self.plot_parameters.cyclic_gradient_state = self.hist.gradient.saveState()
 
     def _update_plot(self):
+        if self.selected_field_function == PlotFunctions.MAGNITUDE.value:
+            # TODO: this should be passed in by the function itself, not special code here
+            # Scale the range to clip low long-tail values
+            self.hist.gradient.restoreState(self.plot_parameters.gradient_state)
+
+        if self.selected_field_function == PlotFunctions.PHASE.value:
+            # TODO: this should be passed in by the function itself, not special code here
+            # Set the colormap to a cyclic map
+            self.hist.gradient.restoreState(self.plot_parameters.cyclic_gradient_state)
+
         # _update_plot is called whenever state changes, so call save_state here too
         self._save_state()
 
@@ -484,12 +505,12 @@ class Plot2D(QWidget):
         else:
             self.vb.setAspectLocked(False)
 
-            abscissa_values = axis_dict['x'].values
-            ordinate_values = axis_dict['y'].values
+            abscissa_values = axis_dict["x"].values
+            ordinate_values = axis_dict["y"].values
 
             # Initialize labels
-            ordinate_label = axis_dict['y'].label
-            abscissa_label = axis_dict['x'].label
+            ordinate_label = axis_dict["y"].label
+            abscissa_label = axis_dict["x"].label
 
             # Map names to symbols
             if ordinate_label.lower() == "theta":
@@ -502,10 +523,10 @@ class Plot2D(QWidget):
                 abscissa_label = "φ"
 
             yaxis_label = str.title(ordinate_label)
-            yaxis_units = axis_dict['y'].units
+            yaxis_units = axis_dict["y"].units
 
             xaxis_label = str.title(abscissa_label)
-            xaxis_units = axis_dict['x'].units
+            xaxis_units = axis_dict["x"].units
 
             axis_scale = 1.0
 
@@ -541,11 +562,20 @@ class Plot2D(QWidget):
                 yMin=upper_left_y + height,
             )
 
+        if self.selected_field_function == PlotFunctions.MAGNITUDE.value:
+            # TODO: this should be passed in by the function itself, not special code here
+            # Scale the range to clip low long-tail values
+            self._autoscale_lut_range()
+
         # AutoRange after domain changed
         if self.last_plot_domain != self.selected_plot_domain:
             self.vb.autoRange()
 
         self.last_plot_domain = self.selected_plot_domain
+
+    def _autoscale_lut_range(self, min_percentile=20, max_percentile=100):
+        low, high = np.percentile(self.image_item.image, [min_percentile, max_percentile])
+        self.hist.setLevels(low, high)
 
 
 def get_transformed_data(spp: SurfacePlot2DParameters):
