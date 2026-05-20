@@ -6,6 +6,7 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 TODO: Add colormap selection (based on type of scale user selected, e.g., cyclic for phase)
 """
 
+from typing import Any
 from collections import namedtuple
 from dataclasses import dataclass
 import pyqtgraph as pg
@@ -29,6 +30,7 @@ from PySide6.QtWidgets import (
     QComboBox,
     QLabel,
 )
+
 from ..enums import CoordinateSystemType
 
 
@@ -48,6 +50,8 @@ logger = logging.getLogger(__name__)
 
 AxisData = namedtuple("AxisData", ("values", "label", "units"))
 
+GradientState = dict[str, Any]
+
 
 @dataclass
 class SurfacePlot2DParameters:
@@ -55,12 +59,18 @@ class SurfacePlot2DParameters:
     field_quantity: FieldQuantity
     field_component: FieldComponent
     plot_domain: CoordinateSystemType
+
     applicate_function: PlotFunction
     applicate_scale: PlotScale
     applicate_norm: PlotNorm
+
     selected_frequency: float
-    gradient_state: pg.ColorMap
-    cyclic_gradient_state: pg.ColorMap
+
+    gradient_cmap: str | None = "CET-L3"
+    cyclic_gradient_cmap: str | None = "CET-C2"
+
+    gradient_state: GradientState | None = None
+    cyclic_gradient_state: GradientState | None = None
 
     def serialize(self):
         return {
@@ -71,9 +81,6 @@ class SurfacePlot2DParameters:
             "applicate_scale": self.applicate_scale.name,
             "frequency": Quantity(self.selected_frequency, "Hz"),
         }
-
-
-from PySide6.QtCore import QEvent
 
 
 class Plot2D(QWidget):
@@ -246,12 +253,6 @@ class Plot2D(QWidget):
                 applicate_scale=self.selected_field_scale,
                 applicate_norm=self.selected_field_norm,
                 selected_frequency=self.selected_plot_frequency,
-                gradient_state=(g := pg.GradientEditorItem()).loadPreset("turbo") or g.saveState(),
-                cyclic_gradient_state=(
-                    g := pg.GradientEditorItem(),
-                    g.setColorMap(pg.colormap.get("CET-C2")),
-                    g.saveState(),
-                )[-1],
             )
             self.plot_parameters = plot_parameters
             self.report_node.data = self.plot_parameters
@@ -346,6 +347,25 @@ class Plot2D(QWidget):
         return self.cb_plot_norm.currentData()
 
     # --- Private Methods ---
+
+    def _set_lut_gradient(self) -> None:
+        if self.selected_field_function == PlotFunctions.MAGNITUDE.value:
+            cmap = self.plot_parameters.gradient_cmap
+            state = self.plot_parameters.gradient_state
+        elif self.selected_field_function == PlotFunctions.PHASE.value:
+            cmap = self.plot_parameters.cyclic_gradient_cmap
+            state = self.plot_parameters.cyclic_gradient_state
+        else:
+            return
+
+        if state is not None:
+            self.hist.gradient.restoreState(state)
+            self.hist.gradient.showTicks(False)
+
+        elif cmap is not None:
+            self.hist.gradient.setColorMap(pg.colormap.get(cmap))
+            self.hist.gradient.showTicks(False)
+
     def _update_plotting_function_options(self):
         # Remove all items before updating items
         for _ in range(self.cb_plot_function.count()):
@@ -445,20 +465,15 @@ class Plot2D(QWidget):
         self.plot_parameters.applicate_norm = self.selected_field_norm
         self.plot_parameters.selected_frequency = self.selected_plot_frequency
         if self.selected_field_function == PlotFunctions.MAGNITUDE.value:
+            print("==== SAVING MAGNITUDE =====")
             self.plot_parameters.gradient_state = self.hist.gradient.saveState()
         if self.selected_field_function == PlotFunctions.PHASE.value:
+            print("==== SAVING PHASE =====")
             self.plot_parameters.cyclic_gradient_state = self.hist.gradient.saveState()
 
     def _update_plot(self):
-        if self.selected_field_function == PlotFunctions.MAGNITUDE.value:
-            # TODO: this should be passed in by the function itself, not special code here
-            # Scale the range to clip low long-tail values
-            self.hist.gradient.restoreState(self.plot_parameters.gradient_state)
-
-        if self.selected_field_function == PlotFunctions.PHASE.value:
-            # TODO: this should be passed in by the function itself, not special code here
-            # Set the colormap to a cyclic map
-            self.hist.gradient.restoreState(self.plot_parameters.cyclic_gradient_state)
+        # Set the histogram gradient
+        self._set_lut_gradient()
 
         # _update_plot is called whenever state changes, so call save_state here too
         self._save_state()
