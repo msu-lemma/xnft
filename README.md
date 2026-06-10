@@ -37,25 +37,25 @@ Prerequisites
 
 1. Install Pixi package manager by following the steps at: https://pixi.prefix.dev/latest/installation/
 2. Install `git`. This may be installed via the OS package manager or pixi. Choose **one** option below: 
-- **Any System:** in a terminal/PowerShell run:
-    ```sh
-    pixi global install --environment git --expose git git-lfs
-    ```
-    This will add the `git` and `git-lfs` executables to a global directory (typically in your home folder) and add the `git` executable to your terminal's search path.
-- **Windows:** In any "PowerShell" run:
-    ```PowerShell
-    winget install --id Git.Git -e --source winget
-    ```
-- **macOS:** In terminal install via xcode-select or [Homebrew](https://brew.sh):
-    ```sh
-    xcode-select --install
-    # or
-    brew install git
-    ```
-- **Ubuntu:** In terminal install via apt:
-    ```sh
-    apt install git
-    ```
+    - **Any System:** in a terminal/PowerShell run:
+        ```sh
+        pixi global install --environment git --expose git git-lfs
+        ```
+        This will add the `git` and `git-lfs` executables to a global directory (typically in your home folder) and add the `git` executable to your terminal's search path.
+    - **Windows:** In any "PowerShell" run:
+        ```PowerShell
+        winget install --id Git.Git -e --source winget
+        ```
+    - **macOS:** In terminal install via xcode-select or [Homebrew](https://brew.sh):
+        ```sh
+        xcode-select --install
+        # or
+        brew install git
+        ```
+    - **Ubuntu:** In terminal install via apt:
+        ```sh
+        apt install git
+        ```
 </details>
 
 ### Download
