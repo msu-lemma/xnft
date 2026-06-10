@@ -1,8 +1,8 @@
 # LEmmA Near Field Measurement System
 
-[![Latest Release](/../../badges/release.svg)](/../../releases) 
-[![Test Coverage](https://gitlab.msu.edu/ece-lemma/xnft/badges/main/coverage.svg)
-![Pipeline Status](https://gitlab.msu.edu/ece-lemma/xnft/badges/main/pipeline.svg?ignore_skipped=true&job=test-job)](https://gitlab.msu.edu/ece-lemma/xnft/-/pipelines)
+<!-- [![Latest Release](/../../badges/release.svg)](/../../releases) 
+[![Test Coverage](../../badges/main/coverage.svg)
+![Pipeline Status](badges/main/pipeline.svg?ignore_skipped=true&job=test-job)](/-/pipelines) -->
 
 
 
