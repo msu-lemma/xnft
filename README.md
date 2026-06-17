@@ -99,6 +99,9 @@ git stash apply  # Pops changes from the top of the stash stack and applies to t
 
 ### Running Jupyter Notebooks (Optional)
 
+> [!CAUTION] Notice:
+> Jupyter notebooks and analysis will be moved into separate repositories in future updates.
+
 Jupter notebooks are included in the `notebooks` and `analysis` folders.  The `notebooks` folder contains examles of using the xNFT API to load, and perform computation using the Python API, and plot the results using Matplotlib.  The `analysis` folder contains notebooks containing error various analysis scripts.
 
 #### Installation
