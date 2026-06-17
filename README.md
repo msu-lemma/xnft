@@ -4,13 +4,10 @@
 [![Test Coverage](../../badges/main/coverage.svg)
 ![Pipeline Status](badges/main/pipeline.svg?ignore_skipped=true&job=test-job)](/-/pipelines) -->
 
-
+> [!CAUTION] ⚠️ xNFT is in active development (Alpha)
+> xNFT is in active development. User interfaces and APIs may change frequently. For the most stable operation, use the latest release. For the most up-to-date features and bug fixes, consider building from source. 
 
 ![xnft Screenshot](docs/source/assets/xnft_screenshot_2026-04-17.png)
-
-
-> [!CAUTION] ⚠️ xNFT is in active development
-> xNFT is in active development. For the most stable operation, use the latest packaged release. For the most up-to-date features and bug fixes, consider building from source. 
 
 # Installation
 
