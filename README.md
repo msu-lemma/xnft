@@ -13,13 +13,13 @@
 
 ## Latest Release 
 
-[![Latest Release](/../../badges/release.svg)](/../../releases) 
+[![Latest Release](/../../badges/release.svg)](/../../releases)
 
 The simplest method to use xNFT is to install the lasted packaged release for Windows or macOS from the [releases page](/../../releases).
 
 ## From Source 
 
-For the latest development features progress, and bug fixes, install from source.
+For the latest features and bug fixes, install from source.
 
 > [!NOTE] 
 > The development environment uses the Pixi package manager (https://pixi.prefix.dev/latest/) and git (https://git-scm.com) to manage the envrionment and source code. It may be helpful to have a basic understanding of Pixi and git to install and use this software.
@@ -29,27 +29,27 @@ For the latest development features progress, and bug fixes, install from source
 
 <details>
 <summary>
-Prerequisites
+<h3>Prerequisites</h3> (Click to view)
 </summary>
 
 1. Install Pixi package manager by following the steps at: https://pixi.prefix.dev/latest/installation/
-2. Install `git`. This may be installed via the OS package manager or pixi. Choose **one** option below: 
-    - **Any System:** in a terminal/PowerShell run:
+2. Install `git`. This may be installed via the OS package manager or pixi. Choose **_one_** option below: 
+    - **Pixi (Any System):** in a terminal/PowerShell run:
         ```sh
         pixi global install --environment git --expose git git-lfs
         ```
         This will add the `git` and `git-lfs` executables to a global directory (typically in your home folder) and add the `git` executable to your terminal's search path.
-    - **Windows:** In any "PowerShell" run:
+    - **Winget (Windows):** In any "PowerShell" run:
         ```PowerShell
         winget install --id Git.Git -e --source winget
         ```
-    - **macOS:** In terminal install via xcode-select or [Homebrew](https://brew.sh):
+    - **Homebrew (macOS):** In terminal install via xcode-select or [Homebrew](https://brew.sh):
         ```sh
         xcode-select --install
         # or
         brew install git
         ```
-    - **Ubuntu:** In terminal install via apt:
+    - **APT (Ubuntu):** In terminal install via apt:
         ```sh
         apt install git
         ```
@@ -99,7 +99,9 @@ git stash apply  # Pops changes from the top of the stash stack and applies to t
 
 ### Running Jupyter Notebooks (Optional)
 
-**Installation**
+Jupter notebooks are included in the `notebooks` and `analysis` folders.  The `notebooks` folder contains examles of using the xNFT API to load, and perform computation using the Python API, and plot the results using Matplotlib.  The `analysis` folder contains notebooks containing error various analysis scripts.
+
+#### Installation
 
 To run the Jupter notebooks included with this project, a `jupter` pixi environment is provided.
 1. [Recommended] Install Microsoft Visual Studio Code (VS Code): https://code.visualstudio.com
@@ -113,7 +115,7 @@ To run the Jupter notebooks included with this project, a `jupter` pixi environm
     - Python
     - Jupyter
 
-**Running**
+#### Running
 
 1. Open the desired Jupyter notebook `.ipynb` file from the `notebooks` or `analysis` folders
 2. In the upper-right corner, press "Select Kernel"'
