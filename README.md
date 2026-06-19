@@ -1,4 +1,4 @@
-# LEmmA Near Field Measurement System
+# xNFT - Antenna Measurement Software 
 
 <!-- [![Latest Release](/../../badges/release.svg)](/../../releases) 
 [![Test Coverage](../../badges/main/coverage.svg)
