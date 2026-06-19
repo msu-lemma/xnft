@@ -4,6 +4,7 @@ Handle xnft coordinates actions.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
+import numpy as np
 from dataclasses import dataclass, field, InitVar
 from typing import Optional
 import logging
@@ -62,7 +63,7 @@ class CoordinateNode(DataNode):
     @property
     @gui_property(label="System", order=4)
     def coordinate_type(self):
-        return self._coordinate_type
+        return self._coordinate_type.value.name
 
     @coordinate_type.setter
     def coordinate_type(self, system: CoordinateSystemType):
@@ -71,3 +72,10 @@ class CoordinateNode(DataNode):
                 f'Argument "system" must be of type {CoordinateSystemType} got {type(system)}'
             )
         self._coordinate_type = system
+
+    @property
+    @gui_property(label="Coordinate Range", order=5)
+    def coordinate_range(self):
+        out_str = ""
+        # TODO
+        return out_str

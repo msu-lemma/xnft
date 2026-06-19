@@ -13,8 +13,8 @@ import xarray as xr
 
 import scipy.constants as spc
 
-from ..file_registry import file_registry
-from ...core.enums import (
+from ..field_loader_registry import field_loader_registry
+from ....core.enums import (
     DataSourceType,
     FieldType,
     CoordinateSystemType,
@@ -22,15 +22,15 @@ from ...core.enums import (
     DataPolarizationType,
     Units
 )
-from ...core.types import FileInfo
-from ...core.dtypes import FieldDataset
+from ....core.types import FileInfo
+from ....core.dtypes import FieldDataset
 
-from ...core.apertures.rectangular import rect_far_field
+from ....core.apertures.rectangular import rect_far_field
 
 logger = logging.getLogger(__name__)
 
 
-@file_registry.register(
+@field_loader_registry.register(
     source=DataSourceType.ANALYTIC,
     field=FieldType.NEAR,
     data_polarization=DataPolarizationType.COMBO_POL,
@@ -137,7 +137,7 @@ def load_analytic_near_field_yaml(file_list: List[FileInfo]) -> xr.Dataset:
     return fields
 
 
-@file_registry.register(
+@field_loader_registry.register(
     source=DataSourceType.ANALYTIC,
     field=FieldType.FAR,
     data_polarization=DataPolarizationType.COMBO_POL,
@@ -199,8 +199,8 @@ def load_theory_far_field_yaml(file_list: List[FileInfo]) -> xr.Dataset:
         ap_x=ap_x,
         ap_y=ap_y,
         wavelength_array=wavelength,
-        phi_sample_locs=phi_sample_location_array,
-        theta_sample_locs=theta_sample_location_array,
+        phi_sample_vec=phi_sample_location_array,
+        theta_sample_vec=theta_sample_location_array,
         r_ff=r_ff,
         amplitude=fd["antenna"]["excitation"]["e_0"],
         excitation=fd["antenna"]["excitation"]["distribution"],

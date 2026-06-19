@@ -172,7 +172,7 @@ class MainWindow(QMainWindow):
         progress_container.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
 
         progress_layout = QHBoxLayout(progress_container)
-        progress_layout.setContentsMargins(10, 0, 10, 0)
+        progress_layout.setContentsMargins(5, 0, 5, 0)
         progress_layout.setSpacing(0)
 
         self.progress = QProgressBar(self)
@@ -180,7 +180,7 @@ class MainWindow(QMainWindow):
         self.progress.setFixedWidth(350)
 
         progress_layout.addWidget(self.progress)
-        progress_container.setFixedWidth(350 + 10 + 10)
+        progress_container.setFixedWidth(350 + 5 + 5)
         status.addPermanentWidget(progress_container)
 
     def create_project_manager_widgets(self, pm):
@@ -216,6 +216,7 @@ class MainWindow(QMainWindow):
         self.properties_table.setSelectionBehavior(QTableWidget.SelectRows)
         self.properties_table.setSelectionMode(QTableWidget.SingleSelection)
         self.properties_table.horizontalHeader().setStretchLastSection(True)
+        self.properties_table.setColumnWidth(0, 150)
 
         properties_dock.setWidget(self.properties_table)
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, properties_dock)
@@ -450,7 +451,7 @@ def run_gui():
     """
     Main GUI entrypoint.
     """
-    import xnft.loaders  # noqa: F401  # pylint: disable=unused-import
+    import xnft.loaders.fields  # noqa: F401  # pylint: disable=unused-import
 
     sys.argv[0] = "xNFT"  # Overwrite name of command to show application name
 

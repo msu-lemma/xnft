@@ -4,6 +4,7 @@ Field transform algorithms.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -27,59 +28,9 @@ from typing import Callable, List
 
 from ..enums import DataSourceType, FieldType, CoordinateSystemType
 from ..dtypes import FieldDataset
-
-# fmt: off
-# MLX_AVAILABLE = False
-# try:
-#     import mlx.core as mx
-#     MLX_AVAILABLE = True
-# except ImportError:
-#     MLX_AVAILABLE = False
-
-# CUPY_AVAILABLE = False
-# try:
-#     import cupy as cp
-#     CUPY_AVAILABLE = True
-# except ImportError:
-#     CUPY_AVAILABLE = False
-
-# CUFINUFFT_AVAILABLE = False
-# try:
-#     import cufinufft
-#     CUFINUFFT_AVAILABLE = True
-# except ImportError:
-#     CUFINUFFT_AVAILABLE = False
-# fmt: on
-
+from ..apertures.probes import MeasurementProbe
 
 logger = logging.getLogger(__name__)
-
-
-def get_correction_marix(
-    far_field: xr.DataArray
-):
-    """
-    Generate the correction matrix given a far-field antenna pattern.
-
-    NOTE/TODO/FIXME: There are many assumptions here to be fixed:
-    1. The far_field matrix must be square and equally spaced in both axes
-    2. The requested shapes/frequencies must match the downstream fields' dimenstions exactly
-
-    Paramters
-    ---------
-    far_field : xr.DataArray
-        Far-field E-field pattern of the measurement probe of shape `(2,n_phi,n_theta)`.
-        It is assumed the polarization is in the y-hat direction (the reference polarization).
-    
-    Returns
-    -------
-    NDArray[np.complex128]
-        Output array of shape `(2,2,n_phi,n_theta)`
-    """
-    return np.vstack([
-        far_field,
-        np.rot90(far_field, -1)  # rotate clockwise 90°
-    ])
 
 
 def planar_near_field_transform_t3(
@@ -93,7 +44,9 @@ def planar_near_field_transform_t3(
     y_scale,
     e_x,
     e_y,
+    z_val,
     r_far_field=1000,
+    probe_correction: MeasurementProbe | None = None,
 ):
     """Compute the planar near-to-far field transform for a single frequency
 
@@ -112,20 +65,24 @@ def planar_near_field_transform_t3(
     near_field_y_scaled : ArrayLike
         Displacement along y-axis, normalized from -pi/2,pi/2 for NUFFT
     x_scale : float
-        Scaling factor for x-component for NUFFT 
+        Scaling factor for x-component for NUFFT
     y_scale : float
         Scaling factor for x-component for NUFFT
     e_x : ArrayLike
         E-field x-component
     e_y : ArrayLike
         E-field y-component
+    e_y : float
+        Z-height above AUT samples collected at (in meters)
     r_far_field : int, optional
         Far-field radius compute transform at, by default 1000
+    probe_correction : MeasurementProbe or None, optional
+        Probe correction fields to use, if any, by default None
 
     Returns
     -------
     Tuple[ArrayLike]
-        Typle of $E_\mathrm{phi}$ and $E_\mathrm{theta}$ fields
+        Typle of $E_\\mathrm{phi}$ and $E_\\mathrm{theta}$ fields
     """
     # TODO: Add a type-2 NUFFT implementation for improved performance (GPU won't be effective with type-3)
 
@@ -161,29 +118,79 @@ def planar_near_field_transform_t3(
     fe_x = plan.execute(field_values_x).reshape(theta_grid_target.shape)
     fe_y = plan.execute(field_values_y).reshape(phi_grid_target.shape)
 
+    e_phi = np.cos(theta_grid_target) * (
+        -fe_x * np.sin(phi_grid_target) + fe_y * np.cos(phi_grid_target)
+    )
+    e_theta = fe_x * np.cos(phi_grid_target) + fe_y * np.sin(phi_grid_target)
+    e_mat = np.stack([e_phi, e_theta], axis=-1)
+
+    # Apply propagation constants
     # Phase correction term such that phase at measured radius is constant
     greens_func = np.exp(-1j * k0 * r_far_field) / r_far_field
-    c = k0 / (2.0 * np.pi)
+    c0 = 1j * k0 / (2.0 * np.pi) * greens_func
+    e_mat *= c0
 
-    # fmt: off
-    e_phi = (
-        1j * c * greens_func * np.cos(theta_grid_target)
-           * (-fe_x * np.sin(phi_grid_target) + fe_y * np.cos(phi_grid_target))
-    )
-    e_theta = (
-        1j * c * greens_func * (fe_x * np.cos(phi_grid_target) + fe_y * np.sin(phi_grid_target))
-    )
-    # fmt: on
+    # Apply probe corrections, if available
+    if probe_correction:
+        reception_mat_inv = probe_correction.get_correction(
+            phi_vec=phi_grid_target[:, 0],
+            theta_vec=theta_grid_target[0, :],
+            wavelength=2.0 * np.pi / k0,
+        ).squeeze()  # remove frequency axis that is of size 1
 
-    return e_phi, e_theta
+        ap_x = probe_correction.source.x
+        ap_y = probe_correction.source.y
+        X = k0 * ap_x / 2 * np.sin(theta_grid_target) * np.cos(phi_grid_target)
+        Y = k0 * ap_y / 2 * np.sin(theta_grid_target) * np.sin(phi_grid_target)
+
+        cx = np.cos(X) / (X**2 - (np.pi / 2) ** 2)
+        cy = np.sinc(Y / np.pi)
+
+        row_1 = np.stack(
+            [
+                -np.cos(theta_grid_target) * np.sin(phi_grid_target) * cx * cy,
+                -np.cos(theta_grid_target) * np.cos(phi_grid_target) * cx * cy,
+            ],
+            axis=-1,
+        )
+        row_2 = np.stack(
+            [-np.cos(phi_grid_target) * cx * cy, np.sin(phi_grid_target) * cx * cy], axis=-1
+        )
+
+        print(f"{row_1.shape=}")
+        print(f"{row_2.shape=}")
+
+        det = -((cx * cy) ** 2) * np.cos(theta_grid_target)
+        # reception_mat_inv = (
+        #     1
+        #     / det[..., np.newaxis, np.newaxis]
+        #     * np.stack(
+        #         [row_1, row_2],
+        #         axis=-1,
+        #     )
+        # )
+
+        print(f"{reception_mat_inv.shape=}")
+        print(f"{e_mat.shape=}")
+
+        # print(reception_mat_inv)
+
+        # Perform matrix multiplication of R^-1 matrix and E-field
+        e_mat = (reception_mat_inv @ e_mat[..., np.newaxis])[..., 0]
+        print(f"Output: {e_mat.shape=}")
+
+        print(f"{theta_grid_target.shape=}")
+        e_mat *= np.exp(1j * np.cos(theta_grid_target[..., np.newaxis]) * z_val)
+
+    return e_mat
 
 
 def planar_near_field_transform(
-    near_field: xr.DataArray,
-    frequencies: List[float],
-    probe_correction: None | xr.DataArray = None,
-    n_phi: int = 361,  # 0.5°/sample
-    n_theta: int = 361,  # 0.5°/sample
+    near_field: xr.Dataset,
+    frequencies: np.ndarray | List[float] | None = None,
+    probe_correction: MeasurementProbe | None = None,
+    n_phi: int = 361,
+    n_theta: int = 361,
     window: Callable = windows.boxcar,
     r_far_field=1000,  # meters
 ) -> xr.Dataset:
@@ -194,14 +201,14 @@ def planar_near_field_transform(
 
     Parameters
     ----------
-    near_field : xr.DataArray
+    near_field : xr.Dataset
         Planar near-field measured values to transform to far-field.
-    frequencies : List[float]
+    frequencies : np.ndarray | List[float] | None
         Frequencies in Hertz to perform the near-to-far field transform at.  If the provided frequency is not
         found in the `near_field` input, the nearest frequency present will be used instead and a warning will
         be raised to the user.
-    probe_correction : None or xr.DataArray, optional
-        Probe correction fields to use, if any. Must be far-field representations, by default None
+    probe_correction : MeasurementProbe or None, optional
+        Probe correction fields to use, if any, by default None
     n_phi : int, optional
         Number of uniform phi sample points in the returned far-field, by default 361
     n_theta : int, optional
@@ -229,29 +236,71 @@ def planar_near_field_transform(
     [4] C. A. Balanis, Antenna theory: analysis and design, 3. ed. Hoboken, N.J: Wiley-Interscience, 2005.
     """
 
-    # [Debug] List all frequencies available in file
-    logger.debug(f"Available frequencies: {', '.join([
-        str(Quantity(x, "Hz")) for x in near_field.frequency.values
-    ])}")
+    print(near_field)
+    near_field_e = near_field['E']
+
+    freq = near_field_e.frequency
+
+    # Normalize once
+    if freq.ndim == 0:
+        freq_values = np.atleast_1d(freq.item())
+    else:
+        freq_values = freq.values
+
+    logger.debug(
+        "Available frequencies: %s",
+        ", ".join(str(Quantity(x, "Hz")) for x in freq_values),
+    )
+
+    if frequencies is None:
+        frequencies = freq_values
+
+    # Compute maximum valid elevation angle to be used in computation (limited by sample locations and aperture sizes)
+    print(near_field)
+    aut_size = near_field.attrs['aperture_size']
+
+    # If a probe is specified, get probe size for valid angle computation, otherwise assume zero size
+    if probe_correction is not None:
+        probe_size = (probe_correction.source.x**2 + probe_correction.source.y**2) ** 0.5
+    else:
+        probe_size = 0
+
+    logger.debug(f'AUT Size: {Quantity(aut_size, units='m')}')
+    logger.debug(f'Probe Size: {Quantity(probe_size, units='m')}')
+
+    # Conservative values
+    min_x_displacement = min(np.abs(np.min(near_field.x)), np.max(near_field.x))
+    min_y_displacement = min(np.abs(np.min(near_field.y)), np.max(near_field.y))
+    max_z_displacement = np.max(np.abs(near_field.z))
+
+    logger.debug(f'min_x_displacement: {Quantity(min_x_displacement, units='m')}')
+    logger.debug(f'min_y_displacement: {Quantity(min_y_displacement, units='m')}')
+    logger.debug(f'max_z_displacement: {Quantity(max_z_displacement, units='m')}')
+
+    max_aperture_displacement = min(min_x_displacement, min_y_displacement) - (aut_size / 2) - (probe_size / 2)
+    logger.debug(f'max_aperture_displacement: {Quantity(max_aperture_displacement, units='m')}')
+
+    max_theta = np.atan2(max_aperture_displacement, max_z_displacement).values.squeeze()
+    logger.debug(f'Max. Theta: {Quantity(max_theta * 180 / np.pi)}°')
 
     # Compute uniform Theta, Phi grid for target field points
-    theta_target = np.linspace(-np.pi / 2, np.pi / 2, n_theta)
+    theta_target = np.linspace(-max_theta, max_theta, n_theta)
     phi_target = np.linspace(-np.pi / 2, np.pi / 2, n_phi)
 
-    theta_grid_target, phi_grid_target = np.meshgrid(theta_target, phi_target)
+    phi_grid_target, theta_grid_target = np.meshgrid(phi_target, theta_target, indexing="ij")
 
     # Generate windowing function (rectangular by default)
-    win_x = window(near_field.x.size)
-    win_y = window(near_field.y.size)
+    win_x = window(near_field_e.x.size)
+    win_y = window(near_field_e.y.size)
 
     # Normalize window
     win = np.sqrt(np.outer(win_x, win_y))
 
     # Scale source sample locations along aperture to input of finufft in the range [-pi/2, pi/2)
-    x_scale = 2.0 * np.pi / (np.max(near_field.x.values) - np.min(near_field.x.values))
-    y_scale = 2.0 * np.pi / (np.max(near_field.y.values) - np.min(near_field.y.values))
+    x_scale = 2.0 * np.pi / (np.max(near_field_e.x.values) - np.min(near_field_e.x.values))
+    y_scale = 2.0 * np.pi / (np.max(near_field_e.y.values) - np.min(near_field_e.y.values))
 
-    near_field_yy, near_field_xx = np.meshgrid(near_field.y.values, near_field.x.values)
+    near_field_yy, near_field_xx = np.meshgrid(near_field_e.y.values, near_field_e.x.values)
 
     near_field_x_scaled = (x_scale * near_field_xx).ravel()
     near_field_y_scaled = (y_scale * near_field_yy).ravel()
@@ -261,12 +310,12 @@ def planar_near_field_transform(
 
     # Generate parallel function call arguments
     args_list = []
-    z_val = near_field.coords["z"].item()  # should only have one z-height value
+    z_val = near_field_e.coords["z"].item()  # should only have one z-height value
 
     for freq in frequencies:
 
-        f_idx = np.argmin(np.abs(near_field.frequency.values - freq))
-        nearest_freq = near_field.frequency.values[f_idx]
+        f_idx = np.argmin(np.abs(freq_values - freq))
+        nearest_freq = freq_values[f_idx]
 
         if nearest_freq != freq:
 
@@ -282,8 +331,14 @@ def planar_near_field_transform(
 
         # Load E-field data from dataset
         # Dimensions (x, y, z, freq)
-        e_x = near_field.sel(component="x", frequency=freq, z=z_val).values
-        e_y = near_field.sel(component="y", frequency=freq, z=z_val).values
+        if near_field_e.frequency.ndim == 1:
+            e_x = near_field_e.sel(component="x", frequency=freq, z=z_val).values
+            e_y = near_field_e.sel(component="y", frequency=freq, z=z_val).values
+        else:
+            e_x = near_field_e.sel(component="x", z=z_val).values
+            e_y = near_field_e.sel(component="y", z=z_val).values
+
+        print(type(win), type(e_x))
 
         args_list.append(
             dict(
@@ -297,28 +352,28 @@ def planar_near_field_transform(
                 y_scale=y_scale,
                 e_x=e_x,
                 e_y=e_y,
+                z_val=z_val,
                 r_far_field=r_far_field,
+                probe_correction=probe_correction,
             )
         )
 
     # Call planar near-field transform in parallel
-    results = Parallel(n_jobs=-1, backend="multiprocessing")(
+    e_mat_list = Parallel(n_jobs=-1, backend="multiprocessing", verbose=10)(
         delayed(planar_near_field_transform_t3)(**args) for args in args_list
     )
-
-    e_phi_list, e_theta_list = zip(*results)
-
-    # Stack along frequency axis
-    # Result shape: (n_phi, n_theta, n_freq)
-    e_phi = np.stack(e_phi_list, axis=-1)
-    e_theta = np.stack(e_theta_list, axis=-1)
 
     # Print ellapsed time
     elapsed_time = Quantity(time.perf_counter() - t_start, "s")
     logger.debug("Far-field transform: {:}".format(elapsed_time))
 
     # Generate field output
-    e_field = np.stack([e_phi, e_theta], axis=0)
+    print(f"{np.array(e_mat_list).shape=}")
+
+    # Reorder output to: (component, phi, theta, frequency)
+    e_field = np.transpose(e_mat_list, (3, 1, 2, 0))
+
+    print(f"{e_field.shape=}")
 
     fields = FieldDataset.create(
         e_field=e_field,
@@ -330,5 +385,7 @@ def planar_near_field_transform(
         coordinate_system=CoordinateSystemType.SPHERICAL,
         field_type=FieldType.FAR,
         data_source=DataSourceType.HFSS,
+        aperture_size=near_field.attrs['aperture_size']
     )
+
     return fields

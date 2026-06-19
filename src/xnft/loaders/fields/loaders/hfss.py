@@ -13,21 +13,21 @@ import numpy as np
 import xarray as xr
 import unyt
 
-from ..file_registry import file_registry
-from ...core.enums import (
+from ..field_loader_registry import field_loader_registry
+from ....core.enums import (
     DataSourceType,
     FieldType,
     PolarizationType,
     CoordinateSystemType,
     DataPolarizationType,
 )
-from ...core.types import FileInfo
-from ...core.dtypes import FieldDataset
+from ....core.types import FileInfo
+from ....core.dtypes import FieldDataset
 
 logger = logging.getLogger(__name__)
 
 
-@file_registry.register(
+@field_loader_registry.register(
     source=DataSourceType.HFSS,
     field=FieldType.NEAR,
     data_polarization=DataPolarizationType.COMBO_POL,
@@ -181,7 +181,7 @@ def load_hfss_near_field_ndf(file_list: List[FileInfo]) -> xr.Dataset:
     return fields
 
 
-@file_registry.register(
+@field_loader_registry.register(
     source=DataSourceType.HFSS,
     field=FieldType.FAR,
     data_polarization=DataPolarizationType.COMBO_POL,
@@ -301,22 +301,11 @@ def load_hfss_far_field_ffd(file_list: List[FileInfo]) -> xr.Dataset:
 
     # === Post-process FFD File Data ===
 
-    # TODO/FIXME
-    h_field = e_field
-
-    # eta = (spc.mu_0 / spc.epsilon_0) ** 0.5
-    # h_theta = -e_phi / eta
-    # h_phi = e_theta / eta
-
-    # e_field = np.stack([e_phi, e_theta])
-    # h_field = np.stack([h_phi, h_theta])
-
     fields = FieldDataset.create(
         e_field=e_field,
-        h_field=None,
         spatial_coords={
-            "phi": phi_sample_location_array,
             "theta": theta_sample_location_array,
+            "phi": phi_sample_location_array,
         },
         frequency=sample_frequency_array,
         coordinate_system=CoordinateSystemType.SPHERICAL,

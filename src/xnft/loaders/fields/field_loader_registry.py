@@ -6,14 +6,14 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 
 import logging
 from pathlib import Path
-from ..core.enums import FieldType, DataSourceType, DataPolarizationType
-from ..core.types import FileInfo
+from ...core.enums import FieldType, DataSourceType, DataPolarizationType
+from ...core.types import FileInfo
 from typing import List
 
 logger = logging.getLogger(__name__)
 
 
-class FileLoaderRegistry:
+class FieldLoaderRegistry:
     """
     File loader registry class to handle addition of new data loaders dynamically.
     """
@@ -128,4 +128,4 @@ class FileLoaderRegistry:
         return loader_function
 
 
-file_registry = FileLoaderRegistry()
+field_loader_registry = FieldLoaderRegistry()

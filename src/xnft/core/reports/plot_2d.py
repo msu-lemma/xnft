@@ -465,10 +465,8 @@ class Plot2D(QWidget):
         self.plot_parameters.applicate_norm = self.selected_field_norm
         self.plot_parameters.selected_frequency = self.selected_plot_frequency
         if self.selected_field_function == PlotFunctions.MAGNITUDE.value:
-            print("==== SAVING MAGNITUDE =====")
             self.plot_parameters.gradient_state = self.hist.gradient.saveState()
         if self.selected_field_function == PlotFunctions.PHASE.value:
-            print("==== SAVING PHASE =====")
             self.plot_parameters.cyclic_gradient_state = self.hist.gradient.saveState()
 
     def _update_plot(self):
@@ -589,7 +587,11 @@ class Plot2D(QWidget):
         self.last_plot_domain = self.selected_plot_domain
 
     def _autoscale_lut_range(self, min_percentile=20, max_percentile=100):
-        low, high = np.percentile(self.image_item.image, [min_percentile, max_percentile])
+        low, high = np.percentile(
+            np.where(np.isnan(self.image_item.image), np.nanmin(self.image_item.image), self.image_item.image),
+            [min_percentile, max_percentile],
+        )
+        print(f"{low=}, {high=}")
         self.hist.setLevels(low, high)
 
 

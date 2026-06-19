@@ -20,13 +20,13 @@ class PlotScales(Enum):
     )
     DECIBELS_20 = PlotScale(
         name="dB (20·log10)",
-        function=lambda x: np.nan_to_num(20 * np.log10(x), nan=np.nan, posinf=np.nan, neginf=np.nan),
+        function=lambda x: 20 * np.log10(np.clip(x, 1e-15, None)),
         unit_modifier=lambda x: f"dB({x})",
         enabled=True,
     )
     DECIBELS_10 = PlotScale(
         name="dB (10·log10)",
-        function=lambda x: np.nan_to_num(10 * np.log10(x), nan=np.nan, posinf=np.nan, neginf=np.nan),
+        function=lambda x: 10 * np.log10(np.clip(x, 1e-15, None)),
         unit_modifier=lambda x: f"dB({x})",
         enabled=True,
     )

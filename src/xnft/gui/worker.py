@@ -5,6 +5,7 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 """
 
 from PySide6.QtCore import QObject, Signal, Slot
+import traceback
 
 
 class SpawnWorker(QObject):
@@ -22,4 +23,5 @@ class SpawnWorker(QObject):
             result = self._invoke_function(**self._invoke_kwargs)
             self.finished.emit(result)
         except Exception as e:
+            traceback.print_exc()
             self.error.emit(e)

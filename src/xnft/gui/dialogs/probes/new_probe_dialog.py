@@ -27,7 +27,7 @@ from PySide6.QtWidgets import (
 )
 
 from ..common import LabeledWidget
-from ....loaders.file_registry import file_registry
+from ....loaders.fields.field_loader_registry import field_loader_registry
 from ....project.nodes.node import Node
 from ....core.enums import ProbeType
 from ....core.apertures.standard_probes import StandardRectWaveguide

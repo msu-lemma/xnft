@@ -12,6 +12,7 @@ from typing import Tuple
 
 import numpy as np
 from numpy.typing import NDArray
+import xarray as xr
 
 import scipy.constants as spc
 
@@ -40,14 +41,15 @@ class RectWaveguide:
 def rect_far_field(
     ap_x: float,  # Cross-pol
     ap_y: float,  # Co-pol
-    phi_sample_locs: NDArray,
-    theta_sample_locs: NDArray,
+    phi_sample_vec: NDArray[np.float64],
+    theta_sample_vec: NDArray[np.float64],
     wavelength_array: float | NDArray,
+    rotation: float = 0.0,
     r_ff: float = 100,
     amplitude: float = 1.0,
     excitation: str = "te10",  # [te10, uniform]
-    weights_only: bool = False,
-):
+    apply_prop_const: bool = True,
+) -> xr.Dataset:
     """Generate ideal rectangular aperture field.
 
     Based on derivation in [§12, 1].  It is assumed the E-field excitation is in the y-hat direction.
@@ -58,10 +60,10 @@ def rect_far_field(
         X-extent of the aperture (cross-pol) in meters
     ap_y : float
         Y-extent of the aperture (co-pol) in meters
-    phi_sample_locs : NDArray
-        Phi sample locations of the far-field in radians
-    theta_sample_locs : NDArray
-        Theta sample locations of the far-field in radians
+    phi_sample_vec : NDArray
+        1D vector of phi sample locations of the far-field in radians
+    theta_sample_vec : NDArray
+        1D vector of theta sample locations of the far-field in radians
     wavelength_array : float | NDArray
         Wavelengths to sample aperture at in meters
     r_ff : float, optional
@@ -70,15 +72,15 @@ def rect_far_field(
         Maximum excitation amplitude in V, by default 1.0 V
     excitation : str, optional
         Aperture excitation mode. Must be either `uniform` or `te10`, by default `te10`
-    weights_only : bool, optional
-        Return only the real normalized weighting values, no phase or propagation loss due to Green's function
+    apply_prop_const : bool, optional
+        Return only the real normalized weighting values, no phase or propagation loss.
 
     Returns
     -------
-    xr.Dataset if `weigths_only` is `False`
-        Dataset containing "E" and "H" fields.
-    NDArray if `weigths_only` is `True`
-        2D matrix containing weighting values
+    xr.Dataset if `apply_prop_const` is `False`
+        Dataset containing "E" fields.
+    NDArray if `apply_prop_const` is `True`
+        2D matrix containing weighting values [e_phi, e_theta]
 
     Raises
     ------
@@ -90,24 +92,21 @@ def rect_far_field(
     [1] C. A. Balanis, Antenna theory: analysis and design, 3. ed. Hoboken,
         N.J: Wiley-Interscience, 2005.
     """
-    frequency_array = np.array(1 / wavelength_array)
-
     # Create sampling grid
-    theta_grid, phi_grid = np.meshgrid(theta_sample_locs, phi_sample_locs)
+    phi_grid, theta_grid = np.meshgrid(phi_sample_vec, theta_sample_vec, indexing='ij')
     phi_grid = phi_grid[:, :, np.newaxis]
     theta_grid = theta_grid[:, :, np.newaxis]
 
     e_0 = amplitude
 
     # Compute far-field constants
-    wavelength_array = spc.c / frequency_array
     k_0 = 2.0 * np.pi / wavelength_array
 
     # Compute far-field distance based on aperture at spec. frequency
     d_2 = ap_x**2 + ap_y**2  # Maximum aperture extents, squared
     r_ff_min = 2.0 * d_2 / wavelength_array  # Far-field radius (m)
 
-    if r_ff < r_ff_min:
+    if np.array(r_ff < r_ff_min).any():
         warn(
             f"Far-zone radius is {r_ff_min} m but {r_ff} m was given--far-field approximation is not valid.",
             RuntimeWarning,
@@ -115,40 +114,37 @@ def rect_far_field(
 
     # Constants from [Table 12.1, 1]
 
-    x_ff = k_0 * ap_x / 2 * np.sin(theta_grid) * np.cos(phi_grid)
-    y_ff = k_0 * ap_y / 2 * np.sin(theta_grid) * np.sin(phi_grid)
+    X = k_0 * ap_x / 2 * np.sin(theta_grid) * np.cos(phi_grid)
+    Y = k_0 * ap_y / 2 * np.sin(theta_grid) * np.sin(phi_grid)
 
     if excitation == "uniform":
-        cx = np.sinc(x_ff / np.pi)
-        cy = np.sinc(y_ff / np.pi)
-        e_theta = np.sin(phi_grid) * cx * cy
-        e_phi = np.cos(theta_grid) * np.cos(phi_grid) * cx * cy
+        cx = np.sinc(X / np.pi)
+        cy = np.sinc(Y / np.pi)
+        e_theta = np.sin(phi_grid + rotation) * cx * cy
+        e_phi = np.cos(theta_grid) * np.cos(phi_grid + rotation) * cx * cy
     elif excitation == "te10":
-        cx = np.cos(x_ff) / (x_ff**2 - (np.pi / 2) ** 2)
-        cy = np.sinc(y_ff / np.pi)
-        e_theta = np.sin(phi_grid) * cx * cy
-        e_phi = np.cos(theta_grid) * np.cos(phi_grid) * cx * cy
+        cx = np.cos(X) / (X**2 - (np.pi / 2) ** 2)
+        cy = np.sinc(Y / np.pi)
+        e_theta = -np.pi / 2 * np.sin(phi_grid + rotation) * cx * cy
+        e_phi = -np.pi / 2 * np.cos(theta_grid) * np.cos(phi_grid + rotation) * cx * cy
     else:
         raise NotImplementedError(f"Excitation mode {excitation} is not yet implemented.")
 
-    e_field = np.stack([e_phi, e_theta])
+    e_field = np.stack([e_phi, e_theta], dtype=np.complex128)
 
-    # Include Green's function weighting
-    if not weights_only:
+    # Include propagation effects
+    if apply_prop_const:
         greens_func_ff = np.exp(-1j * k_0 * r_ff) / (2.0 * np.pi * r_ff)
-        c_ff = 1j * ap_x * ap_y * k_0 * e_0 * greens_func_ff
-        e_field *= c_ff
-
-        if excitation == "te10":
-            e_field *= -np.pi / 2
+        c_ff = 1j * ap_x * ap_y * k_0 * e_0
+        e_field *= c_ff * greens_func_ff
 
     fields = FieldDataset.create(
         e_field=e_field,
         spatial_coords={
-            "phi": phi_sample_locs,
-            "theta": theta_sample_locs,
+            "phi": phi_sample_vec,
+            "theta": theta_sample_vec,
         },
-        frequency=frequency_array,
+        frequency=spc.c / wavelength_array,
         coordinate_system=CoordinateSystemType.SPHERICAL,
         field_type=FieldType.FAR,
         data_source=DataSourceType.ANALYTIC,

@@ -402,7 +402,7 @@ class TraceList(QTreeWidget):
             symbol_brush=trace.opts["symbolBrush"],
             symbol_pen=trace.opts["symbolPen"],
             symbol_size=trace.opts["symbolSize"],
-            background=Qt.black,
+            background=pg.mkColor(pg.getConfigOption('background')), #Qt.black,
         )
 
         label = QLabel()

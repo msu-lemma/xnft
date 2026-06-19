@@ -61,7 +61,7 @@ class AnalysisNode(Node):
     ):
         # Perform the near to far field transform
         field_data = planar_near_field_transform(
-            near_field=source_field.data["E"],  # Perform transform using E-field data
+            near_field=source_field.data,
             probe_correction=probe_correction,
             frequencies=frequencies,
         )
@@ -212,4 +212,7 @@ class TransformNode(DataNode):
     @property
     @gui_property(label="Probe Correction", order=3)
     def probe_correction(self):
-        return f"{self._probe_correction.name} ({self._probe_correction.correction_type})"
+        if self._probe_correction:
+            return f"{self._probe_correction.name} ({self._probe_correction.correction_type})"
+        else:
+            return "None"

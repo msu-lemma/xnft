@@ -26,9 +26,10 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QComboBox,
     QLabel,
+    QDoubleSpinBox
 )
 
-from ....loaders.file_registry import file_registry
+from ....loaders.fields.field_loader_registry import field_loader_registry
 from ....project.nodes.node import Node
 from ....core.enums import (
     FieldType,
@@ -67,7 +68,7 @@ class NewFieldMeasurementDialog(QDialog):
         self.cb_source_format = QComboBox()
         self.cb_data_polarization = QComboBox()
 
-        field_types = self._loaders_info(file_registry).keys()
+        field_types = self._loaders_info(field_loader_registry).keys()
         for idx, field_type in enumerate(field_types):
             # NOTE: Qt casts StrEnum to plain str which breaks some things;
             #       we'll wrap this in a tuple here to mitigate this behavior
@@ -96,6 +97,10 @@ class NewFieldMeasurementDialog(QDialog):
             parent=self,
         )
 
+        self.sb_aut_size = QDoubleSpinBox()
+        self.sb_aut_size.setSuffix(" mm")
+        self.sb_aut_size.setRange(0.0, 1e12)
+
         self.label_file_help = QLabel(
             f"Available extensions are: " f"{', '.join(self._get_available_extensions())}"
         )
@@ -122,6 +127,8 @@ class NewFieldMeasurementDialog(QDialog):
         self.form_layout.addRow("Source File Co-Pol:", self.fe_co_pol)
         self.form_layout.addRow("Source File Cross-Pol:", self.fe_cx_pol)
 
+        self.form_layout.addRow("AUT Aperture Size:", self.sb_aut_size)
+
         layout = QVBoxLayout(self)
         layout.addLayout(self.form_layout)
         self.form_layout.addRow(self.label_file_help)
@@ -139,9 +146,12 @@ class NewFieldMeasurementDialog(QDialog):
         self.cb_source_format.currentTextChanged.connect(self._update_source_polarization_formats)
 
         self.cb_data_polarization.currentTextChanged.connect(self._update_file_fields_shown)
+        self.cb_data_polarization.currentTextChanged.connect(self._update_default_name)
 
         self.buttons.accepted.connect(self._on_accept)
         self.buttons.rejected.connect(self.reject)
+
+        self._update_default_name()
 
         # Enter key creates if valid
         # self.path_field.returnPressed.connect(self._try_accept)
@@ -184,6 +194,7 @@ class NewFieldMeasurementDialog(QDialog):
             "source_type": self.cb_source_format.currentText().strip(),
             "field_name": self.field_name_field.text().strip(),
             "file_info_list": file_info_list,
+            "aut_size": self.sb_aut_size.value() * 1e-3
         }
 
     @property
@@ -194,10 +205,14 @@ class NewFieldMeasurementDialog(QDialog):
     def selected_source_format(self) -> DataSourceType:
         return self.cb_source_format.currentData()[0]
 
+    def _update_default_name(self) -> None:
+        default_name = f"Measured {self.selected_field} ({self.selected_source_format})"
+        self.field_name_field.setText(default_name)
+
     def _update_source_file_formats(self) -> None:
         """Update available source file formats based on field type."""
         field_type = self.cb_field_type.currentText()
-        source_format_types = self._loaders_info(file_registry)[field_type].keys()
+        source_format_types = self._loaders_info(field_loader_registry)[field_type].keys()
 
         # Remove all items before updating items
         for _ in range(self.cb_source_format.count()):
@@ -212,7 +227,7 @@ class NewFieldMeasurementDialog(QDialog):
         """Update available source polarization formats based on source file type."""
         field_type = self.cb_field_type.currentData()[0]
         source_type = self.cb_source_format.currentData()[0]
-        loaders = file_registry._loaders
+        loaders = field_loader_registry._loaders
 
         # Get data polarizations available for source and field type files
         polarization_formats = []
@@ -247,6 +262,8 @@ class NewFieldMeasurementDialog(QDialog):
             self.form_layout.setRowVisible(self.fe_co_pol, True)
             self.form_layout.setRowVisible(self.fe_cx_pol, True)
 
+        self.adjustSize()
+
     def _update_help_label(self) -> None:
         self.label_file_help.setText(
             f"Available extensions are: " f"{', '.join(self._get_available_extensions())}"
@@ -256,7 +273,7 @@ class NewFieldMeasurementDialog(QDialog):
         field_type = self.cb_field_type.currentText()
         source_type = self.cb_source_format.currentText()
 
-        file_extensions = self._loaders_info(file_registry)[field_type][source_type]
+        file_extensions = self._loaders_info(field_loader_registry)[field_type][source_type]
         if glob_format:
             return [f"*{extension}" for extension in file_extensions]
         else:
@@ -419,7 +436,7 @@ class FileEntryRow(QWidget):
         extension = Path(self.le_path.text()).suffix
 
         try:
-            loader = file_registry.get_loader(source_format, field_type, extension)
+            loader = field_loader_registry.get_loader(source_format, field_type, extension)
             self.show_sp = loader.__attributes__["has_sp"]
         except Exception:
             pass

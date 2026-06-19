@@ -7,6 +7,7 @@ University.
 from __future__ import annotations
 from numpy.typing import ArrayLike
 import xarray as xr
+import numpy as np
 
 from typing import Dict, Optional
 import unyt
@@ -41,6 +42,7 @@ class FieldDataset:
         coordinate_system: "CoordinateSystemType",
         field_type: "FieldType",
         data_source: "DataSourceType",
+        aperture_size: float = 0.0,
     ) -> xr.Dataset:
         """Create xarray field dataset with data validation.
 
@@ -60,6 +62,9 @@ class FieldDataset:
             Type of field: Near-Field / Far-Field
         data_source : DataSourceType
             Source of data, e.g., ANSYS HFSS, LEmmA scanner, etc.
+        aperture_size : float, optional
+            Largest dimension of the aperture inducing the field in meters
+            Used to compute valid observation angles, by default 0.0
 
         Returns
         -------
@@ -68,6 +73,14 @@ class FieldDataset:
         """
 
         components = coordinate_system.value.components
+
+        frequency = np.atleast_1d(frequency)
+
+        if e_field.shape[-1] != len(frequency):
+            raise ValueError(
+                f"Mismatch: e_field.shape[-1]={e_field.shape[-1]} "
+                f"but len(frequency)={len(frequency)}"
+            )
 
         # Ignore first dimension (radial) if in far-field
         if field_type is FieldType.FAR:
@@ -138,5 +151,6 @@ class FieldDataset:
                 "field_type": field_type,
                 "coordinate_system": coordinate_system,
                 "coordinate_units": coordinate_units,
+                "aperture_size": aperture_size,
             },
         )

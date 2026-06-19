@@ -8,7 +8,7 @@ authors = [
 ]
 maintainers = [{ name = "Jason Merlo", email = "merlojas@msu.edu" }]
 readme = "README.md"
-description = "Near-field to far-field antenna measurement transformation software."
+description = "Antenna measurement and analysis software."
 
 requires-python = ">=3.13,<3.15"
 

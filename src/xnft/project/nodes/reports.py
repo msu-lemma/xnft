@@ -49,7 +49,6 @@ class ReportsNode(Node):
         icon_name="document-new",
     )
     def new_1d_field_report(self, **kwargs):
-        logger.debug(f"{kwargs=}")
         report_node = ReportNodeLinePlot(
             name=kwargs["report_name"],
             args=kwargs,
@@ -82,7 +81,6 @@ class ReportsNode(Node):
         icon_name="document-new",
     )
     def new_2d_field_report(self, **kwargs):
-        logger.debug(f"{kwargs=}")
         report_node = ReportNodeSurfacePlot2D(
             name=kwargs["report_name"],
             fields=kwargs["fields"],

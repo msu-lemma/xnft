@@ -14,8 +14,8 @@ import xarray as xr
 
 # import scipy.constants as spc
 
-from ..file_registry import file_registry
-from ...core.enums import (
+from ..field_loader_registry import field_loader_registry
+from ....core.enums import (
     DataSourceType,
     FieldType,
     CoordinateSystemType,
@@ -23,8 +23,8 @@ from ...core.enums import (
     PolarizationType,
     DataPolarizationType,
 )
-from ...core.types import FileInfo
-from ...core.dtypes import FieldDataset
+from ....core.types import FileInfo
+from ....core.dtypes import FieldDataset
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 POINTS_PER_METER = 200_000
 
 
-@file_registry.register(
+@field_loader_registry.register(
     source=DataSourceType.LEMMA,
     field=FieldType.NEAR,
     data_polarization=DataPolarizationType.SINGLE_POL,
@@ -76,13 +76,13 @@ def load_lemma_h5(file_list: List[FileInfo]) -> xr.Dataset:
             field_amplitude = dataset[f"{sp}real"][()] + 1.0j * dataset[f"{sp}imag"][()]
 
             if file_info.polarization == PolarizationType.CO_POL:
-                ex_array = field_amplitude
-                if cx_file_info is None:
-                    ey_array = np.zeros_like(ex_array)
-            if file_info.polarization == PolarizationType.CROSS_POL:
                 ey_array = field_amplitude
-                if co_file_info is None:
+                if cx_file_info is None:
                     ex_array = np.zeros_like(ey_array)
+            if file_info.polarization == PolarizationType.CROSS_POL:
+                ex_array = field_amplitude
+                if co_file_info is None:
+                    ey_array = np.zeros_like(ex_array)
 
     x_list = x_locs.tolist()
     y_list = y_locs.tolist()
@@ -90,11 +90,6 @@ def load_lemma_h5(file_list: List[FileInfo]) -> xr.Dataset:
 
     frequency_list = sample_frequencies.tolist()
 
-    # TODO: Improve E field estimate
-    # TODO: Need to add x, and y field components (from separate files?)
-    # ex_list = (s21 + s12)/2
-    ex_array = ex_array
-    ey_array = ey_array
     ez_array = np.zeros_like(ex_array)
 
     x_sample_location_array = np.sort(np.array(list(set(x_list))))
@@ -131,28 +126,6 @@ def load_lemma_h5(file_list: List[FileInfo]) -> xr.Dataset:
         e_field[1, x_idx, y_idx, z_idx, f_idx] = ey_array[:, f_idx]
         e_field[2, x_idx, y_idx, z_idx, f_idx] = ez_array[:, f_idx]
 
-    # fields = xr.Dataset(
-    #     {
-    #         "E": (
-    #             ("component", "x", "y", "z", "frequency"),
-    #             e_field,
-    #             {"Units": "V/m"},
-    #         ),
-    #     },
-    #     coords={
-    #         "component": ["x", "y", "z"],
-    #         "x": x_sample_location_array,
-    #         "y": y_sample_location_array,
-    #         "z": z_sample_location_array,
-    #         "frequency": sample_frequency_array,
-    #     },
-    #     attrs={
-    #         "data_source_type": DataSourceType.HFSS,
-    #         "field": FieldType.NEAR,
-    #         "coordinate_system": CoordinateSystemType.CARTESIAN,
-    #         "component_units": Units.METERS
-    #     },
-    # )
     fields = FieldDataset.create(
         e_field=e_field,
         h_field=None,

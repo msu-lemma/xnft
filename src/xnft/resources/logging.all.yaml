@@ -10,7 +10,7 @@ handlers:
     formatter: dev
     stream: ext://sys.stdout
 root:
-  level: DEBUG
+  level: WARN
   handlers: [console]
 
 # Set log level of submodules

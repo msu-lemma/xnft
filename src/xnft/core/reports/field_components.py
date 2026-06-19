@@ -24,7 +24,6 @@ def field_component_x(field: xr.DataArray):
         e_theta = field.sel(component="theta")
         e_phi = field.sel(component="phi")
         e_r = field.sel(component="r") if "r" in field.component else 0
-        phi_grid -= np.pi / 2
         return (
             np.sin(theta_grid) * np.cos(phi_grid) * e_r
             + np.cos(theta_grid) * np.cos(phi_grid) * e_theta
@@ -40,7 +39,6 @@ def field_component_y(field: xr.DataArray):
         e_theta = field.sel(component="theta")
         e_phi = field.sel(component="phi")
         e_r = field.sel(component="r") if "r" in field.component else 0
-        phi_grid -= np.pi / 2
         return (
             np.sin(theta_grid) * np.sin(phi_grid) * e_r
             + np.cos(theta_grid) * np.sin(phi_grid) * e_theta
@@ -55,7 +53,6 @@ def field_component_z(field: xr.DataArray):
         phi_grid, theta_grid = np.meshgrid(field.phi, field.theta, indexing="ij")
         e_theta = field.sel(component="theta")
         e_r = field.sel(component="r") if "r" in field.component else 0
-        phi_grid -= np.pi / 2
         return np.cos(theta_grid) * e_r - np.sin(theta_grid) * e_theta
     elif field.attrs["field_type"] == FieldType.NEAR:
         return field.sel(component="z")
@@ -81,7 +78,6 @@ def field_component_l3_ref(field: xr.DataArray):
     phi_grid, theta_grid = np.meshgrid(field.phi, field.theta, indexing="ij")
     e_theta = field.sel(component="theta")
     e_phi = field.sel(component="phi")
-    phi_grid -= np.pi / 2
     return np.sin(phi_grid) * e_theta + np.cos(phi_grid) * e_phi
 
 
@@ -90,7 +86,6 @@ def field_component_l3_cross(field: xr.DataArray):
     phi_grid, theta_grid = np.meshgrid(field.phi, field.theta, indexing="ij")
     e_theta = field.sel(component="theta")
     e_phi = field.sel(component="phi")
-    phi_grid -= np.pi / 2
     return np.cos(phi_grid) * e_theta - np.sin(phi_grid) * e_phi
 
 

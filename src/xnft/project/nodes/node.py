@@ -320,7 +320,7 @@ class DataNode(Node):
             raise TypeError(
                 f'Argument "source_node" must be of type {Node} or None got {type(source_node)}'
             )
-        logger.debug(f"{source_node=}")
+        # logger.debug(f"{source_node=}")
         self._source = source_node
 
     @context_action(

@@ -59,19 +59,16 @@ class NewPlanarNearFieldTransform(QDialog):
                 break
         assert fields_node is not None
 
-        source_field_options = [(f"{x.name} ({x.display_type})", x) for x in fields_node.children]
+        source_field_options = [(f"{x.name}", x) for x in fields_node.children]
 
         # Populate Combo Boxes
         self.cb_source_field = QComboBox()
         for label, item in source_field_options:
             if item.node_type == NodeType.FIELDS and item.field_type == FieldType.NEAR:
                 self.cb_source_field.addItem(label, item)
-
-                print(item)
             # if item.node_type == NodeType.FIELDS and item.field_type == FieldType.FAR:
             #     # A probe correction can be any far field measurement
             #     self.cb_probe_corrections.addItem(label, item)
-
 
         # -- Populate probe options --
 
@@ -86,11 +83,11 @@ class NewPlanarNearFieldTransform(QDialog):
         # self.cb_far_field = QComboBox()
         self.cb_probe_corrections = QComboBox()
 
-        # The user may elect to use no probe corrections
-        self.cb_probe_corrections.addItem("None", None)
-
         for label, item in probe_options:
             self.cb_probe_corrections.addItem(label, item)
+
+        # The user may elect to use no probe corrections
+        self.cb_probe_corrections.addItem("None", None)
 
         # -- Create remaining widgets --
 
@@ -148,7 +145,11 @@ class NewPlanarNearFieldTransform(QDialog):
         return {
             "transform_name": self.le_transform_name.text().strip(),
             "source_field": self.cb_source_field.currentData(),
-            "probe_correction": self.cb_probe_corrections.currentData(),
+            "probe_correction": (
+                self.cb_probe_corrections.currentData().probe
+                if self.cb_probe_corrections.currentData()
+                else None
+            ),
             "frequencies": [x.data(Qt.UserRole) for x in self.lw_frequencies.selectedItems()],
         }
 
@@ -158,7 +159,9 @@ class NewPlanarNearFieldTransform(QDialog):
         self.lw_frequencies.clear()
 
         if self.cb_source_field.currentData():
-            frequencies = self.cb_source_field.currentData().data.coords["frequency"].values.tolist()
+            frequencies = (
+                self.cb_source_field.currentData().data.coords["frequency"].values.tolist()
+            )
             frequencies_items = [(str(Quantity(x, units="Hz")), x) for x in frequencies]
             for label, data in frequencies_items:
                 item = QListWidgetItem(label)
@@ -184,10 +187,12 @@ class NewPlanarNearFieldTransform(QDialog):
             if not silent:
                 QMessageBox.warning(self, "Missing Name", "Please enter a transform node name.")
             return False
-        
+
         if not self.cb_source_field.currentData():
             if not silent:
-                QMessageBox.warning(self, "Missing Source Field", "Please select a source field to transform.")
+                QMessageBox.warning(
+                    self, "Missing Source Field", "Please select a source field to transform."
+                )
             return False
 
         if not self.lw_frequencies.selectedItems():

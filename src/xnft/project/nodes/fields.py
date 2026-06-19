@@ -8,11 +8,12 @@ from dataclasses import dataclass, field
 from typing import Optional
 import logging
 from pathlib import Path
+from quantiphy import Quantity
 
 
 from ...gui.dialogs.fields.new_field_measurement_dialog import NewFieldMeasurementDialog
 from ...gui.dialogs.export_data_dialog import ExportDataDialog
-from ...loaders.file_registry import file_registry
+from ...loaders.fields.field_loader_registry import field_loader_registry
 from .node import Node, DataNode, NodeType, context_action, gui_property
 from .coordinates import CoordinateNode
 
@@ -41,12 +42,14 @@ class FieldsNode(Node):
         helper_dialog=NewFieldMeasurementDialog,
         spawn_thread=True,
     )
-    def new_measured_field(self, field_type, source_type, field_name, file_info_list):
+    def new_measured_field(self, field_type, source_type, field_name, file_info_list, aut_size):
 
         # Read measured field file
-        field_data = file_registry.load(
+        field_data = field_loader_registry.load(
             source=source_type, field=field_type, file_list=file_info_list
         )
+        field_data.attrs['aperture_size'] = aut_size
+        print(field_data)
 
         # Add pointer to coordinates (All measured data should have intrinsic
         # coordinates associated with it)
@@ -145,10 +148,15 @@ class FieldNode(DataNode):
     @gui_property(label="Source Type", order=5)
     def source_type(self):
         return self._source_type
-
+    
     @source_type.setter
     def source_type(self, source_type):
         self._source_type = source_type
+
+    @property
+    @gui_property(label="AUT Aperture Size", order=6)
+    def aut_size(self):
+        return f"{Quantity(self.data.attrs['aperture_size'], units='m')}"
 
     @property
     def display_type(self):
@@ -156,6 +164,7 @@ class FieldNode(DataNode):
         #     f"{'Measured ' if self.source_type else ''}{str(self.node_type).title()}"
         # )
         return f"{self.source_type}"
+
 
     @context_action(
         label="Export Field",

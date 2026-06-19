@@ -524,7 +524,7 @@ class TraceStyleGroupBox(QGroupBox):
     def __init__(self, title="Trace Style", parent=None):
         super().__init__(title, parent)
 
-        self.current_color = QColor("#ffffff")
+        self.current_color = pg.mkColor(pg.getConfigOption('foreground'))  # QColor("#ffffff")
 
         layout = QHBoxLayout(self)
         layout.setSpacing(24)
@@ -667,7 +667,7 @@ class TraceStyleGroupBox(QGroupBox):
             symbol_brush=pg.mkBrush(self.current_color),
             symbol_pen=None,
             symbol_size=10,
-            background=Qt.black,
+            background=pg.mkColor(pg.getConfigOption('background')), #Qt.black,
             width=width,
             height=height,
         )
