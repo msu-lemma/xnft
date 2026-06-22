@@ -1,7 +1,7 @@
-xnft.loaders.loaders.lemma
-==========================
+xnft.loaders.fields.loaders.lemma
+=================================
 
-.. automodule:: xnft.loaders.loaders.lemma
+.. automodule:: xnft.loaders.fields.loaders.lemma
    :no-members:
    :no-inherited-members:
 

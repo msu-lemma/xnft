@@ -1,7 +1,7 @@
-xnft.loaders.loaders.hfss
-=========================
+xnft.loaders.fields.loaders.hfss
+================================
 
-.. automodule:: xnft.loaders.loaders.hfss
+.. automodule:: xnft.loaders.fields.loaders.hfss
    :no-members:
    :no-inherited-members:
 

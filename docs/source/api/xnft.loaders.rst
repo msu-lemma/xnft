@@ -1,4 +1,4 @@
-xnft.loaders
+﻿xnft.loaders
 ============
 
 .. automodule:: xnft.loaders
@@ -15,9 +15,7 @@ Submodules
    :nosignatures:
 
 
-   file_registry
-
-   loaders
+   fields
 
 
 

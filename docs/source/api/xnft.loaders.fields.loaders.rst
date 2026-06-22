@@ -1,7 +1,7 @@
-﻿xnft.loaders.loaders
-====================
+xnft.loaders.fields.loaders
+===========================
 
-.. automodule:: xnft.loaders.loaders
+.. automodule:: xnft.loaders.fields.loaders
    :no-members:
    :no-inherited-members:
 

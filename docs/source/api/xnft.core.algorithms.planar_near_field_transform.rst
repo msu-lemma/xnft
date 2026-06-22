@@ -16,8 +16,6 @@ Functions
    :nosignatures:
 
 
-   get_correction_marix
-
    planar_near_field_transform
 
    planar_near_field_transform_t3

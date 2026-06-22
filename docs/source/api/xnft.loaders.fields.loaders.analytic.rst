@@ -1,7 +1,7 @@
-xnft.loaders.loaders.analytic
-=============================
+xnft.loaders.fields.loaders.analytic
+====================================
 
-.. automodule:: xnft.loaders.loaders.analytic
+.. automodule:: xnft.loaders.fields.loaders.analytic
    :no-members:
    :no-inherited-members:
 
