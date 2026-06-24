@@ -96,7 +96,7 @@ class Plot1D(QWidget):
 
         # Add +/-, edit buttons
         self.pb_add_trace = QPushButton("+")
-        self.pb_remove_trace = QPushButton("-")
+        self.pb_remove_trace = QPushButton("–")
         self.pb_edit_trace = QPushButton("Edit")
         self.pb_edit_trace.setEnabled(False)
 
