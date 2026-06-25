@@ -28,6 +28,7 @@ version_scheme = "guess-next-dev"
 local_scheme = "node-and-date"
 tag_regex = "^v(?P<version>.*)$"
 
+
 [tool.setuptools]
 package-dir = {"" = "src"}
 include-package-data = true
@@ -35,11 +36,6 @@ include-package-data = true
 [tool.setuptools.packages.find]
 where = ["src"]
 
-[tool.setuptools.package-data]
-xnft = [
-    "resources/*.yaml",
-    "resources/**/*.yaml"
-]
 
 # === PyTest Configuration ===
 
