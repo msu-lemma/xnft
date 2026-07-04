@@ -65,6 +65,8 @@ def load_lemma_h5(file_list: List[FileInfo]) -> xr.Dataset:
             x_locs = sample_locations[:, 0]
             # NOTE: Swap y and z axes
             y_locs = sample_locations[:, 2]
+
+            # TODO/FIXME: Hardcoded z-distance!!
             z_locs = sample_locations[:, 1] + 0.069
 
             # NOTE: We're only taking the first item in the set

@@ -89,6 +89,17 @@ class NewPlanarNearFieldTransform(QDialog):
         # The user may elect to use no probe corrections
         self.cb_probe_corrections.addItem("None", None)
 
+        # -- Populate power calibration options --
+        
+        self.cb_power_cal = QComboBox()
+
+        for label, item in source_field_options:
+            if item.node_type == NodeType.CALS:
+                self.cb_power_cal.addItem(label, item)
+
+        # The user may elect to use no probe corrections
+        self.cb_power_cal.addItem("None", None)
+
         # -- Create remaining widgets --
 
         self.lw_frequencies = QListWidget(self)
@@ -128,6 +139,7 @@ class NewPlanarNearFieldTransform(QDialog):
         form_layout.addRow("Frequencies:", self.lw_frequencies)
         form_layout.addRow(label_freq_help)
         form_layout.addRow("Probe Corrections:", self.cb_probe_corrections)
+        form_layout.addRow("Power Calibration:", self.cb_power_cal)
 
         layout = QVBoxLayout(self)
         layout.addLayout(form_layout)

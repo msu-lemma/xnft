@@ -85,7 +85,7 @@ def load_analytic_near_field_yaml(file_list: List[FileInfo]) -> xr.Dataset:
 
     e_x = e_z = np.zeros((x_size, y_size, 1, sample_frequency_array.size), np.complex128)
     e_y = e_0 * np.ones((x_size, y_size, 1, sample_frequency_array.size), np.complex128)
-    h_x = h_y = h_z = np.zeros((x_size, y_size, 1, sample_frequency_array.size), np.complex128)
+    # h_x = h_y = h_z = np.zeros((x_size, y_size, 1, sample_frequency_array.size), np.complex128)
 
     yy, xx = np.meshgrid(y_sample_location_array, x_sample_location_array)
 
@@ -118,11 +118,11 @@ def load_analytic_near_field_yaml(file_list: List[FileInfo]) -> xr.Dataset:
         )
 
     e_field = np.stack([e_x, e_y, e_z])
-    h_field = np.stack([h_x, h_y, h_z])
+    # h_field = np.stack([h_x, h_y, h_z])
 
     fields = FieldDataset.create(
         e_field=e_field,
-        h_field=h_field,
+        # h_field=h_field,
         spatial_coords={
             "x": x_sample_location_array,
             "y": y_sample_location_array,
@@ -170,14 +170,14 @@ def load_theory_far_field_yaml(file_list: List[FileInfo]) -> xr.Dataset:
 
     phi_max = fd["samples"]["far_field"]["phi"]["length"][1]
     phi_min = fd["samples"]["far_field"]["phi"]["length"][0]
-    phi_size = fd["samples"]["far_field"]["phi"]["size"]
+    phi_num_samples = fd["samples"]["far_field"]["phi"]["size"]
 
     theta_max = fd["samples"]["far_field"]["theta"]["length"][1]
     theta_min = fd["samples"]["far_field"]["theta"]["length"][0]
-    theta_size = fd["samples"]["far_field"]["theta"]["size"]
+    theta_num_samples = fd["samples"]["far_field"]["theta"]["size"]
 
-    phi_sample_location_array = np.linspace(phi_min, phi_max, phi_size) * np.pi / 180
-    theta_sample_location_array = np.linspace(theta_min, theta_max, theta_size) * np.pi / 180
+    phi_sample_location_array = np.linspace(phi_min, phi_max, phi_num_samples) * np.pi / 180
+    theta_sample_location_array = np.linspace(theta_min, theta_max, theta_num_samples) * np.pi / 180
     sample_frequency_array = np.array(fd["samples"]["frequency"])
 
     ap_x_min = fd["antenna"]["x"]["length"][0]
@@ -187,6 +187,9 @@ def load_theory_far_field_yaml(file_list: List[FileInfo]) -> xr.Dataset:
 
     ap_x = ap_x_max - ap_x_min
     ap_y = ap_y_max - ap_y_min
+
+    print(f'{ap_x=}')
+    print(f'{ap_y=}')
 
     # Compute far-field constants
     wavelength = spc.c / sample_frequency_array

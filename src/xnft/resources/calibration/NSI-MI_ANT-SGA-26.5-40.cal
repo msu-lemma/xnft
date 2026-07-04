@@ -1,5 +1,7 @@
-# NOTE: Values are visually approximated from datasheet curves
+# WARNING: Values are visually approximated from datasheet curves
 # For testing ONLY--do not use for real measurements
+manufacturer: NSI-MI
+model: ANT-SGA-26.5-40
 frequency_hz,gain_dbi
 26_500_000_000.0,23.46
 27_000_000_000.0,23.56

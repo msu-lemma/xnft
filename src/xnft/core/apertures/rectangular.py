@@ -77,10 +77,8 @@ def rect_far_field(
 
     Returns
     -------
-    xr.Dataset if `apply_prop_const` is `False`
+    xr.Dataset
         Dataset containing "E" fields.
-    NDArray if `apply_prop_const` is `True`
-        2D matrix containing weighting values [e_phi, e_theta]
 
     Raises
     ------

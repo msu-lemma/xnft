@@ -64,7 +64,7 @@ noarch = false
 [activation.env]
 # Workaround to enforce editable installation -- see:
 # https://pixi.prefix.dev/dev/build/backends/pixi-build-python/#editable-installations
-BUILD_EDITABLE_PYTHON = "true"
+# BUILD_EDITABLE_PYTHON = "true"
 
 [environments]
 

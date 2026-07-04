@@ -17,6 +17,7 @@ class NodeType(StrEnum):
     PROJECT = "Project"
     FIELDS = "Fields"
     PROBES = "Probes"
+    CALS = "Calibrations"
     ANALYSIS = "Analysis"
     COORDINATES = "Coordinates"
     REPORTS = "Reports"
