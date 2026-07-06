@@ -19,7 +19,9 @@ from io import StringIO
 from pathlib import Path
 import pandas as pd
 
-from ...project.nodes.fields import FieldNode
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from ...project.nodes.fields import FieldNode
 
 logger = logging.getLogger(__name__)
 
