@@ -89,16 +89,25 @@ class NewPlanarNearFieldTransform(QDialog):
         # The user may elect to use no probe corrections
         self.cb_probe_corrections.addItem("None", None)
 
-        # -- Populate power calibration options --
+        # -- Populate gain calibration options --
         
-        self.cb_power_cal = QComboBox()
+        self.cb_gain_cal = QComboBox()
 
-        for label, item in source_field_options:
+        cals_node = None
+        for tmp_node in target_node.parent.children:
+            if tmp_node.node_type == NodeType.CALS:
+                cals_node = tmp_node
+                break
+        assert cals_node is not None
+
+        cals_options = [(f"{x.name}", x) for x in cals_node.children]
+
+        for label, item in cals_options:
             if item.node_type == NodeType.CALS:
-                self.cb_power_cal.addItem(label, item)
+                self.cb_gain_cal.addItem(label, item)
 
         # The user may elect to use no probe corrections
-        self.cb_power_cal.addItem("None", None)
+        self.cb_gain_cal.addItem("None", None)
 
         # -- Create remaining widgets --
 
@@ -139,7 +148,7 @@ class NewPlanarNearFieldTransform(QDialog):
         form_layout.addRow("Frequencies:", self.lw_frequencies)
         form_layout.addRow(label_freq_help)
         form_layout.addRow("Probe Corrections:", self.cb_probe_corrections)
-        form_layout.addRow("Power Calibration:", self.cb_power_cal)
+        form_layout.addRow("Gain Calibration:", self.cb_gain_cal)
 
         layout = QVBoxLayout(self)
         layout.addLayout(form_layout)
@@ -160,6 +169,11 @@ class NewPlanarNearFieldTransform(QDialog):
             "probe_correction": (
                 self.cb_probe_corrections.currentData().probe
                 if self.cb_probe_corrections.currentData()
+                else None
+            ),
+            "gain_calibration": (
+                self.cb_gain_cal.currentData()
+                if self.cb_gain_cal.currentData()
                 else None
             ),
             "frequencies": [x.data(Qt.UserRole) for x in self.lw_frequencies.selectedItems()],

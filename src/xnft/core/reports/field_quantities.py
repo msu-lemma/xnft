@@ -23,30 +23,42 @@ FieldQuantity = namedtuple(
 # -------------- Field Quantities ------------------
 
 
-def field_quantity_re():
-    raise NotImplementedError("field_quantity_re is not yet implemented.")
+def field_quantity_e(field):
+    return field["E"]
 
 
-def field_quantity_gain():
-    raise NotImplementedError("field_quantity_gain is not yet implemented.")
+def gain_norm(field):
+    if "gain_calibration" in field.attrs and field.attrs["gain_calibration"] is not None:
+        cal = field.attrs["gain_calibration"].gain_cal_ref
+        print(f'Gain Calibration: {cal}')
+        return field["E"]
 
 
 class FieldQuantities(Enum):
     RE = FieldQuantity(
-        name="E",
-        function=field_quantity_re,
+        name="rE",
+        function=field_quantity_e,
         scales=(PlotScales.LINEAR, PlotScales.DECIBELS_20),
-        field_types=(FieldType.NEAR, FieldType.FAR),  # ratio
+        field_types=(FieldType.FAR,),  # ratio
         field_components=FieldComponents,  # All components valid
-        enabled=True,
+        enabled=lambda field: True,
+        units=unyt.volt / unyt.meter,
+    )
+    E = FieldQuantity(
+        name="E",
+        function=field_quantity_e,
+        scales=(PlotScales.LINEAR, PlotScales.DECIBELS_20),
+        field_types=(FieldType.NEAR),  # ratio
+        field_components=FieldComponents,  # All components valid
+        enabled=lambda field: True,
         units=unyt.volt / unyt.meter,
     )
     GAIN = FieldQuantity(
         name="Gain",
-        function=field_quantity_gain,
+        function=gain_norm,
         scales=(PlotScales.LINEAR, PlotScales.DECIBELS_20),
-        field_types=(FieldType.FAR),  # ratio
-        field_components=FieldComponents,  # All components valid
-        enabled=False,
-        units=None,
+        field_types={FieldType.FAR},  # ratio
+        field_components=FieldComponents,
+        enabled=lambda field: "gain_calibration" in field.attrs and field.attrs["gain_calibration"] is not None,
+        units='dBi'
     )

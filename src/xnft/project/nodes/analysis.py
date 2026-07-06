@@ -29,6 +29,7 @@ from ...core.enums import (
     ProbeType,
 )
 from ...core.apertures.probes import MeasurementProbe, RectWaveguide
+from ...core.calibration.gain import GainCalibrationReference
 
 logger = logging.getLogger(__name__)
 
@@ -58,12 +59,14 @@ class AnalysisNode(Node):
         source_field,
         probe_correction,
         frequencies,
+        gain_calibration,
     ):
         # Perform the near to far field transform
         field_data = planar_near_field_transform(
             near_field=source_field.data,
             probe_correction=probe_correction,
             frequencies=frequencies,
+            gain_calibration=gain_calibration,
         )
 
         coordinate_data = field_data.coords

@@ -13,6 +13,7 @@ from typing import Dict, Optional
 import unyt
 
 from .enums import FieldType, CoordinateSystemType, DataSourceType
+from .calibration.gain import GainCalibration
 
 # Allowed coordinate system types for near/far-field
 
@@ -43,6 +44,7 @@ class FieldDataset:
         field_type: "FieldType",
         data_source: "DataSourceType",
         aperture_size: float = 0.0,
+        gain_calibration: GainCalibration | None = None,
     ) -> xr.Dataset:
         """Create xarray field dataset with data validation.
 
@@ -65,6 +67,9 @@ class FieldDataset:
         aperture_size : float, optional
             Largest dimension of the aperture inducing the field in meters
             Used to compute valid observation angles, by default 0.0
+        gain_calibration : GainCalibration, optional
+            Gain calibration object containing standard and measurement
+            fields used to create a gain correction lookup table. By default None
 
         Returns
         -------
@@ -152,5 +157,6 @@ class FieldDataset:
                 "coordinate_system": coordinate_system,
                 "coordinate_units": coordinate_units,
                 "aperture_size": aperture_size,
+                "gain_calibration": gain_calibration
             },
         )

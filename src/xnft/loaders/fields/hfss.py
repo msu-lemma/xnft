@@ -13,16 +13,16 @@ import numpy as np
 import xarray as xr
 import unyt
 
-from ..field_loader_registry import field_loader_registry
-from ....core.enums import (
+from .field_loader_registry import field_loader_registry
+from ...core.enums import (
     DataSourceType,
     FieldType,
     PolarizationType,
     CoordinateSystemType,
     DataPolarizationType,
 )
-from ....core.types import FileInfo
-from ....core.dtypes import FieldDataset
+from ...core.types import FileInfo
+from ...core.dtypes import FieldDataset
 
 logger = logging.getLogger(__name__)
 

@@ -5,7 +5,7 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 """
 
 # NOTE: automated discovery technique did not work with pyiinstaller packaging so manual imports are used here
-from .loaders.hfss import *
-from .loaders.lemma import *
-from .loaders.nsi import *
-from .loaders.analytic import *
+from .hfss import *
+from .lemma import *
+from .nsi import *
+from .analytic import *

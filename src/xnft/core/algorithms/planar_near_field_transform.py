@@ -29,6 +29,7 @@ from typing import Callable, List
 from ..enums import DataSourceType, FieldType, CoordinateSystemType
 from ..dtypes import FieldDataset
 from ..apertures.probes import MeasurementProbe
+from ..calibration.gain import GainCalibration
 
 logger = logging.getLogger(__name__)
 
@@ -178,6 +179,7 @@ def planar_near_field_transform(
     near_field: xr.Dataset,
     frequencies: np.ndarray | List[float] | None = None,
     probe_correction: MeasurementProbe | None = None,
+    gain_calibration: GainCalibration | None = None,
     dphi: float = 1.0,
     dtheta: float = 1.0,
     window: Callable = windows.boxcar,
@@ -378,6 +380,7 @@ def planar_near_field_transform(
         field_type=FieldType.FAR,
         data_source=DataSourceType.HFSS,
         aperture_size=near_field.attrs["aperture_size"],
+        gain_calibration=gain_calibration
     )
-
+    
     return fields

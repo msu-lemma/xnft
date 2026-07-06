@@ -16,7 +16,7 @@ from .analysis import AnalysisNode
 from .reports import ReportsNode
 from .coordinates import CoordinatesNode
 from .model import ModelNode
-from .calibrations import PowerCalibrationsNode
+from .calibrations import GainCalibrationsNode
 from .probes import ProbesNode
 from ..project_io import write_project
 
@@ -38,7 +38,7 @@ class Project(Node):
         # Add default project nodes
         self.add_child(FieldsNode())
         self.add_child(ProbesNode())
-        self.add_child(PowerCalibrationsNode())
+        self.add_child(GainCalibrationsNode())
         self.add_child(AnalysisNode())
         self.add_child(ReportsNode())
         self.add_child(CoordinatesNode())

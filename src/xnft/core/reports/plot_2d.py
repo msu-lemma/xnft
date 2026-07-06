@@ -307,6 +307,7 @@ class Plot2D(QWidget):
         self.cb_plot_function.currentTextChanged.connect(self._update_plot)
         self.cb_plot_norm.currentTextChanged.connect(self._update_plot)
         self.cb_plot_function.currentTextChanged.connect(self._update_plotting_scale_options)
+        self.cb_plot_function.currentTextChanged.connect(self._update_plotting_norm_options)
         self.cb_plot_scale.currentTextChanged.connect(self._update_plot)
 
         self.hist.gradient.sigGradientChanged.connect(self._save_state)
@@ -380,13 +381,16 @@ class Plot2D(QWidget):
         for _ in range(self.cb_field_quantity.count()):
             self.cb_field_quantity.removeItem(0)
 
-        # logger.debug(self.field.data)
+        logger.debug(self.field_node.data)
 
         field_quantities = FieldQuantities
 
-        for idx, fc in enumerate(field_quantities):
-            self.cb_field_quantity.addItem(fc.value.name, fc.value)
-            self.cb_field_quantity.model().item(idx).setEnabled(fc.value.enabled)
+        newitem_index = 0
+        for fc in field_quantities:
+            if self.field_node.data.attrs["field_type"] in fc.value.field_types:
+                self.cb_field_quantity.addItem(fc.value.name, fc.value)
+                self.cb_field_quantity.model().item(newitem_index).setEnabled(fc.value.enabled(self.field_node.data))
+                newitem_index += 1
 
     def _update_report_field_components(self):
         # Remove all items before updating items
@@ -424,9 +428,15 @@ class Plot2D(QWidget):
         if self.selected_field_quantity is not None:
             field_norms = [x for x in PlotNorms]
 
-            for idx, fc in enumerate(field_norms):
-                self.cb_plot_norm.addItem(fc.value.name, fc.value)
-                self.cb_plot_norm.model().item(idx).setEnabled(fc.value.enabled)
+            plot_function = self.cb_plot_function.currentData()
+            print(plot_function)
+            
+            newitem_index = 0
+            for fc in field_norms:
+                if plot_function in [x.value for x in fc.value.functions]:
+                    self.cb_plot_norm.addItem(fc.value.name, fc.value)
+                    self.cb_plot_norm.model().item(newitem_index).setEnabled(fc.value.enabled)
+                    newitem_index += 1
 
     def _update_plotting_domain_options(self):
         # Remove all items before updating items
@@ -588,7 +598,11 @@ class Plot2D(QWidget):
 
     def _autoscale_lut_range(self, min_percentile=20, max_percentile=100):
         low, high = np.percentile(
-            np.where(np.isnan(self.image_item.image), np.nanmin(self.image_item.image), self.image_item.image),
+            np.where(
+                np.isnan(self.image_item.image),
+                np.nanmin(self.image_item.image),
+                self.image_item.image,
+            ),
             [min_percentile, max_percentile],
         )
         print(f"{low=}, {high=}")
@@ -615,7 +629,14 @@ def get_transformed_data(spp: SurfacePlot2DParameters):
 
     # -- Apply selected component / functions --
     field_scaled = spp.applicate_scale.function(
-        spp.applicate_function.function(spp.field_component.function(field_data)["E"], dim=2)
+        spp.applicate_function.function(
+            spp.applicate_norm.function(
+                spp.field_quantity.function(
+                    spp.field_component.function(field_data),
+                ),
+            ),
+            dim=2,
+        ),
     )
 
     # -- Get axis values, labels, and units --

@@ -66,11 +66,6 @@ class MainWindow(QMainWindow):
     def __init__(self, project_manager):
         super().__init__()
 
-        QCoreApplication.setOrganizationName(
-            "LEmmA, Electromagnetics Research Group, Michigan State University"
-        )
-        QCoreApplication.setOrganizationDomain("engineering.msu.edu")
-        QCoreApplication.setApplicationName("xNFT")
         self.settings = QSettings()
 
         self.setWindowTitle(f"xNFT - version {importlib.metadata.version('xnft')}")
@@ -277,7 +272,7 @@ class MainWindow(QMainWindow):
             "About xNFT",
             f"xNFT Version {meta.get("Version")}\n\n"
             f"{meta.get("Summary")}\n\n"
-            "Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.\n\n"
+            "Copyright 2025-2026 The Laboratory for Electromagnetics and mm-Wave Antennas (LEmmA), Electromagnetics Research Group (EMRG), Michigan State University.\n\n"
             f"Authors:\n{authors}\n\n"
             f"License: {meta.get("License")}",
         )
@@ -461,7 +456,8 @@ def run_gui():
 
     app.setApplicationName("xnft")
     app.setApplicationDisplayName("xNFT")
-    app.setOrganizationName("LEmmA, Electromagnetics Research Group, Michigan State University")
+    app.setOrganizationDomain("lemma.msu.edu")
+    app.setOrganizationName("LEmmA")
 
     pm = manager.Manager()
     window = MainWindow(pm)

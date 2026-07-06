@@ -19,6 +19,7 @@ from .coordinates import CoordinateNode
 
 from ...core.enums import CoordinateSystemType, FieldType, DataSourceType
 from ...core.data_writers import write_dataset_hdf5
+from ...core.calibration.gain import GainCalibrationReference
 
 logger = logging.getLogger(__name__)
 
@@ -155,15 +156,16 @@ class FieldNode(DataNode):
 
     @property
     @gui_property(label="AUT Aperture Size", order=6)
-    def aut_size(self):
+    def aut_size_gui(self):
         return f"{Quantity(self.data.attrs['aperture_size'], units='m')}"
-
+    
     @property
-    def display_type(self):
-        # return (
-        #     f"{'Measured ' if self.source_type else ''}{str(self.node_type).title()}"
-        # )
-        return f"{self.source_type}"
+    @gui_property(label="Gain Calibration", order=7)
+    def gain_calibration_gui(self):
+        if self.data.attrs['gain_calibration']:
+            return f"{self.data.attrs['gain_calibration'].name}"
+        else:
+            return "None"
 
 
     @context_action(

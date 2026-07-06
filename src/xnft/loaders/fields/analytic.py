@@ -13,8 +13,8 @@ import xarray as xr
 
 import scipy.constants as spc
 
-from ..field_loader_registry import field_loader_registry
-from ....core.enums import (
+from .field_loader_registry import field_loader_registry
+from ...core.enums import (
     DataSourceType,
     FieldType,
     CoordinateSystemType,
@@ -22,10 +22,10 @@ from ....core.enums import (
     DataPolarizationType,
     Units
 )
-from ....core.types import FileInfo
-from ....core.dtypes import FieldDataset
+from ...core.types import FileInfo
+from ...core.dtypes import FieldDataset
 
-from ....core.apertures.rectangular import rect_far_field
+from ...core.apertures.rectangular import rect_far_field
 
 logger = logging.getLogger(__name__)
 
