@@ -12,7 +12,7 @@ from functools import partial
 from quantiphy import Quantity
 
 from ...core.enums import ProbeType
-from ...core.apertures.probes import MeasurementProbe
+from ...core.antennas.probes.probes import MeasurementProbe
 from .node import Node, DataNode, NodeType, context_action, gui_property
 from ...gui.dialogs.probes.new_probe_dialog import NewProbeDialog
 

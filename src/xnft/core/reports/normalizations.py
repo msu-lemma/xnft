@@ -1,5 +1,5 @@
 """
-Plotting normalizations available to transform data.
+Reporting normalizations available to transform data.
 
 Copyright 2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """

@@ -9,8 +9,8 @@ from pathlib import Path
 from collections import defaultdict
 
 
-from PySide6.QtCore import Qt, QStandardPaths
-from PySide6.QtGui import QIcon
+from PySide6.QtCore import Qt, QUrl
+from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import (
     QDialog,
     QDialogButtonBox,
@@ -27,6 +27,7 @@ from PySide6.QtWidgets import (
     QGroupBox,
 )
 
+from ....core.calibration.gain import gain_cal_dir
 from ..common import LabeledWidget
 from ....loaders.fields.field_loader_registry import field_loader_registry
 from ....project.nodes.node import Node
@@ -154,14 +155,18 @@ class NewGainCalibrationDialog(QDialog):
 
         # Add import button at bottom of list
         self.cb_gain_cal_reference.insertSeparator(self.cb_gain_cal_reference.count())
+
         self.import_index = self.cb_gain_cal_reference.count()
         self.cb_gain_cal_reference.addItem("Import reference file...")
+
+        self.manage_index = self.cb_gain_cal_reference.count()
+        self.cb_gain_cal_reference.addItem("Manage reference files...")
 
     def _on_cal_standard_changed(self, index):
         if index == self.import_index:
             # Open file dialog
             start_dir = str(Path.home())
-            file_type_str = "*.cal"
+            file_type_str = "*.cal;*.ngt"
             file_path, _ = QFileDialog.getOpenFileName(
                 self,
                 "Select Calibration File",
@@ -175,6 +180,13 @@ class NewGainCalibrationDialog(QDialog):
                 copy_gain_cal_file(file_path)
                 self._update_gain_cals()
 
+            # Restore previous selection (avoid leaving it on "Import...")
+            self.cb_gain_cal_reference.blockSignals(True)
+            self.cb_gain_cal_reference.setCurrentIndex(self.cb_gain_cal_standard_last_index)
+            self.cb_gain_cal_reference.blockSignals(False)
+        elif index == self.manage_index:
+            QDesktopServices.openUrl(QUrl.fromLocalFile(str(gain_cal_dir)))
+            
             # Restore previous selection (avoid leaving it on "Import...")
             self.cb_gain_cal_reference.blockSignals(True)
             self.cb_gain_cal_reference.setCurrentIndex(self.cb_gain_cal_standard_last_index)

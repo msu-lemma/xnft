@@ -22,6 +22,7 @@ from ...core.enums import (
     SParameterType,
     PolarizationType,
     DataPolarizationType,
+    ScanType,
 )
 from ...core.types import FileInfo
 from ...core.dtypes import FieldDataset
@@ -36,6 +37,7 @@ POINTS_PER_METER = 200_000
 @field_loader_registry.register(
     source=DataSourceType.LEMMA,
     field=FieldType.NEAR,
+    scan=ScanType.PLANAR,
     data_polarization=DataPolarizationType.SINGLE_POL,
     extension=".h5",
     has_sp=True,

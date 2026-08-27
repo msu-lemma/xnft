@@ -11,7 +11,6 @@ from pathlib import Path
 
 import numpy as np
 import xarray as xr
-import unyt
 
 from .field_loader_registry import field_loader_registry
 from ...core.enums import (
@@ -20,6 +19,7 @@ from ...core.enums import (
     PolarizationType,
     CoordinateSystemType,
     DataPolarizationType,
+    ScanType,
 )
 from ...core.types import FileInfo
 from ...core.dtypes import FieldDataset
@@ -30,6 +30,7 @@ logger = logging.getLogger(__name__)
 @field_loader_registry.register(
     source=DataSourceType.HFSS,
     field=FieldType.NEAR,
+    scan=ScanType.PLANAR,
     data_polarization=DataPolarizationType.COMBO_POL,
     extension=".nfd",
 )
@@ -184,6 +185,7 @@ def load_hfss_near_field_ndf(file_list: List[FileInfo]) -> xr.Dataset:
 @field_loader_registry.register(
     source=DataSourceType.HFSS,
     field=FieldType.FAR,
+    scan=ScanType.SPHERICAL,
     data_polarization=DataPolarizationType.COMBO_POL,
     extension=".ffd",
 )

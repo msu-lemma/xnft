@@ -205,7 +205,7 @@ class Plot1D(QWidget):
 
                     # -- Abscissa --
                     if tp.source_field.data is not None:
-                        source_field = tp.source_field.data["E"]
+                        source_field = tp.source_field.data  # ["E"]
                     else:
                         raise RuntimeError("Source field data is not populated.")
 
@@ -215,7 +215,13 @@ class Plot1D(QWidget):
                         abscissa_values = np.rad2deg(abscissa_values)
 
                     # -- Ordinate --
-                    ordinate_raw_values = source_field.sel(**tp.slice_dict)
+
+                    # Get quantity from field values
+                    ordinate_raw_values = tp.field_quantity.function(
+                        source_field.sel(**tp.slice_dict)
+                    )
+
+                    # Apply norm, function, and scale
                     ordinate_values = tp.ordinate_scale.function(
                         tp.ordinate_function.function(
                             tp.field_norm.function(ordinate_raw_values), dim=1
@@ -402,7 +408,7 @@ class TraceList(QTreeWidget):
             symbol_brush=trace.opts["symbolBrush"],
             symbol_pen=trace.opts["symbolPen"],
             symbol_size=trace.opts["symbolSize"],
-            background=pg.mkColor(pg.getConfigOption('background')), #Qt.black,
+            background=pg.mkColor(pg.getConfigOption("background")),  # Qt.black,
         )
 
         label = QLabel()
@@ -467,7 +473,7 @@ class PlotTrace(pg.PlotDataItem):
         # Create new dict with updated names for attrs dict
         new_slice_dict = dict()
         for key, val in self.trace_parameters.slice_dict.items():
-            new_slice_dict[f'slice_{key}'] = val
+            new_slice_dict[f"slice_{key}"] = val
 
         attrs = {
             "name": str(self.name()),

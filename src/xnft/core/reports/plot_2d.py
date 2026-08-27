@@ -515,7 +515,7 @@ class Plot2D(QWidget):
                 points=np.column_stack([ux_vals.ravel(), uy_vals.ravel()]),
                 values=field_fun_scaled.ravel(),
                 xi=(x_idx_mesh, y_idx_mesh),
-                method="cubic",
+                method="linear",
             )
 
             self.image_item.setImage(field_fun_scaled)
@@ -595,6 +595,11 @@ class Plot2D(QWidget):
             self.vb.autoRange()
 
         self.last_plot_domain = self.selected_plot_domain
+
+        # Set applicate label on LUT histogram
+        applicate_label = 'Placeholder'
+        applicate_units = 'placeholderUnit'
+        self.hist.axis.setLabel(applicate_label, units=applicate_units)
 
     def _autoscale_lut_range(self, min_percentile=20, max_percentile=100):
         low, high = np.percentile(

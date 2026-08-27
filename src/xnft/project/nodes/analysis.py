@@ -28,7 +28,7 @@ from ...core.enums import (
     AnalysisType,
     ProbeType,
 )
-from ...core.apertures.probes import MeasurementProbe, RectWaveguide
+from ...core.antennas.probes.probes import MeasurementProbe, RectWaveguide
 from ...core.calibration.gain import GainCalibrationReference
 
 logger = logging.getLogger(__name__)

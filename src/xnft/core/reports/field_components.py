@@ -1,5 +1,5 @@
 """
-Plotting functions available to transform data.
+Reporting functions available to retrieve field components from data.
 
 Copyright 2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """

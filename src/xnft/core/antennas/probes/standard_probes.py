@@ -6,7 +6,7 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 
 from enum import Enum
 
-from xnft.core.apertures.rectangular import RectWaveguide
+from xnft.core.antennas.aperture.rectangular import RectWaveguide
 
 
 class StandardRectWaveguide(Enum):

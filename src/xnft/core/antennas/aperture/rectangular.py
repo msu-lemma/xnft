@@ -16,12 +16,12 @@ import xarray as xr
 
 import scipy.constants as spc
 
-from ...core.enums import (
+from ...enums import (
     DataSourceType,
     FieldType,
     CoordinateSystemType,
 )
-from ...core.dtypes import FieldDataset
+from ...dtypes import FieldDataset
 
 import logging
 from warnings import warn
@@ -38,7 +38,59 @@ class RectWaveguide:
     band: Tuple[float, float]  # Hz
 
 
-def rect_far_field(
+def rect_e_near_field(
+    ap_x,
+    ap_y,
+    x_sample_vec,
+    y_sample_vec,
+    z_sample_vec,
+    freq_sample_vec,
+    amplitude=1.0,
+    excitation: str = "te10",  # [te10, uniform]
+):
+    
+    e_x = e_z = np.zeros((x_sample_vec.size, y_sample_vec.size, 1, freq_sample_vec.size), np.complex128)
+    e_y = amplitude * np.ones((x_sample_vec.size, y_sample_vec.size, 1, freq_sample_vec.size), np.complex128)
+
+    yy, xx = np.meshgrid(y_sample_vec, x_sample_vec)
+    
+    cond = (
+        (xx <= ap_x[1])
+        & (xx >= ap_x[0])
+        & (yy <= ap_y[1])
+        & (yy >= ap_y[0])
+    )
+
+    e_y *= np.where(cond, 1.0, 0.0)[:, :, None, None]
+
+    if excitation == "uniform":
+        pass  # Nothing needed for uniform
+    elif excitation == "te10":
+        # Taper fields based on TE-10 mode
+        e_y *= np.cos(np.pi / (ap_x[1] - ap_x[0]) * xx)[:, :, None, None]
+    else:
+        raise NotImplementedError(
+            f"Excitation {excitation} is not yet " "implemented."
+        )
+
+    e_field = np.stack([e_x, e_y, e_z])
+
+    fields = FieldDataset.create(
+        e_field=e_field,
+        spatial_coords={
+            "x": x_sample_vec,
+            "y": y_sample_vec,
+            "z": z_sample_vec,
+        },
+        frequency=freq_sample_vec,
+        coordinate_system=CoordinateSystemType.CARTESIAN,
+        field_type=FieldType.NEAR,
+        data_source=DataSourceType.ANALYTIC,
+    )
+    return fields
+
+
+def rect_e_far_field(
     ap_x: float,  # Cross-pol
     ap_y: float,  # Co-pol
     phi_sample_vec: NDArray[np.float64],

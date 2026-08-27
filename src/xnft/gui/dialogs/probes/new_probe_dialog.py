@@ -30,9 +30,9 @@ from ..common import LabeledWidget
 from ....loaders.fields.field_loader_registry import field_loader_registry
 from ....project.nodes.node import Node
 from ....core.enums import ProbeType
-from ....core.apertures.standard_probes import StandardRectWaveguide
+from ....core.antennas.probes.standard_probes import StandardRectWaveguide
 from ....core.types import FileInfo
-from ....core.apertures.probes import RectWaveguide, MeasurementProbe
+from ....core.antennas.probes.probes import RectWaveguide, MeasurementProbe
 
 from quantiphy import Quantity
 

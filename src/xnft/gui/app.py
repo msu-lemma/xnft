@@ -446,6 +446,7 @@ def run_gui():
     """
     Main GUI entrypoint.
     """
+    # Import fields loaders to build loader registry
     import xnft.loaders.fields  # noqa: F401  # pylint: disable=unused-import
 
     sys.argv[0] = "xNFT"  # Overwrite name of command to show application name
@@ -464,13 +465,5 @@ def run_gui():
     window.show()
 
     exit_code = app.exec()
-
-    # Clean up joblib workers, if any (from core compuatations)
-    try:
-        from joblib.externals.loky import stop_executor
-
-        stop_executor()
-    except ImportError:
-        pass
 
     sys.exit(exit_code)

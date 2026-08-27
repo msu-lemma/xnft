@@ -9,8 +9,8 @@ import xarray as xr
 
 # import scipy.constants as spc
 
-from ..enums import ProbeType
-from .rectangular import RectWaveguide, rect_far_field
+from ...enums import ProbeType
+from ..aperture.rectangular import RectWaveguide, rect_e_far_field
 
 
 class MeasurementProbe:
@@ -62,7 +62,7 @@ class MeasurementProbe:
 
         elif self.correction_type == ProbeType.IDEAL_RECT:
             print(f"{wavelength=}")
-            co_pol_e_field = rect_far_field(
+            co_pol_e_field = rect_e_far_field(
                 ap_x=self.source.x,
                 ap_y=self.source.y,
                 wavelength_array=wavelength,
@@ -71,7 +71,7 @@ class MeasurementProbe:
                 excitation="te10",
                 apply_prop_const=False,
             )["E"]
-            cx_pol_e_field = rect_far_field(
+            cx_pol_e_field = rect_e_far_field(
                 ap_x=self.source.x,
                 ap_y=self.source.y,
                 wavelength_array=wavelength,

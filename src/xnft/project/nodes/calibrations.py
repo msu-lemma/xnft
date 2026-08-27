@@ -11,7 +11,7 @@ import logging
 from functools import partial
 from quantiphy import Quantity
 
-from ...core.apertures.probes import MeasurementProbe
+from ...core.antennas.probes.probes import MeasurementProbe
 from .node import Node, DataNode, NodeType, context_action, gui_property
 from ...gui.dialogs.calibrations.new_gain_calibration_dialog import NewGainCalibrationDialog
 from ...core.calibration.gain import GainCalibrationReference
@@ -106,3 +106,9 @@ class GainCalibrationNode(DataNode):
     @gui_property(label="Reference Field", order=60)
     def ref_field_name(self):
         return self.gain_cal_field._name
+
+    @property
+    @gui_property(label="Frequency Range", order=70)
+    def frequency_range(self):
+        freq = self.gain_cal_ref.data.frequency
+        return f'{Quantity(freq.min(), "Hz")}–{Quantity(freq.max(), "Hz")}'

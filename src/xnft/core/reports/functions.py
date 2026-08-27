@@ -1,5 +1,5 @@
 """
-Plotting functions available to transform data.
+Reporting functions available to transform data.
 
 Copyright 2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
@@ -65,7 +65,7 @@ class PlotFunctions(Enum):
         name="Magnitude",
         name_short="mag",
         function=plot_mag,
-        scales=(PlotScales.DECIBELS_20, PlotScales.LINEAR),
+        scales=(PlotScales.DECIBELS_20, PlotScales.DECIBELS_10, PlotScales.LINEAR),
         field_types=(FieldType.NEAR, FieldType.FAR),
         enabled=True,
     )

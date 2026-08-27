@@ -7,6 +7,7 @@ University.
 
 from __future__ import annotations
 
+import numpy as np
 from quantiphy import Quantity
 
 from PySide6.QtCore import Qt
@@ -90,7 +91,7 @@ class NewPlanarNearFieldTransform(QDialog):
         self.cb_probe_corrections.addItem("None", None)
 
         # -- Populate gain calibration options --
-        
+
         self.cb_gain_cal = QComboBox()
 
         cals_node = None
@@ -172,9 +173,7 @@ class NewPlanarNearFieldTransform(QDialog):
                 else None
             ),
             "gain_calibration": (
-                self.cb_gain_cal.currentData()
-                if self.cb_gain_cal.currentData()
-                else None
+                self.cb_gain_cal.currentData() if self.cb_gain_cal.currentData() else None
             ),
             "frequencies": [x.data(Qt.UserRole) for x in self.lw_frequencies.selectedItems()],
         }
@@ -229,6 +228,30 @@ class NewPlanarNearFieldTransform(QDialog):
                     "Please select at least one frequency.",
                 )
             return False
+
+        # Check if gain calibration overlaps _any_ of transform frequency range
+        if self.cb_gain_cal.currentData():
+            selected_freq_list = [x.data(Qt.UserRole) for x in self.lw_frequencies.selectedItems()]
+            gain_cal_freqs = self.cb_gain_cal.currentData().gain_cal_ref.data.frequency
+            
+            freq_overlap = max(np.nanmin(gain_cal_freqs), np.nanmin(selected_freq_list)) <= min(
+                np.nanmax(gain_cal_freqs), np.nanmax(selected_freq_list)
+            )
+
+            if not freq_overlap:
+                msgBox = QMessageBox(self)
+                msgBox.setText("Invalid gain calibration frequencies.")
+                msgBox.setInformativeText(
+                    "Gain calibration does not overlap with selected frequencies.  Continue anyway?"
+                )
+                msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.StandardButton.Cancel)
+                msgBox.setDefaultButton(QMessageBox.Save)
+                ret = msgBox.exec()
+
+                if ret == QMessageBox.Yes:
+                    return True
+                else:
+                    return False
 
         return True
 

@@ -1,5 +1,5 @@
 """
-Plotting functions available to transform data.
+Reporting scales available.
 
 Copyright 2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """

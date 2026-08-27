@@ -6,7 +6,7 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 
 import logging
 from pathlib import Path
-from ...core.enums import FieldType, DataSourceType, DataPolarizationType
+from ...core.enums import FieldType, DataSourceType, DataPolarizationType, ScanType
 from ...core.types import FileInfo
 from typing import List
 
@@ -29,9 +29,10 @@ class FieldLoaderRegistry:
     def register(
         self,
         source: DataSourceType,
-        field: FieldType,
         data_polarization: DataPolarizationType,
         extension: str,
+        field: FieldType = FieldType.NEAR,
+        scan: ScanType = ScanType.PLANAR,
         has_sp: bool = False,
     ):
         """
@@ -45,15 +46,20 @@ class FieldLoaderRegistry:
         ----------
         source : DataSourceType
             System type that generated the data (e.g., HFSS, NSI, etc.).
-        field : FieldType
-            Field type of measurement.
-            - FieldType.NEAR : Near-field measurement.
-            - FieldType.FAR : Far-field measurement.
         data_polarization : DataPolarizationType
             - DataPolarizationType.SINGLE_POL : Single polarization per file
             - DataPolarizationType.COMBO_POL : Combined polarization in file
         extension : str
             File extension (e.g., .csv, .nfd, .ffd, etc.).
+        field : FieldType
+            Field type of measurement.
+            - FieldType.NEAR : Near-field measurement
+            - FieldType.FAR : Far-field measurement
+        scan : ScanType
+            Scan type of measurement.
+            - ScanType.PLANAR : Planar measurement coordinates
+            - ScanType.CYLINDRICAL : Cylindrical measurement coordinates
+            - ScanType.SPHERICAL : Spherical measurement coordinates
         has_sp : bool, optional
             File has s-parameters to select from, by default False
         """
@@ -66,6 +72,7 @@ class FieldLoaderRegistry:
             func.__attributes__ = {
                 "source": source,
                 "field": field,
+                "scan": scan,
                 "extension": extension,
                 "data_polarization": data_polarization,
                 "has_sp": has_sp,

@@ -8,7 +8,7 @@ import pytest
 
 import xarray as xr
 
-from xnft.core.enums import FieldType, DataSourceType, PolarizationType
+from xnft.core.enums import FieldType, DataSourceType, PolarizationType, CoordinateSystemType
 from xnft.core.types import FileInfo
 from xnft.loaders.fields.field_loader_registry import field_loader_registry
 from xnft.core.algorithms.planar_near_field_transform import planar_near_field_transform
@@ -81,13 +81,35 @@ def test_file_loader(load_test_file: tuple[Any, Any]):
     indirect=True,
 )
 def test_planar_near_field_transform(load_test_file: tuple[Any, Any]):
+    # TODO/FIXME: Create _numerical_ accuracy test instead of just output type test
     source_field, params = load_test_file
-    result = planar_near_field_transform(
-        near_field=source_field,
-        probe_correction=None,
-        frequencies=source_field.frequency.values[:3],  # pnft should pick the first 3 frequencies
-    )
-    try:
-        assert isinstance(result, xr.Dataset)
-    except AssertionError as e:
-        raise AssertionError(f"Error processing test: {params} / {result}") from e
+
+    if source_field.attrs["coordinate_system"] == CoordinateSystemType.CARTESIAN:
+
+        # Test single frequency transform
+        result = planar_near_field_transform(
+            near_field=source_field,
+            probe_correction=None,
+            frequencies=source_field.frequency.values[0],
+        )
+        try:
+            assert isinstance(result, xr.Dataset)
+        except AssertionError as e:
+            raise AssertionError(f"Error processing single frequency test: {params} / {result}") from e
+
+        # Test multi-frequency transform
+        result = planar_near_field_transform(
+            near_field=source_field,
+            probe_correction=None,
+            frequencies=source_field.frequency.values[:3],  # pick the first 3 frequencies to keep tests quick
+        )
+        try:
+            assert isinstance(result, xr.Dataset)
+        except AssertionError as e:
+            raise AssertionError(f"Error processing test: {params} / {result}") from e
+
+    elif source_field.attrs["coordinate_system"] == CoordinateSystemType.SPHERICAL:
+
+        # TODO: Insert spherical NFT here
+
+        pass

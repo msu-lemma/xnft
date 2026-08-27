@@ -18,8 +18,10 @@ from dataclasses import dataclass
 from io import StringIO
 from pathlib import Path
 import pandas as pd
+import xarray as xr
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from ...project.nodes.fields import FieldNode
 
@@ -43,7 +45,7 @@ class GainCalibrationReference:
     manufacturer: str | None = None
     model: str | None = None
     serial: str | None = None
-    data: pd.DataFrame | None = None
+    data: xr.DataArray | None = None
 
     @property
     def name(self):
@@ -62,13 +64,15 @@ def copy_gain_cal_file(file_path):
 
     src_file = Path(file_path)
 
-    if src_file.suffix.lower() != ".cal":
-        raise ValueError(f"Expected a .cal file, got '{src_file.name}'")
+    if src_file.suffix.lower() not in (".cal", ".ngt"):
+        raise ValueError(f"Expected a .cal or .ngt file, got '{src_file.name}'")
 
     calib_dir = gain_cal_dir
     dst_file = calib_dir / src_file.name
 
     shutil.copy2(src_file, dst_file)
+
+    logger.info(f"Wrote gain calibration file to: {dst_file}")
 
     return dst_file
 
@@ -79,7 +83,7 @@ def load_gain_cal(path: str | Path, name_only: bool = False) -> GainCalibrationR
     Parameters
     ----------
     path : str | Path
-        File path to gain calibration file ".cal"
+        File path to gain calibration file ".cal" or ".ngt"
     name_only : bool, optional
         Return only the name contained int he file, don't parse entire file, by default False
 
@@ -89,6 +93,8 @@ def load_gain_cal(path: str | Path, name_only: bool = False) -> GainCalibrationR
         GainCalibration or GainCalibration.name if "name_only" is True
     """
     gain_cal = GainCalibrationReference()
+
+    path = Path(path)
 
     with open(path, "r") as f:
         while True:
@@ -120,11 +126,43 @@ def load_gain_cal(path: str | Path, name_only: bool = False) -> GainCalibrationR
                     logger.warning(f"Metadata '{key}' not found in GainCalibration")
 
         if name_only:
-            return gain_cal.name
+            return path.stem if gain_cal.name == "" else gain_cal.name
 
         else:
             # read_csv will parse the rest of the file
-            gain_cal.data = pd.read_csv(f)
+            df = pd.read_csv(f)
+            df.columns = df.columns.str.strip()
+
+            logger.debug(df)
+
+            # Get file type
+            if path.suffix == ".cal":
+                # Convert dataframe to DataArray for interpolation
+                gain_cal.data = xr.DataArray(
+                    df["gain_dbi"].to_numpy(),
+                    coords={
+                        "frequency": df["frequency_hz"].to_numpy(),
+                    },
+                    dims=("frequency",),
+                    name="gain_ref",
+                    attrs={"units": "dBi"},
+                )
+
+            elif path.suffix == ".ngt":
+                # Convert dataframe to DataArray for interpolation
+                df["Freq"] *= 1e9  # convert to Hertz
+                gain_cal.data = xr.DataArray(
+                    df["Gain"].to_numpy(),
+                    coords={
+                        "frequency": df["Freq"].to_numpy(),
+                    },
+                    dims=("frequency",),
+                    name="gain_ref",
+                    attrs={"units": "dBi"},
+                )
+
+            else:
+                raise NotImplementedError(f"File type {path.suffix} is not supported.")
 
             return gain_cal
 
@@ -137,7 +175,7 @@ def get_gain_cal_files(name_only):
     # If path doesn't exist, create it
     calib_dir.mkdir(parents=True, exist_ok=True)
 
-    cal_files = sorted(calib_dir.glob("*.cal"))
+    cal_files = sorted(list(calib_dir.glob("*.cal")) + list(calib_dir.glob("*.ngt")))
 
     gain_files_available = []
 

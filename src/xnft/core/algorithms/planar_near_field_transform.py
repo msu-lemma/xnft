@@ -16,8 +16,6 @@ import finufft
 
 from quantiphy import Quantity
 
-from joblib import Parallel, delayed
-
 import logging
 import warnings
 import time
@@ -28,7 +26,7 @@ from typing import Callable, List
 
 from ..enums import DataSourceType, FieldType, CoordinateSystemType
 from ..dtypes import FieldDataset
-from ..apertures.probes import MeasurementProbe
+from ..antennas.probes.probes import MeasurementProbe
 from ..calibration.gain import GainCalibration
 
 logger = logging.getLogger(__name__)
@@ -138,35 +136,6 @@ def planar_near_field_transform_t3(
             theta_vec=theta_grid_target[0, :],
             wavelength=2.0 * np.pi / k0,
         ).squeeze()  # remove frequency axis that is of size 1
-
-        ap_x = probe_correction.source.x
-        ap_y = probe_correction.source.y
-        X = k0 * ap_x / 2 * np.sin(theta_grid_target) * np.cos(phi_grid_target)
-        Y = k0 * ap_y / 2 * np.sin(theta_grid_target) * np.sin(phi_grid_target)
-
-        cx = np.cos(X) / (X**2 - (np.pi / 2) ** 2)
-        cy = np.sinc(Y / np.pi)
-
-        row_1 = np.stack(
-            [
-                -np.cos(theta_grid_target) * np.sin(phi_grid_target) * cx * cy,
-                -np.cos(theta_grid_target) * np.cos(phi_grid_target) * cx * cy,
-            ],
-            axis=-1,
-        )
-        row_2 = np.stack(
-            [-np.cos(phi_grid_target) * cx * cy, np.sin(phi_grid_target) * cx * cy], axis=-1
-        )
-
-        det = -((cx * cy) ** 2) * np.cos(theta_grid_target)
-        # reception_mat_inv = (
-        #     1
-        #     / det[..., np.newaxis, np.newaxis]
-        #     * np.stack(
-        #         [row_1, row_2],
-        #         axis=-1,
-        #     )
-        # )
 
         # Perform matrix multiplication of R^-1 matrix and E-field
         e_mat = (reception_mat_inv @ e_mat[..., np.newaxis])[..., 0]
@@ -285,7 +254,6 @@ def planar_near_field_transform(
     # Trim theta
     theta_target = theta_target[(theta_target >= -max_theta) & (theta_target <= max_theta)]
 
-
     phi_grid_target, theta_grid_target = np.meshgrid(phi_target, theta_target, indexing="ij")
 
     # Generate windowing function (rectangular by default)
@@ -311,7 +279,10 @@ def planar_near_field_transform(
     args_list = []
     z_val = near_field_e.coords["z"].item()  # should only have one z-height value
 
-    for freq in frequencies:
+    # Ensure frequencies is an array (if scalar)
+    frequencies = np.array(frequencies)
+
+    for freq in np.nditer(frequencies):
 
         f_idx = np.argmin(np.abs(freq_values - freq))
         nearest_freq = freq_values[f_idx]
@@ -356,6 +327,7 @@ def planar_near_field_transform(
         )
 
     # Call planar near-field transform in parallel
+    # NOTE: it's faster to not run in parallel
     # e_mat_list = Parallel(n_jobs=-1, backend="multiprocessing", verbose=10)(
     #     delayed(planar_near_field_transform_t3)(**args) for args in args_list
     # )
