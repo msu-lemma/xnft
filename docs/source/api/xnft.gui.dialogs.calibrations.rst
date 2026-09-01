@@ -1,7 +1,7 @@
-xnft.core.apertures
-===================
+xnft.gui.dialogs.calibrations
+=============================
 
-.. automodule:: xnft.core.apertures
+.. automodule:: xnft.gui.dialogs.calibrations
    :no-members:
    :no-inherited-members:
 
@@ -15,11 +15,7 @@ Submodules
    :nosignatures:
 
 
-   probes
-
-   rectangular
-
-   standard_probes
+   new_gain_calibration_dialog
 
 
 

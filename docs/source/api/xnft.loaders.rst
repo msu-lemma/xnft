@@ -1,4 +1,4 @@
-﻿xnft.loaders
+xnft.loaders
 ============
 
 .. automodule:: xnft.loaders

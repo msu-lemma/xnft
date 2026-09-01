@@ -81,6 +81,10 @@ test = "pytest -s"
 
 [feature.docs.tasks]
 
+build-apidoc = { cmd = [
+  "sphinx-apidoc","-o", "docs/source/api", "src/xnft"
+] }
+
 build-html-docs = { cmd = [
   "echo",
   "'Building HTML docs...'",
@@ -90,7 +94,9 @@ build-html-docs = { cmd = [
   "html",
   "$PIXI_PROJECT_ROOT/docs/source",
   "$PIXI_PROJECT_ROOT/docs/build",
-] }
+], depends-on = [
+  "build-apidoc"
+]}
 
 build-pdf-docs = { cmd = [
   "echo",
@@ -101,6 +107,8 @@ build-pdf-docs = { cmd = [
   "latexpdf",
   "$PIXI_PROJECT_ROOT/docs/source",
   "$PIXI_PROJECT_ROOT/docs/build",
+], depends-on = [
+  "build-apidoc"
 ] }
 
 build-docs = { depends-on = ["build-html-docs", "build-pdf-docs"] }

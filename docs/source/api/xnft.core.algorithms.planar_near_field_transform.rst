@@ -1,4 +1,4 @@
-﻿xnft.core.algorithms.planar_near_field_transform
+xnft.core.algorithms.planar_near_field_transform
 ================================================
 
 .. automodule:: xnft.core.algorithms.planar_near_field_transform

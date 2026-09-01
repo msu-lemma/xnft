@@ -17,6 +17,8 @@ Submodules
 
    analysis
 
+   calibrations
+
    common
 
    export_data_dialog

@@ -1,4 +1,4 @@
-﻿xnft.gui
+xnft.gui
 ========
 
 .. automodule:: xnft.gui

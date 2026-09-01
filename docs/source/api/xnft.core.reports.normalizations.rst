@@ -8,17 +8,6 @@ xnft.core.reports.normalizations
 
 
 
-Functions
----------
-
-.. autosummary::
-   :toctree:
-   :nosignatures:
-
-
-   local_maxima
-
-
 
 
 Classes

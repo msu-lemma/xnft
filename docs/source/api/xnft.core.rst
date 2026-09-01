@@ -1,4 +1,4 @@
-﻿xnft.core
+xnft.core
 =========
 
 .. automodule:: xnft.core
@@ -16,8 +16,6 @@ Submodules
 
 
    algorithms
-
-   apertures
 
    coordinate_transforms
 

@@ -157,8 +157,8 @@ def planar_near_field_transform(
 ) -> xr.Dataset:
     """Compute the near to far-field transform via non-uniform fast Fourier transform (NUFFT).
 
-    The NUFFT performed here uses the fiNUFFT package [1], [2], [3]. The plnar near-to-far field transform
-    implementation proceeds from [§12.9, 4] and the derivation included in the documentation [citation needed].
+    The NUFFT performed here uses the fiNUFFT package [1]_, [2]_, [3]_. The plnar near-to-far field transform
+    implementation proceeds from §12.9 [4]_ and the derivation included in the documentation [citation needed].
 
     Parameters
     ----------
@@ -188,13 +188,17 @@ def planar_near_field_transform(
 
     References
     ----------
-    [1] fiNUFFT Mathematical definitions of transforms. Online: https://finufft.readthedocs.io/en/latest/math.html
-    [2] A. H. Barnett, J. F. Magland, and L. af Klinteberg, A parallel non-uniform fast Fourier transform library
+    .. [1] fiNUFFT Mathematical definitions of transforms. Online: https://finufft.readthedocs.io/en/latest/math.html
+
+    .. [2] A. H. Barnett, J. F. Magland, and L. af Klinteberg, A parallel non-uniform fast Fourier transform library
         based on an “exponential of semicircle” kernel. SIAM J. Sci. Comput. 41(5), C479-C504 (2019).
         Online: https://arxiv.org/abs/1808.06736
-    [3] A. H. Barnett, Aliasing error of the exp(𝛽√1-z2) kernel in the nonuniform fast Fourier transform.  Appl.
+
+    .. [3] A. H. Barnett, Aliasing error of the exp(𝛽√1-z2) kernel in the nonuniform fast Fourier transform.  Appl.
         Comput. Harmon. Anal. 51, 1-16 (2021). Online: https://arxiv.org/abs/2001.09405
-    [4] C. A. Balanis, Antenna theory: analysis and design, 3. ed. Hoboken, N.J: Wiley-Interscience, 2005.
+
+    .. [4] C. A. Balanis, Antenna theory: analysis and design, 3. ed. Hoboken, N.J: Wiley-Interscience, 2005.
+
     """
     near_field_e = near_field["E"]
 

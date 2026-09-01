@@ -1,4 +1,4 @@
-﻿xnft.loaders.fields
+xnft.loaders.fields
 ===================
 
 .. automodule:: xnft.loaders.fields
@@ -15,9 +15,15 @@ Submodules
    :nosignatures:
 
 
+   analytic
+
    field_loader_registry
 
-   loaders
+   hfss
+
+   lemma
+
+   nsi
 
 
 

@@ -16,9 +16,9 @@ Functions
    :nosignatures:
 
 
-   field_quantity_gain
+   field_quantity_e
 
-   field_quantity_re
+   field_quantity_gain
 
 
 
