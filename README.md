@@ -34,22 +34,22 @@ For the latest features and bug fixes, install from source.
 
 1. Install Pixi package manager by following the steps at: https://pixi.prefix.dev/latest/installation/
 2. Install `git`. This may be installed via the OS package manager or pixi. Choose **_one_** option below: 
-    - **Pixi (Any System):** in a terminal/PowerShell run:
-        ```sh
-        pixi global install --environment git --expose git git-lfs
-        ```
-        This will add the `git` and `git-lfs` executables to a global directory (typically in your home folder) and add the `git` executable to your terminal's search path.
     - **Winget (Windows):** In any "PowerShell" run:
         ```PowerShell
         winget install --id Git.Git -e --source winget
         ```
+    - **Pixi (macOS or Linux):** in a terminal run:
+        ```sh
+        pixi global install --environment git --expose git git-lfs
+        ```
+        This will add the `git` and `git-lfs` executables to a global directory (typically in your home folder) and add the `git` executable to your terminal's search path.
     - **Homebrew (macOS):** In terminal install via xcode-select or [Homebrew](https://brew.sh):
         ```sh
         xcode-select --install
         # or
         brew install git
         ```
-    - **APT (Ubuntu):** In terminal install via apt:
+    - **APT (Ubuntu/Debian):** In terminal install via apt:
         ```sh
         apt install git
         ```
@@ -58,10 +58,9 @@ For the latest features and bug fixes, install from source.
 ### Download
 
 1. Open a terminal/PowerShell and navigate to the location where you would like to download the project
-2. Clone this repository via: 
-    ```sh
-    git clone https://gitlab.msu.edu/ece-lemma/xnft.git
-    ```
+2. Clone this repository by clicking the **Code** button in the upper right and selecting either "Clone with SSH" or "Clone with HTTPS". 
+> [!Note]
+> The SSH option will use your SSH keys allowing for more convenient passwordless authentication if your ssh-agent is properly configured.
 
 
 ### Install and Run
