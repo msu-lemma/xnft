@@ -60,8 +60,6 @@ release-job:
 # Builds the sphinx documentation for the project
 docs-build-job:
   stage: test-and-docs-build
-  before_script:
-  - apt-get update && apt-get install -y texlive make
   script:
   - pixi run -e docs build-docs
   artifacts:
