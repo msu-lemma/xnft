@@ -221,6 +221,7 @@ cython_debug/
 
 # Ruff stuff:
 .ruff_cache/
+code-quality-report.json
 
 # PyPI configuration file
 .pypirc

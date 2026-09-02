@@ -240,17 +240,21 @@ def planar_near_field_transform(
     logger.debug(f"min_y_displacement: {Quantity(min_y_displacement, units='m')}")
     logger.debug(f"max_z_displacement: {Quantity(max_z_displacement, units='m')}")
 
-    max_aperture_displacement = (
-        min(min_x_displacement, min_y_displacement) - (aut_size / 2)  # - (probe_size / 2)
-    )
+    max_aperture_displacement = min(min_x_displacement, min_y_displacement) - (
+        aut_size / 2
+    )  # - (probe_size / 2)
     logger.debug(f"max_aperture_displacement: {Quantity(max_aperture_displacement, units='m')}")
 
     max_theta = np.atan2(max_aperture_displacement, max_z_displacement).values.squeeze()
     logger.debug(f"Max. Theta: {Quantity(max_theta * 180 / np.pi)}°")
 
     # Compute uniform Theta, Phi grid for target field points
-    theta_target = np.linspace(-np.pi / 2, np.pi / 2, round(np.pi / np.deg2rad(dtheta)) + 1, endpoint=True)
-    phi_target = np.linspace(-np.pi / 2, np.pi / 2, round(np.pi / np.deg2rad(dphi)) + 1, endpoint=True)
+    theta_target = np.linspace(
+        -np.pi / 2, np.pi / 2, round(np.pi / np.deg2rad(dtheta)) + 1, endpoint=True
+    )
+    phi_target = np.linspace(
+        -np.pi / 2, np.pi / 2, round(np.pi / np.deg2rad(dphi)) + 1, endpoint=True
+    )
 
     # Trim theta
     theta_target = theta_target[(theta_target >= -max_theta) & (theta_target <= max_theta)]
@@ -284,12 +288,10 @@ def planar_near_field_transform(
     frequencies = np.array(frequencies)
 
     for freq in np.nditer(frequencies):
-
         f_idx = np.argmin(np.abs(freq_values - freq))
         nearest_freq = freq_values[f_idx]
 
         if nearest_freq != freq:
-
             warnings.warn(
                 "Provided frequency {:} not in available frequencies, using nearest frequency {:} instead".format(
                     Quantity(freq, "Hz"), Quantity(nearest_freq, "Hz")
@@ -353,7 +355,7 @@ def planar_near_field_transform(
         field_type=FieldType.FAR,
         data_source=DataSourceType.HFSS,
         aperture_size=near_field.attrs["aperture_size"],
-        gain_calibration=gain_calibration
+        gain_calibration=gain_calibration,
     )
-    
+
     return fields

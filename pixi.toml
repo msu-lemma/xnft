@@ -4,6 +4,7 @@ platforms = [
   { platform = "osx-arm64", macos = "15.0" },
   { platform = "osx-64", macos = "15.0" },
   { platform = "linux-64", glibc = "2.35" },
+  { platform = "linux-aarch64", glibc = "2.35" },
   { platform = "win-64" },
 ]
 preview = ["pixi-build"]
@@ -198,6 +199,7 @@ pytest = ">=9.0.3,<10"
 pytest-cov = ">=7.1.0,<8"
 pytest-xdist = ">=3.8.0,<4"
 types-pyyaml = ">=6.0.12.20260408,<7"
+ruff = ">=0.16.5,<0.17"
 
 [feature.docs.dependencies]
 sphinx = ">=9.1.0,<10"
@@ -205,14 +207,12 @@ pydata-sphinx-theme = ">=0.17.0,<0.18"
 numpydoc = ">=1.10.0,<2"
 sphinx-copybutton = ">=0.5.2,<0.6"
 make = ">=4.4.1,<5"
+perl = ">=5.32.1,<5.33"
 
-[feature.docs.target.linux-64.dependencies]
+[feature.docs.target.linux.dependencies]
 texlive-core = ">=20260301,<20260302"
 
-[feature.docs.target.osx-64.dependencies]
-texlive-core = ">=20260301,<20260302"
-
-[feature.docs.target.osx-arm64.dependencies]
+[feature.docs.target.osx.dependencies]
 texlive-core = ">=20260301,<20260302"
 
 [feature.dev.dependencies]
@@ -222,7 +222,6 @@ pyflakes = ">=3.4.0,<4"
 black = ">=26.1.0,<27"
 scipy-stubs = ">=1.17.1.4,<2"
 pandas-stubs = ">=3.0.0.260204,<4"
-ruff = ">=0.16.5,<0.17"
 
 [feature.jupyter.dependencies]
 jupyter = ">=1.1.1,<2"
