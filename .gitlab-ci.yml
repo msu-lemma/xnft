@@ -1,6 +1,5 @@
 stages:
-  - test
-  - docs-build
+  - test-and-docs-build
   - release
 
 image: ghcr.io/prefix-dev/pixi:latest
@@ -16,7 +15,7 @@ cache:
 
 # Run test cases
 test-job:
-  stage: test
+  stage: test-and-docs-build
   script:
   - pixi run -e test test
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
@@ -60,7 +59,7 @@ release-job:
 
 # Builds the sphinx documentation for the project
 docs-build-job:
-  stage: docs-build
+  stage: test-and-docs-build
   before_script:
   - apt-get update && apt-get install -y texlive
   script:
