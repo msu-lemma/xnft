@@ -107,6 +107,8 @@ build-pdf-docs = { cmd = [
   "latexpdf",
   "$PIXI_PROJECT_ROOT/docs/source",
   "$PIXI_PROJECT_ROOT/docs/build",
+  "&&",
+  "mv","$PIXI_PROJECT_ROOT/docs/build/latex/*.pdf","$PIXI_PROJECT_ROOT/docs"
 ], depends-on = [
   "build-apidoc"
 ] }

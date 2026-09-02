@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath("../../src"))
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "Near-Field Antenna Measurement System"
+project = "xNFT - Near-Field Antenna Measurement System"
 copyright = "2025-%Y, LEmmA Group, Michigan State University"
 author = "LEmmA Group, Michigan State University"
 
@@ -79,3 +79,7 @@ html_last_updated_fmt = "%b %d, %Y"
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "project-templatedoc"
+
+# --- LaTeX PDF Output Configuration ---
+latex_engine = "xelatex"
+latex_documents = [('index', 'xnft-docs.tex', project, author, 'manual')]

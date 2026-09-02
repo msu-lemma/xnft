@@ -158,7 +158,7 @@ def planar_near_field_transform(
     """Compute the near to far-field transform via non-uniform fast Fourier transform (NUFFT).
 
     The NUFFT performed here uses the fiNUFFT package [1]_, [2]_, [3]_. The plnar near-to-far field transform
-    implementation proceeds from §12.9 [4]_ and the derivation included in the documentation [citation needed].
+    implementation proceeds from Ch 12.9 [4]_ and the derivation included in the documentation.
 
     Parameters
     ----------

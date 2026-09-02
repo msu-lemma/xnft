@@ -58,10 +58,12 @@ For the latest features and bug fixes, install from source.
 ### Download
 
 1. Open a terminal/PowerShell and navigate to the location where you would like to download the project
-2. Clone this repository by clicking the **Code** button in the upper right and selecting either "Clone with SSH" or "Clone with HTTPS". 
+2. Clone this repository by clicking the **Code** button in the upper right and selecting either "Clone with SSH" or "Clone with HTTPS" to copy the repo URL, then run:
+    ```shell
+    git clone <copied-url>
+    ```
 > [!Note]
 > The SSH option will use your SSH keys allowing for more convenient passwordless authentication if your ssh-agent is properly configured.
-
 
 ### Install and Run
 
@@ -95,51 +97,34 @@ git pull         # Pulls upstream changes and applies to local working tree movi
 git stash apply  # Pops changes from the top of the stash stack and applies to the local working tree
 ```
 
-
-### Running Jupyter Notebooks (Optional)
-
-> [!CAUTION] Notice:
-> Jupyter notebooks and analysis will be moved into separate repositories in future updates.
-
-Jupter notebooks are included in the `notebooks` and `analysis` folders.  The `notebooks` folder contains examles of using the xNFT API to load, and perform computation using the Python API, and plot the results using Matplotlib.  The `analysis` folder contains notebooks containing error various analysis scripts.
-
-#### Installation
-
-To run the Jupter notebooks included with this project, a `jupter` pixi environment is provided.
-1. [Recommended] Install Microsoft Visual Studio Code (VS Code): https://code.visualstudio.com
-3. Install the `default` Pixi environment by running: 
-    ```shell
-    pixi install -e jupyter
-    ```
-    > [!NOTE] 
-    > This command may be run from any terminal.  To use the built-in terminal in VS Code, drag up from the bottom of the VS Code window, or select "Terminal > New Terminal" from the file menu.
-4. [If using VS Code] install the "Workspace Extensions" from the extensions tab on the menu bar on the left side of the screen (four blocks icon):
-    - Python
-    - Jupyter
-
-#### Running
-
-1. Open the desired Jupyter notebook `.ipynb` file from the `notebooks` or `analysis` folders
-2. In the upper-right corner, press "Select Kernel"'
-3. At the top of the screen select "Python Environments..." then select:
-    ```
-    Python 3.xx.x `.../xnft/.pixi/envs/jupyter/bin/python
-    ```
-    If it does not appear, you may need to choose "Browse..." and navigate to the python executable in the `.pixi` folder as shown above.
-4. Press "Run All" from the tool bar at the top of the window to run the notebook
-
-
 ## Development
 
 TODO...
 
-### API Documentation
+### Documentation
 
-#### Pre-built docs
+> [!NOTE]
+> The documentation currently only contains API docs.
+
+#### Pre-built Docs
 
 The latest automated docs build can be downloaded here: [**Download Latest Documentation**](https://gitlab.msu.edu/api/v4/projects/28094/jobs/artifacts/main/download?job=docs-build-job)
 
 Once downloaded, unzip the archive and navigate to **`build/html/index.html`** to access the documentation.
+
+#### Local Docs Generation
+
+To build all docs locally (PDF and HTML), run:
+```shell
+pixi run -e docs build-docs
+```
+If you do not have a LaTeX toolchain installed locally, the above command will fail. You can still build the HTML-only docs by running
+```shell
+pixi run -e docs build-html-docs
+```
+
+> [!NOTE]
+> The CI pipeline does not have a LaTeX toolchain, so it will only generate HTML docs, not PDF.
 
 ### Upgrading Dependencies
 

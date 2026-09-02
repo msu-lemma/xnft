@@ -87,6 +87,7 @@ instance/
 docs/_build/
 # Generated api docs
 docs/source/api/
+docs/*.pdf
 
 # PyBuilder
 .pybuilder/
