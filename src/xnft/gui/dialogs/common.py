@@ -5,21 +5,19 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 """
 
 from pathlib import Path
-from collections import defaultdict
 
-from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
-    QVBoxLayout,
-    QLineEdit,
-    QPushButton,
-    QWidget,
+    QComboBox,
     QFileDialog,
     QHBoxLayout,
-    QComboBox,
     QLabel,
+    QLineEdit,
     QListWidget,
-    QSizePolicy
+    QPushButton,
+    QSizePolicy,
+    QVBoxLayout,
+    QWidget,
 )
 
 from ...core.enums import SParameterType

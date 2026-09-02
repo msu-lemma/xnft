@@ -4,9 +4,10 @@ Reporting scales available.
 Copyright 2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
-import numpy as np
 from collections import namedtuple
 from enum import Enum
+
+import numpy as np
 
 PlotScale = namedtuple("PlotScale", ("name", "function", "unit_modifier", "enabled"))
 

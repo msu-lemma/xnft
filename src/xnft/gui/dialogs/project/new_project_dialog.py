@@ -4,6 +4,7 @@ Define new project dialog window.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
+from datetime import datetime
 from pathlib import Path
 
 from PySide6.QtCore import Qt
@@ -11,17 +12,15 @@ from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QDialog,
     QDialogButtonBox,
-    QVBoxLayout,
-    QFormLayout,
-    QLineEdit,
-    QPushButton,
-    QWidget,
     QFileDialog,
+    QFormLayout,
     QHBoxLayout,
+    QLineEdit,
     QMessageBox,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
 )
-
-from datetime import datetime
 
 
 class NewProjectDialog(QDialog):

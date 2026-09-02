@@ -5,20 +5,18 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
 
-from dataclasses import dataclass
-from typing import Optional
-from pathlib import Path
 import logging
+from dataclasses import dataclass
+from pathlib import Path
 
-from .node import Node, NodeType, context_action, gui_property
-from .fields import FieldsNode
-from .analysis import AnalysisNode
-from .reports import ReportsNode
-from .coordinates import CoordinatesNode
-from .model import ModelNode
-from .calibrations import GainCalibrationsNode
-from .probes import ProbesNode
 from ..project_io import write_project
+from .analysis import AnalysisNode
+from .calibrations import GainCalibrationsNode
+from .coordinates import CoordinatesNode
+from .fields import FieldsNode
+from .node import Node, NodeType, context_action, gui_property
+from .probes import ProbesNode
+from .reports import ReportsNode
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +25,7 @@ logger = logging.getLogger(__name__)
 class Project(Node):
     """Project Node subclass to handle projects."""
 
-    _path: Optional[Path] = None
+    _path: Path | None = None
     version: int = 1
     icon_name: str = "folder"
     # name: str | None = None

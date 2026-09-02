@@ -5,37 +5,33 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
 
+import logging
 from pathlib import Path
-from collections import defaultdict
-
 
 from PySide6.QtCore import Qt, QUrl
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import (
+    QComboBox,
     QDialog,
     QDialogButtonBox,
-    QVBoxLayout,
-    QFormLayout,
-    QLineEdit,
-    QPushButton,
-    QWidget,
     QFileDialog,
-    QHBoxLayout,
-    QMessageBox,
-    QComboBox,
-    QLabel,
+    QFormLayout,
     QGroupBox,
+    QLineEdit,
+    QMessageBox,
+    QVBoxLayout,
+    QWidget,
 )
 
-from ....core.calibration.gain import gain_cal_dir
-from ..common import LabeledWidget
-from ....loaders.fields.field_loader_registry import field_loader_registry
-from ....project.nodes.node import Node
+from ....core.calibration.gain import (
+    copy_gain_cal_file,
+    gain_cal_dir,
+    get_gain_cal_files,
+    load_gain_cal,
+)
 from ....core.enums import FieldType, NodeType
-from ....core.calibration.gain import get_gain_cal_files, load_gain_cal, copy_gain_cal_file
-
-from quantiphy import Quantity
-import logging
+from ....project.nodes.node import Node
+from ..common import LabeledWidget
 
 logger = logging.getLogger(__name__)
 
@@ -207,7 +203,7 @@ class NewGainCalibrationDialog(QDialog):
                 QMessageBox.warning(
                     self,
                     "Value Error",
-                    f"Measured Field cannot be empty.",
+                    "Measured Field cannot be empty.",
                 )
                 return False
             
@@ -216,7 +212,7 @@ class NewGainCalibrationDialog(QDialog):
                 QMessageBox.warning(
                     self,
                     "Value Error",
-                    f"Reference File cannot be empty.",
+                    "Reference File cannot be empty.",
                 )
                 return False
 

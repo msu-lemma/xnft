@@ -4,14 +4,15 @@ Reporting functions available to retrieve field components from data.
 Copyright 2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
+from collections import namedtuple
+from enum import Enum
+
 import numpy as np
 import xarray as xr
-from enum import Enum
-from collections import namedtuple
 
-from .scales import PlotScales
 from ..enums import FieldType
 from .functions import PlotFunctions
+from .scales import PlotScales
 
 FieldComponent = namedtuple(
     "FieldComponent", ("name", "function", "scales", "field_types", "plot_functions", "enabled")

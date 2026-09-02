@@ -5,26 +5,23 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 """
 
 import logging
-from typing import List
 
-import yaml
 import numpy as np
-import xarray as xr
-
 import scipy.constants as spc
+import xarray as xr
+import yaml
 
-from .field_loader_registry import field_loader_registry
-
-from ...core.types import FileInfo
+from ...core.antennas.aperture.rectangular import rect_e_far_field, rect_e_near_field
+from ...core.antennas.wire.dipole import dipole_e, dipole_e_far_field
 from ...core.enums import (
+    DataPolarizationType,
     DataSourceType,
     FieldType,
-    ScanType,
-    DataPolarizationType,
     PolarizationType,
+    ScanType,
 )
-from ...core.antennas.aperture.rectangular import rect_e_near_field, rect_e_far_field
-from ...core.antennas.wire.dipole import dipole_e, dipole_e_far_field
+from ...core.types import FileInfo
+from .field_loader_registry import field_loader_registry
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +35,7 @@ logger = logging.getLogger(__name__)
     data_polarization=DataPolarizationType.COMBO_POL,
     extension=".yaml",
 )
-def load_analytic_near_field_planar_yaml(file_list: List[FileInfo]) -> xr.Dataset:
+def load_analytic_near_field_planar_yaml(file_list: list[FileInfo]) -> xr.Dataset:
     return load_analytic_yaml(
         file_list=file_list,
         field_type=FieldType.NEAR,
@@ -53,7 +50,7 @@ def load_analytic_near_field_planar_yaml(file_list: List[FileInfo]) -> xr.Datase
     data_polarization=DataPolarizationType.COMBO_POL,
     extension=".yaml",
 )
-def load_analytic_near_field_spherical_yaml(file_list: List[FileInfo]) -> xr.Dataset:
+def load_analytic_near_field_spherical_yaml(file_list: list[FileInfo]) -> xr.Dataset:
     return load_analytic_yaml(
         file_list=file_list,
         field_type=FieldType.NEAR,
@@ -68,7 +65,7 @@ def load_analytic_near_field_spherical_yaml(file_list: List[FileInfo]) -> xr.Dat
     data_polarization=DataPolarizationType.COMBO_POL,
     extension=".yaml",
 )
-def load_analytic_far_field_yaml(file_list: List[FileInfo]) -> xr.Dataset:
+def load_analytic_far_field_yaml(file_list: list[FileInfo]) -> xr.Dataset:
     return load_analytic_yaml(
         file_list=file_list,
         field_type=FieldType.FAR,
@@ -80,7 +77,7 @@ def load_analytic_far_field_yaml(file_list: List[FileInfo]) -> xr.Dataset:
 
 
 def load_analytic_yaml(
-    file_list: List[FileInfo], field_type: FieldType, scan_type: ScanType
+    file_list: list[FileInfo], field_type: FieldType, scan_type: ScanType
 ) -> xr.Dataset:
     """
     Generic analytic YAML loader based on simple description file.  Calls specific loaders for various scan type and field parameters.

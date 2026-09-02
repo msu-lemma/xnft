@@ -7,7 +7,6 @@ University.
 from __future__ import annotations
 
 import numpy as np
-import numba as nb
 
 
 # @nb.njit(fastmath=True, cache=True)

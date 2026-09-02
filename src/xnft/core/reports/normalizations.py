@@ -4,11 +4,13 @@ Reporting normalizations available to transform data.
 Copyright 2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
-import numpy as np
 from collections import namedtuple
 from enum import Enum
-from .functions import PlotFunctions
+
+import numpy as np
+
 from ..enums import FieldType
+from .functions import PlotFunctions
 
 PlotNorm = namedtuple("PlotNorm", ("name", "function", "field_types", "enabled", "unit_modifier", "functions"))
 

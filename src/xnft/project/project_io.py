@@ -6,19 +6,20 @@ University.
 """
 from __future__ import annotations
 
-from compression import zstd
-import pickle
 import os
+import pickle
 import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING
+
+from compression import zstd
 
 # Only imports Projec tfor type checking
 if TYPE_CHECKING:
     from .nodes.project import Project
 
 
-def write_project(project: "Project", compression_level=10):
+def write_project(project: Project, compression_level=10):
     """Write `project` to disk at specified `compression_level`.
 
     Parameters
@@ -55,7 +56,7 @@ def write_project(project: "Project", compression_level=10):
             tmp_path.unlink(missing_ok=True)
 
 
-def read_project(project_path: Path) -> "Project":
+def read_project(project_path: Path) -> Project:
     """Read project from `project_path` and return object.
 
     Parameters

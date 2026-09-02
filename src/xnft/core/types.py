@@ -4,8 +4,8 @@ Module providing specialized types.
 Copyright 2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
-from typing import NamedTuple, Set
 from pathlib import Path
+from typing import NamedTuple
 
 from .enums import PolarizationType, SParameterType
 
@@ -26,8 +26,8 @@ class FileInfo(NamedTuple):
     """
 
     path: Path
-    polarization: PolarizationType | Set[PolarizationType] = {
+    polarization: PolarizationType | set[PolarizationType] = {
         PolarizationType.CO_POL,
         PolarizationType.CROSS_POL,
     }
-    s_parameters: Set[SParameterType] = set()
+    s_parameters: set[SParameterType] = set()

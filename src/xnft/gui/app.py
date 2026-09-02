@@ -4,17 +4,15 @@ Module providing graphical user interfaces.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
+import importlib.metadata
+import logging
 import sys
 from pathlib import Path
 
-import logging
-import importlib.metadata
-
 from PySide6.QtCore import (
-    Qt,
     QModelIndex,
     QSettings,
-    QCoreApplication,
+    Qt,
     QThread,
 )
 from PySide6.QtGui import (
@@ -24,34 +22,32 @@ from PySide6.QtGui import (
 )
 from PySide6.QtWidgets import (
     QApplication,
-    QMainWindow,
     QDialog,
-    QMessageBox,
     QDockWidget,
-    QTextEdit,
+    QFileDialog,
+    QHBoxLayout,
+    QMainWindow,
+    QMessageBox,
+    QProgressBar,
+    QSizePolicy,
     QTableWidget,
     QTableWidgetItem,
-    QFileDialog,
+    QTextEdit,
     QToolBar,
-    QProgressBar,
     QWidget,
-    QHBoxLayout,
-    QSizePolicy,
 )
 
 from xnft.gui.utils import center_window
-
-from .dialogs.project.new_project_dialog import NewProjectDialog
-from .project_tree_model import ProjectManagerTreeModel
-from .project_tree_view import ProjectTreeView
-from .mdi_area import QMdiAreaWatermark
-
-from .worker import SpawnWorker
 
 from ..project import manager
 from ..project.nodes.project import Project
 from ..project.project_io import read_project
 from ..resources.paths import resource_path
+from .dialogs.project.new_project_dialog import NewProjectDialog
+from .mdi_area import QMdiAreaWatermark
+from .project_tree_model import ProjectManagerTreeModel
+from .project_tree_view import ProjectTreeView
+from .worker import SpawnWorker
 
 # Registers all loaders
 
@@ -305,7 +301,7 @@ class MainWindow(QMainWindow):
         if dialog.exec() == QDialog.Accepted:
             name, path = dialog.get_project_info()
             project_path = Path(path) / f"{name}.xnft"
-            self.statusBar().showMessage(f"New Project Path: {str(project_path)}")
+            self.statusBar().showMessage(f"New Project Path: {project_path!s}")
 
             # Create the underlying project object
             new_project = Project(name=name, _path=project_path)

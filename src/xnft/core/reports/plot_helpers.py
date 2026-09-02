@@ -5,10 +5,9 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 """
 
 import pyqtgraph as pg
-from pyqtgraph.graphicsItems.ScatterPlotItem import Symbols, drawSymbol
-
+from pyqtgraph.graphicsItems.ScatterPlotItem import drawSymbol
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QPixmap, QPainter, QPainterPath, QTransform
+from PySide6.QtGui import QPainter, QPixmap
 
 
 def trace_preview(pen, symbol=None, symbol_brush=None, symbol_pen=None, symbol_size=10, background=Qt.transparent, width=40, height=20):

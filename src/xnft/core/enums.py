@@ -4,8 +4,9 @@ Module providing structured type enumerations.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
-from enum import StrEnum, Enum
 from collections import namedtuple
+from enum import Enum, StrEnum
+
 import unyt
 
 CoordinateSystemTuple = namedtuple("CoordinateSystemTuple", ["name", "components"])

@@ -6,52 +6,46 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 
 from __future__ import annotations
 
-from quantiphy import Quantity
-import numpy as np
-from numpy.typing import ArrayLike
-import pyqtgraph as pg
-import unyt
 import platform
-import colorcet as cc
-
+from dataclasses import dataclass
 from itertools import product
 
-from PySide6.QtCore import Qt, QPoint
-from PySide6.QtGui import QColor, QPixmap, QPainter, QPen, QGuiApplication
+import colorcet as cc
+import numpy as np
+import pyqtgraph as pg
+import unyt
+from numpy.typing import ArrayLike
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QColor, QPainter, QPen, QPixmap
 from PySide6.QtWidgets import (
+    QColorDialog,
+    QComboBox,
     QDialog,
     QDialogButtonBox,
-    QVBoxLayout,
-    QHBoxLayout,
     QFormLayout,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
     QLineEdit,
-    QWidget,
-    QComboBox,
     QListWidget,
     QListWidgetItem,
-    QGroupBox,
-    QLabel,
-    QColorDialog,
-    QSpinBox,
-    QPushButton,
     QMessageBox,
+    QPushButton,
+    QSpinBox,
+    QVBoxLayout,
+    QWidget,
 )
-
-from dataclasses import dataclass, field, InitVar
-from uuid import uuid4, UUID
-from typing import List, Optional, Callable, Any
-from numpy.typing import ArrayLike
-
-from ..common import ListWidgetTitle
+from quantiphy import Quantity
 
 from ....core.enums import NodeType
-from ....project.nodes.node import Node, DataNode
-from ....core.reports.normalizations import PlotNorms, PlotNorm
 from ....core.reports.field_components import FieldComponent
 from ....core.reports.field_quantities import FieldQuantities, FieldQuantity
 from ....core.reports.functions import PlotFunction
-from ....core.reports.scales import PlotScale
+from ....core.reports.normalizations import PlotNorm, PlotNorms
 from ....core.reports.plot_helpers import trace_preview
+from ....core.reports.scales import PlotScale
+from ....project.nodes.node import DataNode, Node
+from ..common import ListWidgetTitle
 
 
 @dataclass

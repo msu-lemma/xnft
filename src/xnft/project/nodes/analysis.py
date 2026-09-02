@@ -5,31 +5,26 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
 
-from dataclasses import dataclass, field
-from typing import Optional
 import logging
-
-from ...gui.dialogs.analysis.new_planar_nft_dialog import (
-    NewPlanarNearFieldTransform,
-)
+from dataclasses import dataclass, field
 
 from ...core.algorithms.planar_near_field_transform import (
     planar_near_field_transform,
 )
-
-from .node import Node, DataNode, context_action, gui_property
-from .fields import FieldNode
-from .coordinates import CoordinateNode
-from ...core.enums import (
-    NodeType,
-    FieldType,
-    DataSourceType,
-    CoordinateSystemType,
-    AnalysisType,
-    ProbeType,
-)
 from ...core.antennas.probes.probes import MeasurementProbe, RectWaveguide
-from ...core.calibration.gain import GainCalibrationReference
+from ...core.enums import (
+    AnalysisType,
+    CoordinateSystemType,
+    DataSourceType,
+    FieldType,
+    NodeType,
+)
+from ...gui.dialogs.analysis.new_planar_nft_dialog import (
+    NewPlanarNearFieldTransform,
+)
+from .coordinates import CoordinateNode
+from .fields import FieldNode
+from .node import DataNode, Node, context_action, gui_property
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +33,7 @@ logger = logging.getLogger(__name__)
 class AnalysisNode(Node):
     icon_name: str = "src/xnft/resources/icons/function.svg"
 
-    def __post_init__(self, name: Optional[str] = None, node_type: NodeType = NodeType.UNKNOWN):
+    def __post_init__(self, name: str | None = None, node_type: NodeType = NodeType.UNKNOWN):
         super().__post_init__(name, node_type)
 
         self._node_type = NodeType.ANALYSIS
@@ -176,13 +171,13 @@ class TransformNode(DataNode):
         repr=False,
     )
 
-    name_editable: Optional[bool] = True
+    name_editable: bool | None = True
 
     def __init__(
         self,
         *,
-        name: Optional[str] = None,
-        source: Optional[Node] = None,
+        name: str | None = None,
+        source: Node | None = None,
         analysis_type: AnalysisType = AnalysisType.UNKNOWN,
         probe_correction: MeasurementProbe = MeasurementProbe(
             "Unknown", RectWaveguide(float("nan"), float("nan"), (float("nan"), float("nan")))

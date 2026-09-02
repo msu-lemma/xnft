@@ -6,24 +6,21 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 
 from __future__ import annotations
 
-from quantiphy import Quantity
-
 import platform
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QDialog,
     QDialogButtonBox,
-    QVBoxLayout,
     QFormLayout,
-    QLineEdit,
-    QWidget,
-    QComboBox,
-    QMessageBox,
-    QListWidget,
-    QListWidgetItem,
     QGroupBox,
     QLabel,
+    QLineEdit,
+    QListWidget,
+    QListWidgetItem,
+    QMessageBox,
+    QVBoxLayout,
+    QWidget,
 )
 
 from ....core.enums import NodeType

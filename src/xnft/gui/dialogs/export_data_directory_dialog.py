@@ -6,26 +6,26 @@ University.
 """
 
 from __future__ import annotations
+
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
+    QComboBox,
     QDialog,
     QDialogButtonBox,
-    QVBoxLayout,
-    QFormLayout,
-    QLineEdit,
-    QPushButton,
-    QWidget,
     QFileDialog,
+    QFormLayout,
     QHBoxLayout,
-    QMessageBox,
-    QComboBox,
     QLabel,
+    QLineEdit,
+    QMessageBox,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
 )
-
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ...project.nodes.fields import FieldNode
@@ -47,7 +47,7 @@ class ExportDataDirectoryDialog(QDialog):
     def __init__(
         self,
         parent: QWidget | None = None,
-        target_node: "FieldNode" | "ReportNode" | None = None,
+        target_node: FieldNode | ReportNode | None = None,
         help_str: str = ""
     ):
         super().__init__(parent)

@@ -7,25 +7,24 @@ University.
 
 from __future__ import annotations
 
-import numpy as np
-from quantiphy import Quantity
+import platform
 
+import numpy as np
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
+    QComboBox,
     QDialog,
     QDialogButtonBox,
-    QVBoxLayout,
     QFormLayout,
+    QLabel,
     QLineEdit,
-    QWidget,
-    QComboBox,
-    QMessageBox,
     QListWidget,
     QListWidgetItem,
-    QLabel,
+    QMessageBox,
+    QVBoxLayout,
+    QWidget,
 )
-
-import platform
+from quantiphy import Quantity
 
 from ....core.enums import FieldType, NodeType
 

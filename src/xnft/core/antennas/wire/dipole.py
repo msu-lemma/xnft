@@ -9,9 +9,9 @@ import scipy.constants as spc
 
 from ....core.dtypes import FieldDataset
 from ....core.enums import (
+    CoordinateSystemType,
     DataSourceType,
     FieldType,
-    CoordinateSystemType,
 )
 
 # Constants

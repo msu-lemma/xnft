@@ -5,15 +5,15 @@ to the QTreeView.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
-from PySide6.QtCore import Qt, QAbstractItemModel, QModelIndex
+from functools import cache
+from pathlib import Path
+
+from PySide6.QtCore import QAbstractItemModel, QModelIndex, Qt
 from PySide6.QtGui import QIcon
 
-from functools import cache
-
+from ..project.nodes.node import DataNode, Node
 from ..project.nodes.project import Project
-from ..project.nodes.node import Node, DataNode
 from ..resources.paths import resource_path
-from pathlib import Path
 
 
 class ProjectManagerTreeModel(QAbstractItemModel):

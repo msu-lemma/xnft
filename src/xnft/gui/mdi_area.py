@@ -4,23 +4,22 @@ Custom QMdiArea with logos.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
+import logging
+
 from PySide6.QtCore import (
-    Qt,
-    QRect,
-    QRectF,
-    QSizeF,
-    QSize,
     QPointF,
+    QRectF,
+    QSize,
+    QSizeF,
+    Qt,
 )
 from PySide6.QtGui import (
-    QPainter,
     QImage,
+    QPainter,
     QPixmap,
 )
 from PySide6.QtSvg import QSvgRenderer
 from PySide6.QtWidgets import QMdiArea
-
-import logging
 
 logger = logging.getLogger(__name__)
 

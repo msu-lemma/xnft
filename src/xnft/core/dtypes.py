@@ -5,15 +5,14 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
 from __future__ import annotations
-from numpy.typing import ArrayLike
-import xarray as xr
+
 import numpy as np
-
-from typing import Dict, Optional
 import unyt
+import xarray as xr
+from numpy.typing import ArrayLike
 
-from .enums import FieldType, CoordinateSystemType, DataSourceType
 from .calibration.gain import GainCalibration
+from .enums import CoordinateSystemType, DataSourceType, FieldType
 
 # Allowed coordinate system types for near/far-field
 
@@ -37,12 +36,12 @@ class FieldDataset:
     def create(
         *,
         e_field: ArrayLike,
-        h_field: Optional[ArrayLike | None] = None,
-        spatial_coords: Dict[ArrayLike],
+        h_field: ArrayLike | None = None,
+        spatial_coords: dict[ArrayLike],
         frequency: ArrayLike,
-        coordinate_system: "CoordinateSystemType",
-        field_type: "FieldType",
-        data_source: "DataSourceType",
+        coordinate_system: CoordinateSystemType,
+        field_type: FieldType,
+        data_source: DataSourceType,
         aperture_size: float = 0.0,
         gain_calibration: GainCalibration | None = None,
     ) -> xr.Dataset:

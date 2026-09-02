@@ -5,17 +5,17 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
 
-from dataclasses import dataclass, field
-from typing import Optional
 import logging
-from functools import partial
+from dataclasses import dataclass
+
 from quantiphy import Quantity
 
-from ...core.antennas.probes.probes import MeasurementProbe
-from .node import Node, DataNode, NodeType, context_action, gui_property
-from ...gui.dialogs.calibrations.new_gain_calibration_dialog import NewGainCalibrationDialog
 from ...core.calibration.gain import GainCalibrationReference
+from ...gui.dialogs.calibrations.new_gain_calibration_dialog import (
+    NewGainCalibrationDialog,
+)
 from .fields import FieldNode
+from .node import DataNode, Node, NodeType, context_action, gui_property
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +65,7 @@ class GainCalibrationNode(DataNode):
     # _gain_cal_ref: GainCalibration
     # _gain_cal_field: FieldNode
 
-    name_editable: Optional[bool] = True
+    name_editable: bool | None = True
     # icon_name: str = "utilities-system-monitor"
 
     def __init__(

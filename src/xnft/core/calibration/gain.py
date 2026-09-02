@@ -5,22 +5,16 @@ Copyright 2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
 
-from pathlib import Path
-from PySide6.QtCore import QStandardPaths
-import shutil
 import logging
+import shutil
 from dataclasses import dataclass
-import numpy as np
-from numpy.typing import NDArray
-from typing import List
-
-from dataclasses import dataclass
-from io import StringIO
 from pathlib import Path
+from typing import TYPE_CHECKING
+
 import pandas as pd
 import xarray as xr
-
-from typing import TYPE_CHECKING
+from numpy.typing import NDArray
+from PySide6.QtCore import QStandardPaths
 
 if TYPE_CHECKING:
     from ...project.nodes.fields import FieldNode
@@ -203,4 +197,3 @@ def get_gain_correction(frequency: NDArray | float, interpolation: str | None = 
     NDArray or float
         Gain value in dBi to be _added_ to gain to correct value
     """
-    pass

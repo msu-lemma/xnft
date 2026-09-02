@@ -4,14 +4,15 @@ xNFT - Antenna Measurement Software
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University
 """
 
-import sys
-import multiprocessing
 import logging
 import logging.config
-import yaml
-from pathlib import Path
-from importlib.resources import files
+import multiprocessing
+import sys
 from importlib.metadata import version
+from importlib.resources import files
+from pathlib import Path
+
+import yaml
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 

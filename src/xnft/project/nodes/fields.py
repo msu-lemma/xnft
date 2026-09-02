@@ -4,22 +4,19 @@ Handle xnft fields actions.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
-from dataclasses import dataclass, field
-from typing import Optional
 import logging
+from dataclasses import dataclass, field
 from pathlib import Path
+
 from quantiphy import Quantity
 
-
-from ...gui.dialogs.fields.new_field_measurement_dialog import NewFieldMeasurementDialog
-from ...gui.dialogs.export_data_dialog import ExportDataDialog
-from ...loaders.fields.field_loader_registry import field_loader_registry
-from .node import Node, DataNode, NodeType, context_action, gui_property
-from .coordinates import CoordinateNode
-
-from ...core.enums import CoordinateSystemType, FieldType, DataSourceType
 from ...core.data_writers import write_dataset_hdf5
-from ...core.calibration.gain import GainCalibrationReference
+from ...core.enums import CoordinateSystemType, DataSourceType, FieldType
+from ...gui.dialogs.export_data_dialog import ExportDataDialog
+from ...gui.dialogs.fields.new_field_measurement_dialog import NewFieldMeasurementDialog
+from ...loaders.fields.field_loader_registry import field_loader_registry
+from .coordinates import CoordinateNode
+from .node import DataNode, Node, NodeType, context_action, gui_property
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +25,7 @@ logger = logging.getLogger(__name__)
 class FieldsNode(Node):
     icon_name: str = "src/xnft/resources/icons/fields.svg"
 
-    def __post_init__(self, name: Optional[str] = None, node_type: NodeType = NodeType.UNKNOWN):
+    def __post_init__(self, name: str | None = None, node_type: NodeType = NodeType.UNKNOWN):
         super().__post_init__(name, node_type)
 
         self._node_type = NodeType.FIELDS
@@ -103,15 +100,15 @@ class FieldNode(DataNode):
     _field_type: FieldType = field(default=FieldType.UNKNOWN, init=False)
     _source_type: DataSourceType = field(default=DataSourceType.UNKNOWN, init=False)
 
-    name_editable: Optional[bool] = True
+    name_editable: bool | None = True
     file_export_types = [".h5", ".csv"]
 
     def __init__(
         self,
         *,
-        name: Optional[str] = None,
-        source: Optional[Node] = None,
-        coordinates_node: Optional[CoordinateNode] = None,
+        name: str | None = None,
+        source: Node | None = None,
+        coordinates_node: CoordinateNode | None = None,
         field_type: FieldType = FieldType.UNKNOWN,
         source_type: DataSourceType = DataSourceType.UNKNOWN,
         **kwargs,
@@ -181,7 +178,7 @@ class FieldNode(DataNode):
     )
     def export_data(self, file_path: Path):
         if self.data is None:
-            return None
+            return
 
         file_type = file_path.suffix
 

@@ -5,27 +5,27 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 """
 
 import logging
+
 import h5py
-from typing import List
 
 # import pandas as pd
 import numpy as np
 import xarray as xr
 
-# import scipy.constants as spc
-
-from .field_loader_registry import field_loader_registry
+from ...core.dtypes import FieldDataset
 from ...core.enums import (
+    CoordinateSystemType,
+    DataPolarizationType,
     DataSourceType,
     FieldType,
-    CoordinateSystemType,
-    SParameterType,
     PolarizationType,
-    DataPolarizationType,
     ScanType,
+    SParameterType,
 )
 from ...core.types import FileInfo
-from ...core.dtypes import FieldDataset
+
+# import scipy.constants as spc
+from .field_loader_registry import field_loader_registry
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ POINTS_PER_METER = 200_000
     extension=".h5",
     has_sp=True,
 )
-def load_lemma_h5(file_list: List[FileInfo]) -> xr.Dataset:
+def load_lemma_h5(file_list: list[FileInfo]) -> xr.Dataset:
 
     co_file_info = cx_file_info = None
     for file_info in file_list:

@@ -6,44 +6,39 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 TODO: Add colormap selection (based on type of scale user selected, e.g., cyclic for phase)
 """
 
-from typing import Any
+import logging
 from collections import namedtuple
 from dataclasses import dataclass
-import pyqtgraph as pg
-import numpy as np
-import xarray as xr
-import unyt
-from quantiphy import Quantity
+from typing import Any
 
-from scipy.interpolate import griddata  # , CloughTocher2DInterpolator
+import numpy as np
+import pyqtgraph as pg
+import unyt
+import xarray as xr
 
 # import scipy.spatial.qhull as qhull
-
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import (
-    QWidget,
-    QListWidget,
-    QListWidgetItem,
-    QVBoxLayout,
-    QSplitter,
-    QSizePolicy,
     QComboBox,
     QLabel,
+    QListWidget,
+    QListWidgetItem,
+    QSizePolicy,
+    QSplitter,
+    QVBoxLayout,
+    QWidget,
 )
+from quantiphy import Quantity
+from scipy.interpolate import griddata  # , CloughTocher2DInterpolator
 
+from ...project.nodes.fields import FieldNode
+from ..coordinate_transforms import phitheta_to_unit
 from ..enums import CoordinateSystemType
-
-
-from .normalizations import PlotNorms, PlotNorm
 from .field_components import FieldComponent
 from .field_quantities import FieldQuantities, FieldQuantity
-from .functions import PlotFunctions, PlotFunction
+from .functions import PlotFunction, PlotFunctions
+from .normalizations import PlotNorm, PlotNorms
 from .scales import PlotScale
-from ..coordinate_transforms import phitheta_to_unit
-from ...project.nodes.fields import FieldNode
-
-
-import logging
 
 logger = logging.getLogger(__name__)
 

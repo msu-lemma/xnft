@@ -6,27 +6,25 @@ University.
 """
 from __future__ import annotations
 
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
+from typing import TYPE_CHECKING
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QDialog,
     QDialogButtonBox,
-    QVBoxLayout,
-    QFormLayout,
-    QLineEdit,
-    QPushButton,
-    QWidget,
     QFileDialog,
+    QFormLayout,
     QHBoxLayout,
-    QMessageBox,
-    QComboBox,
     QLabel,
+    QLineEdit,
+    QMessageBox,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
 )
-
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ...project.nodes.fields import FieldNode
@@ -51,7 +49,7 @@ class ExportDataDialog(QDialog):
     def __init__(
         self,
         parent: QWidget | None = None,
-        target_node: "FieldNode" | "ReportNode" | None = None,
+        target_node: FieldNode | ReportNode | None = None,
     ):
         super().__init__(parent)
         self.setWindowTitle("Export Data to File")
@@ -146,7 +144,7 @@ class ExportDataDialog(QDialog):
 
         if file_path.parent == Path(".") or not file_path.parent.exists():
             if not silent:
-                QMessageBox.warning(self, "Invalid File Path", f"Please enter a valid file path.")
+                QMessageBox.warning(self, "Invalid File Path", "Please enter a valid file path.")
             return False
 
         extension_list = self._get_available_extensions(glob_format=False)

@@ -7,24 +7,21 @@ Module providing rectangular aperture fields [§12, 1].
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
+import logging
 from dataclasses import dataclass
-from typing import Tuple
+from warnings import warn
 
 import numpy as np
-from numpy.typing import NDArray
-import xarray as xr
-
 import scipy.constants as spc
+import xarray as xr
+from numpy.typing import NDArray
 
+from ...dtypes import FieldDataset
 from ...enums import (
+    CoordinateSystemType,
     DataSourceType,
     FieldType,
-    CoordinateSystemType,
 )
-from ...dtypes import FieldDataset
-
-import logging
-from warnings import warn
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +32,7 @@ class RectWaveguide:
 
     x: float  # m
     y: float  # m
-    band: Tuple[float, float]  # Hz
+    band: tuple[float, float]  # Hz
 
 
 def rect_e_near_field(

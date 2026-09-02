@@ -4,12 +4,11 @@ Handle xnft coordinates actions.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
-import numpy as np
-from dataclasses import dataclass, field, InitVar
-from typing import Optional
 import logging
-from .node import Node, DataNode, context_action, gui_property
-from ...core.enums import NodeType, CoordinateSystemType
+from dataclasses import dataclass, field
+
+from ...core.enums import CoordinateSystemType, NodeType
+from .node import DataNode, Node, context_action, gui_property
 
 logger = logging.getLogger(__name__)
 
@@ -42,13 +41,13 @@ class CoordinateNode(DataNode):
         repr=False,
     )
 
-    name_editable: Optional[bool] = True
+    name_editable: bool | None = True
 
     def __init__(
         self,
         *,
-        name: Optional[str] = None,
-        source: Optional[Node] = None,
+        name: str | None = None,
+        source: Node | None = None,
         coordinate_type: CoordinateSystemType = CoordinateSystemType.UNKNOWN,
         **kwargs,
     ):

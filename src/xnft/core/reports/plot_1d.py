@@ -5,31 +5,30 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 """
 
 import logging
+from types import NoneType
+
 import numpy as np
 import pyqtgraph as pg
-from types import NoneType
 import unyt
-
-
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import (
-    QWidget,
+    QAbstractItemView,
+    QDialog,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QSizePolicy,
+    QSplitter,
     QTreeWidget,
     QTreeWidgetItem,
     QVBoxLayout,
-    QHBoxLayout,
-    QSplitter,
-    QSizePolicy,
-    QPushButton,
-    QLabel,
-    QDialog,
-    QAbstractItemView,
+    QWidget,
 )
 
-from ..enums import CoordinateSystemType
-from ...project.nodes.node import DataNode
 from ...core.reports.scales import PlotScale
 from ...gui.dialogs.reports.new_trace_dialog import NewTraceDialog, TraceParameters
+from ...project.nodes.node import DataNode
+from ..enums import CoordinateSystemType
 from .plot_helpers import trace_preview
 
 logger = logging.getLogger(__name__)
@@ -313,7 +312,6 @@ class Plot1D(QWidget):
         for _ in range(self.cb_coordinate_system.count()):
             self.cb_coordinate_system.removeItem(0)
 
-        pass
 
     def _update_abscissa_options(self):
         pass

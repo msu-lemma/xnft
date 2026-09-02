@@ -6,9 +6,9 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 
 import logging
 from pathlib import Path
-from ...core.enums import FieldType, DataSourceType, DataPolarizationType, ScanType
+
+from ...core.enums import DataPolarizationType, DataSourceType, FieldType, ScanType
 from ...core.types import FileInfo
-from typing import List
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +86,7 @@ class FieldLoaderRegistry:
         self,
         source: DataSourceType,
         field: FieldType,
-        file_list: List[FileInfo],
+        file_list: list[FileInfo],
     ):
         """
         Load a file using appropriate loader.
@@ -109,7 +109,7 @@ class FieldLoaderRegistry:
         for file in file_list:
             file_path = Path(file.path)
             if not file_path.exists():
-                raise FileNotFoundError(f"File not found: {str(file_path)}")
+                raise FileNotFoundError(f"File not found: {file_path!s}")
             if file_path.suffix != extension:
                 raise TypeError("All file extensions must be of the same type.")
 

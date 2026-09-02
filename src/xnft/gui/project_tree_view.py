@@ -6,11 +6,10 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 
 from PySide6.QtGui import QAction, QContextMenuEvent
 from PySide6.QtWidgets import (
-    QTreeView,
-    QMenu,
     QAbstractItemView,
+    QMenu,
+    QTreeView,
 )
-
 
 from ..project import manager
 
@@ -117,7 +116,6 @@ class ProjectTreeView(QTreeView):
                     action.triggered.connect(
                         lambda checked=False, inv=invoke: inv()
                     )
-                pass
 
             menu.addAction(action)
 

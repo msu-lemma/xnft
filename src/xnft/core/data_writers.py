@@ -6,9 +6,9 @@ University.
 """
 from __future__ import annotations
 
-import xarray as xr
-import numpy as np
 from pathlib import Path
+
+import xarray as xr
 
 
 def write_dataset_hdf5(ds: xr.Dataset, file_path: Path):

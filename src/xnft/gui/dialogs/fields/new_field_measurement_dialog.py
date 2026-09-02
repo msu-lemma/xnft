@@ -8,37 +8,37 @@ TODO:
     - Add S-param. detection for .h5 files (show S-aram. list next to selected file)
 """
 
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
+    QComboBox,
     QDialog,
     QDialogButtonBox,
-    QVBoxLayout,
-    QFormLayout,
-    QLineEdit,
-    QPushButton,
-    QWidget,
+    QDoubleSpinBox,
     QFileDialog,
+    QFormLayout,
     QHBoxLayout,
-    QMessageBox,
-    QComboBox,
     QLabel,
-    QDoubleSpinBox
+    QLineEdit,
+    QMessageBox,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
 )
 
-from ....loaders.fields.field_loader_registry import field_loader_registry
-from ....project.nodes.node import Node
 from ....core.enums import (
-    FieldType,
     DataPolarizationType,
-    SParameterType,
     DataSourceType,
+    FieldType,
     PolarizationType,
+    SParameterType,
 )
 from ....core.types import FileInfo
+from ....loaders.fields.field_loader_registry import field_loader_registry
+from ....project.nodes.node import Node
 
 
 class NewFieldMeasurementDialog(QDialog):
@@ -232,7 +232,7 @@ class NewFieldMeasurementDialog(QDialog):
         # Get data polarizations available for source and field type files
         polarization_formats = []
         for key, loader in loaders.items():
-            attributes = getattr(loader, "__attributes__")
+            attributes = loader.__attributes__
             if attributes["source"] == source_type and attributes["field"] == field_type:
                 polarization_formats.append(attributes["data_polarization"])
 

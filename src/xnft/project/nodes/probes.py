@@ -5,16 +5,15 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
 
-from dataclasses import dataclass, field
-from typing import Optional
 import logging
-from functools import partial
+from dataclasses import dataclass, field
+
 from quantiphy import Quantity
 
-from ...core.enums import ProbeType
 from ...core.antennas.probes.probes import MeasurementProbe
-from .node import Node, DataNode, NodeType, context_action, gui_property
+from ...core.enums import ProbeType
 from ...gui.dialogs.probes.new_probe_dialog import NewProbeDialog
+from .node import DataNode, Node, NodeType, context_action, gui_property
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +58,7 @@ class ProbesNode(Node):
 class ProbeNode(DataNode):
     _probe: MeasurementProbe = field(init=False, repr=False)
 
-    name_editable: Optional[bool] = True
+    name_editable: bool | None = True
     # icon_name: str = "utilities-system-monitor"
 
     def __init__(

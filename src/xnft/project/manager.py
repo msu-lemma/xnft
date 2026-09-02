@@ -6,7 +6,6 @@ University.
 """
 
 import logging
-from typing import List
 
 from .nodes.project import Project
 
@@ -15,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 # === Project Manager ===
 class Manager:
-    def __init__(self, projects: List[Project] = []):
+    def __init__(self, projects: list[Project] = []):
         self._projects = projects
 
     @property

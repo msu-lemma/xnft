@@ -7,27 +7,24 @@ University.
 
 from __future__ import annotations
 
-import numpy as np
-import xarray as xr
-import scipy.constants as spc
-from scipy.signal import windows
+import logging
+import time
+import warnings
+from collections.abc import Callable
 
 import finufft
-
+import numpy as np
+import scipy.constants as spc
+import xarray as xr
 from quantiphy import Quantity
+from scipy.signal import windows
 
-import logging
-import warnings
-import time
-
-from typing import Callable, List
-
-# from numpy.typing import ArrayLike
-
-from ..enums import DataSourceType, FieldType, CoordinateSystemType
-from ..dtypes import FieldDataset
 from ..antennas.probes.probes import MeasurementProbe
 from ..calibration.gain import GainCalibration
+from ..dtypes import FieldDataset
+
+# from numpy.typing import ArrayLike
+from ..enums import CoordinateSystemType, DataSourceType, FieldType
 
 logger = logging.getLogger(__name__)
 
@@ -146,7 +143,7 @@ def planar_near_field_transform_t3(
 
 def planar_near_field_transform(
     near_field: xr.Dataset,
-    frequencies: np.ndarray | List[float] | None = None,
+    frequencies: np.ndarray | list[float] | None = None,
     probe_correction: MeasurementProbe | None = None,
     gain_calibration: GainCalibration | None = None,
     dphi: float = 1.0,
@@ -339,7 +336,7 @@ def planar_near_field_transform(
 
     # Print ellapsed time
     elapsed_time = Quantity(time.perf_counter() - t_start, "s")
-    logger.debug("Far-field transform: {:}".format(elapsed_time))
+    logger.debug(f"Far-field transform: {elapsed_time}")
 
     # Generate field output
     # Reorder output to: (component, phi, theta, frequency)

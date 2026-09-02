@@ -5,27 +5,28 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
 
-import xarray as xr
-import numpy as np
-from dataclasses import dataclass, field, InitVar
-from typing import Optional
 import logging
+from collections.abc import Iterable
+from dataclasses import dataclass, field
 from functools import partial
 from pathlib import Path
 
+import numpy as np
+import xarray as xr
 from PySide6.QtWidgets import QMdiSubWindow
 
-from .node import Node, DataNode, NodeType, context_action, gui_property
-from functools import partial
-from collections.abc import Iterable
-
-from ...gui.dialogs.reports.new_field_report_dialog import NewFieldReport
+from ...core.data_writers import write_data_array_hdf5
+from ...core.enums import ReportType
+from ...core.reports.plot_1d import Plot1D, PlotTrace
+from ...core.reports.plot_2d import (
+    Plot2D,
+    SurfacePlot2DParameters,
+    get_transformed_data,
+)
 from ...gui.dialogs.export_data_dialog import ExportDataDialog
 from ...gui.dialogs.export_data_directory_dialog import ExportDataDirectoryDialog
-from ...core.enums import ReportType
-from ...core.reports.plot_2d import Plot2D, get_transformed_data, SurfacePlot2DParameters
-from ...core.reports.plot_1d import Plot1D, PlotTrace
-from ...core.data_writers import write_data_array_hdf5
+from ...gui.dialogs.reports.new_field_report_dialog import NewFieldReport
+from .node import DataNode, Node, NodeType, context_action, gui_property
 
 logger = logging.getLogger(__name__)
 
@@ -121,7 +122,7 @@ class ReportNode(DataNode):
     fields: list = field(default_factory=list)
     args: dict = field(default_factory=dict)
 
-    name_editable: Optional[bool] = True
+    name_editable: bool | None = True
     icon_name: str = "utilities-system-monitor"
 
     file_export_types = [".h5", ".csv"]
@@ -129,10 +130,10 @@ class ReportNode(DataNode):
     def __init__(
         self,
         *,
-        name: Optional[str] = None,
-        source: Optional[Node] = None,
-        fields: Optional[list] = None,
-        args: Optional[dict] = None,
+        name: str | None = None,
+        source: Node | None = None,
+        fields: list | None = None,
+        args: dict | None = None,
         report_type: ReportType = ReportType.UNKNOWN,
         **kwargs,
     ):
@@ -170,10 +171,10 @@ class ReportNodeSurfacePlot2D(ReportNode):
     def __init__(
         self,
         *,
-        name: Optional[str] = None,
-        source: Optional[Node] = None,
-        fields: Optional[list] = None,
-        args: Optional[dict] = None,
+        name: str | None = None,
+        source: Node | None = None,
+        fields: list | None = None,
+        args: dict | None = None,
         **kwargs,
     ):
         super().__init__(
@@ -283,9 +284,9 @@ class ReportNodeLinePlot(ReportNode):
     def __init__(
         self,
         *,
-        name: Optional[str] = None,
-        source: Optional[Node] = None,
-        args: Optional[dict] = None,
+        name: str | None = None,
+        source: Node | None = None,
+        args: dict | None = None,
         **kwargs,
     ):
         super().__init__(
@@ -330,7 +331,7 @@ class ReportNodeLinePlot(ReportNode):
     def export_data(self, directory_path: Path, file_type: str):
         # Iterate over each trace to write to output directory
         if not isinstance(self.data, Iterable):
-            raise TypeError(f"self.data (traces) must be iterable")
+            raise TypeError("self.data (traces) must be iterable")
         for trace in self.data:
             if not isinstance(trace, PlotTrace):
                 raise TypeError(f"Export traces must be of type PlotTrace not {type(trace)}")

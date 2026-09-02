@@ -6,35 +6,30 @@ University.
 """
 
 from pathlib import Path
-from collections import defaultdict
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
+    QComboBox,
     QDialog,
     QDialogButtonBox,
-    QVBoxLayout,
-    QFormLayout,
-    QLineEdit,
-    QPushButton,
-    QWidget,
     QFileDialog,
-    QHBoxLayout,
-    QMessageBox,
-    QComboBox,
-    QLabel,
     QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QMessageBox,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
 )
-
-from ..common import LabeledWidget
-from ....loaders.fields.field_loader_registry import field_loader_registry
-from ....project.nodes.node import Node
-from ....core.enums import ProbeType
-from ....core.antennas.probes.standard_probes import StandardRectWaveguide
-from ....core.types import FileInfo
-from ....core.antennas.probes.probes import RectWaveguide, MeasurementProbe
-
 from quantiphy import Quantity
+
+from ....core.antennas.probes.probes import MeasurementProbe, RectWaveguide
+from ....core.antennas.probes.standard_probes import StandardRectWaveguide
+from ....core.enums import ProbeType
+from ....project.nodes.node import Node
+from ..common import LabeledWidget
 
 
 class NewProbeDialog(QDialog):

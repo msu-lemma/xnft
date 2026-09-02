@@ -4,15 +4,15 @@ Reporting functions available to transform field data to various derived quantit
 Copyright 2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
-import numpy as np
-import xarray as xr
-from enum import Enum
 from collections import namedtuple
+from enum import Enum
+
+import numpy as np
 import unyt
 
-from .scales import PlotScales
 from ..enums import FieldType
 from .field_components import FieldComponents
+from .scales import PlotScales
 
 FieldQuantity = namedtuple(
     "FieldQuantity",

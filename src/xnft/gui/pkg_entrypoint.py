@@ -6,9 +6,9 @@ Isolates entrypoint from relative imports used in the rest of the package which 
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
+import multiprocessing
 import os
 import sys
-import multiprocessing
 
 # Handle noconsole mode on Windows
 if sys.stdout is None:

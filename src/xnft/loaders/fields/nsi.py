@@ -1,26 +1,24 @@
 """
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
-import logging
 import io
-from typing import List
+import logging
 from pathlib import Path
 
 import numpy as np
 import xarray as xr
 
-from .field_loader_registry import field_loader_registry
+from ...core.dtypes import FieldDataset
 from ...core.enums import (
+    CoordinateSystemType,
+    DataPolarizationType,
     DataSourceType,
     FieldType,
     PolarizationType,
-    CoordinateSystemType,
-    DataPolarizationType,
     ScanType,
 )
 from ...core.types import FileInfo
-from ...core.dtypes import FieldDataset
-
+from .field_loader_registry import field_loader_registry
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +30,7 @@ logger = logging.getLogger(__name__)
     data_polarization=DataPolarizationType.COMBO_POL,
     extension=".ffd",
 )
-def load_hfss_far_field_ffd(file_list: List[FileInfo]) -> xr.Dataset:
+def load_hfss_far_field_ffd(file_list: list[FileInfo]) -> xr.Dataset:
     """
     Load far-field file data.
 

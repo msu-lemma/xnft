@@ -5,10 +5,8 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 """
 
 import numpy as np
-import xarray as xr
 
 # import scipy.constants as spc
-
 from ...enums import ProbeType
 from ..aperture.rectangular import RectWaveguide, rect_e_far_field
 

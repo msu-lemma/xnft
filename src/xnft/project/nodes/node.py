@@ -5,13 +5,15 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
 
-from dataclasses import dataclass, field, InitVar
-from uuid import uuid4, UUID
-from typing import List, Optional, Callable, Any
 import inspect
 import logging
-from ...core.enums import NodeType
+from collections.abc import Callable
+from dataclasses import InitVar, dataclass, field
 from enum import StrEnum
+from typing import Any, Optional
+from uuid import UUID, uuid4
+
+from ...core.enums import NodeType
 
 logger = logging.getLogger(__name__)
 
@@ -23,10 +25,10 @@ class ContextAction:
     label: str
     invoke: Callable[[], None]
     enabled: bool = True
-    tooltip: Optional[str] = None
-    icon_name: Optional[str] = None
-    action: Optional[str] = None
-    helper_dialog: Optional[object] = None
+    tooltip: str | None = None
+    icon_name: str | None = None
+    action: str | None = None
+    helper_dialog: object | None = None
     order: int = 100
     separator: bool = False
     spawn_thread: bool = False
@@ -35,13 +37,13 @@ class ContextAction:
 def context_action(
     label: str,
     enabled: Callable[["Node"], bool] | bool = True,
-    tooltip: Optional[str] = None,
-    icon_name: Optional[str] = None,
+    tooltip: str | None = None,
+    icon_name: str | None = None,
     order: int = 100,
-    action: Optional[str] = None,
-    helper_dialog: Optional[object | None] = None,
-    separator: Optional[bool] = False,
-    spawn_thread: Optional[bool] = False,
+    action: str | None = None,
+    helper_dialog: object | None = None,
+    separator: bool | None = False,
+    spawn_thread: bool | None = False,
 ):
     """Decorator to add a ContextAction (right-click menu item) to a method.
 
@@ -116,18 +118,18 @@ class Node:
 
     # Node values
     id: UUID = uuid4()
-    name: InitVar[Optional[str]] = None
-    node_type: InitVar[Optional[NodeType]] = NodeType.UNKNOWN
-    name_editable: Optional[bool] = False
-    attributes: Optional[dict] = field(default_factory=dict)
-    data: Optional[Any] = None
-    icon_name: Optional[object] = "text-x-generic"
+    name: InitVar[str | None] = None
+    node_type: InitVar[NodeType | None] = NodeType.UNKNOWN
+    name_editable: bool | None = False
+    attributes: dict | None = field(default_factory=dict)
+    data: Any | None = None
+    icon_name: object | None = "text-x-generic"
 
     # Node traversal pointers
     _parent: Optional["Node"] = None
-    _children: List["Node"] = field(default_factory=list)
+    _children: list["Node"] = field(default_factory=list)
 
-    def __post_init__(self, name: Optional[str] = None, node_type: NodeType = NodeType.UNKNOWN):
+    def __post_init__(self, name: str | None = None, node_type: NodeType = NodeType.UNKNOWN):
         self._name = name
         self._node_type = node_type
 
@@ -167,12 +169,12 @@ class Node:
     # -- Children ------------
 
     @property
-    def children(self) -> List["Node"]:
+    def children(self) -> list["Node"]:
         """Return list of this node's children."""
         return self._children
 
     @children.setter
-    def children(self, children: List["Node"]):
+    def children(self, children: list["Node"]):
         """Add children from list of Nodes."""
         for child in children:
             self.add_child(child)
@@ -298,7 +300,7 @@ class Node:
 
 @dataclass(kw_only=True, eq=False)
 class DataNode(Node):
-    _source: Optional[Node] = field(default=None, init=False)
+    _source: Node | None = field(default=None, init=False)
 
     def __init__(self, *, source=None, name=None, node_type=NodeType.UNKNOWN, **kwargs):
         super().__init__(**kwargs)

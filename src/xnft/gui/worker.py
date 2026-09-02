@@ -4,8 +4,9 @@ Worker thread handler for non-blocking GUI operations.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
-from PySide6.QtCore import QObject, Signal, Slot
 import traceback
+
+from PySide6.QtCore import QObject, Signal, Slot
 
 
 class SpawnWorker(QObject):

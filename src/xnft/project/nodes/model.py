@@ -5,12 +5,11 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
 
-from dataclasses import dataclass, InitVar
 import logging
-from typing import Optional
-from ...project.nodes.node import Node
+from dataclasses import dataclass
 
-from .node import DataNode, NodeType, context_action
+from ...project.nodes.node import Node
+from .node import NodeType, context_action
 
 logger = logging.getLogger(__name__)
 
