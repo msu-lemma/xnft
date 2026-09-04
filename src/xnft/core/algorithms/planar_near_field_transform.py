@@ -220,7 +220,9 @@ def planar_near_field_transform(
 
     # If a probe is specified, get probe size for valid angle computation, otherwise assume zero size
     if probe_correction is not None:
-        probe_size = (probe_correction.source.x**2 + probe_correction.source.y**2) ** 0.5
+        probe_size = (
+            probe_correction.source.x**2 + probe_correction.source.y**2
+        ) ** 0.5
     else:
         probe_size = 0
 
@@ -243,7 +245,9 @@ def planar_near_field_transform(
     max_aperture_displacement = min(min_x_displacement, min_y_displacement) - (
         aut_size / 2
     )  # - (probe_size / 2)
-    logger.debug(f"max_aperture_displacement: {Quantity(max_aperture_displacement, units='m')}")
+    logger.debug(
+        f"max_aperture_displacement: {Quantity(max_aperture_displacement, units='m')}"
+    )
 
     max_theta = np.atan2(max_aperture_displacement, max_z_displacement).values.squeeze()
     logger.debug(f"Max. Theta: {Quantity(max_theta * 180 / np.pi)}°")
@@ -257,9 +261,13 @@ def planar_near_field_transform(
     )
 
     # Trim theta
-    theta_target = theta_target[(theta_target >= -max_theta) & (theta_target <= max_theta)]
+    theta_target = theta_target[
+        (theta_target >= -max_theta) & (theta_target <= max_theta)
+    ]
 
-    phi_grid_target, theta_grid_target = np.meshgrid(phi_target, theta_target, indexing="ij")
+    phi_grid_target, theta_grid_target = np.meshgrid(
+        phi_target, theta_target, indexing="ij"
+    )
 
     # Generate windowing function (rectangular by default)
     win_x = window(near_field_e.x.size)
@@ -269,10 +277,16 @@ def planar_near_field_transform(
     win = np.sqrt(np.outer(win_x, win_y))
 
     # Scale source sample locations along aperture to input of finufft in the range [-pi/2, pi/2)
-    x_scale = 2.0 * np.pi / (np.max(near_field_e.x.values) - np.min(near_field_e.x.values))
-    y_scale = 2.0 * np.pi / (np.max(near_field_e.y.values) - np.min(near_field_e.y.values))
+    x_scale = (
+        2.0 * np.pi / (np.max(near_field_e.x.values) - np.min(near_field_e.x.values))
+    )
+    y_scale = (
+        2.0 * np.pi / (np.max(near_field_e.y.values) - np.min(near_field_e.y.values))
+    )
 
-    near_field_yy, near_field_xx = np.meshgrid(near_field_e.y.values, near_field_e.x.values)
+    near_field_yy, near_field_xx = np.meshgrid(
+        near_field_e.y.values, near_field_e.x.values
+    )
 
     near_field_x_scaled = (x_scale * near_field_xx).ravel()
     near_field_y_scaled = (y_scale * near_field_yy).ravel()
@@ -312,21 +326,21 @@ def planar_near_field_transform(
             e_y = near_field_e.sel(component="y", z=z_val).values
 
         args_list.append(
-            dict(
-                theta_grid_target=theta_grid_target,
-                phi_grid_target=phi_grid_target,
-                k0=k0,
-                win=win,
-                near_field_x_scaled=near_field_x_scaled,
-                near_field_y_scaled=near_field_y_scaled,
-                x_scale=x_scale,
-                y_scale=y_scale,
-                e_x=e_x,
-                e_y=e_y,
-                z_val=z_val,
-                r_far_field=r_far_field,
-                probe_correction=probe_correction,
-            )
+            {
+                "theta_grid_target": theta_grid_target,
+                "phi_grid_target": phi_grid_target,
+                "k0": k0,
+                "win": win,
+                "near_field_x_scaled": near_field_x_scaled,
+                "near_field_y_scaled": near_field_y_scaled,
+                "x_scale": x_scale,
+                "y_scale": y_scale,
+                "e_x": e_x,
+                "e_y": e_y,
+                "z_val": z_val,
+                "r_far_field": r_far_field,
+                "probe_correction": probe_correction,
+            }
         )
 
     # Call planar near-field transform in parallel
