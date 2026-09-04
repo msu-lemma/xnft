@@ -66,11 +66,15 @@ noarch = false
 # BUILD_EDITABLE_PYTHON = "true"
 
 [environments]
-
-dev = ["test", "docs", "dev"]
 jupyter = ["dev", "test", "jupyter"]
 docs = ["docs"]
 build = ["build"]
+
+[environments.dev]
+features = ["test", "docs", "dev"]
+
+[environments.dev.dependencies]
+pre-commit = ">=4.6.2,<5"
 
 [environments.test]
 features = ["test"]
