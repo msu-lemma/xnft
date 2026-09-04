@@ -3,7 +3,7 @@ stages:
   - release
 
 variables:
-  GIT_LFS_SKIP_SMUDGE: "1"
+  # GIT_LFS_SKIP_SMUDGE: "1"
   DEBIAN_FRONTEND: "noninteractive"
 
 # Store our package cache in our git repo so we can cache it
