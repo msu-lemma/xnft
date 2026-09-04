@@ -69,9 +69,14 @@ noarch = false
 
 dev = ["test", "docs", "dev"]
 jupyter = ["dev", "test", "jupyter"]
-test = ["test"]
 docs = ["docs"]
 build = ["build"]
+
+[environments.test]
+features = ["test"]
+
+[environments.test.dependencies]
+syft = ">=1.51.1,<2"
 
 
 [tasks]
