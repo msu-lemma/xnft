@@ -48,7 +48,7 @@ class ExportDataDirectoryDialog(QDialog):
         self,
         parent: QWidget | None = None,
         target_node: FieldNode | ReportNode | None = None,
-        help_str: str = ""
+        help_str: str = "",
     ):
         super().__init__(parent)
         self.setWindowTitle("Export Data to Directory")
@@ -122,7 +122,9 @@ class ExportDataDirectoryDialog(QDialog):
 
         if directory_path.parent == Path(".") or not directory_path.parent.exists():
             if not silent:
-                QMessageBox.warning(self, "Invalid Directory", "Please enter a valid directory path.")
+                QMessageBox.warning(
+                    self, "Invalid Directory", "Please enter a valid directory path."
+                )
             return False
 
         return True
@@ -187,9 +189,7 @@ class FileEntryRow(QWidget):
         """Create folder selection dialog."""
         start_dir = self.le_path.text().strip() or str(Path.home())
         chosen = QFileDialog.getExistingDirectory(
-            self,
-            "Select data export destination",
-            start_dir
+            self, "Select data export destination", start_dir
         )
 
         if chosen:

@@ -23,7 +23,10 @@ def is_worker():
     multiprocessing helper or worker.
     """
     # Check for joblib spawned tasks
-    if os.environ.get("LOKY_WORKER") == "1" or os.environ.get("JOBLIB_SPAWNED_PROCESS") == "1":
+    if (
+        os.environ.get("LOKY_WORKER") == "1"
+        or os.environ.get("JOBLIB_SPAWNED_PROCESS") == "1"
+    ):
         return True
 
     # Check for multiprocessing spawned tasks

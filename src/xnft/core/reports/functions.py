@@ -14,7 +14,8 @@ from ..enums import FieldType
 from .scales import PlotScales
 
 PlotFunction = namedtuple(
-    "PlotFunction", ("name", "name_short", "function", "scales", "field_types", "enabled")
+    "PlotFunction",
+    ("name", "name_short", "function", "scales", "field_types", "enabled"),
 )
 
 

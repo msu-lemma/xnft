@@ -16,7 +16,15 @@ from .scales import PlotScales
 
 FieldQuantity = namedtuple(
     "FieldQuantity",
-    ("name", "function", "scales", "units", "field_types", "field_components", "enabled"),
+    (
+        "name",
+        "function",
+        "scales",
+        "units",
+        "field_types",
+        "field_components",
+        "enabled",
+    ),
 )
 
 
@@ -28,14 +36,17 @@ def field_quantity_e(field):
 
 
 def field_quantity_gain(field):
-    if "gain_calibration" in field.attrs and field.attrs["gain_calibration"] is not None:
+    if (
+        "gain_calibration" in field.attrs
+        and field.attrs["gain_calibration"] is not None
+    ):
         gain_cal_node = field.attrs["gain_calibration"]
         gain_cal_table = gain_cal_node.gain_cal_ref.data
         gain_cal_field = gain_cal_node.gain_cal_field.data
 
         frequency = field["frequency"].item()
 
-        print(f'{frequency=}')
+        print(f"{frequency=}")
 
         # Configure gain cal interpolation
         gain_cal_interp = gain_cal_table.interp(
@@ -79,7 +90,9 @@ class FieldQuantities(Enum):
         scales=(PlotScales.LINEAR, PlotScales.DECIBELS_10),
         field_types={FieldType.FAR},  # ratio
         field_components=FieldComponents,
-        enabled=lambda field: "gain_calibration" in field.attrs
-        and field.attrs["gain_calibration"] is not None,
+        enabled=lambda field: (
+            "gain_calibration" in field.attrs
+            and field.attrs["gain_calibration"] is not None
+        ),
         units="dBi",
     )

@@ -4,6 +4,7 @@ Helper dialog to export data to various file types.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
+
 from __future__ import annotations
 
 from collections import defaultdict
@@ -67,7 +68,7 @@ class ExportDataDialog(QDialog):
         )
 
         self.label_file_help = QLabel(
-            f"Available file types are: " f"{', '.join(self._get_available_extensions())}."
+            f"Available file types are: {', '.join(self._get_available_extensions())}."
         )
         self.label_file_help.setWordWrap(True)
         self.label_file_help.setStyleSheet("color: #777")
@@ -107,7 +108,7 @@ class ExportDataDialog(QDialog):
 
     def _update_help_label(self) -> None:
         self.label_file_help.setText(
-            f"Available extensions are: " f"{', '.join(self._get_available_extensions())}"
+            f"Available extensions are: {', '.join(self._get_available_extensions())}"
         )
 
     def _get_available_extensions(self, glob_format=True) -> list[str]:
@@ -144,7 +145,9 @@ class ExportDataDialog(QDialog):
 
         if file_path.parent == Path(".") or not file_path.parent.exists():
             if not silent:
-                QMessageBox.warning(self, "Invalid File Path", "Please enter a valid file path.")
+                QMessageBox.warning(
+                    self, "Invalid File Path", "Please enter a valid file path."
+                )
             return False
 
         extension_list = self._get_available_extensions(glob_format=False)

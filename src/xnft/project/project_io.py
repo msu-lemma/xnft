@@ -4,6 +4,7 @@ Handle reading and writing xNFT projects.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
+
 from __future__ import annotations
 
 import os

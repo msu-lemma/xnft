@@ -44,9 +44,7 @@ class NewProjectDialog(QDialog):
         self.name_field = QLineEdit(self)
         self.name_field.setPlaceholderText("Enter project name")
 
-        self.name_field.setText(
-            f"Project_{datetime.today().strftime("%Y%m%d_%H%M%S")}"
-        )
+        self.name_field.setText(f"Project_{datetime.today().strftime('%Y%m%d_%H%M%S')}")
 
         self.path_field = QLineEdit(self)
         self.path_field.setPlaceholderText("Choose or enter a save directory")
@@ -146,7 +144,6 @@ class NewProjectDialog(QDialog):
             self.accept()
 
     def _on_accept(self) -> None:
-
         """
         Wrapper for QDialog `accept` function.
 

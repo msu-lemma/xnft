@@ -68,8 +68,8 @@ html_theme_options = {
     "gitlab_url": "https://gitlab.msu.edu/ece-lemma/xnft",
     "show_prev_next": False,
     "logo": {
-      "image_light": "xnft.svg",
-      "image_dark": "xnft.svg",
+        "image_light": "xnft.svg",
+        "image_dark": "xnft.svg",
     },
 }
 
@@ -81,4 +81,4 @@ htmlhelp_basename = "project-templatedoc"
 
 # --- LaTeX PDF Output Configuration ---
 latex_engine = "xelatex"
-latex_documents = [('index', 'xnft-docs.tex', project, author, 'manual')]
+latex_documents = [("index", "xnft-docs.tex", project, author, "manual")]

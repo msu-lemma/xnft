@@ -185,13 +185,25 @@ class NewTraceDialog(QDialog):
         layout.addWidget(self.buttons)
 
         # === Connections ===
-        self.lwt_source_field.lw.itemSelectionChanged.connect(self._update_abscissa_options)
+        self.lwt_source_field.lw.itemSelectionChanged.connect(
+            self._update_abscissa_options
+        )
         self.lwt_abscissa.lw.itemSelectionChanged.connect(self._update_slice_options)
-        self.lwt_source_field.lw.itemSelectionChanged.connect(self._update_field_quantities)
-        self.lwt_field_quantity.lw.itemSelectionChanged.connect(self._update_field_components)
-        self.lwt_field_component.lw.itemSelectionChanged.connect(self._update_ordinate_functions)
-        self.lwt_ordinate_function.lw.itemSelectionChanged.connect(self._update_ordinate_scales)
-        self.lwt_ordinate_scale.lw.itemSelectionChanged.connect(self._update_field_norms)
+        self.lwt_source_field.lw.itemSelectionChanged.connect(
+            self._update_field_quantities
+        )
+        self.lwt_field_quantity.lw.itemSelectionChanged.connect(
+            self._update_field_components
+        )
+        self.lwt_field_component.lw.itemSelectionChanged.connect(
+            self._update_ordinate_functions
+        )
+        self.lwt_ordinate_function.lw.itemSelectionChanged.connect(
+            self._update_ordinate_scales
+        )
+        self.lwt_ordinate_scale.lw.itemSelectionChanged.connect(
+            self._update_field_norms
+        )
 
         self.buttons.accepted.connect(self._on_accept)
         self.buttons.rejected.connect(self.reject)
@@ -251,11 +263,10 @@ class NewTraceDialog(QDialog):
         slice_list_products = list(product(*slice_list))
 
         for idx, slice_list_idx in enumerate(slice_list_products):
-
             # -- Trace name --
             trace_name_suffix = ""
             if len(slice_list_products) != 1:
-                trace_name_suffix = f"-{idx+1}"
+                trace_name_suffix = f"-{idx + 1}"
             trace_name = self.le_trace_name.text().strip() + trace_name_suffix
 
             # -- Trace Style --
@@ -280,17 +291,25 @@ class NewTraceDialog(QDialog):
                 trace_pen=trace_pen,
                 trace_marker_symbol=trace_marker_symbol,
                 # -- Source Data --
-                source_field=self.lwt_source_field.lw.selectedItems()[0].data(Qt.UserRole),
+                source_field=self.lwt_source_field.lw.selectedItems()[0].data(
+                    Qt.UserRole
+                ),
                 abscissa=self.lwt_abscissa.lw.selectedItems()[0].data(Qt.UserRole),
                 # -- Slice Parameters --
                 slice_dict=slice_dict,
                 # -- Ordinate Parameters --
-                field_quantity=self.lwt_field_quantity.lw.selectedItems()[0].data(Qt.UserRole),
-                field_component=self.lwt_field_quantity.lw.selectedItems()[0].data(Qt.UserRole),
+                field_quantity=self.lwt_field_quantity.lw.selectedItems()[0].data(
+                    Qt.UserRole
+                ),
+                field_component=self.lwt_field_quantity.lw.selectedItems()[0].data(
+                    Qt.UserRole
+                ),
                 ordinate_function=self.lwt_ordinate_function.lw.selectedItems()[0].data(
                     Qt.UserRole
                 ),
-                ordinate_scale=self.lwt_ordinate_scale.lw.selectedItems()[0].data(Qt.UserRole),
+                ordinate_scale=self.lwt_ordinate_scale.lw.selectedItems()[0].data(
+                    Qt.UserRole
+                ),
                 field_norm=self.lwt_field_norm.lw.selectedItems()[0].data(Qt.UserRole),
             )
 
@@ -329,7 +348,9 @@ class NewTraceDialog(QDialog):
         self.lwt_abscissa.lw.clear()
 
         abscissa_options = [
-            (f"{x.title()}", x) for x in self.selected_field.data.coords if x != "component"
+            (f"{x.title()}", x)
+            for x in self.selected_field.data.coords
+            if x != "component"
         ]
 
         # If plot has an abscissa already selected, only allow that abscissa
@@ -407,7 +428,7 @@ class NewTraceDialog(QDialog):
 
             for fc in field_components:
                 # Only add if field type is valid for that function
-                if self.selected_field.data.attrs['field_type'] in fc.value.field_types:
+                if self.selected_field.data.attrs["field_type"] in fc.value.field_types:
                     item = QListWidgetItem(fc.value.name)
                     item.setData(Qt.UserRole, fc.value)
                     if not fc.value.enabled:
@@ -469,7 +490,9 @@ class NewTraceDialog(QDialog):
 
         if not name:
             if not silent:
-                QMessageBox.warning(self, "Missing Name", "Please enter a transform node name.")
+                QMessageBox.warning(
+                    self, "Missing Name", "Please enter a transform node name."
+                )
             return False
 
         lwt_fields = [
@@ -518,7 +541,9 @@ class TraceStyleGroupBox(QGroupBox):
     def __init__(self, title="Trace Style", parent=None):
         super().__init__(title, parent)
 
-        self.current_color = pg.mkColor(pg.getConfigOption('foreground'))  # QColor("#ffffff")
+        self.current_color = pg.mkColor(
+            pg.getConfigOption("foreground")
+        )  # QColor("#ffffff")
 
         layout = QHBoxLayout(self)
         layout.setSpacing(24)
@@ -549,7 +574,9 @@ class TraceStyleGroupBox(QGroupBox):
                 height=20,
             )
             self.cb_line_style.addItem(icon, name)
-            self.cb_line_style.setItemData(self.cb_line_style.count() - 1, style, Qt.UserRole)
+            self.cb_line_style.setItemData(
+                self.cb_line_style.count() - 1, style, Qt.UserRole
+            )
 
         layout.addLayout(self._labeled_control("Line Style", self.cb_line_style))
 
@@ -599,7 +626,9 @@ class TraceStyleGroupBox(QGroupBox):
 
         self.cb_line_style.currentIndexChanged.connect(lambda _: self._update_preview())
         self.sb_line_width.valueChanged.connect(lambda _: self._update_preview())
-        self.cb_marker_symbol.currentIndexChanged.connect(lambda _: self._update_preview())
+        self.cb_marker_symbol.currentIndexChanged.connect(
+            lambda _: self._update_preview()
+        )
 
         layout.addStretch()
 
@@ -661,7 +690,7 @@ class TraceStyleGroupBox(QGroupBox):
             symbol_brush=pg.mkBrush(self.current_color),
             symbol_pen=None,
             symbol_size=10,
-            background=pg.mkColor(pg.getConfigOption('background')), #Qt.black,
+            background=pg.mkColor(pg.getConfigOption("background")),  # Qt.black,
             width=width,
             height=height,
         )

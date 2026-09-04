@@ -25,7 +25,9 @@ logger = logging.getLogger(__name__)
 class FieldsNode(Node):
     icon_name: str = "src/xnft/resources/icons/fields.svg"
 
-    def __post_init__(self, name: str | None = None, node_type: NodeType = NodeType.UNKNOWN):
+    def __post_init__(
+        self, name: str | None = None, node_type: NodeType = NodeType.UNKNOWN
+    ):
         super().__post_init__(name, node_type)
 
         self._node_type = NodeType.FIELDS
@@ -40,13 +42,15 @@ class FieldsNode(Node):
         helper_dialog=NewFieldMeasurementDialog,
         spawn_thread=True,
     )
-    def new_measured_field(self, field_type, source_type, field_name, file_info_list, aut_size):
+    def new_measured_field(
+        self, field_type, source_type, field_name, file_info_list, aut_size
+    ):
 
         # Read measured field file
         field_data = field_loader_registry.load(
             source=source_type, field=field_type, file_list=file_info_list
         )
-        field_data.attrs['aperture_size'] = aut_size
+        field_data.attrs["aperture_size"] = aut_size
         print(field_data)
 
         # Add pointer to coordinates (All measured data should have intrinsic
@@ -96,7 +100,9 @@ class FieldsNode(Node):
 
 @dataclass(kw_only=True)
 class FieldNode(DataNode):
-    _coordinates_node: CoordinateNode | None = field(default=None, init=False, repr=False)
+    _coordinates_node: CoordinateNode | None = field(
+        default=None, init=False, repr=False
+    )
     _field_type: FieldType = field(default=FieldType.UNKNOWN, init=False)
     _source_type: DataSourceType = field(default=DataSourceType.UNKNOWN, init=False)
 
@@ -146,7 +152,7 @@ class FieldNode(DataNode):
     @gui_property(label="Source Type", order=5)
     def source_type(self):
         return self._source_type
-    
+
     @source_type.setter
     def source_type(self, source_type):
         self._source_type = source_type
@@ -155,15 +161,14 @@ class FieldNode(DataNode):
     @gui_property(label="AUT Aperture Size", order=6)
     def aut_size_gui(self):
         return f"{Quantity(self.data.attrs['aperture_size'], units='m')}"
-    
+
     @property
     @gui_property(label="Gain Calibration", order=7)
     def gain_calibration_gui(self):
-        if self.data.attrs['gain_calibration']:
+        if self.data.attrs["gain_calibration"]:
             return f"{self.data.attrs['gain_calibration'].name}"
         else:
             return "None"
-
 
     @context_action(
         label="Export Field",

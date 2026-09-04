@@ -24,14 +24,19 @@ test_dict = {
 }
 
 
-def generate_tests(fields=test_dict['field']):
+def generate_tests(fields=test_dict["field"]):
     """
     Generate testing options for registry.load test.
     """
     tests_list = []
     for source in test_dict["source"]:
         for field in fields:
-            nf_test_dir = test_dir / "data" / field.lower().replace(" ", "_") / source.name.lower()
+            nf_test_dir = (
+                test_dir
+                / "data"
+                / field.lower().replace(" ", "_")
+                / source.name.lower()
+            )
 
             test_file_dict = defaultdict(list)
 
@@ -89,7 +94,6 @@ def test_planar_near_field_transform(load_test_file: tuple[Any, Any]):
     source_field, params = load_test_file
 
     if source_field.attrs["coordinate_system"] == CoordinateSystemType.CARTESIAN:
-
         # Test single frequency transform
         result = planar_near_field_transform(
             near_field=source_field,
@@ -99,13 +103,17 @@ def test_planar_near_field_transform(load_test_file: tuple[Any, Any]):
         try:
             assert isinstance(result, xr.Dataset)
         except AssertionError as e:
-            raise AssertionError(f"Error processing single frequency test: {params} / {result}") from e
+            raise AssertionError(
+                f"Error processing single frequency test: {params} / {result}"
+            ) from e
 
         # Test multi-frequency transform
         result = planar_near_field_transform(
             near_field=source_field,
             probe_correction=None,
-            frequencies=source_field.frequency.values[:3],  # pick the first 3 frequencies to keep tests quick
+            frequencies=source_field.frequency.values[
+                :3
+            ],  # pick the first 3 frequencies to keep tests quick
         )
         try:
             assert isinstance(result, xr.Dataset)
@@ -113,7 +121,6 @@ def test_planar_near_field_transform(load_test_file: tuple[Any, Any]):
             raise AssertionError(f"Error processing test: {params} / {result}") from e
 
     elif source_field.attrs["coordinate_system"] == CoordinateSystemType.SPHERICAL:
-
         # TODO: Insert spherical NFT here
 
         pass

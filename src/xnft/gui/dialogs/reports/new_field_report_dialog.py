@@ -47,7 +47,7 @@ class NewFieldReport(QDialog):
         parent: QWidget | None = None,
         target_node=None,
         show_fields=True,
-        select_multiple_fields=False
+        select_multiple_fields=False,
     ):
         super().__init__(parent)
         self.setWindowTitle("New Field Report")
@@ -100,7 +100,6 @@ class NewFieldReport(QDialog):
         group_data_selection = QGroupBox("Data Source")
         group_data_selection.setLayout(form_layout_data)
 
-
         # -- Dialog Butons --
 
         self.buttons = QDialogButtonBox(
@@ -133,9 +132,11 @@ class NewFieldReport(QDialog):
     def get_selections(self) -> dict:
         """Return values chosen by the user."""
         output_dict = {}
-        output_dict['report_name'] = self.le_report_name.text().strip()
+        output_dict["report_name"] = self.le_report_name.text().strip()
         if self.show_fields:
-            output_dict['fields'] = [x.data(Qt.UserRole) for x in self.lw_report_fields.selectedItems()]
+            output_dict["fields"] = [
+                x.data(Qt.UserRole) for x in self.lw_report_fields.selectedItems()
+            ]
         return output_dict
 
     # --- Private Methods ---
@@ -166,7 +167,9 @@ class NewFieldReport(QDialog):
 
         if not name:
             if not silent:
-                QMessageBox.warning(self, "Missing Name", "Please enter a transform node name.")
+                QMessageBox.warning(
+                    self, "Missing Name", "Please enter a transform node name."
+                )
             return False
 
         if not self.lw_report_fields.selectedItems():

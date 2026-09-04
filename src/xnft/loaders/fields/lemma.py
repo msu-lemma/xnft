@@ -141,7 +141,7 @@ def load_lemma_h5(file_list: list[FileInfo]) -> xr.Dataset:
         frequency=sample_frequency_array,
         coordinate_system=CoordinateSystemType.CARTESIAN,
         field_type=FieldType.NEAR,
-        data_source=DataSourceType.LEMMA
+        data_source=DataSourceType.LEMMA,
     )
 
     return fields

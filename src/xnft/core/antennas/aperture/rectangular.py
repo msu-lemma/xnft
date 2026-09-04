@@ -45,18 +45,17 @@ def rect_e_near_field(
     amplitude=1.0,
     excitation: str = "te10",  # [te10, uniform]
 ):
-    
-    e_x = e_z = np.zeros((x_sample_vec.size, y_sample_vec.size, 1, freq_sample_vec.size), np.complex128)
-    e_y = amplitude * np.ones((x_sample_vec.size, y_sample_vec.size, 1, freq_sample_vec.size), np.complex128)
+
+    e_x = e_z = np.zeros(
+        (x_sample_vec.size, y_sample_vec.size, 1, freq_sample_vec.size), np.complex128
+    )
+    e_y = amplitude * np.ones(
+        (x_sample_vec.size, y_sample_vec.size, 1, freq_sample_vec.size), np.complex128
+    )
 
     yy, xx = np.meshgrid(y_sample_vec, x_sample_vec)
-    
-    cond = (
-        (xx <= ap_x[1])
-        & (xx >= ap_x[0])
-        & (yy <= ap_y[1])
-        & (yy >= ap_y[0])
-    )
+
+    cond = (xx <= ap_x[1]) & (xx >= ap_x[0]) & (yy <= ap_y[1]) & (yy >= ap_y[0])
 
     e_y *= np.where(cond, 1.0, 0.0)[:, :, None, None]
 
@@ -66,9 +65,7 @@ def rect_e_near_field(
         # Taper fields based on TE-10 mode
         e_y *= np.cos(np.pi / (ap_x[1] - ap_x[0]) * xx)[:, :, None, None]
     else:
-        raise NotImplementedError(
-            f"Excitation {excitation} is not yet " "implemented."
-        )
+        raise NotImplementedError(f"Excitation {excitation} is not yet implemented.")
 
     e_field = np.stack([e_x, e_y, e_z])
 
@@ -140,7 +137,7 @@ def rect_e_far_field(
         N.J: Wiley-Interscience, 2005.
     """
     # Create sampling grid
-    phi_grid, theta_grid = np.meshgrid(phi_sample_vec, theta_sample_vec, indexing='ij')
+    phi_grid, theta_grid = np.meshgrid(phi_sample_vec, theta_sample_vec, indexing="ij")
     phi_grid = phi_grid[:, :, np.newaxis]
     theta_grid = theta_grid[:, :, np.newaxis]
 
@@ -175,7 +172,9 @@ def rect_e_far_field(
         e_theta = -np.pi / 2 * np.sin(phi_grid + rotation) * cx * cy
         e_phi = -np.pi / 2 * np.cos(theta_grid) * np.cos(phi_grid + rotation) * cx * cy
     else:
-        raise NotImplementedError(f"Excitation mode {excitation} is not yet implemented.")
+        raise NotImplementedError(
+            f"Excitation mode {excitation} is not yet implemented."
+        )
 
     e_field = np.stack([e_phi, e_theta], dtype=np.complex128)
 

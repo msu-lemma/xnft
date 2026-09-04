@@ -11,6 +11,12 @@ from ...enums import ProbeType
 from ..aperture.rectangular import RectWaveguide, rect_e_far_field
 
 
+class MeasuredProbe:
+    def __init__(self, ap_x, ap_y):
+        self.x = ap_x
+        self.y = ap_y
+
+
 class MeasurementProbe:
     """
     Class for handling measurmenet probe sampling and numerical operations.
@@ -82,8 +88,12 @@ class MeasurementProbe:
             # Dims: ('component', 'phi', 'theta', 'frequency)
 
             # Reorder dimensions s.t. vector components is at the end
-            co_pol_e_field = co_pol_e_field.transpose("frequency", "phi", "theta", "component").values
-            cx_pol_e_field = cx_pol_e_field.transpose("frequency", "phi", "theta", "component").values
+            co_pol_e_field = co_pol_e_field.transpose(
+                "frequency", "phi", "theta", "component"
+            ).values
+            cx_pol_e_field = cx_pol_e_field.transpose(
+                "frequency", "phi", "theta", "component"
+            ).values
 
             co_pol_e_field = co_pol_e_field[..., [1, 0]]
             cx_pol_e_field = cx_pol_e_field[..., [1, 0]]
@@ -99,9 +109,3 @@ class MeasurementProbe:
             raise TypeError(
                 f"Probe source must be type MeasuredProbe or RectWaveguide, got {type(self.source)}."
             )
-
-
-class MeasuredProbe:
-    def __init__(self, ap_x, ap_y):
-        self.x = ap_x
-        self.y = ap_y

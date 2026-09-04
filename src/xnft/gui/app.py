@@ -231,7 +231,9 @@ class MainWindow(QMainWindow):
         for name in dir(node.__class__):
             attr = getattr(node.__class__, name, None)
             # NOTE: fget is the getter of a property
-            if isinstance(attr, property) and getattr(attr.fget, "__gui_property__", False):
+            if isinstance(attr, property) and getattr(
+                attr.fget, "__gui_property__", False
+            ):
                 label = attr.fget.__gui_property__["label"]
                 order = attr.fget.__gui_property__["order"]
                 formatter = attr.fget.__gui_property__["formatter"]
@@ -266,11 +268,11 @@ class MainWindow(QMainWindow):
         QMessageBox.about(
             self,
             "About xNFT",
-            f"xNFT Version {meta.get("Version")}\n\n"
-            f"{meta.get("Summary")}\n\n"
+            f"xNFT Version {meta.get('Version')}\n\n"
+            f"{meta.get('Summary')}\n\n"
             "Copyright 2025-2026 The Laboratory for Electromagnetics and mm-Wave Antennas (LEmmA), Electromagnetics Research Group (EMRG), Michigan State University.\n\n"
             f"Authors:\n{authors}\n\n"
-            f"License: {meta.get("License")}",
+            f"License: {meta.get('License')}",
         )
 
     def create_plot_area(self):
@@ -320,7 +322,9 @@ class MainWindow(QMainWindow):
         else:
             self.statusBar().showMessage("No project selected to save.")
 
-    def _ui_action(self, helper_dialog, target_node, invoke_function, spawn_thread=False):
+    def _ui_action(
+        self, helper_dialog, target_node, invoke_function, spawn_thread=False
+    ):
         """Perform actions that interact with the UI from external models
             (e.g., nodes).
         Examples:

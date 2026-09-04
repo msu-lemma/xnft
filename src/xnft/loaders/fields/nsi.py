@@ -1,6 +1,7 @@
 """
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
+
 import io
 import logging
 from pathlib import Path
@@ -47,7 +48,10 @@ def load_hfss_far_field_ffd(file_list: list[FileInfo]) -> xr.Dataset:
     if len(file_list) != 1:
         raise ValueError("HFSS .ffd loader accepts exactly one file.")
 
-    if file_list[0].polarization != {PolarizationType.CO_POL, PolarizationType.CROSS_POL}:
+    if file_list[0].polarization != {
+        PolarizationType.CO_POL,
+        PolarizationType.CROSS_POL,
+    }:
         raise ValueError(
             "HFSS .ffd loader only accepts files containing both co-pol and cross-pol."
         )
@@ -88,7 +92,9 @@ def load_hfss_far_field_ffd(file_list: list[FileInfo]) -> xr.Dataset:
                 )
             # Azimuth (Phi)
             elif line_idx == 1:
-                phi_start_deg, phi_stop_deg, phi_num_steps = [float(x) for x in line.split(" ")]
+                phi_start_deg, phi_stop_deg, phi_num_steps = [
+                    float(x) for x in line.split(" ")
+                ]
                 phi_sample_location_array = np.radians(
                     np.linspace(phi_start_deg, phi_stop_deg, int(phi_num_steps))
                 )
@@ -153,7 +159,7 @@ def load_hfss_far_field_ffd(file_list: list[FileInfo]) -> xr.Dataset:
         frequency=sample_frequency_array,
         coordinate_system=CoordinateSystemType.SPHERICAL,
         field_type=FieldType.FAR,
-        data_source=DataSourceType.HFSS
+        data_source=DataSourceType.HFSS,
     )
 
     fields_buffer = io.StringIO()

@@ -50,7 +50,10 @@ def load_hfss_near_field_ndf(file_list: list[FileInfo]) -> xr.Dataset:
     if len(file_list) != 1:
         raise ValueError("HFSS .nfd loader accepts exactly one file.")
 
-    if file_list[0].polarization != {PolarizationType.CO_POL, PolarizationType.CROSS_POL}:
+    if file_list[0].polarization != {
+        PolarizationType.CO_POL,
+        PolarizationType.CROSS_POL,
+    }:
         raise ValueError(
             "HFSS .nfd loader only accepts files containing both co-pol and cross-pol."
         )
@@ -58,7 +61,7 @@ def load_hfss_near_field_ndf(file_list: list[FileInfo]) -> xr.Dataset:
     # Ensure file_list.path is a Path
     file_path = Path(file_list[0].path)
 
-    logger.debug(f'{file_path=}')
+    logger.debug(f"{file_path=}")
 
     if file_path.suffix != ".nfd":
         raise TypeError(f"File type must be '.nfd', got '{file_path.suffix}'.")
@@ -171,7 +174,7 @@ def load_hfss_near_field_ndf(file_list: list[FileInfo]) -> xr.Dataset:
         frequency=sample_frequency_array,
         coordinate_system=CoordinateSystemType.CARTESIAN,
         field_type=FieldType.NEAR,
-        data_source=DataSourceType.HFSS
+        data_source=DataSourceType.HFSS,
     )
 
     fields_buffer = io.StringIO()
@@ -205,7 +208,10 @@ def load_hfss_far_field_ffd(file_list: list[FileInfo]) -> xr.Dataset:
     if len(file_list) != 1:
         raise ValueError("HFSS .ffd loader accepts exactly one file.")
 
-    if file_list[0].polarization != {PolarizationType.CO_POL, PolarizationType.CROSS_POL}:
+    if file_list[0].polarization != {
+        PolarizationType.CO_POL,
+        PolarizationType.CROSS_POL,
+    }:
         raise ValueError(
             "HFSS .ffd loader only accepts files containing both co-pol and cross-pol."
         )
@@ -246,7 +252,9 @@ def load_hfss_far_field_ffd(file_list: list[FileInfo]) -> xr.Dataset:
                 )
             # Azimuth (Phi)
             elif line_idx == 1:
-                phi_start_deg, phi_stop_deg, phi_num_steps = [float(x) for x in line.split(" ")]
+                phi_start_deg, phi_stop_deg, phi_num_steps = [
+                    float(x) for x in line.split(" ")
+                ]
                 phi_sample_location_array = np.radians(
                     np.linspace(phi_start_deg, phi_stop_deg, int(phi_num_steps))
                 )
@@ -311,7 +319,7 @@ def load_hfss_far_field_ffd(file_list: list[FileInfo]) -> xr.Dataset:
         frequency=sample_frequency_array,
         coordinate_system=CoordinateSystemType.SPHERICAL,
         field_type=FieldType.FAR,
-        data_source=DataSourceType.HFSS
+        data_source=DataSourceType.HFSS,
     )
 
     fields_buffer = io.StringIO()

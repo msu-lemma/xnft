@@ -102,7 +102,7 @@ class NewFieldMeasurementDialog(QDialog):
         self.sb_aut_size.setRange(0.0, 1e12)
 
         self.label_file_help = QLabel(
-            f"Available extensions are: " f"{', '.join(self._get_available_extensions())}"
+            f"Available extensions are: {', '.join(self._get_available_extensions())}"
         )
         self.label_file_help.setStyleSheet("color: #777")
 
@@ -143,9 +143,13 @@ class NewFieldMeasurementDialog(QDialog):
         self.cb_field_type.currentTextChanged.connect(self._update_help_label)
         self.cb_source_format.currentTextChanged.connect(self._update_help_label)
 
-        self.cb_source_format.currentTextChanged.connect(self._update_source_polarization_formats)
+        self.cb_source_format.currentTextChanged.connect(
+            self._update_source_polarization_formats
+        )
 
-        self.cb_data_polarization.currentTextChanged.connect(self._update_file_fields_shown)
+        self.cb_data_polarization.currentTextChanged.connect(
+            self._update_file_fields_shown
+        )
         self.cb_data_polarization.currentTextChanged.connect(self._update_default_name)
 
         self.buttons.accepted.connect(self._on_accept)
@@ -194,7 +198,7 @@ class NewFieldMeasurementDialog(QDialog):
             "source_type": self.cb_source_format.currentText().strip(),
             "field_name": self.field_name_field.text().strip(),
             "file_info_list": file_info_list,
-            "aut_size": self.sb_aut_size.value() * 1e-3
+            "aut_size": self.sb_aut_size.value() * 1e-3,
         }
 
     @property
@@ -212,7 +216,9 @@ class NewFieldMeasurementDialog(QDialog):
     def _update_source_file_formats(self) -> None:
         """Update available source file formats based on field type."""
         field_type = self.cb_field_type.currentText()
-        source_format_types = self._loaders_info(field_loader_registry)[field_type].keys()
+        source_format_types = self._loaders_info(field_loader_registry)[
+            field_type
+        ].keys()
 
         # Remove all items before updating items
         for _ in range(self.cb_source_format.count()):
@@ -221,7 +227,9 @@ class NewFieldMeasurementDialog(QDialog):
         for source_format_type in source_format_types:
             # NOTE: Qt casts StrEnum to plain str which breaks some things;
             #       we'll wrap this in a tuple here to mitigate this behavior
-            self.cb_source_format.addItem(source_format_type.value, (source_format_type,))
+            self.cb_source_format.addItem(
+                source_format_type.value, (source_format_type,)
+            )
 
     def _update_source_polarization_formats(self) -> None:
         """Update available source polarization formats based on source file type."""
@@ -233,7 +241,10 @@ class NewFieldMeasurementDialog(QDialog):
         polarization_formats = []
         for key, loader in loaders.items():
             attributes = loader.__attributes__
-            if attributes["source"] == source_type and attributes["field"] == field_type:
+            if (
+                attributes["source"] == source_type
+                and attributes["field"] == field_type
+            ):
                 polarization_formats.append(attributes["data_polarization"])
 
         # Remove all items before updating items
@@ -243,7 +254,9 @@ class NewFieldMeasurementDialog(QDialog):
         for polarization_format in polarization_formats:
             # NOTE: Qt casts StrEnum to plain str which breaks some things;
             #       we'll wrap this in a tuple here to mitigate this behavior
-            self.cb_data_polarization.addItem(polarization_format.value, (polarization_format,))
+            self.cb_data_polarization.addItem(
+                polarization_format.value, (polarization_format,)
+            )
 
     def _update_file_fields_shown(self):
         # Enable/disable data polarization specific data selection boxes
@@ -266,14 +279,16 @@ class NewFieldMeasurementDialog(QDialog):
 
     def _update_help_label(self) -> None:
         self.label_file_help.setText(
-            f"Available extensions are: " f"{', '.join(self._get_available_extensions())}"
+            f"Available extensions are: {', '.join(self._get_available_extensions())}"
         )
 
     def _get_available_extensions(self, glob_format=True) -> list[str]:
         field_type = self.cb_field_type.currentText()
         source_type = self.cb_source_format.currentText()
 
-        file_extensions = self._loaders_info(field_loader_registry)[field_type][source_type]
+        file_extensions = self._loaders_info(field_loader_registry)[field_type][
+            source_type
+        ]
         if glob_format:
             return [f"*{extension}" for extension in file_extensions]
         else:
@@ -303,7 +318,9 @@ class NewFieldMeasurementDialog(QDialog):
 
         if not name:
             if not silent:
-                QMessageBox.warning(self, "Missing Name", "Please enter a field node name.")
+                QMessageBox.warning(
+                    self, "Missing Name", "Please enter a field node name."
+                )
             return False
 
         # TODO: re-implement file path testing to handle FileEntryRow (maybe inside the class)
@@ -436,7 +453,9 @@ class FileEntryRow(QWidget):
         extension = Path(self.le_path.text()).suffix
 
         try:
-            loader = field_loader_registry.get_loader(source_format, field_type, extension)
+            loader = field_loader_registry.get_loader(
+                source_format, field_type, extension
+            )
             self.show_sp = loader.__attributes__["has_sp"]
         except Exception:
             pass

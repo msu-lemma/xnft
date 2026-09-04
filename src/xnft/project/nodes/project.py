@@ -50,14 +50,12 @@ class Project(Node):
     @gui_property(label="File Path", order=3)
     def path(self):
         return self._path
-    
+
     @path.setter
     def path(self, new_path):
         self._path = Path(new_path)
 
-    @context_action(
-        "Save Project", order=10, enabled=True, icon_name="document-save"
-    )
+    @context_action("Save Project", order=10, enabled=True, icon_name="document-save")
     def save(self, path=None):
         """Saves project to `self.path` specified at project creation.
 
@@ -74,11 +72,11 @@ class Project(Node):
         if path is not None:
             self._path = path
 
-        try:
-            write_project(self, compression_level=10)
-            return f"Saved project {self.name} to path: {self._path}"
-        except Exception:
-            return f"Failed to save {self.name} to path: {self._path}"
+        # try:
+        write_project(self, compression_level=10)
+        return f"Saved project {self.name} to path: {self._path}"
+        # except Exception:
+        #     return f"Failed to save {self.name} to path: {self._path}"
 
     @context_action(
         "Save Project As...",

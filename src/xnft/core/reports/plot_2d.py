@@ -124,7 +124,9 @@ class Plot2D(QWidget):
 
         # -- Add Frequency Selection --
         self.lw_frequency_range = QListWidget()
-        self.lw_frequency_range.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.lw_frequency_range.setSizePolicy(
+            QSizePolicy.Expanding, QSizePolicy.Expanding
+        )
 
         layout_controls.addWidget(QLabel("Frequency"))
         layout_controls.addWidget(self.lw_frequency_range)
@@ -301,8 +303,12 @@ class Plot2D(QWidget):
         self.cb_plot_domain.currentTextChanged.connect(self._update_plot)
         self.cb_plot_function.currentTextChanged.connect(self._update_plot)
         self.cb_plot_norm.currentTextChanged.connect(self._update_plot)
-        self.cb_plot_function.currentTextChanged.connect(self._update_plotting_scale_options)
-        self.cb_plot_function.currentTextChanged.connect(self._update_plotting_norm_options)
+        self.cb_plot_function.currentTextChanged.connect(
+            self._update_plotting_scale_options
+        )
+        self.cb_plot_function.currentTextChanged.connect(
+            self._update_plotting_norm_options
+        )
         self.cb_plot_scale.currentTextChanged.connect(self._update_plot)
 
         self.hist.gradient.sigGradientChanged.connect(self._save_state)
@@ -368,8 +374,13 @@ class Plot2D(QWidget):
             self.cb_plot_function.removeItem(0)
 
         for plot_function in PlotFunctions:
-            if self.field_node.data.attrs["field_type"] in plot_function.value.field_types:
-                self.cb_plot_function.addItem(plot_function.value.name, plot_function.value)
+            if (
+                self.field_node.data.attrs["field_type"]
+                in plot_function.value.field_types
+            ):
+                self.cb_plot_function.addItem(
+                    plot_function.value.name, plot_function.value
+                )
 
     def _update_report_field_quantities(self):
         # Remove all items before updating items
@@ -384,7 +395,9 @@ class Plot2D(QWidget):
         for fc in field_quantities:
             if self.field_node.data.attrs["field_type"] in fc.value.field_types:
                 self.cb_field_quantity.addItem(fc.value.name, fc.value)
-                self.cb_field_quantity.model().item(newitem_index).setEnabled(fc.value.enabled(self.field_node.data))
+                self.cb_field_quantity.model().item(newitem_index).setEnabled(
+                    fc.value.enabled(self.field_node.data)
+                )
                 newitem_index += 1
 
     def _update_report_field_components(self):
@@ -425,12 +438,14 @@ class Plot2D(QWidget):
 
             plot_function = self.cb_plot_function.currentData()
             print(plot_function)
-            
+
             newitem_index = 0
             for fc in field_norms:
                 if plot_function in [x.value for x in fc.value.functions]:
                     self.cb_plot_norm.addItem(fc.value.name, fc.value)
-                    self.cb_plot_norm.model().item(newitem_index).setEnabled(fc.value.enabled)
+                    self.cb_plot_norm.model().item(newitem_index).setEnabled(
+                        fc.value.enabled
+                    )
                     newitem_index += 1
 
     def _update_plotting_domain_options(self):
@@ -444,7 +459,9 @@ class Plot2D(QWidget):
         valid_plot_domains = self.__coordinate_domains__[source_coordiante_system]
 
         for coordinates_domain in valid_plot_domains:
-            self.cb_plot_domain.addItem(coordinates_domain.value.name, coordinates_domain.value)
+            self.cb_plot_domain.addItem(
+                coordinates_domain.value.name, coordinates_domain.value
+            )
 
     def _update_frequency_options(self):
         # Remove all items before updating items
@@ -455,7 +472,9 @@ class Plot2D(QWidget):
         # Get only unique items
         frequencies = list(set(frequencies))
 
-        frequencies_items = sorted([(str(Quantity(x, units="Hz")), x) for x in frequencies])
+        frequencies_items = sorted(
+            [(str(Quantity(x, units="Hz")), x) for x in frequencies]
+        )
         for label, data in frequencies_items:
             item = QListWidgetItem(label)
             item.setData(Qt.UserRole, data)
@@ -492,7 +511,6 @@ class Plot2D(QWidget):
         # NOTE: Native domain is spherical
         # Direction cosines require nonlinear transformation so we need to use pcolormesh for
         if self.selected_plot_domain == CoordinateSystemType.DIRECTION_COSINE.value:
-
             # Get phi and theta as numpy arrays
             phi = self.field_node.data.phi.values
             theta = self.field_node.data.theta.values
@@ -592,8 +610,8 @@ class Plot2D(QWidget):
         self.last_plot_domain = self.selected_plot_domain
 
         # Set applicate label on LUT histogram
-        applicate_label = 'Placeholder'
-        applicate_units = 'placeholderUnit'
+        applicate_label = "Placeholder"
+        applicate_units = "placeholderUnit"
         self.hist.axis.setLabel(applicate_label, units=applicate_units)
 
     def _autoscale_lut_range(self, min_percentile=20, max_percentile=100):

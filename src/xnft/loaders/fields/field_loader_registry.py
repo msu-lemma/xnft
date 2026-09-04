@@ -66,7 +66,9 @@ class FieldLoaderRegistry:
 
         def decorator(func):
             # Generate entry in loader dicionary
-            self._loaders[self.loader_key(source=source, field=field, extension=extension)] = func
+            self._loaders[
+                self.loader_key(source=source, field=field, extension=extension)
+            ] = func
 
             # Add declared attributes of the loader
             func.__attributes__ = {
@@ -102,7 +104,7 @@ class FieldLoaderRegistry:
         file_list : List[FileInfo]
             List of FileInfo objects containing files and measurement information.
         """
-        logger.debug(f'{file_list}')
+        logger.debug(f"{file_list}")
         extension = Path(file_list[0].path).suffix
 
         # Check all files exist and extensions are the same

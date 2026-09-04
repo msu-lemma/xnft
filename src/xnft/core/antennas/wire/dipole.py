@@ -67,7 +67,11 @@ def dipole_e(r, theta, phi, i_0=1, len=0.5, k=1):
     e_rho = (const / rho) * (
         (z - len / 2) * np.exp(-1j * k[:, None, None] * R1) / R1
         + (z + len / 2) * np.exp(-1j * k[:, None, None] * R2) / R2
-        - 2 * z * np.cos(k[:, None, None] * len / 2) * np.exp(-1j * k[:, None, None] * r) / r
+        - 2
+        * z
+        * np.cos(k[:, None, None] * len / 2)
+        * np.exp(-1j * k[:, None, None] * r)
+        / r
     )
 
     e_x = e_rho * np.cos(phi_m)
@@ -77,13 +81,16 @@ def dipole_e(r, theta, phi, i_0=1, len=0.5, k=1):
     e_z = -const * (
         np.exp(-1j * k[:, None, None] * R1) / R1
         + np.exp(-1j * k[:, None, None] * R2) / R2
-        - 2 * np.cos(k[:, None, None] * len / 2) * np.exp(-1j * k[:, None, None] * r) / r
+        - 2
+        * np.cos(k[:, None, None] * len / 2)
+        * np.exp(-1j * k[:, None, None] * r)
+        / r
     )
 
     e_field = np.stack([e_x, e_y, e_z]).reshape((3, 1, *theta_m.shape, 3))
 
     freq_vec = k * spc.c / (2 * np.pi)
-    
+
     fields = FieldDataset.create(
         e_field=e_field,
         spatial_coords={
@@ -108,7 +115,7 @@ def dipole_e_far_field(theta, phi=0, r=1, i_0=1, len=0.5, k=1):
     theta : Number, NDArray
         Field point theta (spherical).
     phi : Number, NDArray
-        Field point phi (spherical). For dipole this parameter does not impact the field, but is included 
+        Field point phi (spherical). For dipole this parameter does not impact the field, but is included
         for completeness.
     r : Number, NDArray
         Field point radius.
@@ -134,7 +141,13 @@ def dipole_e_far_field(theta, phi=0, r=1, i_0=1, len=0.5, k=1):
     e_theta = (
         (1j * eta)
         * (i_0 * np.exp(-1j * k[:, None, None] * r) / (2 * np.pi * r))
-        * ((np.cos(k[:, None, None] * len / 2 * np.cos(theta)) - np.cos(k[:, None, None] * len / 2)) / np.sin(theta))
+        * (
+            (
+                np.cos(k[:, None, None] * len / 2 * np.cos(theta))
+                - np.cos(k[:, None, None] * len / 2)
+            )
+            / np.sin(theta)
+        )
     )
 
     # Convert to cartesian vector components for uniform reporting to xNFT

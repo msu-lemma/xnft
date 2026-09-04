@@ -78,7 +78,9 @@ class NewPlanarNearFieldTransform(QDialog):
                 probes_node = tmp_node
                 break
         assert probes_node is not None
-        probe_options = [(f"{x.name} ({x.correction_type})", x) for x in probes_node.children]
+        probe_options = [
+            (f"{x.name} ({x.correction_type})", x) for x in probes_node.children
+        ]
 
         # self.cb_far_field = QComboBox()
         self.cb_probe_corrections = QComboBox()
@@ -172,9 +174,13 @@ class NewPlanarNearFieldTransform(QDialog):
                 else None
             ),
             "gain_calibration": (
-                self.cb_gain_cal.currentData() if self.cb_gain_cal.currentData() else None
+                self.cb_gain_cal.currentData()
+                if self.cb_gain_cal.currentData()
+                else None
             ),
-            "frequencies": [x.data(Qt.UserRole) for x in self.lw_frequencies.selectedItems()],
+            "frequencies": [
+                x.data(Qt.UserRole) for x in self.lw_frequencies.selectedItems()
+            ],
         }
 
     def _update_frequencies(self) -> None:
@@ -184,7 +190,9 @@ class NewPlanarNearFieldTransform(QDialog):
 
         if self.cb_source_field.currentData():
             frequencies = (
-                self.cb_source_field.currentData().data.coords["frequency"].values.tolist()
+                self.cb_source_field.currentData()
+                .data.coords["frequency"]
+                .values.tolist()
             )
             frequencies_items = [(str(Quantity(x, units="Hz")), x) for x in frequencies]
             for label, data in frequencies_items:
@@ -209,13 +217,17 @@ class NewPlanarNearFieldTransform(QDialog):
 
         if not name:
             if not silent:
-                QMessageBox.warning(self, "Missing Name", "Please enter a transform node name.")
+                QMessageBox.warning(
+                    self, "Missing Name", "Please enter a transform node name."
+                )
             return False
 
         if not self.cb_source_field.currentData():
             if not silent:
                 QMessageBox.warning(
-                    self, "Missing Source Field", "Please select a source field to transform."
+                    self,
+                    "Missing Source Field",
+                    "Please select a source field to transform.",
                 )
             return False
 
@@ -230,12 +242,14 @@ class NewPlanarNearFieldTransform(QDialog):
 
         # Check if gain calibration overlaps _any_ of transform frequency range
         if self.cb_gain_cal.currentData():
-            selected_freq_list = [x.data(Qt.UserRole) for x in self.lw_frequencies.selectedItems()]
+            selected_freq_list = [
+                x.data(Qt.UserRole) for x in self.lw_frequencies.selectedItems()
+            ]
             gain_cal_freqs = self.cb_gain_cal.currentData().gain_cal_ref.data.frequency
-            
-            freq_overlap = max(np.nanmin(gain_cal_freqs), np.nanmin(selected_freq_list)) <= min(
-                np.nanmax(gain_cal_freqs), np.nanmax(selected_freq_list)
-            )
+
+            freq_overlap = max(
+                np.nanmin(gain_cal_freqs), np.nanmin(selected_freq_list)
+            ) <= min(np.nanmax(gain_cal_freqs), np.nanmax(selected_freq_list))
 
             if not freq_overlap:
                 msgBox = QMessageBox(self)
@@ -243,7 +257,9 @@ class NewPlanarNearFieldTransform(QDialog):
                 msgBox.setInformativeText(
                     "Gain calibration does not overlap with selected frequencies.  Continue anyway?"
                 )
-                msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.StandardButton.Cancel)
+                msgBox.setStandardButtons(
+                    QMessageBox.Yes | QMessageBox.StandardButton.Cancel
+                )
                 msgBox.setDefaultButton(QMessageBox.Save)
                 ret = msgBox.exec()
 

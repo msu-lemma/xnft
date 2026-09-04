@@ -4,6 +4,7 @@ Module providing data types specific to xnft.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -18,8 +19,16 @@ from .enums import CoordinateSystemType, DataSourceType, FieldType
 
 NEAR_FIELD_CS_TYPES = {
     CoordinateSystemType.CARTESIAN: {"x": unyt.meter, "y": unyt.meter, "z": unyt.meter},
-    CoordinateSystemType.CYLINDRICAL: {"rho": unyt.meter, "phi": unyt.radian, "z": unyt.meter},
-    CoordinateSystemType.SPHERICAL: {"r": unyt.meter, "phi": unyt.radian, "theta": unyt.radian},
+    CoordinateSystemType.CYLINDRICAL: {
+        "rho": unyt.meter,
+        "phi": unyt.radian,
+        "z": unyt.meter,
+    },
+    CoordinateSystemType.SPHERICAL: {
+        "r": unyt.meter,
+        "phi": unyt.radian,
+        "theta": unyt.radian,
+    },
 }
 
 FAR_FIELD_CS_TYPES = {
@@ -98,7 +107,10 @@ class FieldDataset:
         if field_type is FieldType.FAR and coordinate_system not in FAR_FIELD_CS_TYPES:
             raise ValueError("Far-field must use spherical coordinates")
 
-        if field_type is FieldType.NEAR and coordinate_system not in NEAR_FIELD_CS_TYPES:
+        if (
+            field_type is FieldType.NEAR
+            and coordinate_system not in NEAR_FIELD_CS_TYPES
+        ):
             raise ValueError(
                 f"Invalid coordinate system for near-field. Must be one of {','.join([x.name for x in NEAR_FIELD_CS_TYPES])}"
             )
@@ -156,6 +168,6 @@ class FieldDataset:
                 "coordinate_system": coordinate_system,
                 "coordinate_units": coordinate_units,
                 "aperture_size": aperture_size,
-                "gain_calibration": gain_calibration
+                "gain_calibration": gain_calibration,
             },
         )

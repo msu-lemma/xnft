@@ -22,16 +22,12 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 gain_cal_dir = (
-    Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppDataLocation))
+    Path(
+        QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppDataLocation)
+    )
     / "calibrations"
     / "gain"
 )
-
-
-@dataclass
-class GainCalibration:
-    reference: GainCalibrationReference
-    measurement: FieldNode
 
 
 @dataclass
@@ -53,6 +49,12 @@ class GainCalibrationReference:
         return " ".join(name_list)
 
 
+@dataclass
+class GainCalibration:
+    reference: GainCalibrationReference
+    measurement: FieldNode
+
+
 def copy_gain_cal_file(file_path):
     """Copy a gain cal file to the calibration file path."""
 
@@ -71,7 +73,9 @@ def copy_gain_cal_file(file_path):
     return dst_file
 
 
-def load_gain_cal(path: str | Path, name_only: bool = False) -> GainCalibrationReference | str:
+def load_gain_cal(
+    path: str | Path, name_only: bool = False
+) -> GainCalibrationReference | str:
     """Load gain calibration files
 
     Parameters

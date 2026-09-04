@@ -33,7 +33,9 @@ logger = logging.getLogger(__name__)
 class AnalysisNode(Node):
     icon_name: str = "src/xnft/resources/icons/function.svg"
 
-    def __post_init__(self, name: str | None = None, node_type: NodeType = NodeType.UNKNOWN):
+    def __post_init__(
+        self, name: str | None = None, node_type: NodeType = NodeType.UNKNOWN
+    ):
         super().__post_init__(name, node_type)
 
         self._node_type = NodeType.ANALYSIS
@@ -165,7 +167,8 @@ class TransformNode(DataNode):
     )
     _probe_correction: MeasurementProbe = field(
         default=MeasurementProbe(
-            "Unknown", RectWaveguide(float("nan"), float("nan"), (float("nan"), float("nan")))
+            "Unknown",
+            RectWaveguide(float("nan"), float("nan"), (float("nan"), float("nan"))),
         ),
         init=False,
         repr=False,
@@ -180,7 +183,8 @@ class TransformNode(DataNode):
         source: Node | None = None,
         analysis_type: AnalysisType = AnalysisType.UNKNOWN,
         probe_correction: MeasurementProbe = MeasurementProbe(
-            "Unknown", RectWaveguide(float("nan"), float("nan"), (float("nan"), float("nan")))
+            "Unknown",
+            RectWaveguide(float("nan"), float("nan"), (float("nan"), float("nan"))),
         ),
         **kwargs,
     ):

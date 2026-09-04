@@ -8,7 +8,7 @@ University.
 import inspect
 import logging
 from collections.abc import Callable
-from dataclasses import InitVar, dataclass, field
+from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Any, Optional
 from uuid import UUID, uuid4
@@ -91,7 +91,7 @@ def context_action(
             "action": action,
             "helper_dialog": helper_dialog,
             "separator": separator,
-            "spawn_thread": spawn_thread
+            "spawn_thread": spawn_thread,
         }
         return func
 
@@ -118,8 +118,8 @@ class Node:
 
     # Node values
     id: UUID = uuid4()
-    name: InitVar[str | None] = None
-    node_type: InitVar[NodeType | None] = NodeType.UNKNOWN
+    # name: InitVar[str | None] = None
+    # node_type: InitVar[NodeType | None] = NodeType.UNKNOWN
     name_editable: bool | None = False
     attributes: dict | None = field(default_factory=dict)
     data: Any | None = None
@@ -129,7 +129,9 @@ class Node:
     _parent: Optional["Node"] = None
     _children: list["Node"] = field(default_factory=list)
 
-    def __post_init__(self, name: str | None = None, node_type: NodeType = NodeType.UNKNOWN):
+    def __post_init__(
+        self, name: str | None = None, node_type: NodeType = NodeType.UNKNOWN
+    ):
         self._name = name
         self._node_type = node_type
 
@@ -164,7 +166,7 @@ class Node:
         if isinstance(parent, Node):
             self._parent = parent
         else:
-            raise TypeError(f"Node 'parent' must be of type 'Node'" f" got {type(parent)}.")
+            raise TypeError(f"Node 'parent' must be of type 'Node' got {type(parent)}.")
 
     # -- Children ------------
 
@@ -185,14 +187,14 @@ class Node:
             child.parent = self
             self._children.append(child)
         else:
-            raise TypeError(f"Node children must be of type 'Node'," f" got {type(child)}.")
+            raise TypeError(f"Node children must be of type 'Node', got {type(child)}.")
 
     def remove_child(self, child):
         """Remove a single child Node."""
         if not isinstance(child, Node):
-            raise TypeError(f"Node children must be of type 'Node'," f" got {type(child)}.")
+            raise TypeError(f"Node children must be of type 'Node', got {type(child)}.")
         if child not in self._children:
-            raise ValueError("Attempting to remove item that is not a child of " "node.")
+            raise ValueError("Attempting to remove item that is not a child of node.")
         self._children.remove(child)
 
     @property
@@ -210,7 +212,7 @@ class Node:
     @property
     def is_root(self) -> bool:
         """Return if this node is a root (has no parent)."""
-        return False if self.parent else True
+        return not self.parent
 
     def get_child_by_index(self, index) -> "Node":
         """Get a child Node by its index below this node."""
@@ -246,7 +248,9 @@ class Node:
         """
         actions: list[ContextAction] = []
 
-        for name, function in inspect.getmembers(self.__class__, predicate=inspect.isfunction):
+        for name, function in inspect.getmembers(
+            self.__class__, predicate=inspect.isfunction
+        ):
             meta = getattr(function, "__context_action__", None)
             if not meta:
                 continue

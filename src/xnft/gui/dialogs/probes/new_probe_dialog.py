@@ -82,7 +82,9 @@ class NewProbeDialog(QDialog):
             )
             self.cb_standard_waveguide_type.addItem(label, field_type)
 
-        layout_dim.addWidget(LabeledWidget("Probe Type", self.cb_standard_waveguide_type))
+        layout_dim.addWidget(
+            LabeledWidget("Probe Type", self.cb_standard_waveguide_type)
+        )
 
         self.units_label = QLabel("Units: mm")
         self.units_label.setStyleSheet("color: #777")
@@ -112,7 +114,9 @@ class NewProbeDialog(QDialog):
             get_available_extensions="*.nist",
         )
 
-        layout_meas.addWidget(LabeledWidget("Probe Measurement file:", self.fe_measured_probe))
+        layout_meas.addWidget(
+            LabeledWidget("Probe Measurement file:", self.fe_measured_probe)
+        )
 
         self.units_label = QLabel("File types: *.nist")
         self.units_label.setStyleSheet("color: #777")
@@ -160,7 +164,6 @@ class NewProbeDialog(QDialog):
         probe_type = self.selected_probe_type
 
         if probe_type == ProbeType.IDEAL_RECT:
-
             if self.cb_standard_waveguide_type.currentData() is None:
                 source = RectWaveguide(
                     x=float(self.le_ap_x.text().strip()) * 1e-3,
@@ -170,7 +173,9 @@ class NewProbeDialog(QDialog):
             else:
                 source = self.cb_standard_waveguide_type.currentData().value
 
-            probe = MeasurementProbe(name=self.le_probe_name.text().strip(), source=source)
+            probe = MeasurementProbe(
+                name=self.le_probe_name.text().strip(), source=source
+            )
 
         elif probe_type == ProbeType.MEASURED:
             probe = None
@@ -217,7 +222,9 @@ class NewProbeDialog(QDialog):
         name = self.le_probe_name.text().strip()
         if not name:
             if not silent:
-                QMessageBox.warning(self, "Missing Name", "Please enter a field node name.")
+                QMessageBox.warning(
+                    self, "Missing Name", "Please enter a field node name."
+                )
             return False
 
         if self.selected_probe_type == ProbeType.IDEAL_RECT:

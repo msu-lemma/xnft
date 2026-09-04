@@ -43,7 +43,7 @@ class GainCalibrationsNode(Node):
         report_node = GainCalibrationNode(
             gain_cal_name=kwargs["gain_cal_name"],
             gain_cal_ref=kwargs["gain_cal_ref"],
-            gain_cal_field=kwargs["gain_cal_field"]
+            gain_cal_field=kwargs["gain_cal_field"],
         )
         logger.debug(f"{report_node=}")
 
@@ -91,12 +91,12 @@ class GainCalibrationNode(DataNode):
     @gui_property(label="Reference Mfr.", order=30)
     def ref_manufacturer(self):
         return self.gain_cal_ref.manufacturer
-    
+
     @property
     @gui_property(label="Reference Model", order=40)
     def ref_model(self):
         return self.gain_cal_ref.model
-    
+
     @property
     @gui_property(label="Reference Serial Number", order=50)
     def ref_serial(self):
@@ -111,4 +111,4 @@ class GainCalibrationNode(DataNode):
     @gui_property(label="Frequency Range", order=70)
     def frequency_range(self):
         freq = self.gain_cal_ref.data.frequency
-        return f'{Quantity(freq.min(), "Hz")}–{Quantity(freq.max(), "Hz")}'
+        return f"{Quantity(freq.min(), 'Hz')}–{Quantity(freq.max(), 'Hz')}"

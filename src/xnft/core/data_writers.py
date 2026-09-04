@@ -4,6 +4,7 @@ Data writers for xarray formatted data.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -22,7 +23,7 @@ def write_dataset_hdf5(ds: xr.Dataset, file_path: Path):
 
     coordinate_units_list = []
     for key, value in tmp_ds.attrs["coordinate_units"].items():
-        coordinate_units_list.append(f'{key}, {value}')
+        coordinate_units_list.append(f"{key}, {value}")
     tmp_ds.attrs["coordinate_units"] = coordinate_units_list
 
     for da in tmp_ds.data_vars.values():

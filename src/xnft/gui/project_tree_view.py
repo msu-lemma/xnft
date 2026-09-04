@@ -54,13 +54,10 @@ class ProjectTreeView(QTreeView):
         # Build the context menu based on associated actions
         menu = QMenu(self)
         for context_action in context_actions:
-
             # If context action has an associated icon
             if context_action.icon_name:
                 action = QAction(
-                    self.model().get_icon(
-                        context_action.icon_name, from_theme=True
-                    ),
+                    self.model().get_icon(context_action.icon_name, from_theme=True),
                     context_action.label,
                     menu,
                 )
@@ -113,9 +110,7 @@ class ProjectTreeView(QTreeView):
                 # If no context.action specified, directly invoke callable
                 invoke = getattr(context_action, "invoke", None)
                 if callable(invoke):
-                    action.triggered.connect(
-                        lambda checked=False, inv=invoke: inv()
-                    )
+                    action.triggered.connect(lambda checked=False, inv=invoke: inv())
 
             menu.addAction(action)
 

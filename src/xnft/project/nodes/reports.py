@@ -78,7 +78,9 @@ class ReportsNode(Node):
         order=20,
         enabled=True,
         action="ui_action",
-        helper_dialog=partial(NewFieldReport, show_fields=True, select_multiple_fields=False),
+        helper_dialog=partial(
+            NewFieldReport, show_fields=True, select_multiple_fields=False
+        ),
         icon_name="document-new",
     )
     def new_2d_field_report(self, **kwargs):
@@ -125,7 +127,7 @@ class ReportNode(DataNode):
     name_editable: bool | None = True
     icon_name: str = "utilities-system-monitor"
 
-    file_export_types = [".h5", ".csv"]
+    file_export_types = (".h5", ".csv")
 
     def __init__(
         self,
@@ -189,7 +191,10 @@ class ReportNodeSurfacePlot2D(ReportNode):
         self.file_export_types = [".h5", ".csv"]
 
     @context_action(
-        label="View Report", icon_name="utilities-system-monitor", action="ui_action", order=10
+        label="View Report",
+        icon_name="utilities-system-monitor",
+        action="ui_action",
+        order=10,
     )
     def open(self):
         """Open/view the report in an MDI window."""
@@ -300,7 +305,10 @@ class ReportNodeLinePlot(ReportNode):
         self.file_export_types = [".h5", ".csv"]
 
     @context_action(
-        label="View Report", icon_name="utilities-system-monitor", action="ui_action", order=10
+        label="View Report",
+        icon_name="utilities-system-monitor",
+        action="ui_action",
+        order=10,
     )
     def open(self):
         """Open/view the report in an MDI window."""
@@ -334,7 +342,9 @@ class ReportNodeLinePlot(ReportNode):
             raise TypeError("self.data (traces) must be iterable")
         for trace in self.data:
             if not isinstance(trace, PlotTrace):
-                raise TypeError(f"Export traces must be of type PlotTrace not {type(trace)}")
+                raise TypeError(
+                    f"Export traces must be of type PlotTrace not {type(trace)}"
+                )
 
             plot_data, attrs = trace.serialize()
             report_data = xr.DataArray(
@@ -346,7 +356,7 @@ class ReportNodeLinePlot(ReportNode):
                 },
             )
 
-            file_path = Path(directory_path) / f'{attrs['name']}{file_type[1:]}'
+            file_path = Path(directory_path) / f"{attrs['name']}{file_type[1:]}"
 
             if file_type == "*.h5":
                 write_data_array_hdf5(report_data, file_path)

@@ -15,7 +15,8 @@ from .functions import PlotFunctions
 from .scales import PlotScales
 
 FieldComponent = namedtuple(
-    "FieldComponent", ("name", "function", "scales", "field_types", "plot_functions", "enabled")
+    "FieldComponent",
+    ("name", "function", "scales", "field_types", "plot_functions", "enabled"),
 )
 
 

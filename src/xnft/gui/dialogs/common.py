@@ -39,7 +39,14 @@ class ListWidgetTitle(QWidget):
 
 
 class LabeledWidget(QWidget):
-    def __init__(self, label: str, widget: QWidget, parent=None, layout_cls=QHBoxLayout, compact=False):
+    def __init__(
+        self,
+        label: str,
+        widget: QWidget,
+        parent=None,
+        layout_cls=QHBoxLayout,
+        compact=False,
+    ):
         super().__init__(parent)
 
         self._layout = layout_cls(self)
@@ -70,7 +77,6 @@ class LabeledWidget(QWidget):
 
             self._layout.addWidget(self.label, 0)
             self._layout.addWidget(self.widget, 1)
-
 
 
 class FileEntryRow(QWidget):

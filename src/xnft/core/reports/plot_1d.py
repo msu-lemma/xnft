@@ -91,7 +91,9 @@ class Plot1D(QWidget):
 
         # -- Add Trace List --
         self.trace_list_widget = TraceList(self.plot)
-        self.trace_list_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.trace_list_widget.setSizePolicy(
+            QSizePolicy.Expanding, QSizePolicy.Expanding
+        )
 
         # Add +/-, edit buttons
         self.pb_add_trace = QPushButton("+")
@@ -179,8 +181,12 @@ class Plot1D(QWidget):
         self._update_abscissa()
 
     def _update_abscissa(self):
-        abscissa_name = self.abscissa.title() if isinstance(self.abscissa, str) else None
-        abscissa_units = self.abscissa_units if isinstance(self.abscissa_units, str) else None
+        abscissa_name = (
+            self.abscissa.title() if isinstance(self.abscissa, str) else None
+        )
+        abscissa_units = (
+            self.abscissa_units if isinstance(self.abscissa_units, str) else None
+        )
         self.plot.setLabel("bottom", text=abscissa_name, units=abscissa_units)
 
     def _update_ordinate(self):
@@ -209,7 +215,9 @@ class Plot1D(QWidget):
                         raise RuntimeError("Source field data is not populated.")
 
                     abscissa_values = source_field[tp.abscissa]
-                    abscissa_units = tp.source_field.data.attrs["coordinate_units"][tp.abscissa]
+                    abscissa_units = tp.source_field.data.attrs["coordinate_units"][
+                        tp.abscissa
+                    ]
                     if abscissa_units == unyt.radian:
                         abscissa_values = np.rad2deg(abscissa_values)
 
@@ -235,7 +243,9 @@ class Plot1D(QWidget):
 
                     # Update ordinate name if a function is applied
                     if tp.ordinate_function is not None:
-                        ordinate_name = f"{tp.ordinate_function.name_short}({ordinate_name})"
+                        ordinate_name = (
+                            f"{tp.ordinate_function.name_short}({ordinate_name})"
+                        )
 
                     # -- Trace ---
                     trace = PlotTrace(
@@ -311,7 +321,6 @@ class Plot1D(QWidget):
         # Remove all items before updating items
         for _ in range(self.cb_coordinate_system.count()):
             self.cb_coordinate_system.removeItem(0)
-
 
     def _update_abscissa_options(self):
         pass

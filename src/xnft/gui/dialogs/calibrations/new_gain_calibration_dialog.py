@@ -61,7 +61,9 @@ class NewGainCalibrationDialog(QDialog):
 
         self.le_calibration_name = QLineEdit(self)
         self.le_calibration_name.setText("Gain Calibration")
-        self.le_calibration_name.setPlaceholderText("Enter the name for the gain calibration")
+        self.le_calibration_name.setPlaceholderText(
+            "Enter the name for the gain calibration"
+        )
 
         # Load all source field options (near and far) from active project
 
@@ -121,7 +123,9 @@ class NewGainCalibrationDialog(QDialog):
         layout.addWidget(self.buttons)
 
         # --- Add Connections ---
-        self.cb_gain_cal_reference.currentIndexChanged.connect(self._on_cal_standard_changed)
+        self.cb_gain_cal_reference.currentIndexChanged.connect(
+            self._on_cal_standard_changed
+        )
 
         self.buttons.accepted.connect(self._on_accept)
         self.buttons.rejected.connect(self.reject)
@@ -135,7 +139,7 @@ class NewGainCalibrationDialog(QDialog):
         return {
             "gain_cal_name": self.le_calibration_name.text().strip(),
             "gain_cal_ref": gain_cal_ref,
-            "gain_cal_field": gain_cal_field
+            "gain_cal_field": gain_cal_field,
         }
 
     def _update_gain_cals(self):
@@ -178,14 +182,18 @@ class NewGainCalibrationDialog(QDialog):
 
             # Restore previous selection (avoid leaving it on "Import...")
             self.cb_gain_cal_reference.blockSignals(True)
-            self.cb_gain_cal_reference.setCurrentIndex(self.cb_gain_cal_standard_last_index)
+            self.cb_gain_cal_reference.setCurrentIndex(
+                self.cb_gain_cal_standard_last_index
+            )
             self.cb_gain_cal_reference.blockSignals(False)
         elif index == self.manage_index:
             QDesktopServices.openUrl(QUrl.fromLocalFile(str(gain_cal_dir)))
-            
+
             # Restore previous selection (avoid leaving it on "Import...")
             self.cb_gain_cal_reference.blockSignals(True)
-            self.cb_gain_cal_reference.setCurrentIndex(self.cb_gain_cal_standard_last_index)
+            self.cb_gain_cal_reference.setCurrentIndex(
+                self.cb_gain_cal_standard_last_index
+            )
             self.cb_gain_cal_reference.blockSignals(False)
         else:
             # Update last valid selection
@@ -195,7 +203,9 @@ class NewGainCalibrationDialog(QDialog):
         name = self.le_calibration_name.text().strip()
         if not name:
             if not silent:
-                QMessageBox.warning(self, "Missing Name", "Please enter a field node name.")
+                QMessageBox.warning(
+                    self, "Missing Name", "Please enter a field node name."
+                )
             return False
 
         if self.cb_gain_cal_field.currentData() is None:
@@ -206,7 +216,7 @@ class NewGainCalibrationDialog(QDialog):
                     "Measured Field cannot be empty.",
                 )
                 return False
-            
+
         if self.cb_gain_cal_reference.currentData() is None:
             if not silent:
                 QMessageBox.warning(

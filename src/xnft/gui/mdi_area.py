@@ -62,7 +62,9 @@ class QMdiAreaWatermark(QMdiArea):
         """Compute QSize in screen pixels"""
         return QSize(round(size.width() * dpr), round(size.height() * dpr))
 
-    def _svg_to_pixmap(self, renderer: QSvgRenderer, size: QSizeF, dpr: float) -> QPixmap:
+    def _svg_to_pixmap(
+        self, renderer: QSvgRenderer, size: QSizeF, dpr: float
+    ) -> QPixmap:
         pixmap = QPixmap(self._scale_pixels(size, dpr))
         pixmap.fill(Qt.transparent)
         pixmap.setDevicePixelRatio(dpr)

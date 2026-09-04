@@ -10,7 +10,16 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QPainter, QPixmap
 
 
-def trace_preview(pen, symbol=None, symbol_brush=None, symbol_pen=None, symbol_size=10, background=Qt.transparent, width=40, height=20):
+def trace_preview(
+    pen,
+    symbol=None,
+    symbol_brush=None,
+    symbol_pen=None,
+    symbol_size=10,
+    background=Qt.transparent,
+    width=40,
+    height=20,
+):
     """
     Generate trace preview pixmap.
 
@@ -40,7 +49,6 @@ def trace_preview(pen, symbol=None, symbol_brush=None, symbol_pen=None, symbol_s
         painter.drawLine(4, y, width - 4, y)
 
     if symbol:
-
         center_x = width // 2
         center_y = height // 2
 
@@ -52,7 +60,7 @@ def trace_preview(pen, symbol=None, symbol_brush=None, symbol_pen=None, symbol_s
             symbol=symbol,
             size=symbol_size,
             pen=symbol_pen if symbol_pen is not None else Qt.NoPen,
-            brush=symbol_brush
+            brush=symbol_brush,
         )
 
         painter.restore()

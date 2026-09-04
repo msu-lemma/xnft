@@ -12,7 +12,10 @@ import numpy as np
 from ..enums import FieldType
 from .functions import PlotFunctions
 
-PlotNorm = namedtuple("PlotNorm", ("name", "function", "field_types", "enabled", "unit_modifier", "functions"))
+PlotNorm = namedtuple(
+    "PlotNorm",
+    ("name", "function", "field_types", "enabled", "unit_modifier", "functions"),
+)
 
 
 class PlotNorms(Enum):
@@ -22,7 +25,9 @@ class PlotNorms(Enum):
         unit_modifier=lambda x: "N.U.",
         enabled=True,
         field_types={FieldType.FAR},
-        functions={PlotFunctions.MAGNITUDE,},
+        functions={
+            PlotFunctions.MAGNITUDE,
+        },
     )
     NONE = PlotNorm(
         name="None",

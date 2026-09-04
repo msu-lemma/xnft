@@ -76,7 +76,9 @@ class CoordinateSystemType(Enum):
         name="Spherical (r,θ,φ)",  # For label purposes only, does not represent internal format
         components=("r", "phi", "theta"),
     )
-    DIRECTION_COSINE = CoordinateSystemTuple(name="Direction Cosine (u,v)", components=("u", "v"))
+    DIRECTION_COSINE = CoordinateSystemTuple(
+        name="Direction Cosine (u,v)", components=("u", "v")
+    )
     SPHERICAL_AZEL = "Azimuth/Elevation"
     UNKNOWN = "Unknown"
 
