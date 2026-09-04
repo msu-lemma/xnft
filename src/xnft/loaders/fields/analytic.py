@@ -98,7 +98,10 @@ def load_analytic_yaml(
 
     if len(file_list) != 1:
         raise ValueError(f"Analytic loader accepts exactly one file. Got: {file_list}")
-    if file_list[0].polarization != {PolarizationType.CO_POL, PolarizationType.CROSS_POL}:
+    if file_list[0].polarization != {
+        PolarizationType.CO_POL,
+        PolarizationType.CROSS_POL,
+    }:
         raise ValueError(
             "Analytic loader only accepts files containing both co-pol and cross-pol."
         )
@@ -168,7 +171,9 @@ def load_rect_aperture_yaml(fd, field_type, scan_type):
         theta_min = fd["samples"]["far_field"]["theta"]["bounds"][0]
         theta_num_samples = fd["samples"]["far_field"]["theta"]["size"]
 
-        phi_sample_location_array = np.linspace(phi_min, phi_max, phi_num_samples) * np.pi / 180
+        phi_sample_location_array = (
+            np.linspace(phi_min, phi_max, phi_num_samples) * np.pi / 180
+        )
         theta_sample_location_array = (
             np.linspace(theta_min, theta_max, theta_num_samples) * np.pi / 180
         )
@@ -204,12 +209,12 @@ def load_rect_aperture_yaml(fd, field_type, scan_type):
 def load_dipole_yaml(fd, field_type, scan_type):
     r = fd["samples"]["near_field"]["r"]
 
-    phi_max = fd["samples"]["near_field"]["phi"]["bounds"][1]
-    phi_min = fd["samples"]["near_field"]["phi"]["bounds"][0]
+    phi_max = np.deg2rad(fd["samples"]["near_field"]["phi"]["bounds"][1])
+    phi_min = np.deg2rad(fd["samples"]["near_field"]["phi"]["bounds"][0])
     phi_size = fd["samples"]["near_field"]["phi"]["size"]
 
-    theta_max = fd["samples"]["near_field"]["theta"]["bounds"][1]
-    theta_min = fd["samples"]["near_field"]["theta"]["bounds"][0]
+    theta_max = np.deg2rad(fd["samples"]["near_field"]["theta"]["bounds"][1])
+    theta_min = np.deg2rad(fd["samples"]["near_field"]["theta"]["bounds"][0])
     theta_size = fd["samples"]["near_field"]["theta"]["size"]
 
     r_sample_vec = np.array([r], np.float64)
