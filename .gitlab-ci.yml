@@ -1,9 +1,9 @@
 stages:
-  - test-docs
+  - build-test
   - release
 
-# include:
-#   - template: Jobs/Dependency-Scanning.v2.gitlab-ci.yml
+include:
+  - template: Jobs/Dependency-Scanning.v2.gitlab-ci.yml
   
 variables:
   GIT_LFS_SKIP_SMUDGE: "1"
@@ -17,7 +17,7 @@ cache:
 # Run test cases
 test-job:
   image: ghcr.io/prefix-dev/pixi:latest
-  stage: test-docs
+  stage: build-test
   script:
   - pixi run -e test test
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
@@ -32,7 +32,7 @@ test-job:
 # Run code quality test
 code-quality-job:
   image: ghcr.io/prefix-dev/pixi:latest
-  stage: test-docs
+  stage: build-test
   script:
   - pixi run -e test ruff check --output-format=gitlab --output-file=$CI_PROJECT_DIR/code-quality-report.json
   artifacts:
@@ -43,7 +43,7 @@ code-quality-job:
 # Builds the sphinx documentation for the project
 docs-build-job:
   image: ghcr.io/prefix-dev/pixi:latest
-  stage: test-docs
+  stage: build-test
   before_script:
   - > 
     apt-get update && apt-get install -y --no-install-recommends 
@@ -78,7 +78,7 @@ release-job:
 
 # Run Dependency Scanning
 generate-sbom:
-  stage: test-docs
+  stage: .pre
   image: ghcr.io/prefix-dev/pixi:latest
   script:
    - pixi install -a 
@@ -86,3 +86,9 @@ generate-sbom:
   artifacts:
     paths:
      - gl-sbom.cdx.json
+
+dependency-scanning:
+  stage: application-security-testing
+  needs:
+    - job: generate-sbom
+      artifacts: true
