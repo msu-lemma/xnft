@@ -109,7 +109,7 @@ class QMdiAreaWatermark(QMdiArea):
 
         # Add LEmmA logo
         lemma_w = self._lemma_target_size.width()
-        lemma_h = self._lemma_target_size.height()
+        # lemma_h = self._lemma_target_size.height()
         lemma_x = vp_rect.right() - lemma_w - self._margin
         lemma_y = vp_rect.top() + self._margin
 

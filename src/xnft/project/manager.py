@@ -14,7 +14,9 @@ logger = logging.getLogger(__name__)
 
 # === Project Manager ===
 class Manager:
-    def __init__(self, projects: list[Project] = []):
+    def __init__(self, projects: list[Project] | None = None):
+        if projects is None:
+            projects = []
         self._projects = projects
 
     @property

@@ -23,13 +23,13 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from ....core.calibration.gain import (
+from ....calibration.gain import (
     copy_gain_cal_file,
     gain_cal_dir,
     get_gain_cal_files,
     load_gain_cal,
 )
-from ....core.enums import FieldType, NodeType
+from ....common.enums import FieldType, NodeType
 from ....project.nodes.node import Node
 from ..common import LabeledWidget
 
@@ -92,7 +92,7 @@ class NewGainCalibrationDialog(QDialog):
             if item.node_type == NodeType.FIELDS and item.field_type == FieldType.FAR:
                 self.cb_gain_cal_field.addItem(label, item)
 
-        gain_cal_options: list[tuple] = list()
+        gain_cal_options: list[tuple] = []
         for label, item in gain_cal_options:
             pass
 
@@ -208,23 +208,21 @@ class NewGainCalibrationDialog(QDialog):
                 )
             return False
 
-        if self.cb_gain_cal_field.currentData() is None:
-            if not silent:
-                QMessageBox.warning(
-                    self,
-                    "Value Error",
-                    "Measured Field cannot be empty.",
-                )
-                return False
+        if self.cb_gain_cal_field.currentData() is None and not silent:
+            QMessageBox.warning(
+                self,
+                "Value Error",
+                "Measured Field cannot be empty.",
+            )
+            return False
 
-        if self.cb_gain_cal_reference.currentData() is None:
-            if not silent:
-                QMessageBox.warning(
-                    self,
-                    "Value Error",
-                    "Reference File cannot be empty.",
-                )
-                return False
+        if self.cb_gain_cal_reference.currentData() is None and not silent:
+            QMessageBox.warning(
+                self,
+                "Value Error",
+                "Reference File cannot be empty.",
+            )
+            return False
 
         return True
 

@@ -7,12 +7,17 @@ University.
 
 from __future__ import annotations
 
+from dataclasses import dataclass, field
+from pathlib import Path
+
 import numpy as np
 import unyt
 import xarray as xr
-from numpy.typing import ArrayLike
+from numpy.typing import NDArray
 
-from .calibration.gain import GainCalibration
+from xnft.common.enums import PolarizationType, SParameterType
+
+from ..calibration.gain import GainCalibration
 from .enums import CoordinateSystemType, DataSourceType, FieldType
 
 # Allowed coordinate system types for near/far-field
@@ -44,10 +49,10 @@ class FieldDataset:
     @staticmethod
     def create(
         *,
-        e_field: ArrayLike,
-        h_field: ArrayLike | None = None,
-        spatial_coords: dict[ArrayLike],
-        frequency: ArrayLike,
+        e_field: NDArray,
+        h_field: NDArray | None = None,
+        spatial_coords: dict[NDArray, str],
+        frequency: NDArray,
         coordinate_system: CoordinateSystemType,
         field_type: FieldType,
         data_source: DataSourceType,
@@ -58,13 +63,13 @@ class FieldDataset:
 
         Parameters
         ----------
-        e_field : ArrayLike
+        e_field : NDArray
             3D Electric field tensor, shape (3, nx, ny, nz)
-        h_field : ArrayLike
+        h_field : NDArray
             3D Magnetic field tensor, shape (3, nx, ny, nz)
-        spatial_coords : Dict[ArrayLike]
+        spatial_coords : Dict[NDArray]
             Mapping from component name to coordinate vector
-        frequency : ArrayLike
+        frequency : NDArray
             Vector of frequencies contained in field tensor
         coordinate_system : CoordinateSystemType
             Coordinate system used for data
@@ -123,11 +128,10 @@ class FieldDataset:
             if dim not in spatial_coords:
                 raise ValueError(f"Missing coordinate '{dim}' in spatial_coords")
 
-        if h_field is not None:
-            if e_field.shape != h_field.shape:
-                raise ValueError(
-                    "E- and H-field shapes must match, otherwise H-field must be None"
-                )
+        if h_field is not None and e_field.shape != h_field.shape:
+            raise ValueError(
+                "E- and H-field shapes must match, otherwise H-field must be None"
+            )
 
         # --- Create Dataset ---
         coords = {
@@ -148,7 +152,7 @@ class FieldDataset:
             "E": (
                 dims,
                 e_field,
-                {"units": unyt.volt / unyt.meter},
+                {"units": f"{unyt.volt}/{unyt.meter}"},
             )
         }
 
@@ -156,7 +160,7 @@ class FieldDataset:
             data_vars["H"] = (
                 dims,
                 h_field,
-                {"units": unyt.ampere / unyt.meter},
+                {"units": f"{unyt.ampere}/{unyt.meter}"},
             )
 
         return xr.Dataset(
@@ -171,3 +175,29 @@ class FieldDataset:
                 "gain_calibration": gain_calibration,
             },
         )
+
+
+@dataclass
+class FileInfo:
+    """
+    File path and metatdata struct.
+
+    Parameters
+    ----------
+    path : pathlib.Path
+        Path to file.
+    polarization : PolarizationTye or Set[PolarizationType], optional
+        Polarization of data stored in file, may be a typle of both co-
+        and cross-pol, by default {PolarizationType.CO_POL, PolarizationType.CROSS_POL}
+    s_parameters : Set[SParameterType]
+        S-Parameter in file to load for processing
+    """
+
+    path: Path
+    polarization: PolarizationType | set[PolarizationType] = field(
+        default_factory=lambda: {
+            PolarizationType.CO_POL,
+            PolarizationType.CROSS_POL,
+        }
+    )
+    s_parameters: set[SParameterType] = field(default_factory=set)

@@ -10,7 +10,7 @@ from dataclasses import dataclass
 
 from quantiphy import Quantity
 
-from ...core.calibration.gain import GainCalibrationReference
+from ...calibration.gain import GainCalibrationReference
 from ...gui.dialogs.calibrations.new_gain_calibration_dialog import (
     NewGainCalibrationDialog,
 )

@@ -7,8 +7,8 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 import logging
 from pathlib import Path
 
-from ...core.enums import DataPolarizationType, DataSourceType, FieldType, ScanType
-from ...core.types import FileInfo
+from ...common.enums import DataPolarizationType, DataSourceType, FieldType, ScanType
+from ...common.types import FileInfo
 
 logger = logging.getLogger(__name__)
 

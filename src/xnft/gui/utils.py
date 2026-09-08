@@ -4,7 +4,12 @@ Module providing GUI utility functions.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
-from PySide6.QtGui import QWindow
+from functools import lru_cache
+from pathlib import Path
+
+from PySide6.QtGui import QIcon, QWindow
+
+from ..resources.paths import resource_path
 
 
 def center_window(window: QWindow, target_size_ratio: float = 0.7):
@@ -45,3 +50,29 @@ def center_window(window: QWindow, target_size_ratio: float = 0.7):
 
         window.setMinimumWidth(min_width)
         window.setMinimumHeight(min_height)
+
+
+@lru_cache  # Store icons in a cache once loaded; icons shouldn't change
+def get_icon(name: str, from_theme=False) -> QIcon:
+    """
+    Dynamically load icon from file or from built-in theme.
+
+    Parameters
+    ----------
+    name : str
+        Name of icon to load
+    from_theme : bool, optional
+        Load icon from built-in theme (True) or from file (False), by
+        default False
+
+    Returns
+    -------
+    QIcon
+        Icon asset.
+    """
+    if from_theme:
+        icon = QIcon.fromTheme(name)
+    else:
+        file_name = Path(name).name
+        icon = QIcon(str(resource_path("icons", file_name)))
+    return icon

@@ -33,7 +33,9 @@ def write_dataset_hdf5(ds: xr.Dataset, file_path: Path):
     tmp_ds.to_netcdf(file_path, engine="netcdf4", auto_complex=True)
 
 
-def write_data_array_hdf5(da: xr.DataArray, file_path: Path, attrs=dict()):
+def write_data_array_hdf5(da: xr.DataArray, file_path: Path, attrs=None):
+    if attrs is None:
+        attrs = {}
     if isinstance(da, xr.DataArray):
         if "units" in da.attrs:
             da.attrs["units"] = str(da.attrs["units"])

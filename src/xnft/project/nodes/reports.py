@@ -15,17 +15,17 @@ import numpy as np
 import xarray as xr
 from PySide6.QtWidgets import QMdiSubWindow
 
-from ...core.data_writers import write_data_array_hdf5
-from ...core.enums import ReportType
-from ...core.reports.plot_1d import Plot1D, PlotTrace
-from ...core.reports.plot_2d import (
+from ...common.enums import ReportType
+from ...gui.dialogs.export_data_dialog import ExportDataDialog
+from ...gui.dialogs.export_data_directory_dialog import ExportDataDirectoryDialog
+from ...gui.dialogs.reports.new_field_report_dialog import NewFieldReport
+from ...reports.data_writers import write_data_array_hdf5
+from ...reports.plot_1d import Plot1D, PlotTrace
+from ...reports.plot_2d import (
     Plot2D,
     SurfacePlot2DParameters,
     get_transformed_data,
 )
-from ...gui.dialogs.export_data_dialog import ExportDataDialog
-from ...gui.dialogs.export_data_directory_dialog import ExportDataDirectoryDialog
-from ...gui.dialogs.reports.new_field_report_dialog import NewFieldReport
 from .node import DataNode, Node, NodeType, context_action, gui_property
 
 logger = logging.getLogger(__name__)

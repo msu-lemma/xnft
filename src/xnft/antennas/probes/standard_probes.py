@@ -6,7 +6,7 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 
 from enum import Enum
 
-from xnft.core.antennas.aperture.rectangular import RectWaveguide
+from xnft.antennas.aperture.rectangular import RectWaveguide
 
 
 class StandardRectWaveguide(Enum):
@@ -34,8 +34,9 @@ class StandardRectWaveguide(Enum):
     WR12 = RectWaveguide(3.10e-3, 1.55e-3, (60e9, 90e9))
     WR10 = RectWaveguide(2.54e-3, 1.27e-3, (75e9, 110e9))
     WR8 = RectWaveguide(2.03e-3, 1.02e-3, (90e9, 140e9))
+    # NOTE: WR6, WR6.5 and WR7 are identical sizes
     WR7 = RectWaveguide(1.65e-3, 0.826e-3, (110e9, 170e9))
-    WR6 = RectWaveguide(1.65e-3, 0.826e-3, (110e9, 170e9))
+    WR6 = RectWaveguide(1.65e-3, 0.826e-3, (110e9, 170e9))  # noqa: PIE796
     WR5 = RectWaveguide(1.30e-3, 0.648e-3, (140e9, 220e9))
     WR4 = RectWaveguide(1.09e-3, 0.546e-3, (170e9, 260e9))
     WR3 = RectWaveguide(0.864e-3, 0.432e-3, (220e9, 330e9))

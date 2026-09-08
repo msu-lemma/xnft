@@ -10,7 +10,7 @@ from enum import Enum
 import numpy as np
 import xarray as xr
 
-from ..enums import FieldType
+from ..common.enums import FieldType
 from .functions import PlotFunctions
 from .scales import PlotScales
 
@@ -52,7 +52,7 @@ def field_component_y(field: xr.DataArray):
 
 def field_component_z(field: xr.DataArray):
     if field.attrs["field_type"] == FieldType.FAR:
-        phi_grid, theta_grid = np.meshgrid(field.phi, field.theta, indexing="ij")
+        _phi_grid, theta_grid = np.meshgrid(field.phi, field.theta, indexing="ij")
         e_theta = field.sel(component="theta")
         e_r = field.sel(component="r") if "r" in field.component else 0
         return np.cos(theta_grid) * e_r - np.sin(theta_grid) * e_theta
@@ -77,7 +77,7 @@ def field_component_theta(field: xr.DataArray):
 
 def field_component_l3_ref(field: xr.DataArray):
     """Ludwig-3 Ref Polarization"""
-    phi_grid, theta_grid = np.meshgrid(field.phi, field.theta, indexing="ij")
+    phi_grid, _theta_grid = np.meshgrid(field.phi, field.theta, indexing="ij")
     e_theta = field.sel(component="theta")
     e_phi = field.sel(component="phi")
     return np.sin(phi_grid) * e_theta + np.cos(phi_grid) * e_phi
@@ -85,7 +85,7 @@ def field_component_l3_ref(field: xr.DataArray):
 
 def field_component_l3_cross(field: xr.DataArray):
     """Ludwig-3 Cross Polarization"""
-    phi_grid, theta_grid = np.meshgrid(field.phi, field.theta, indexing="ij")
+    phi_grid, _theta_grid = np.meshgrid(field.phi, field.theta, indexing="ij")
     e_theta = field.sel(component="theta")
     e_phi = field.sel(component="phi")
     return np.cos(phi_grid) * e_theta - np.sin(phi_grid) * e_phi

@@ -8,12 +8,12 @@ University.
 import inspect
 import logging
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import InitVar, dataclass, field
 from enum import StrEnum
-from typing import Any, Optional
+from typing import Any, ClassVar, Optional
 from uuid import UUID, uuid4
 
-from ...core.enums import NodeType
+from ...common.enums import NodeType
 
 logger = logging.getLogger(__name__)
 
@@ -117,9 +117,11 @@ class Node:
     """Base class for a node in the project hierarchy."""
 
     # Node values
-    id: UUID = uuid4()
-    # name: InitVar[str | None] = None
-    # node_type: InitVar[NodeType | None] = NodeType.UNKNOWN
+    id: ClassVar[UUID] = uuid4()
+    name: InitVar[str | None] = None
+    node_type: InitVar[NodeType] = NodeType.UNKNOWN
+    _name: str | None = field(init=False, default=None)
+    _node_type: NodeType = field(init=False, default=NodeType.UNKNOWN)
     name_editable: bool | None = False
     attributes: dict | None = field(default_factory=dict)
     data: Any | None = None
@@ -129,9 +131,7 @@ class Node:
     _parent: Optional["Node"] = None
     _children: list["Node"] = field(default_factory=list)
 
-    def __post_init__(
-        self, name: str | None = None, node_type: NodeType = NodeType.UNKNOWN
-    ):
+    def __post_init__(self, name: str | None, node_type: NodeType):
         self._name = name
         self._node_type = node_type
 
@@ -139,7 +139,7 @@ class Node:
 
     @property
     @gui_property(label="Name", order=0)
-    def name(self):
+    def name(self):  # noqa: F811
         return self._name
 
     @name.setter
@@ -148,7 +148,7 @@ class Node:
 
     @property
     @gui_property(label="Node Type", order=1)
-    def node_type(self):
+    def node_type(self):  # noqa: F811
         return self._node_type
 
     @node_type.setter

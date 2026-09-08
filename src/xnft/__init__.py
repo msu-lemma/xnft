@@ -6,7 +6,6 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 
 import logging
 import logging.config
-import multiprocessing
 import sys
 from importlib.metadata import version
 from importlib.resources import files

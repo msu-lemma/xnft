@@ -6,6 +6,7 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 
 import logging
 from types import NoneType
+from typing import ClassVar
 
 import numpy as np
 import pyqtgraph as pg
@@ -25,18 +26,80 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from ...core.reports.scales import PlotScale
-from ...gui.dialogs.reports.new_trace_dialog import NewTraceDialog, TraceParameters
-from ...project.nodes.node import DataNode
-from ..enums import CoordinateSystemType
+from ..common.enums import CoordinateSystemType
+from ..gui.dialogs.reports.new_trace_dialog import NewTraceDialog, TraceParameters
+from ..project.nodes.node import DataNode
 from .plot_helpers import trace_preview
+from .scales import PlotScale
 
 logger = logging.getLogger(__name__)
 
 
+class PlotTrace(pg.PlotDataItem):
+    def __init__(
+        self,
+        source: DataNode,
+        trace_parameters: TraceParameters,
+        ordinate_name: str,
+        ordinate_units: str,
+        ordinate_scale: PlotScale,
+        *args,
+        **kwargs,
+    ):
+        """
+        Helper subclass of PlotDataItem to store source data and slice information for traces.
+
+        All kwargs are passed to PyQtGraph PlotDataItem.
+
+        source : DataNode
+            Node containing data to plot
+        trace_parameters : TraceParameters
+            Dictionary containing trace args supplied by user (via helper dialog)
+        ordinate_name : str
+            String to display on the ordinate axis
+        ordinate_units : unyt.unit
+            Units to display on the axis
+        ordinate_scale : PlotScale
+            Scaleing to use for plot (e.g., dB, linear, etc.)
+        """
+        super().__init__(*args, **kwargs)
+
+        self.source = source
+        self.trace_parameters = trace_parameters
+        self.ordinate_name = ordinate_name
+        self.ordinate_units = ordinate_units
+        self.ordinate_scale = ordinate_scale
+
+    def serialize(self):
+        x_values, y_values = self.getData()
+        plot_data = {"x": x_values, "y": y_values}
+
+        # Create new dict with updated names for attrs dict
+        new_slice_dict = {}
+        for key, val in self.trace_parameters.slice_dict.items():
+            new_slice_dict[f"slice_{key}"] = val
+
+        attrs = {
+            "name": str(self.name()),
+            "abscissa": self.trace_parameters.abscissa,
+            "field_quantity": self.trace_parameters.field_quantity.name,
+            "field_component": self.trace_parameters.field_component.name,
+            "ordinate_function": self.trace_parameters.ordinate_function.name,
+            "field_norm": self.trace_parameters.field_norm.name,
+            "ordinate_name": self.ordinate_name,
+            "ordinate_units": str(self.ordinate_units),
+            "ordinate_scale": self.ordinate_scale.name,
+            **new_slice_dict,
+        }
+
+        return plot_data, attrs
+
+
 class Plot1D(QWidget):
     # Mapping of valid source coordinates to plotting coordinates
-    __coordinate_domains__ = {
+    __coordinate_domains__: ClassVar[
+        dict[CoordinateSystemType, tuple[CoordinateSystemType]]
+    ] = {
         CoordinateSystemType.SPHERICAL: (
             CoordinateSystemType.SPHERICAL,
             CoordinateSystemType.DIRECTION_COSINE,
@@ -64,9 +127,9 @@ class Plot1D(QWidget):
 
         self.report_node = report_node
 
-        if coordinates_type not in self.__coordinate_domains__.keys():
+        if coordinates_type not in self.__coordinate_domains__:
             raise ValueError(
-                f"Plot coordinates must be one of {[x.name for x in self.__coordinate_domains__.keys()]},"
+                f"Plot coordinates must be one of {[x.name for x in self.__coordinate_domains__]},"
                 f" got {coordinates_type.name}"
             )
 
@@ -436,63 +499,3 @@ class TraceList(QTreeWidget):
         if column == 2:
             enabled = item.checkState(2) == Qt.Checked
             item.data(0, Qt.UserRole).setVisible(enabled)
-
-
-class PlotTrace(pg.PlotDataItem):
-    def __init__(
-        self,
-        source: DataNode,
-        trace_parameters: TraceParameters,
-        ordinate_name: str,
-        ordinate_units: str,
-        ordinate_scale: PlotScale,
-        *args,
-        **kwargs,
-    ):
-        """
-        Helper subclass of PlotDataItem to store source data and slice information for traces.
-
-        All kwargs are passed to PyQtGraph PlotDataItem.
-
-        source : DataNode
-            Node containing data to plot
-        trace_parameters : TraceParameters
-            Dictionary containing trace args supplied by user (via helper dialog)
-        ordinate_name : str
-            String to display on the ordinate axis
-        ordinate_units : unyt.unit
-            Units to display on the axis
-        ordinate_scale : PlotScale
-            Scaleing to use for plot (e.g., dB, linear, etc.)
-        """
-        super().__init__(*args, **kwargs)
-
-        self.source = source
-        self.trace_parameters = trace_parameters
-        self.ordinate_name = ordinate_name
-        self.ordinate_units = ordinate_units
-        self.ordinate_scale = ordinate_scale
-
-    def serialize(self):
-        x_values, y_values = self.getData()
-        plot_data = {"x": x_values, "y": y_values}
-
-        # Create new dict with updated names for attrs dict
-        new_slice_dict = dict()
-        for key, val in self.trace_parameters.slice_dict.items():
-            new_slice_dict[f"slice_{key}"] = val
-
-        attrs = {
-            "name": str(self.name()),
-            "abscissa": self.trace_parameters.abscissa,
-            "field_quantity": self.trace_parameters.field_quantity.name,
-            "field_component": self.trace_parameters.field_component.name,
-            "ordinate_function": self.trace_parameters.ordinate_function.name,
-            "field_norm": self.trace_parameters.field_norm.name,
-            "ordinate_name": self.ordinate_name,
-            "ordinate_units": str(self.ordinate_units),
-            "ordinate_scale": self.ordinate_scale.name,
-            **new_slice_dict,
-        }
-
-        return plot_data, attrs

@@ -5,4 +5,4 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 """
 
 # NOTE: automated discovery technique did not work with pyiinstaller packaging so manual imports are used here
-from . import analytic, hfss, lemma, nsi
+from . import analytic, hfss, lemma, nsi  # noqa: F401

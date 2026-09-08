@@ -10,11 +10,11 @@ from pathlib import Path
 
 from quantiphy import Quantity
 
-from ...core.data_writers import write_dataset_hdf5
-from ...core.enums import CoordinateSystemType, DataSourceType, FieldType
+from ...common.enums import CoordinateSystemType, DataSourceType, FieldType
 from ...gui.dialogs.export_data_dialog import ExportDataDialog
 from ...gui.dialogs.fields.new_field_measurement_dialog import NewFieldMeasurementDialog
 from ...loaders.fields.field_loader_registry import field_loader_registry
+from ...reports.data_writers import write_dataset_hdf5
 from .coordinates import CoordinateNode
 from .node import DataNode, Node, NodeType, context_action, gui_property
 
@@ -25,9 +25,7 @@ logger = logging.getLogger(__name__)
 class FieldsNode(Node):
     icon_name: str = "src/xnft/resources/icons/fields.svg"
 
-    def __post_init__(
-        self, name: str | None = None, node_type: NodeType = NodeType.UNKNOWN
-    ):
+    def __post_init__(self, name: str | None, node_type: NodeType):
         super().__post_init__(name, node_type)
 
         self._node_type = NodeType.FIELDS
@@ -107,7 +105,9 @@ class FieldNode(DataNode):
     _source_type: DataSourceType = field(default=DataSourceType.UNKNOWN, init=False)
 
     name_editable: bool | None = True
-    file_export_types = [".h5", ".csv"]
+
+    # TODO/FIXME: populate with exporter registry
+    file_export_types = (".h5", ".csv")
 
     def __init__(
         self,

@@ -9,8 +9,7 @@ from pathlib import Path
 import numpy as np
 import xarray as xr
 
-from ...core.dtypes import FieldDataset
-from ...core.enums import (
+from ...common.enums import (
     CoordinateSystemType,
     DataPolarizationType,
     DataSourceType,
@@ -18,7 +17,7 @@ from ...core.enums import (
     PolarizationType,
     ScanType,
 )
-from ...core.types import FileInfo
+from ...common.types import FieldDataset, FileInfo
 from .field_loader_registry import field_loader_registry
 
 logger = logging.getLogger(__name__)

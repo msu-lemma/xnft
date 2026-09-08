@@ -30,7 +30,7 @@ from PySide6.QtWidgets import (
 if TYPE_CHECKING:
     from ...project.nodes.fields import FieldNode
     from ...project.nodes.reports import ReportNode
-from ...core.enums import (
+from ...common.enums import (
     FieldType,
 )
 
@@ -113,7 +113,7 @@ class ExportDataDialog(QDialog):
 
     def _get_available_extensions(self, glob_format=True) -> list[str]:
         if self.target_node is None:
-            return list()
+            return []
         file_extensions = self.target_node.file_export_types
         if glob_format:
             return [f"*{extension}" for extension in file_extensions]
@@ -130,7 +130,7 @@ class ExportDataDialog(QDialog):
             FieldType.FAR: defaultdict(list),
         }
 
-        for key, loader in file_registry._loaders.items():
+        for loader in file_registry._loaders.values():
             attr_dict = loader.__attributes__
             source = attr_dict["source"]
             field = attr_dict["field"]

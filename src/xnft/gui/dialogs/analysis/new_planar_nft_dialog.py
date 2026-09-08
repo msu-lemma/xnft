@@ -26,7 +26,7 @@ from PySide6.QtWidgets import (
 )
 from quantiphy import Quantity
 
-from ....core.enums import FieldType, NodeType
+from ....common.enums import FieldType, NodeType
 
 
 class NewPlanarNearFieldTransform(QDialog):
@@ -263,10 +263,7 @@ class NewPlanarNearFieldTransform(QDialog):
                 msgBox.setDefaultButton(QMessageBox.Save)
                 ret = msgBox.exec()
 
-                if ret == QMessageBox.Yes:
-                    return True
-                else:
-                    return False
+                return ret == QMessageBox.Yes
 
         return True
 

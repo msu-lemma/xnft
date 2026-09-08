@@ -23,7 +23,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from ....core.enums import NodeType
+from ....common.enums import NodeType
 
 
 class NewFieldReport(QDialog):

@@ -110,7 +110,7 @@ class ExportDataDirectoryDialog(QDialog):
 
     def _get_available_extensions(self, glob_format=True) -> list[str]:
         if self.target_node is None:
-            return list()
+            return []
         file_extensions = self.target_node.file_export_types
         if glob_format:
             return [f"*{extension}" for extension in file_extensions]

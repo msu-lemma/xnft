@@ -16,12 +16,12 @@ import scipy.constants as spc
 import xarray as xr
 from numpy.typing import NDArray
 
-from ...dtypes import FieldDataset
-from ...enums import (
+from ...common.enums import (
     CoordinateSystemType,
     DataSourceType,
     FieldType,
 )
+from ...common.types import FieldDataset
 
 logger = logging.getLogger(__name__)
 

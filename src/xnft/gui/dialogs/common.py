@@ -20,7 +20,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from ...core.enums import SParameterType
+from ...common.enums import SParameterType
 
 
 class ListWidgetTitle(QWidget):
@@ -151,11 +151,11 @@ class FileEntryRow(QWidget):
 
         extension = Path(self.le_path.text()).suffix
 
-        try:
-            loader = file_registry.get_loader(source_format, field_type, extension)
-            self.show_sp = loader.__attributes__["has_sp"]
-        except Exception:
-            pass
+        # try:
+        loader = file_registry.get_loader(source_format, field_type, extension)  # noqa: F821
+        self.show_sp = loader.__attributes__["has_sp"]
+        # except Exception:
+        #     pass
 
     @property
     def show_sp(self):

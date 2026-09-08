@@ -10,7 +10,7 @@ from enum import Enum
 import numpy as np
 import xarray as xr
 
-from ..enums import FieldType
+from ..common.enums import FieldType
 from .scales import PlotScales
 
 PlotFunction = namedtuple(

@@ -4,8 +4,10 @@ Worker thread handler for non-blocking GUI operations.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
+import logging
 import traceback
 
+logger = logging.getLogger(__name__)
 from PySide6.QtCore import QObject, Signal, Slot
 
 
@@ -23,6 +25,7 @@ class SpawnWorker(QObject):
         try:
             result = self._invoke_function(**self._invoke_kwargs)
             self.finished.emit(result)
-        except Exception as e:
+        except BaseException as e:
             traceback.print_exc()
             self.error.emit(e)
+            logger.exception(f"Exception: {''.join(traceback.format_exception())}")

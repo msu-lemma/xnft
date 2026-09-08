@@ -9,7 +9,7 @@ TODO: Add colormap selection (based on type of scale user selected, e.g., cyclic
 import logging
 from collections import namedtuple
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, ClassVar
 
 import numpy as np
 import pyqtgraph as pg
@@ -31,9 +31,9 @@ from PySide6.QtWidgets import (
 from quantiphy import Quantity
 from scipy.interpolate import griddata  # , CloughTocher2DInterpolator
 
-from ...project.nodes.fields import FieldNode
-from ..coordinate_transforms import phitheta_to_unit
-from ..enums import CoordinateSystemType
+from ..common.enums import CoordinateSystemType
+from ..project.nodes.fields import FieldNode
+from .coordinate_transforms import phitheta_to_unit
 from .field_components import FieldComponent
 from .field_quantities import FieldQuantities, FieldQuantity
 from .functions import PlotFunction, PlotFunctions
@@ -80,7 +80,9 @@ class SurfacePlot2DParameters:
 
 class Plot2D(QWidget):
     # Mapping of valid source coordinates to plotting domain
-    __coordinate_domains__ = {
+    __coordinate_domains__: ClassVar[
+        dict[CoordinateSystemType, tuple[CoordinateSystemType]]
+    ] = {
         CoordinateSystemType.SPHERICAL: (
             CoordinateSystemType.SPHERICAL,
             CoordinateSystemType.DIRECTION_COSINE,
@@ -106,9 +108,9 @@ class Plot2D(QWidget):
         """
         super().__init__(parent)
 
-        if coordinates_type not in self.__coordinate_domains__.keys():
+        if coordinates_type not in self.__coordinate_domains__:
             raise ValueError(
-                f"Plot coordinates must be one of {[x.name for x in self.__coordinate_domains__.keys()]},"
+                f"Plot coordinates must be one of {[x.name for x in self.__coordinate_domains__]},"
                 f" got {coordinates_type.name}"
             )
 
@@ -667,7 +669,7 @@ def get_transformed_data(spp: SurfacePlot2DParameters):
         "x": AxisData(
             values=field_ds.coords[x_key].values,
             label=x_key.title(),
-            units=list(field_ds.attrs["coordinate_units"].values())[0],
+            units=next(iter(field_ds.attrs["coordinate_units"].values())),
         ),
         "y": AxisData(
             values=field_ds.coords[y_key].values,

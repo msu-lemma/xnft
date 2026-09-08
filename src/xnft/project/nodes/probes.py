@@ -10,8 +10,8 @@ from dataclasses import dataclass, field
 
 from quantiphy import Quantity
 
-from ...core.antennas.probes.probes import MeasurementProbe
-from ...core.enums import ProbeType
+from ...antennas.probes.probes import MeasurementProbe
+from ...common.enums import ProbeType
 from ...gui.dialogs.probes.new_probe_dialog import NewProbeDialog
 from .node import DataNode, Node, NodeType, context_action, gui_property
 

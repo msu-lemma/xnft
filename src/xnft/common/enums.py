@@ -79,8 +79,10 @@ class CoordinateSystemType(Enum):
     DIRECTION_COSINE = CoordinateSystemTuple(
         name="Direction Cosine (u,v)", components=("u", "v")
     )
-    SPHERICAL_AZEL = "Azimuth/Elevation"
-    UNKNOWN = "Unknown"
+    SPHERICAL_AZEL = CoordinateSystemTuple(
+        name="Azimuth/Elevation", components=("az", "el")
+    )
+    UNKNOWN = CoordinateSystemTuple(name="Unknown", components=())
 
 
 class AnalysisType(StrEnum):

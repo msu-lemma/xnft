@@ -17,7 +17,7 @@ from numpy.typing import NDArray
 from PySide6.QtCore import QStandardPaths
 
 if TYPE_CHECKING:
-    from ...project.nodes.fields import FieldNode
+    from ..project.nodes.fields import FieldNode  # noqa: TC004
 
 logger = logging.getLogger(__name__)
 

@@ -7,14 +7,14 @@ from typing import Any
 import pytest
 import xarray as xr
 
-from xnft.core.algorithms.planar_near_field_transform import planar_near_field_transform
-from xnft.core.enums import (
+from xnft.algorithms.planar_near_field_transform import planar_near_field_transform
+from xnft.common.enums import (
     CoordinateSystemType,
     DataSourceType,
     FieldType,
     PolarizationType,
 )
-from xnft.core.types import FileInfo
+from xnft.common.types import FileInfo
 from xnft.loaders.fields.field_loader_registry import field_loader_registry
 
 test_dir = Path(__file__).parent.parent

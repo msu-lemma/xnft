@@ -5,15 +5,11 @@ to the QTreeView.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
-from functools import cache
-from pathlib import Path
-
 from PySide6.QtCore import QAbstractItemModel, QModelIndex, Qt
-from PySide6.QtGui import QIcon
 
 from ..project.nodes.node import DataNode, Node
 from ..project.nodes.project import Project
-from ..resources.paths import resource_path
+from .utils import get_icon
 
 
 class ProjectManagerTreeModel(QAbstractItemModel):
@@ -30,44 +26,24 @@ class ProjectManagerTreeModel(QAbstractItemModel):
 
         self._project_manager = project_manager
 
-    @cache  # Store icons in a cache once loaded; icons shouldn't change
-    def get_icon(self, name: str, from_theme=False) -> QIcon:
-        """
-        Dynamically load icon from file or from built-in theme.
-
-        Parameters
-        ----------
-        name : str
-            Name of icon to load
-        from_theme : bool, optional
-            Load icon from built-in theme (True) or from file (False), by
-            default False
-
-        Returns
-        -------
-        QIcon
-            Icon asset.
-        """
-        if from_theme:
-            icon = QIcon.fromTheme(name)
-        else:
-            file_name = Path(name).name
-            icon = QIcon(str(resource_path("icons", file_name)))
-        return icon
-
-    def columnCount(self, parent=QModelIndex()) -> int:
+    def columnCount(self, parent=None) -> int:
         """
         Return number of colums. Our model only has one column.
         """
+        if parent is None:
+            parent = QModelIndex()
         return 1
 
-    def rowCount(self, parent=QModelIndex()) -> int:
+    def rowCount(self, parent=None) -> int:
         """
         Return the number of rows under the given parent.
 
         When the parent is valid it means that rowCount is returning the
         number of children of parent.
         """
+        if parent is None:
+            parent = QModelIndex()
+
         # Top-level node is project manager
         if not parent.isValid():
             return self._project_manager.project_count
@@ -76,8 +52,11 @@ class ProjectManagerTreeModel(QAbstractItemModel):
             parent_node = parent.internalPointer()
             return parent_node.child_count
 
-    def index(self, row: int, column: int, parent=QModelIndex()) -> QModelIndex:
+    def index(self, row: int, column: int, parent=None) -> QModelIndex:
         """Return QModelIndex at requested location."""
+        if parent is None:
+            parent = QModelIndex()
+
         # Top-level node is project manager
         if not parent.isValid():
             if row >= self._project_manager.project_count:
@@ -143,9 +122,9 @@ class ProjectManagerTreeModel(QAbstractItemModel):
             # If the icon name has a . in it, assume it's a file path,
             # otherwise, assume it's from the theme.
             if "." in icon_name:
-                return self.get_icon(icon_name)
+                return get_icon(icon_name)
             else:
-                return self.get_icon(icon_name, from_theme=True)
+                return get_icon(icon_name, from_theme=True)
 
         return None
 

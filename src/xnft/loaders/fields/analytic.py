@@ -11,16 +11,16 @@ import scipy.constants as spc
 import xarray as xr
 import yaml
 
-from ...core.antennas.aperture.rectangular import rect_e_far_field, rect_e_near_field
-from ...core.antennas.wire.dipole import dipole_e, dipole_e_far_field
-from ...core.enums import (
+from ...antennas.aperture.rectangular import rect_e_far_field, rect_e_near_field
+from ...antennas.wire.dipole import dipole_e, dipole_e_far_field
+from ...common.enums import (
     DataPolarizationType,
     DataSourceType,
     FieldType,
     PolarizationType,
     ScanType,
 )
-from ...core.types import FileInfo
+from ...common.types import FileInfo
 from .field_loader_registry import field_loader_registry
 
 logger = logging.getLogger(__name__)

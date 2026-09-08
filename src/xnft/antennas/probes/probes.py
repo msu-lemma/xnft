@@ -7,7 +7,7 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 import numpy as np
 
 # import scipy.constants as spc
-from ...enums import ProbeType
+from ...common.enums import ProbeType
 from ..aperture.rectangular import RectWaveguide, rect_e_far_field
 
 

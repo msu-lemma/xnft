@@ -37,14 +37,14 @@ from PySide6.QtWidgets import (
 )
 from quantiphy import Quantity
 
-from ....core.enums import NodeType
-from ....core.reports.field_components import FieldComponent
-from ....core.reports.field_quantities import FieldQuantities, FieldQuantity
-from ....core.reports.functions import PlotFunction
-from ....core.reports.normalizations import PlotNorm, PlotNorms
-from ....core.reports.plot_helpers import trace_preview
-from ....core.reports.scales import PlotScale
+from ....common.enums import NodeType
 from ....project.nodes.node import DataNode, Node
+from ....reports.field_components import FieldComponent
+from ....reports.field_quantities import FieldQuantities, FieldQuantity
+from ....reports.functions import PlotFunction
+from ....reports.normalizations import PlotNorm, PlotNorms
+from ....reports.plot_helpers import trace_preview
+from ....reports.scales import PlotScale
 from ..common import ListWidgetTitle
 
 
@@ -134,7 +134,7 @@ class NewTraceDialog(QDialog):
 
         # Create a dictionary to hold QListWidgets for slices (updated dynamically)
         # [slice_axis_name: ListWidgetTitle]
-        self.lwt_slice_dict: dict[str, ListWidgetTitle] = dict()
+        self.lwt_slice_dict: dict[str, ListWidgetTitle] = {}
 
         # Generate help label based on platform type
         mod_key = "⌘" if platform.system() == "Darwin" else "ctrl"
@@ -698,8 +698,11 @@ class TraceStyleGroupBox(QGroupBox):
         self.preview_label.setPixmap(pixmap)
 
     @staticmethod
-    def _make_line_style_icon(style, color=QColor("black")):
+    def _make_line_style_icon(style, color=None):
         """Generate QListWidget line style preview icon."""
+        if color is None:
+            QColor("black")
+
         pm = QPixmap(40, 14)
         pm.fill(Qt.transparent)
 

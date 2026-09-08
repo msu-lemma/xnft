@@ -7,7 +7,7 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 import logging
 from dataclasses import dataclass, field
 
-from ...core.enums import CoordinateSystemType, NodeType
+from ...common.enums import CoordinateSystemType, NodeType
 from .node import DataNode, Node, context_action, gui_property
 
 logger = logging.getLogger(__name__)

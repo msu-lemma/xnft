@@ -4,6 +4,8 @@ Custom QTreeView subclass to extend context menu actions.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
+from functools import partial
+
 from PySide6.QtGui import QAction, QContextMenuEvent
 from PySide6.QtWidgets import (
     QAbstractItemView,
@@ -12,6 +14,7 @@ from PySide6.QtWidgets import (
 )
 
 from ..project import manager
+from .project_tree_model import get_icon
 
 
 class ProjectTreeView(QTreeView):
@@ -57,7 +60,7 @@ class ProjectTreeView(QTreeView):
             # If context action has an associated icon
             if context_action.icon_name:
                 action = QAction(
-                    self.model().get_icon(context_action.icon_name, from_theme=True),
+                    get_icon(context_action.icon_name, from_theme=True),
                     context_action.label,
                     menu,
                 )
@@ -82,26 +85,39 @@ class ProjectTreeView(QTreeView):
             if context_action.action == "ui_action":
                 helper_dialog = context_action.helper_dialog
                 invoke_function = context_action.invoke
+                window = self.window()
                 spawn_thread = context_action.spawn_thread
-                # fmt: off
+
+                # action.triggered.connect(
+                #     lambda checked=False, helper_dialog=helper_dialog, target_node=node, invoke_function=invoke_function, main=window: (
+                #         main._ui_action(
+                #             helper_dialog,
+                #             target_node,
+                #             invoke_function,
+                #             spawn_thread=spawn_thread,
+                #         )
+                #     )
+                # )
+
                 action.triggered.connect(
-                    lambda
-                    checked=False,
-                    helper_dialog=helper_dialog,
-                    target_node=node,
-                    invoke_function=invoke_function,
-                    main=self.window():
-                    main._ui_action(helper_dialog, target_node, invoke_function, spawn_thread=spawn_thread)
+                    partial(
+                        window._ui_action,
+                        helper_dialog,
+                        node,
+                        invoke_function,
+                        spawn_thread=spawn_thread,
+                    )
                 )
-                # fmt: on
+
             elif context_action.action == "close_project" and isinstance(
                 node, manager.Project
             ):
+                model = self.model()
                 # fmt: off
                 action.triggered.connect(
                     lambda
                     checked=False,
-                    model=self.model(),
+                    model=model,
                     proj=node:
                     model.remove_project(proj)
                 )

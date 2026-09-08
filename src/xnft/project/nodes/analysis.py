@@ -8,11 +8,11 @@ University.
 import logging
 from dataclasses import dataclass, field
 
-from ...core.algorithms.planar_near_field_transform import (
+from ...algorithms.planar_near_field_transform import (
     planar_near_field_transform,
 )
-from ...core.antennas.probes.probes import MeasurementProbe, RectWaveguide
-from ...core.enums import (
+from ...antennas.probes.probes import MeasurementProbe, RectWaveguide
+from ...common.enums import (
     AnalysisType,
     CoordinateSystemType,
     DataSourceType,
@@ -33,9 +33,7 @@ logger = logging.getLogger(__name__)
 class AnalysisNode(Node):
     icon_name: str = "src/xnft/resources/icons/function.svg"
 
-    def __post_init__(
-        self, name: str | None = None, node_type: NodeType = NodeType.UNKNOWN
-    ):
+    def __post_init__(self, name: str, node_type: NodeType):
         super().__post_init__(name, node_type)
 
         self._node_type = NodeType.ANALYSIS
@@ -182,10 +180,7 @@ class TransformNode(DataNode):
         name: str | None = None,
         source: Node | None = None,
         analysis_type: AnalysisType = AnalysisType.UNKNOWN,
-        probe_correction: MeasurementProbe = MeasurementProbe(
-            "Unknown",
-            RectWaveguide(float("nan"), float("nan"), (float("nan"), float("nan"))),
-        ),
+        probe_correction: MeasurementProbe | None = None,
         **kwargs,
     ):
         super().__init__(
@@ -194,6 +189,12 @@ class TransformNode(DataNode):
             source=source,
             # **kwargs,
         )
+
+        if probe_correction is None:
+            probe_correction = MeasurementProbe(
+                "Unknown",
+                RectWaveguide(float("nan"), float("nan"), (float("nan"), float("nan"))),
+            )
 
         self.analysis_type = analysis_type
         self._probe_correction = probe_correction

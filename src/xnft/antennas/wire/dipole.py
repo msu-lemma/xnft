@@ -7,12 +7,12 @@ Copyright 2026 LEmmA, Electromagnetics Research Group, Michigan State University
 import numpy as np
 import scipy.constants as spc
 
-from ....core.dtypes import FieldDataset
-from ....core.enums import (
+from ...common.enums import (
     CoordinateSystemType,
     DataSourceType,
     FieldType,
 )
+from ...common.types import FieldDataset
 
 # Constants
 eta = (spc.mu_0 / spc.epsilon_0) ** 0.5

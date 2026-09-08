@@ -25,9 +25,9 @@ from PySide6.QtWidgets import (
 )
 from quantiphy import Quantity
 
-from ....core.antennas.probes.probes import MeasurementProbe, RectWaveguide
-from ....core.antennas.probes.standard_probes import StandardRectWaveguide
-from ....core.enums import ProbeType
+from ....antennas.probes.probes import MeasurementProbe, RectWaveguide
+from ....antennas.probes.standard_probes import StandardRectWaveguide
+from ....common.enums import ProbeType
 from ....project.nodes.node import Node
 from ..common import LabeledWidget
 
@@ -227,18 +227,17 @@ class NewProbeDialog(QDialog):
                 )
             return False
 
-        if self.selected_probe_type == ProbeType.IDEAL_RECT:
-            if not silent:
-                try:
-                    float(self.le_ap_x.text().strip())
-                    float(self.le_ap_y.text().strip())
-                except ValueError as e:
-                    QMessageBox.warning(
-                        self,
-                        "Value Error",
-                        f"{str(e).capitalize()}. X and Y values must be numerical.",
-                    )
-                    return False
+        if self.selected_probe_type == ProbeType.IDEAL_RECT and not silent:
+            try:
+                float(self.le_ap_x.text().strip())
+                float(self.le_ap_y.text().strip())
+            except ValueError as e:
+                QMessageBox.warning(
+                    self,
+                    "Value Error",
+                    f"{str(e).capitalize()}. X and Y values must be numerical.",
+                )
+                return False
 
         return True
 

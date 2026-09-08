@@ -12,9 +12,9 @@ import sys
 
 # Handle noconsole mode on Windows
 if sys.stdout is None:
-    sys.stdout = open(os.devnull, "w")
+    sys.stdout = open(os.devnull, "w")  # noqa: SIM115
 if sys.stderr is None:
-    sys.stderr = open(os.devnull, "w")
+    sys.stderr = open(os.devnull, "w")  # noqa: SIM115
 
 
 def is_worker():
@@ -38,10 +38,7 @@ def is_worker():
         return True
 
     # Check for multiprocessing named task
-    if multiprocessing.current_process().name != "MainProcess":
-        return True
-
-    return False
+    return multiprocessing.current_process().name != "MainProcess"
 
 
 def main():

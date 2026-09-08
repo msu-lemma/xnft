@@ -29,14 +29,14 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from ....core.enums import (
+from ....common.enums import (
     DataPolarizationType,
     DataSourceType,
     FieldType,
     PolarizationType,
     SParameterType,
 )
-from ....core.types import FileInfo
+from ....common.types import FileInfo
 from ....loaders.fields.field_loader_registry import field_loader_registry
 from ....project.nodes.node import Node
 
@@ -239,7 +239,7 @@ class NewFieldMeasurementDialog(QDialog):
 
         # Get data polarizations available for source and field type files
         polarization_formats = []
-        for key, loader in loaders.items():
+        for loader in loaders.values():
             attributes = loader.__attributes__
             if (
                 attributes["source"] == source_type
@@ -304,7 +304,7 @@ class NewFieldMeasurementDialog(QDialog):
             FieldType.FAR: defaultdict(list),
         }
 
-        for key, loader in file_registry._loaders.items():
+        for loader in file_registry._loaders.values():
             attr_dict = loader.__attributes__
             source = attr_dict["source"]
             field = attr_dict["field"]
@@ -452,13 +452,11 @@ class FileEntryRow(QWidget):
 
         extension = Path(self.le_path.text()).suffix
 
-        try:
-            loader = field_loader_registry.get_loader(
-                source_format, field_type, extension
-            )
-            self.show_sp = loader.__attributes__["has_sp"]
-        except Exception:
-            pass
+        # try:
+        loader = field_loader_registry.get_loader(source_format, field_type, extension)
+        self.show_sp = loader.__attributes__["has_sp"]
+        # except Exception as e:
+        #     pass
 
     @property
     def show_sp(self):

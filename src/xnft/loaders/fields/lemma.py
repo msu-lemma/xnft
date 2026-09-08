@@ -12,8 +12,7 @@ import h5py
 import numpy as np
 import xarray as xr
 
-from ...core.dtypes import FieldDataset
-from ...core.enums import (
+from ...common.enums import (
     CoordinateSystemType,
     DataPolarizationType,
     DataSourceType,
@@ -22,7 +21,7 @@ from ...core.enums import (
     ScanType,
     SParameterType,
 )
-from ...core.types import FileInfo
+from ...common.types import FieldDataset, FileInfo
 
 # import scipy.constants as spc
 from .field_loader_registry import field_loader_registry
@@ -57,7 +56,7 @@ def load_lemma_h5(file_list: list[FileInfo]) -> xr.Dataset:
             )
 
     if co_file_info is None and cx_file_info is None:
-        raise Exception("At least `co_pol` or `cross_pol` must be specified.")
+        raise RuntimeError("At least `co_pol` or `cross_pol` must be specified.")
 
     # Open file
     for file_info in file_list:
@@ -73,7 +72,7 @@ def load_lemma_h5(file_list: list[FileInfo]) -> xr.Dataset:
 
             # NOTE: We're only taking the first item in the set
             if file_info.s_parameters != set():
-                sp = list(file_info.s_parameters)[0]
+                sp = next(iter(file_info.s_parameters))
             else:
                 sp = SParameterType.S21
 

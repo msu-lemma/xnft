@@ -21,10 +21,10 @@ from scipy.signal import windows
 
 from ..antennas.probes.probes import MeasurementProbe
 from ..calibration.gain import GainCalibration
-from ..dtypes import FieldDataset
 
 # from numpy.typing import ArrayLike
-from ..enums import CoordinateSystemType, DataSourceType, FieldType
+from ..common.enums import CoordinateSystemType, DataSourceType, FieldType
+from ..common.types import FieldDataset
 
 logger = logging.getLogger(__name__)
 
