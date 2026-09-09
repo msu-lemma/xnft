@@ -37,7 +37,7 @@ from ....common.enums import (
     SParameterType,
 )
 from ....common.types import FileInfo
-from ....loaders.fields.field_loader_registry import field_loader_registry
+from ....loaders.registry import field_loader_registry
 from ....project.nodes.node import Node
 
 

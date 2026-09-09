@@ -24,7 +24,7 @@ from ...common.enums import (
 from ...common.types import FieldDataset, FileInfo
 
 # import scipy.constants as spc
-from .field_loader_registry import field_loader_registry
+from ..registry import field_loader_registry
 
 logger = logging.getLogger(__name__)
 

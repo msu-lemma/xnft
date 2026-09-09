@@ -13,7 +13,7 @@ from quantiphy import Quantity
 from ...common.enums import CoordinateSystemType, DataSourceType, FieldType
 from ...gui.dialogs.export_data_dialog import ExportDataDialog
 from ...gui.dialogs.fields.new_field_measurement_dialog import NewFieldMeasurementDialog
-from ...loaders.fields.field_loader_registry import field_loader_registry
+from ...loaders.registry import field_loader_registry
 from ...reports.data_writers import write_dataset_hdf5
 from .coordinates import CoordinateNode
 from .node import DataNode, Node, NodeType, context_action, gui_property

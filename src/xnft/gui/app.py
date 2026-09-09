@@ -40,14 +40,14 @@ from PySide6.QtWidgets import (
 from xnft.gui.utils import center_window
 
 from ..project import manager
+from ..project.io import read_project
 from ..project.nodes.project import Project
-from ..project.project_io import read_project
 from ..resources.paths import resource_path
 from .dialogs.project.new_project_dialog import NewProjectDialog
-from .mdi_area import QMdiAreaWatermark
-from .project_tree_model import ProjectManagerTreeModel
-from .project_tree_view import ProjectTreeView
-from .worker import SpawnWorker
+from .models.project_tree_model import ProjectManagerTreeModel
+from .views.mdi_area import QMdiAreaWatermark
+from .views.project_tree_view import ProjectTreeView
+from .workers.worker import SpawnWorker
 
 # Registers all loaders
 

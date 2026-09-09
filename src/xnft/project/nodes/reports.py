@@ -20,8 +20,8 @@ from ...gui.dialogs.export_data_dialog import ExportDataDialog
 from ...gui.dialogs.export_data_directory_dialog import ExportDataDirectoryDialog
 from ...gui.dialogs.reports.new_field_report_dialog import NewFieldReport
 from ...reports.data_writers import write_data_array_hdf5
-from ...reports.plot_1d import Plot1D, PlotTrace
-from ...reports.plot_2d import (
+from ...reports.plot.line_plot import Plot1D, PlotTrace
+from ...reports.plot.surface_plot import (
     Plot2D,
     SurfacePlot2DParameters,
     get_transformed_data,

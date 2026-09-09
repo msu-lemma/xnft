@@ -26,11 +26,11 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from ..common.enums import CoordinateSystemType
-from ..gui.dialogs.reports.new_trace_dialog import NewTraceDialog, TraceParameters
-from ..project.nodes.node import DataNode
+from ...common.enums import CoordinateSystemType
+from ...gui.dialogs.reports.new_trace_dialog import NewTraceDialog, TraceParameters
+from ...project.nodes.node import DataNode
+from .plot_functions.scales import PlotScale
 from .plot_helpers import trace_preview
-from .scales import PlotScale
 
 logger = logging.getLogger(__name__)
 

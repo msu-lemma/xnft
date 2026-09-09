@@ -7,9 +7,9 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 
 from PySide6.QtCore import QAbstractItemModel, QModelIndex, Qt
 
-from ..project.nodes.node import DataNode, Node
-from ..project.nodes.project import Project
-from .utils import get_icon
+from ...project.nodes.node import DataNode, Node
+from ...project.nodes.project import Project
+from ..utils import get_icon
 
 
 class ProjectManagerTreeModel(QAbstractItemModel):

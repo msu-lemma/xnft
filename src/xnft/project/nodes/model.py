@@ -1,5 +1,5 @@
 """
-Handle xnft project actions.
+Handle xnft project 3D antenna model actions.
 
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.

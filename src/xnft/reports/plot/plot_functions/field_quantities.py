@@ -10,7 +10,7 @@ from enum import Enum
 import numpy as np
 import unyt
 
-from ..common.enums import FieldType
+from ....common.enums import FieldType
 from .field_components import FieldComponents
 from .scales import PlotScales
 

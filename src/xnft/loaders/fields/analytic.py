@@ -21,7 +21,7 @@ from ...common.enums import (
     ScanType,
 )
 from ...common.types import FileInfo
-from .field_loader_registry import field_loader_registry
+from ..registry import field_loader_registry
 
 logger = logging.getLogger(__name__)
 

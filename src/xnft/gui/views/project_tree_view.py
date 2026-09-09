@@ -13,8 +13,8 @@ from PySide6.QtWidgets import (
     QTreeView,
 )
 
-from ..project import manager
-from .project_tree_model import get_icon
+from ...project import manager
+from ..models.project_tree_model import get_icon
 
 
 class ProjectTreeView(QTreeView):

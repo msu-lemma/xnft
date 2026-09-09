@@ -9,7 +9,7 @@ from enum import Enum
 
 import numpy as np
 
-from ..common.enums import FieldType
+from ....common.enums import FieldType
 from .functions import PlotFunctions
 
 PlotNorm = namedtuple(

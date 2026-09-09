@@ -9,7 +9,7 @@ import logging
 from dataclasses import dataclass
 from pathlib import Path
 
-from ..project_io import write_project
+from ..io import write_project
 from .analysis import AnalysisNode
 from .calibrations import GainCalibrationsNode
 from .coordinates import CoordinatesNode

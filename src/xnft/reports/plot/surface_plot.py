@@ -31,14 +31,14 @@ from PySide6.QtWidgets import (
 from quantiphy import Quantity
 from scipy.interpolate import griddata  # , CloughTocher2DInterpolator
 
-from ..common.enums import CoordinateSystemType
-from ..project.nodes.fields import FieldNode
+from ...common.enums import CoordinateSystemType
+from ...project.nodes.fields import FieldNode
 from .coordinate_transforms import phitheta_to_unit
-from .field_components import FieldComponent
-from .field_quantities import FieldQuantities, FieldQuantity
-from .functions import PlotFunction, PlotFunctions
-from .normalizations import PlotNorm, PlotNorms
-from .scales import PlotScale
+from .plot_functions.field_components import FieldComponent
+from .plot_functions.field_quantities import FieldQuantities, FieldQuantity
+from .plot_functions.functions import PlotFunction, PlotFunctions
+from .plot_functions.normalizations import PlotNorm, PlotNorms
+from .plot_functions.scales import PlotScale
 
 logger = logging.getLogger(__name__)
 
