@@ -14,8 +14,9 @@ from xnft.common.enums import (
     FieldType,
     PolarizationType,
 )
+from xnft.common.registry import registry
 from xnft.common.types import FileInfo
-from xnft.loaders.fields.field_loader_registry import field_loader_registry
+from xnft.loaders import register_builtin_loaders
 
 test_dir = Path(__file__).parent.parent
 test_dict = {
@@ -28,6 +29,9 @@ def generate_tests(fields=test_dict["field"]):
     """
     Generate testing options for registry.load test.
     """
+    # Populate file loader registry
+    register_builtin_loaders()
+
     tests_list = []
     for source in test_dict["source"]:
         for field in fields:
@@ -65,7 +69,7 @@ def load_test_file(request: pytest.FixtureRequest):
     Load file to test.
     """
     source, field, file_list = request.param
-    result = field_loader_registry.load(source, field, file_list)
+    result = registry.loaders.fields.load(source, field, file_list)
     return result, request.param
 
 

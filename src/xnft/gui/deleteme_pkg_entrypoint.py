@@ -53,9 +53,9 @@ def main():
         except RuntimeError:
             pass
 
-        from xnft.gui.app import run_gui
+        from xnft.gui.app import main
 
-        run_gui()
+        main()
 
 
 if __name__ == "__main__":

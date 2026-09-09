@@ -36,8 +36,8 @@ from ....common.enums import (
     PolarizationType,
     SParameterType,
 )
+from ....common.registry import registry
 from ....common.types import FileInfo
-from ....loaders.registry import field_loader_registry
 from ....project.nodes.node import Node
 
 
@@ -68,7 +68,7 @@ class NewFieldMeasurementDialog(QDialog):
         self.cb_source_format = QComboBox()
         self.cb_data_polarization = QComboBox()
 
-        field_types = self._loaders_info(field_loader_registry).keys()
+        field_types = self._loaders_info(registry.loaders.fields).keys()
         for idx, field_type in enumerate(field_types):
             # NOTE: Qt casts StrEnum to plain str which breaks some things;
             #       we'll wrap this in a tuple here to mitigate this behavior
@@ -216,7 +216,7 @@ class NewFieldMeasurementDialog(QDialog):
     def _update_source_file_formats(self) -> None:
         """Update available source file formats based on field type."""
         field_type = self.cb_field_type.currentText()
-        source_format_types = self._loaders_info(field_loader_registry)[
+        source_format_types = self._loaders_info(registry.loaders.fields)[
             field_type
         ].keys()
 
@@ -235,7 +235,7 @@ class NewFieldMeasurementDialog(QDialog):
         """Update available source polarization formats based on source file type."""
         field_type = self.cb_field_type.currentData()[0]
         source_type = self.cb_source_format.currentData()[0]
-        loaders = field_loader_registry._loaders
+        loaders = registry.loaders.fields._loaders
 
         # Get data polarizations available for source and field type files
         polarization_formats = []
@@ -286,7 +286,7 @@ class NewFieldMeasurementDialog(QDialog):
         field_type = self.cb_field_type.currentText()
         source_type = self.cb_source_format.currentText()
 
-        file_extensions = self._loaders_info(field_loader_registry)[field_type][
+        file_extensions = self._loaders_info(registry.loaders.fields)[field_type][
             source_type
         ]
         if glob_format:
@@ -453,7 +453,9 @@ class FileEntryRow(QWidget):
         extension = Path(self.le_path.text()).suffix
 
         # try:
-        loader = field_loader_registry.get_loader(source_format, field_type, extension)
+        loader = registry.loaders.fields.get_loader(
+            source_format, field_type, extension
+        )
         self.show_sp = loader.__attributes__["has_sp"]
         # except Exception as e:
         #     pass

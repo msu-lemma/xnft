@@ -1,30 +1,71 @@
 """
-Handle loading of data files.
+Provides registry for extensions, e.g., loaders, algorithms, reports, etc.
 
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
 import logging
+from abc import ABC
+from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 from ..common.enums import DataPolarizationType, DataSourceType, FieldType, ScanType
 from ..common.types import FileInfo
 
 logger = logging.getLogger(__name__)
 
+# Declare registry type helpers
+LoaderFunction = Callable[[list[FileInfo]], Any]
+FieldLoaderKey = tuple[DataSourceType, FieldType, str]
 
-class FieldLoaderRegistry:
+
+class BaseRegistry(ABC):
+    def __len__(self) -> int:
+        """Return number of registered objects."""
+        raise NotImplementedError
+
+    def clear(self) -> None:
+        """Removes all registered objects."""
+        raise NotImplementedError
+
+    def items(self):
+        """Returns registered items."""
+        raise NotImplementedError
+
+    def values(self):
+        """Returns registered functions."""
+        raise NotImplementedError
+
+
+class FieldLoaderRegistry(BaseRegistry):
     """
     File loader registry class to handle addition of new data loaders dynamically.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         # Dict to store loader functions into
-        self._loaders = {}
+        self._loaders: dict[FieldLoaderKey, LoaderFunction] = {}
+
+    # --- Override BaseRegistry Behavior ---
+
+    def __len__(self) -> int:
+        return len(self._loaders)
+
+    def clear(self) -> None:
+        self._loaders.clear()
+
+    def items(self):
+        return self._loaders.items()
+
+    def values(self):
+        return self._loaders.values()
+
+    # --- Loader Functions ---
 
     def loader_key(self, source, field, extension):
-        """Generate a key for the _loaders list."""
-        return (source, field, extension)
+        """Generate a key for the field-loader registry."""
+        return (source, field, extension.strip().casefold())
 
     def register(
         self,
@@ -66,9 +107,8 @@ class FieldLoaderRegistry:
 
         def decorator(func):
             # Generate entry in loader dicionary
-            self._loaders[
-                self.loader_key(source=source, field=field, extension=extension)
-            ] = func
+            key = self.loader_key(source=source, field=field, extension=extension)
+            self._loaders[key] = func
 
             # Add declared attributes of the loader
             func.__attributes__ = {
@@ -79,6 +119,12 @@ class FieldLoaderRegistry:
                 "data_polarization": data_polarization,
                 "has_sp": has_sp,
             }
+
+            logger.debug(
+                "Registered field loader %s for key %r",
+                func.__qualname__,
+                key,
+            )
 
             return func
 
@@ -91,7 +137,7 @@ class FieldLoaderRegistry:
         file_list: list[FileInfo],
     ):
         """
-        Load a file using appropriate loader.
+        Load a field file using appropriate loader.
 
         Parameters
         ----------
@@ -104,26 +150,54 @@ class FieldLoaderRegistry:
         file_list : List[FileInfo]
             List of FileInfo objects containing files and measurement information.
         """
-        logger.debug(f"{file_list}")
-        extension = Path(file_list[0].path).suffix
+        if not file_list:
+            raise ValueError("At least one file is required.")
+
+        logger.debug("Loading field files: %s", file_list)
+
+        extension = Path(file_list[0].path).suffix.strip().casefold()
 
         # Check all files exist and extensions are the same
         for file in file_list:
             file_path = Path(file.path)
             if not file_path.exists():
                 raise FileNotFoundError(f"File not found: {file_path!s}")
-            if file_path.suffix != extension:
+            if file_path.suffix.strip().casefold() != extension:
                 raise TypeError("All file extensions must be of the same type.")
 
-        loader_function = self.get_loader(source, field, extension)
+        loader = self.get_loader(source, field, extension)
 
-        return_value = loader_function(file_list)
+        return loader(file_list)
 
-        return return_value
+    def get_loader(
+        self,
+        source: DataSourceType,
+        field: FieldType,
+        extension: str,
+    ):
+        """Get loader for the specified data format.
 
-    def get_loader(self, source, field, extension):
+        Parameters
+        ----------
+        source : DataSourceType
+            Source type of the field data.
+        field : FieldType
+            Type of the field data (e.g., NEAR or FAR).
+        extension : str
+            File extension of the field data.
+
+        Returns
+        -------
+        LoaderFunction
+            Registered loader function
+
+        Raises
+        ------
+        NotImplementedError
+            If no matching loader is registered.
+        """
         loader_key = self.loader_key(source=source, field=field, extension=extension)
-        logger.debug("Available loaders: %s", self._loaders)
+        logger.debug("Available field loaders: %s", self._loaders)
 
         try:
             loader_function = self._loaders[loader_key]
@@ -137,4 +211,30 @@ class FieldLoaderRegistry:
         return loader_function
 
 
-field_loader_registry = FieldLoaderRegistry()
+class AlgorithmRegistry(BaseRegistry):
+    pass
+
+
+class ReportRegistry(BaseRegistry):
+    pass
+
+
+class LoaderRegistry:
+    """Container class for loader registries."""
+
+    def __init__(self) -> None:
+        self.fields = FieldLoaderRegistry()
+
+        # TODO: Implement further registries
+        # self.probes = ProbeLoaderRegistry()
+        # self.gain = GainLoaderRegistry()
+
+
+class Registry:
+    def __init__(self):
+        self.loaders = LoaderRegistry()
+        self.algorithms = AlgorithmRegistry()
+        self.reports = ReportRegistry()
+
+
+registry = Registry()

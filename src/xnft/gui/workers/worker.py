@@ -5,7 +5,6 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 """
 
 import logging
-import traceback
 
 logger = logging.getLogger(__name__)
 from PySide6.QtCore import QObject, Signal, Slot
@@ -25,7 +24,6 @@ class SpawnWorker(QObject):
         try:
             result = self._invoke_function(**self._invoke_kwargs)
             self.finished.emit(result)
-        except BaseException as e:
-            traceback.print_exc()
+        except Exception as e:
+            logger.exception("Worker operation failed.")
             self.error.emit(e)
-            logger.exception(f"Exception: {''.join(traceback.format_exception())}")

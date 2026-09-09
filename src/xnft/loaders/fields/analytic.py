@@ -20,15 +20,15 @@ from ...common.enums import (
     PolarizationType,
     ScanType,
 )
+from ...common.registry import registry
 from ...common.types import FileInfo
-from ..registry import field_loader_registry
 
 logger = logging.getLogger(__name__)
 
 # === REGISTER LOADERS ===========================================================
 
 
-@field_loader_registry.register(
+@registry.loaders.fields.register(
     source=DataSourceType.ANALYTIC,
     field=FieldType.NEAR,
     scan=ScanType.PLANAR,
@@ -43,7 +43,7 @@ def load_analytic_near_field_planar_yaml(file_list: list[FileInfo]) -> xr.Datase
     )
 
 
-@field_loader_registry.register(
+@registry.loaders.fields.register(
     source=DataSourceType.ANALYTIC,
     field=FieldType.NEAR,
     scan=ScanType.SPHERICAL,
@@ -58,7 +58,7 @@ def load_analytic_near_field_spherical_yaml(file_list: list[FileInfo]) -> xr.Dat
     )
 
 
-@field_loader_registry.register(
+@registry.loaders.fields.register(
     source=DataSourceType.ANALYTIC,
     field=FieldType.FAR,
     scan=ScanType.SPHERICAL,

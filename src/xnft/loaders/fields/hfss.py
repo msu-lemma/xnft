@@ -19,13 +19,13 @@ from ...common.enums import (
     PolarizationType,
     ScanType,
 )
+from ...common.registry import registry
 from ...common.types import FieldDataset, FileInfo
-from ..registry import field_loader_registry
 
 logger = logging.getLogger(__name__)
 
 
-@field_loader_registry.register(
+@registry.loaders.fields.register(
     source=DataSourceType.HFSS,
     field=FieldType.NEAR,
     scan=ScanType.PLANAR,
@@ -183,7 +183,7 @@ def load_hfss_near_field_ndf(file_list: list[FileInfo]) -> xr.Dataset:
     return fields
 
 
-@field_loader_registry.register(
+@registry.loaders.fields.register(
     source=DataSourceType.HFSS,
     field=FieldType.FAR,
     scan=ScanType.SPHERICAL,

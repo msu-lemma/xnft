@@ -11,9 +11,9 @@ from pathlib import Path
 from quantiphy import Quantity
 
 from ...common.enums import CoordinateSystemType, DataSourceType, FieldType
+from ...common.registry import registry
 from ...gui.dialogs.export_data_dialog import ExportDataDialog
 from ...gui.dialogs.fields.new_field_measurement_dialog import NewFieldMeasurementDialog
-from ...loaders.registry import field_loader_registry
 from ...reports.data_writers import write_dataset_hdf5
 from .coordinates import CoordinateNode
 from .node import DataNode, Node, NodeType, context_action, gui_property
@@ -45,7 +45,7 @@ class FieldsNode(Node):
     ):
 
         # Read measured field file
-        field_data = field_loader_registry.load(
+        field_data = registry.loaders.fields.load(
             source=source_type, field=field_type, file_list=file_info_list
         )
         field_data.attrs["aperture_size"] = aut_size

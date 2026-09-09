@@ -51,7 +51,7 @@ class FieldDataset:
         *,
         e_field: NDArray,
         h_field: NDArray | None = None,
-        spatial_coords: dict[NDArray, str],
+        spatial_coords: dict[str, NDArray],
         frequency: NDArray,
         coordinate_system: CoordinateSystemType,
         field_type: FieldType,

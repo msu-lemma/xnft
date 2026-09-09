@@ -37,19 +37,18 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from xnft.gui.utils import center_window
-
+# from ..common.plugins import discover_plugins
+from ..loaders import register_builtin_loaders
 from ..project import manager
 from ..project.io import read_project
 from ..project.nodes.project import Project
 from ..resources.paths import resource_path
 from .dialogs.project.new_project_dialog import NewProjectDialog
 from .models.project_tree_model import ProjectManagerTreeModel
+from .utils import center_window
 from .views.mdi_area import QMdiAreaWatermark
 from .views.project_tree_view import ProjectTreeView
 from .workers.worker import SpawnWorker
-
-# Registers all loaders
 
 logger = logging.getLogger(__name__)
 
@@ -347,35 +346,52 @@ class MainWindow(QMainWindow):
         # If a helper dialog is provided, get args and invoke; else invoke without args
         if helper_dialog is not None:
             dialog = helper_dialog(self, target_node=target_node)
-            if dialog.exec() == QDialog.Accepted:
-                invoke_kwargs = dialog.get_selections()
-            else:
-                # If the user selects "Cancel", don't run the function
-                run_function = False
 
-        if run_function:
-            if spawn_thread:
-                # Run operation on separate non-gui thread to avoid blocking
-                self._invoke_thread = QThread(self)
-                self._invoke_worker = SpawnWorker(invoke_function, invoke_kwargs)
-                self._invoke_worker.moveToThread(self._invoke_thread)
-                self._invoke_thread.started.connect(self._invoke_worker.run)
-                self._invoke_worker.finished.connect(self._on_invoke_finished)
-                self._invoke_worker.error.connect(self._on_invoke_error)
+            try:
+                if dialog.exec() == QDialog.Accepted:
+                    invoke_kwargs = dialog.get_selections()
+                else:
+                    # If the user selects "Cancel", don't run the function
+                    run_function = False
+            finally:
+                # Handle garbage collection on the main gui thread.  Allowing GC to run on the
+                # worker thread can cause segfault.
+                dialog.deleteLater()
+                dialog = None
 
-                # Tear down thread
-                self._invoke_worker.finished.connect(self._invoke_thread.quit)
-                self._invoke_worker.finished.connect(self._invoke_worker.deleteLater)
-                self._invoke_thread.finished.connect(self._invoke_thread.deleteLater)
+        if not run_function:
+            return
 
-                self.statusBar().showMessage(f"{target_node.name}: Working...")
-                self.progress.setRange(0, 0)
-                self.progress.show()
+        if spawn_thread:
+            thread = QThread(self)
+            worker = SpawnWorker(invoke_function, invoke_kwargs)
+            worker.moveToThread(thread)
 
-                self._invoke_thread.start()
-            else:
-                result_dict = invoke_function(**invoke_kwargs)
-                self._on_invoke_finished(result_dict)
+            thread.started.connect(worker.run)
+
+            worker.finished.connect(self._on_invoke_finished)
+            worker.error.connect(self._on_invoke_error)
+
+            worker.finished.connect(thread.quit)
+            worker.error.connect(thread.quit)
+
+            worker.finished.connect(worker.deleteLater)
+            worker.error.connect(worker.deleteLater)
+
+            thread.finished.connect(thread.deleteLater)
+
+            # Retain references while the operation is in progress.
+            self._invoke_thread = thread
+            self._invoke_worker = worker
+
+            self.statusBar().showMessage(f"{target_node.name}: Working...")
+            self.progress.setRange(0, 0)
+            self.progress.show()
+
+            thread.start()
+        else:
+            result_dict = invoke_function(**invoke_kwargs)
+            self._on_invoke_finished(result_dict)
 
     def _on_invoke_finished(self, result_dict):
 
@@ -442,12 +458,21 @@ class MainWindow(QMainWindow):
         super().closeEvent(event)
 
 
-def run_gui():
+def init_application():
+    register_builtin_loaders()
+    # discover_plugins()
+
+    # TODO/FIXME: for debug only
+    import faulthandler
+
+    faulthandler.enable(all_threads=True)
+
+
+def main():
     """
     Main GUI entrypoint.
     """
-    # Import fields loaders to build loader registry
-    import xnft.loaders.fields  # noqa: F401  # pylint: disable=unused-import
+    init_application()
 
     sys.argv[0] = "xNFT"  # Overwrite name of command to show application name
 

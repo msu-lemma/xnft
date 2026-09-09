@@ -21,10 +21,8 @@ from ...common.enums import (
     ScanType,
     SParameterType,
 )
+from ...common.registry import registry
 from ...common.types import FieldDataset, FileInfo
-
-# import scipy.constants as spc
-from ..registry import field_loader_registry
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +31,7 @@ logger = logging.getLogger(__name__)
 POINTS_PER_METER = 200_000
 
 
-@field_loader_registry.register(
+@registry.loaders.fields.register(
     source=DataSourceType.LEMMA,
     field=FieldType.NEAR,
     scan=ScanType.PLANAR,
