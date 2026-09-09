@@ -5,6 +5,7 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 """
 
 import logging
+from importlib.resources import files
 
 from PySide6.QtCore import (
     QPointF,
@@ -30,8 +31,16 @@ class QMdiAreaWatermark(QMdiArea):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self._emrg_logo_path = "src/xnft/resources/logos/emrg_logo_vector.svg"
-        self._lemma_logo_path = "src/xnft/resources/logos/lemma_logo_transparent.png"
+        # self._emrg_logo_path = "src/xnft/resources/logos/emrg_logo_vector.svg"
+        # self._lemma_logo_path = "src/xnft/resources/logos/lemma_logo_transparent.png"
+
+        self._emrg_logo_path = str(
+            files("xnft.resources.logos").joinpath("emrg_logo_vector.svg")
+        )
+
+        self._lemma_logo_path = str(
+            files("xnft.resources.logos").joinpath("lemma_logo_transparent.png")
+        )
 
         self._emrg_logo = QSvgRenderer(self._emrg_logo_path)
         self._lemma_logo = QPixmap.fromImage(QImage(self._lemma_logo_path))
