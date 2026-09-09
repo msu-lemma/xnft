@@ -50,3 +50,7 @@ exclude_lines = [
   "if TYPE_CHECKING:",
   "if __name__ == .__main__.:",
 ]
+
+[tool.ruff]
+# Exclude CI pixi cache folder.
+extend-exclude = [".pixi-cache"]
