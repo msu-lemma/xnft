@@ -7,6 +7,8 @@ variables:
   # GIT_LFS_SKIP_SMUDGE: "1"
   DEBIAN_FRONTEND: "noninteractive"
   PIXI_CACHE_DIR: "$CI_PROJECT_DIR/.pixi-cache"
+  # FF_USE_FASTZIP: "true"
+  # CACHE_COMPRESSION_LEVEL: "fastest"
 
 # Store our package cache in our git repo so we can cache it
 .pixi-cache: &pixi-cache
@@ -15,6 +17,7 @@ variables:
       - pixi.lock
   paths:
     - .pixi-cache/ # installed pixi environments
+  policy: pull
 
 prepare-pixi-cache:
   image: ghcr.io/prefix-dev/pixi:latest
@@ -36,7 +39,6 @@ test:
   stage: build-test
   cache:
     <<: *pixi-cache
-    policy: pull
   script:
     - pixi run -e test test
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
@@ -54,7 +56,6 @@ code-quality:
   stage: build-test
   cache:
     <<: *pixi-cache
-    policy: pull
   script:
     - pixi run -e test ruff check --output-format=gitlab --output-file=$CI_PROJECT_DIR/code-quality-report.json
   artifacts:
@@ -68,7 +69,6 @@ docs-build:
   stage: build-test
   cache:
     <<: *pixi-cache
-    policy: pull
   before_script:
     - >
       apt-get update && apt-get install -y --no-install-recommends 
@@ -90,7 +90,6 @@ release:
   image: registry.gitlab.com/gitlab-org/cli:latest
   cache:
     <<: *pixi-cache
-    policy: pull
   needs:
     - job: test
   rules:
