@@ -199,7 +199,7 @@ class FieldLoaderRegistry(BaseRegistry):
 
         Parameters
         ----------
-        source : DataSourceDefinition
+        source : DataSource
             System type that generated the data (e.g., HFSS, NSI, etc.).
         field_type : FieldType
             Field type of measurement.

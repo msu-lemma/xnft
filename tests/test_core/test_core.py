@@ -12,6 +12,7 @@ from xnft.common.enums import (
     CoordinateSystemType,
     FieldType,
     PolarizationType,
+    ScanType,
 )
 from xnft.common.registry import registry
 from xnft.common.types import FileInfo
@@ -19,45 +20,77 @@ from xnft.loaders import register_builtin_loaders
 
 test_dir = Path(__file__).parent.parent
 test_dict = {
-    "source": registry.loaders.values(),  # Test all registered loaders
-    "field": [FieldType.NEAR, FieldType.FAR],
+    "source": registry.loaders.fields.items(),  # Test all registered loaders
+    "field": [x for x in FieldType],
+    "scan": [x for x in ScanType],
 }
 
 
-def generate_tests(fields=test_dict["field"]):
-    """
-    Generate testing options for registry.load test.
-    """
-    # Populate file loader registry
+def generate_test_id(c):
+    source, field, scan, file_list = c
+
+    return (
+        f"{source.id} {field.value} {scan.value} {file_list[0].path.stem.split('_')[0]}"
+    )
+
+
+def generate_tests(
+    fields=test_dict["field"],
+    scans=test_dict["scan"],
+):
     register_builtin_loaders()
 
     tests_list = []
-    for source in test_dict["source"]:
+
+    print(f"{test_dict["source"]=}")
+
+    for source_key, source_func in test_dict["source"]:
         for field in fields:
-            nf_test_dir = (
-                test_dir
-                / "data"
-                / field.lower().replace(" ", "_")
-                / source.name.lower()
-            )
+            for scan in scans:
+                test_dir_path = (
+                    test_dir
+                    / "data"
+                    / field.lower().replace(" ", "_")
+                    / scan.lower().replace(" ", "_")
+                    / source_key[0].id
+                )
 
-            test_file_dict = defaultdict(list)
+                if not test_dir_path.exists():
+                    continue
 
-            for path in nf_test_dir.glob("*"):
-                if path.is_file() and path.name[0:3].isnumeric():
-                    test_id = int(path.name[0:3])
+                test_file_dict = defaultdict(list)
 
-                    polarization = {PolarizationType.CO_POL, PolarizationType.CROSS_POL}
-                    if path.stem.split("_")[-1] == "co":
-                        polarization = PolarizationType.CO_POL
-                    elif path.stem.split("_")[-1] == "cx":
-                        polarization = PolarizationType.CROSS_POL
+                for path in test_dir_path.glob("*"):
+                    if path.is_file() and path.name[:3].isnumeric():
+                        test_id = int(path.name[:3])
 
-                    file_info = FileInfo(path=path, polarization=polarization)
-                    test_file_dict[test_id].append(file_info)
+                        polarization = {
+                            PolarizationType.CO_POL,
+                            PolarizationType.CROSS_POL,
+                        }
 
-            for file_info_list in test_file_dict.values():
-                tests_list.append((source, field, file_info_list))
+                        suffix = path.stem.split("_")[-1]
+                        if suffix == "co":
+                            polarization = PolarizationType.CO_POL
+                        elif suffix == "cx":
+                            polarization = PolarizationType.CROSS_POL
+
+                        test_file_dict[test_id].append(
+                            FileInfo(
+                                path=path,
+                                polarization=polarization,
+                            )
+                        )
+
+                for file_info_list in test_file_dict.values():
+                    tests_list.append(
+                        (
+                            source_key[0],
+                            field,
+                            scan,
+                            file_info_list,
+                        )
+                    )
 
     return tests_list
 
@@ -67,15 +100,15 @@ def load_test_file(request: pytest.FixtureRequest):
     """
     Load file to test.
     """
-    source, field, file_list = request.param
-    result = registry.loaders.fields.load(source, field, file_list)
+    source, field, scan, file_list = request.param
+    result = registry.loaders.fields.load(source, field, scan, file_list)
     return result, request.param
 
 
 @pytest.mark.parametrize(
     "load_test_file",
     generate_tests(),
-    ids=lambda c: f"{c[0]} {c[1]} {c[2][0].path.stem.split('_')[0]}",
+    ids=generate_test_id,
     indirect=True,
 )
 def test_file_loader(load_test_file: tuple[Any, Any]):
@@ -89,7 +122,7 @@ def test_file_loader(load_test_file: tuple[Any, Any]):
 @pytest.mark.parametrize(
     "load_test_file",
     generate_tests(fields=[FieldType.NEAR]),
-    ids=lambda c: f"{c[0]} {c[1]} {c[2][0].path.stem.split('_')[0]}",
+    ids=generate_test_id,
     indirect=True,
 )
 def test_planar_near_field_transform(load_test_file: tuple[Any, Any]):
