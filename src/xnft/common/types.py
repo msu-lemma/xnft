@@ -18,7 +18,7 @@ from numpy.typing import NDArray
 from xnft.common.enums import PolarizationType, SParameterType
 
 from ..calibration.gain import GainCalibration
-from .enums import CoordinateSystemType, DataSourceType, FieldType
+from .enums import CoordinateSystemType, FieldType
 
 # Allowed coordinate system types for near/far-field
 
@@ -41,6 +41,18 @@ FAR_FIELD_CS_TYPES = {
 }
 
 
+@dataclass(frozen=True, slots=True)
+class DataSource:
+    id: str
+    display_name: str
+
+    def __str__(self):
+        return self.display_name
+
+    def __repr__(self):
+        return f"<DataSource: {self.id} ({self.display_name})>"
+
+
 class FieldDataset:
     """
     Simple helper constructor to store fields as xarray datasets.
@@ -55,7 +67,7 @@ class FieldDataset:
         frequency: NDArray,
         coordinate_system: CoordinateSystemType,
         field_type: FieldType,
-        data_source: DataSourceType,
+        data_source: DataSource,
         aperture_size: float = 0.0,
         gain_calibration: GainCalibration | None = None,
     ) -> xr.Dataset:
@@ -75,7 +87,7 @@ class FieldDataset:
             Coordinate system used for data
         field_type : FieldType
             Type of field: Near-Field / Far-Field
-        data_source : DataSourceType
+        data_source : DataSourceDefinition
             Source of data, e.g., ANSYS HFSS, LEmmA scanner, etc.
         aperture_size : float, optional
             Largest dimension of the aperture inducing the field in meters

@@ -10,8 +10,9 @@ from pathlib import Path
 
 from quantiphy import Quantity
 
-from ...common.enums import CoordinateSystemType, DataSourceType, FieldType
+from ...common.enums import CoordinateSystemType, FieldType
 from ...common.registry import registry
+from ...common.types import DataSource
 from ...gui.dialogs.export_data_dialog import ExportDataDialog
 from ...gui.dialogs.fields.new_field_measurement_dialog import NewFieldMeasurementDialog
 from ...reports.data_writers import write_dataset_hdf5
@@ -41,12 +42,15 @@ class FieldsNode(Node):
         spawn_thread=True,
     )
     def new_measured_field(
-        self, field_type, source_type, field_name, file_info_list, aut_size
+        self, field_type, source_type, scan_type, field_name, file_info_list, aut_size
     ):
 
         # Read measured field file
         field_data = registry.loaders.fields.load(
-            source=source_type, field=field_type, file_list=file_info_list
+            source=source_type,
+            field_type=field_type,
+            scan_type=scan_type,
+            file_list=file_info_list,
         )
         field_data.attrs["aperture_size"] = aut_size
         print(field_data)
@@ -102,7 +106,10 @@ class FieldNode(DataNode):
         default=None, init=False, repr=False
     )
     _field_type: FieldType = field(default=FieldType.UNKNOWN, init=False)
-    _source_type: DataSourceType = field(default=DataSourceType.UNKNOWN, init=False)
+    _source_type: DataSource = field(
+        default=DataSource(id="xnft.unknown", display_name="Unknown"),
+        init=False,
+    )
 
     name_editable: bool | None = True
 
@@ -116,7 +123,7 @@ class FieldNode(DataNode):
         source: Node | None = None,
         coordinates_node: CoordinateNode | None = None,
         field_type: FieldType = FieldType.UNKNOWN,
-        source_type: DataSourceType = DataSourceType.UNKNOWN,
+        source_type: DataSource | None = None,
         **kwargs,
     ):
         super().__init__(
@@ -125,6 +132,9 @@ class FieldNode(DataNode):
             source=source,
             **kwargs,
         )
+
+        if source_type is None:
+            registry.data_sources.get("xnft.unknown")
 
         self.coordinates_node = coordinates_node
         self.field_type = field_type

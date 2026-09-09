@@ -18,9 +18,9 @@ from numpy.typing import NDArray
 
 from ...common.enums import (
     CoordinateSystemType,
-    DataSourceType,
     FieldType,
 )
+from ...common.registry import registry
 from ...common.types import FieldDataset
 
 logger = logging.getLogger(__name__)
@@ -79,7 +79,7 @@ def rect_e_near_field(
         frequency=freq_sample_vec,
         coordinate_system=CoordinateSystemType.CARTESIAN,
         field_type=FieldType.NEAR,
-        data_source=DataSourceType.ANALYTIC,
+        data_source=registry.data_sources.get("xnft.analytic"),
     )
     return fields
 
@@ -193,7 +193,7 @@ def rect_e_far_field(
         frequency=spc.c / wavelength_array,
         coordinate_system=CoordinateSystemType.SPHERICAL,
         field_type=FieldType.FAR,
-        data_source=DataSourceType.ANALYTIC,
+        data_source=registry.data_sources.get("xnft.analytic"),
     )
 
     return fields

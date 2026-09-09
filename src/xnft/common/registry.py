@@ -7,17 +7,28 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 import logging
 from abc import ABC
 from collections.abc import Callable
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from ..common.enums import DataPolarizationType, DataSourceType, FieldType, ScanType
-from ..common.types import FileInfo
+from ..common.enums import DataPolarizationType, FieldType, ScanType
+from ..common.types import DataSource, FileInfo
 
 logger = logging.getLogger(__name__)
 
 # Declare registry type helpers
-LoaderFunction = Callable[[list[FileInfo]], Any]
-FieldLoaderKey = tuple[DataSourceType, FieldType, str]
+LoaderFunction = Callable[..., Any]
+FieldLoaderKey = tuple[DataSource, FieldType, str]
+
+
+@dataclass(frozen=True, slots=True)
+class LoaderMetadata:
+    source: DataSource
+    data_polarization: DataPolarizationType
+    extension: str
+    field: FieldType
+    scan_type: ScanType
+    has_sp: bool
 
 
 class BaseRegistry(ABC):
@@ -36,6 +47,33 @@ class BaseRegistry(ABC):
     def values(self):
         """Returns registered functions."""
         raise NotImplementedError
+
+
+class DataSourceRegistry(BaseRegistry):
+    """Handles mapping between source ID and display name."""
+
+    def __init__(self) -> None:
+        self._sources: dict[str, DataSource] = {}
+
+    def register(
+        self,
+        id: str,
+        display_name: str,
+    ) -> DataSource:
+
+        source = DataSource(id=id, display_name=display_name)
+
+        if source.id in self._sources and source != self._sources.get(source.id):
+            raise ValueError(f"DataSource {source.id!r} already registered.")
+
+        self._sources[source.id] = source
+
+        logger.debug("Registered DataSource %s (%s)", source.id, source.display_name)
+
+        return source
+
+    def get(self, source_id: str) -> DataSource:
+        return self._sources[source_id]
 
 
 class FieldLoaderRegistry(BaseRegistry):
@@ -63,17 +101,17 @@ class FieldLoaderRegistry(BaseRegistry):
 
     # --- Loader Functions ---
 
-    def loader_key(self, source, field, extension):
+    def loader_key(self, source, field_type, scan_type, extension):
         """Generate a key for the field-loader registry."""
-        return (source, field, extension.strip().casefold())
+        return (source, field_type, scan_type, extension.strip().casefold())
 
     def register(
         self,
-        source: DataSourceType,
+        source: DataSource,
         data_polarization: DataPolarizationType,
         extension: str,
         field: FieldType = FieldType.NEAR,
-        scan: ScanType = ScanType.PLANAR,
+        scan_type: ScanType = ScanType.PLANAR,
         has_sp: bool = False,
     ):
         """
@@ -85,7 +123,7 @@ class FieldLoaderRegistry(BaseRegistry):
 
         Parameters
         ----------
-        source : DataSourceType
+        source : DataSourceDefinition
             System type that generated the data (e.g., HFSS, NSI, etc.).
         data_polarization : DataPolarizationType
             - DataPolarizationType.SINGLE_POL : Single polarization per file
@@ -96,7 +134,7 @@ class FieldLoaderRegistry(BaseRegistry):
             Field type of measurement.
             - FieldType.NEAR : Near-field measurement
             - FieldType.FAR : Far-field measurement
-        scan : ScanType
+        scan_type : ScanType
             Scan type of measurement.
             - ScanType.PLANAR : Planar measurement coordinates
             - ScanType.CYLINDRICAL : Cylindrical measurement coordinates
@@ -104,21 +142,40 @@ class FieldLoaderRegistry(BaseRegistry):
         has_sp : bool, optional
             File has s-parameters to select from, by default False
         """
+        extension = extension.strip().casefold()
 
-        def decorator(func):
+        if not extension.startswith("."):
+            raise ValueError("Loader extension must start with '.'")
+
+        # Store metadata on the loader for parsing by consumers
+        metadata = LoaderMetadata(
+            source=source,
+            data_polarization=data_polarization,
+            extension=extension,
+            field=field,
+            scan_type=scan_type,
+            has_sp=has_sp,
+        )
+
+        def decorator(func: LoaderFunction) -> LoaderFunction:
             # Generate entry in loader dicionary
-            key = self.loader_key(source=source, field=field, extension=extension)
+            key = self.loader_key(
+                source=source,
+                field_type=field,
+                scan_type=scan_type,
+                extension=extension,
+            )
+
+            if key in self._loaders:
+                current = self._loaders[key]
+                raise ValueError(
+                    f"Loader {key!r} already registered by {current.__module__}.{current.__qualname__}. Cannot register {func.__module__}.{func.__qualname__}."
+                )
+
             self._loaders[key] = func
 
             # Add declared attributes of the loader
-            func.__attributes__ = {
-                "source": source,
-                "field": field,
-                "scan": scan,
-                "extension": extension,
-                "data_polarization": data_polarization,
-                "has_sp": has_sp,
-            }
+            func.__loader_metadata__ = metadata
 
             logger.debug(
                 "Registered field loader %s for key %r",
@@ -132,8 +189,9 @@ class FieldLoaderRegistry(BaseRegistry):
 
     def load(
         self,
-        source: DataSourceType,
-        field: FieldType,
+        source: DataSource,
+        field_type: FieldType,
+        scan_type: ScanType,
         file_list: list[FileInfo],
     ):
         """
@@ -141,12 +199,17 @@ class FieldLoaderRegistry(BaseRegistry):
 
         Parameters
         ----------
-        source : DataSourceType
+        source : DataSourceDefinition
             System type that generated the data (e.g., HFSS, NSI, etc.).
-        field : FieldType
+        field_type : FieldType
             Field type of measurement.
             - FieldType.NEAR : Near-field measurement.
             - FieldType.FAR : Far-field measurement.
+        scan_type : ScanType
+            Scan type of measurement.
+            - ScanType.PLANAR : Planar measurement coordinates
+            - ScanType.CYLINDRICAL : Cylindrical measurement coordinates
+            - ScanType.SPHERICAL : Spherical measurement coordinates
         file_list : List[FileInfo]
             List of FileInfo objects containing files and measurement information.
         """
@@ -165,24 +228,35 @@ class FieldLoaderRegistry(BaseRegistry):
             if file_path.suffix.strip().casefold() != extension:
                 raise TypeError("All file extensions must be of the same type.")
 
-        loader = self.get_loader(source, field, extension)
+        loader = self.get_loader(
+            source=source,
+            field_type=field_type,
+            scan_type=scan_type,
+            extension=extension,
+        )
 
         return loader(file_list)
 
     def get_loader(
         self,
-        source: DataSourceType,
-        field: FieldType,
+        source: DataSource,
+        field_type: FieldType,
+        scan_type: ScanType,
         extension: str,
     ):
         """Get loader for the specified data format.
 
         Parameters
         ----------
-        source : DataSourceType
+        source : DataSourceDefinition
             Source type of the field data.
-        field : FieldType
+        field_type : FieldType
             Type of the field data (e.g., NEAR or FAR).
+        scan_type : ScanType
+            Scan type of measurement.
+            - ScanType.PLANAR : Planar measurement coordinates
+            - ScanType.CYLINDRICAL : Cylindrical measurement coordinates
+            - ScanType.SPHERICAL : Spherical measurement coordinates
         extension : str
             File extension of the field data.
 
@@ -196,18 +270,22 @@ class FieldLoaderRegistry(BaseRegistry):
         NotImplementedError
             If no matching loader is registered.
         """
-        loader_key = self.loader_key(source=source, field=field, extension=extension)
+        loader_key = self.loader_key(
+            source=source,
+            field_type=field_type,
+            scan_type=scan_type,
+            extension=extension,
+        )
         logger.debug("Available field loaders: %s", self._loaders)
 
         try:
             loader_function = self._loaders[loader_key]
-        except KeyError as exc:
+        except KeyError as e:
             raise NotImplementedError(
-                f"No file loader exists for: "
-                f"{{ source: '{source.value}', field: '{field.value}',"
-                f" extension: '{extension}' }} ({loader_key}). "
-                f"Available options are {self._loaders}. {exc}"
-            ) from exc
+                f"No file loader exists for: {{ {source=}, {field_type=}, "
+                f"{scan_type=}, {extension=} }} . Available options are "
+                f"{self._loaders}. {e}"
+            ) from e
         return loader_function
 
 
@@ -232,6 +310,7 @@ class LoaderRegistry:
 
 class Registry:
     def __init__(self):
+        self.data_sources = DataSourceRegistry()
         self.loaders = LoaderRegistry()
         self.algorithms = AlgorithmRegistry()
         self.reports = ReportRegistry()

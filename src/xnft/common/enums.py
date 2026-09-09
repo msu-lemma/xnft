@@ -93,18 +93,6 @@ class AnalysisType(StrEnum):
     UNKNOWN = "Unknown"
 
 
-class DataSourceType(StrEnum):
-    """Available source file types."""
-
-    XNFT = "xNFT"
-    ANALYTIC = "Ideal Aperture"
-    HFSS = "Ansys HFSS"
-    NSI_MEAS = "NSI-MI Scanner"
-    NSI_REF = "NSI-MI Reference"
-    LEMMA = "LEmmA Scanner"
-    UNKNOWN = "Unknown"
-
-
 class DataPolarizationType(StrEnum):
     """
     Specifies which polarizations are expected in a file.

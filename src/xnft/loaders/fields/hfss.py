@@ -14,7 +14,6 @@ import xarray as xr
 from ...common.enums import (
     CoordinateSystemType,
     DataPolarizationType,
-    DataSourceType,
     FieldType,
     PolarizationType,
     ScanType,
@@ -24,11 +23,17 @@ from ...common.types import FieldDataset, FileInfo
 
 logger = logging.getLogger(__name__)
 
+# Register DataSource
+HFSS_SOURCE = registry.data_sources.register(
+    id="xnft.hfss",
+    display_name="ANSYS HFSS",
+)
+
 
 @registry.loaders.fields.register(
-    source=DataSourceType.HFSS,
+    source=HFSS_SOURCE,
     field=FieldType.NEAR,
-    scan=ScanType.PLANAR,
+    scan_type=ScanType.PLANAR,
     data_polarization=DataPolarizationType.COMBO_POL,
     extension=".nfd",
 )
@@ -173,7 +178,7 @@ def load_hfss_near_field_ndf(file_list: list[FileInfo]) -> xr.Dataset:
         frequency=sample_frequency_array,
         coordinate_system=CoordinateSystemType.CARTESIAN,
         field_type=FieldType.NEAR,
-        data_source=DataSourceType.HFSS,
+        data_source=HFSS_SOURCE,
     )
 
     fields_buffer = io.StringIO()
@@ -184,9 +189,9 @@ def load_hfss_near_field_ndf(file_list: list[FileInfo]) -> xr.Dataset:
 
 
 @registry.loaders.fields.register(
-    source=DataSourceType.HFSS,
+    source=HFSS_SOURCE,
     field=FieldType.FAR,
-    scan=ScanType.SPHERICAL,
+    scan_type=ScanType.SPHERICAL,
     data_polarization=DataPolarizationType.COMBO_POL,
     extension=".ffd",
 )
@@ -318,7 +323,7 @@ def load_hfss_far_field_ffd(file_list: list[FileInfo]) -> xr.Dataset:
         frequency=sample_frequency_array,
         coordinate_system=CoordinateSystemType.SPHERICAL,
         field_type=FieldType.FAR,
-        data_source=DataSourceType.HFSS,
+        data_source=HFSS_SOURCE,
     )
 
     fields_buffer = io.StringIO()

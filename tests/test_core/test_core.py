@@ -10,7 +10,6 @@ import xarray as xr
 from xnft.algorithms.planar_near_field_transform import planar_near_field_transform
 from xnft.common.enums import (
     CoordinateSystemType,
-    DataSourceType,
     FieldType,
     PolarizationType,
 )
@@ -20,7 +19,7 @@ from xnft.loaders import register_builtin_loaders
 
 test_dir = Path(__file__).parent.parent
 test_dict = {
-    "source": [DataSourceType.HFSS, DataSourceType.ANALYTIC, DataSourceType.LEMMA],
+    "source": registry.loaders.values(),  # Test all registered loaders
     "field": [FieldType.NEAR, FieldType.FAR],
 }
 

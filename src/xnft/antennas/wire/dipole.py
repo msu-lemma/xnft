@@ -9,9 +9,9 @@ import scipy.constants as spc
 
 from ...common.enums import (
     CoordinateSystemType,
-    DataSourceType,
     FieldType,
 )
+from ...common.registry import registry
 from ...common.types import FieldDataset
 
 # Constants
@@ -101,7 +101,7 @@ def dipole_e(r, theta, phi, i_0=1, len=0.5, k=1):
         frequency=freq_vec,
         coordinate_system=CoordinateSystemType.SPHERICAL,
         field_type=FieldType.NEAR,
-        data_source=DataSourceType.ANALYTIC,
+        data_source=registry.data_sources.get("xnft.analytic"),
     )
 
     return fields
@@ -170,7 +170,7 @@ def dipole_e_far_field(theta, phi=0, r=1, i_0=1, len=0.5, k=1):
         frequency=freq_vec,
         coordinate_system=CoordinateSystemType.SPHERICAL,
         field_type=FieldType.NEAR,
-        data_source=DataSourceType.ANALYTIC,
+        data_source=registry.data_sources.get("xnft.analytic"),
     )
 
     return fields

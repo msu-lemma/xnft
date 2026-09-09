@@ -15,7 +15,6 @@ import xarray as xr
 from ...common.enums import (
     CoordinateSystemType,
     DataPolarizationType,
-    DataSourceType,
     FieldType,
     PolarizationType,
     ScanType,
@@ -30,11 +29,17 @@ logger = logging.getLogger(__name__)
 # Constant for scanner distnaces
 POINTS_PER_METER = 200_000
 
+# Register DataSource
+LEMMA_SOURCE = registry.data_sources.register(
+    id="xnft.lemma",
+    display_name="LEmmA Scanner",
+)
+
 
 @registry.loaders.fields.register(
-    source=DataSourceType.LEMMA,
+    source=LEMMA_SOURCE,
     field=FieldType.NEAR,
-    scan=ScanType.PLANAR,
+    scan_type=ScanType.PLANAR,
     data_polarization=DataPolarizationType.SINGLE_POL,
     extension=".h5",
     has_sp=True,
@@ -138,7 +143,7 @@ def load_lemma_h5(file_list: list[FileInfo]) -> xr.Dataset:
         frequency=sample_frequency_array,
         coordinate_system=CoordinateSystemType.CARTESIAN,
         field_type=FieldType.NEAR,
-        data_source=DataSourceType.LEMMA,
+        data_source=LEMMA_SOURCE,
     )
 
     return fields

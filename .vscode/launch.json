@@ -8,11 +8,13 @@
             "name": "Python Debugger",
             "type": "debugpy",
             "request": "launch",
-            "module": "xnft.gui.pkg_entrypoint",
+            "module": "xnft.gui.app",
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
             "subProcess": false,
-            "autoReload": {"enable": true}
+            "autoReload": {
+                "enable": true
+            }
         }
     ]
 }

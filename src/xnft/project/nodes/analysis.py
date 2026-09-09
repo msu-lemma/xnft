@@ -15,10 +15,10 @@ from ...antennas.probes.probes import MeasurementProbe, RectWaveguide
 from ...common.enums import (
     AnalysisType,
     CoordinateSystemType,
-    DataSourceType,
     FieldType,
     NodeType,
 )
+from ...common.registry import registry
 from ...gui.dialogs.analysis.new_planar_nft_dialog import (
     NewPlanarNearFieldTransform,
 )
@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 class AnalysisNode(Node):
     icon_name: str = "src/xnft/resources/icons/function.svg"
 
-    def __post_init__(self, name: str, node_type: NodeType):
+    def __post_init__(self, name: str | None, node_type: NodeType):
         super().__post_init__(name, node_type)
 
         self._node_type = NodeType.ANALYSIS
@@ -78,7 +78,7 @@ class AnalysisNode(Node):
             data=field_data,
             field_type=FieldType.FAR,
             coordinates_node=coordinate_node,
-            source_type=DataSourceType.XNFT,
+            source_type=registry.data_sources.get("xnft"),
         )
         transform_node = TransformNode(
             name=transform_name,

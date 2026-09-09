@@ -3,11 +3,9 @@ Define new field measurement dialog window.
 
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
-
-TODO:
-    - Add S-param. detection for .h5 files (show S-aram. list next to selected file)
 """
 
+import logging
 from collections import defaultdict
 from pathlib import Path
 
@@ -31,14 +29,16 @@ from PySide6.QtWidgets import (
 
 from ....common.enums import (
     DataPolarizationType,
-    DataSourceType,
     FieldType,
     PolarizationType,
+    ScanType,
     SParameterType,
 )
 from ....common.registry import registry
-from ....common.types import FileInfo
+from ....common.types import DataSource, FileInfo
 from ....project.nodes.node import Node
+
+logger = logging.getLogger(__name__)
 
 
 class NewFieldMeasurementDialog(QDialog):
@@ -65,16 +65,17 @@ class NewFieldMeasurementDialog(QDialog):
 
         # --- Create Widgets ---
         self.cb_field_type = QComboBox()
+        self.cb_scan_type = QComboBox()
         self.cb_source_format = QComboBox()
         self.cb_data_polarization = QComboBox()
 
-        field_types = self._loaders_info(registry.loaders.fields).keys()
+        self._loader_info = self._loaders_info(registry.loaders.fields)
+
+        field_types = self._loader_info.keys()
         for idx, field_type in enumerate(field_types):
             # NOTE: Qt casts StrEnum to plain str which breaks some things;
             #       we'll wrap this in a tuple here to mitigate this behavior
             self.cb_field_type.addItem(field_type.value, (field_type,))
-
-        self._update_source_file_formats()
 
         self.field_name_field = QLineEdit(self)
         self.field_name_field.setText("Measured Field")
@@ -120,6 +121,7 @@ class NewFieldMeasurementDialog(QDialog):
         self.form_layout.addRow("Field Name:", self.field_name_field)
 
         self.form_layout.addRow("Field Type:", self.cb_field_type)
+        self.form_layout.addRow("Scan Type:", self.cb_scan_type)
         self.form_layout.addRow("Source File Format:", self.cb_source_format)
         self.form_layout.addRow("Source File Polarizations:", self.cb_data_polarization)
 
@@ -133,19 +135,19 @@ class NewFieldMeasurementDialog(QDialog):
         layout.addLayout(self.form_layout)
         self.form_layout.addRow(self.label_file_help)
 
+        self._update_scan_formats()
         self._update_source_polarization_formats()
         self._update_file_fields_shown()
 
         layout.addWidget(self.buttons)
 
         # --- Add Connections ---
-        self.cb_field_type.currentTextChanged.connect(self._update_source_file_formats)
-        self.cb_field_type.currentTextChanged.connect(self._update_help_label)
-        self.cb_source_format.currentTextChanged.connect(self._update_help_label)
-
+        self.cb_field_type.currentTextChanged.connect(self._update_scan_formats)
+        self.cb_scan_type.currentTextChanged.connect(self._update_source_file_formats)
         self.cb_source_format.currentTextChanged.connect(
             self._update_source_polarization_formats
         )
+        self.cb_source_format.currentTextChanged.connect(self._update_help_label)
 
         self.cb_data_polarization.currentTextChanged.connect(
             self._update_file_fields_shown
@@ -194,69 +196,121 @@ class NewFieldMeasurementDialog(QDialog):
                 )
 
         return {
-            "field_type": self.cb_field_type.currentText().strip(),
-            "source_type": self.cb_source_format.currentText().strip(),
+            "field_type": self.selected_field_type,
+            "scan_type": self.selected_scan_type,
+            "source_type": self.selected_source_format,
             "field_name": self.field_name_field.text().strip(),
             "file_info_list": file_info_list,
             "aut_size": self.sb_aut_size.value() * 1e-3,
         }
 
     @property
-    def selected_field(self) -> FieldType:
+    def selected_field_type(self) -> FieldType:
         return self.cb_field_type.currentData()[0]
 
     @property
-    def selected_source_format(self) -> DataSourceType:
+    def selected_source_format(self) -> DataSource:
         return self.cb_source_format.currentData()[0]
 
+    @property
+    def selected_scan_type(self) -> ScanType:
+        return self.cb_scan_type.currentData()[0]
+
     def _update_default_name(self) -> None:
-        default_name = f"Measured {self.selected_field} ({self.selected_source_format})"
+        default_name = (
+            f"Measured {self.selected_field_type} ({self.selected_source_format})"
+        )
         self.field_name_field.setText(default_name)
 
     def _update_source_file_formats(self) -> None:
-        """Update available source file formats based on field type."""
-        field_type = self.cb_field_type.currentText()
-        source_format_types = self._loaders_info(registry.loaders.fields)[
-            field_type
-        ].keys()
+        """Update source formats based on the selected field and scan types."""
+        self.cb_source_format.clear()
 
-        # Remove all items before updating items
-        for _ in range(self.cb_source_format.count()):
-            self.cb_source_format.removeItem(0)
+        if self.cb_field_type.currentData() is None:
+            return
 
-        for source_format_type in source_format_types:
-            # NOTE: Qt casts StrEnum to plain str which breaks some things;
-            #       we'll wrap this in a tuple here to mitigate this behavior
+        if self.cb_scan_type.currentData() is None:
+            return
+
+        field_type = self.selected_field_type
+        scan_type = self.selected_scan_type
+
+        source_types = self._loader_info[field_type][scan_type].keys()
+
+        for source_type in source_types:
             self.cb_source_format.addItem(
-                source_format_type.value, (source_format_type,)
+                source_type.display_name,
+                (source_type,),
             )
+
+        self._update_source_polarization_formats()
 
     def _update_source_polarization_formats(self) -> None:
-        """Update available source polarization formats based on source file type."""
-        field_type = self.cb_field_type.currentData()[0]
-        source_type = self.cb_source_format.currentData()[0]
-        loaders = registry.loaders.fields._loaders
+        """
+        Update polarization formats based on the selected field, scan,
+        and source types.
+        """
+        self.cb_data_polarization.clear()
 
-        # Get data polarizations available for source and field type files
+        if self.cb_field_type.currentData() is None:
+            return
+
+        if self.cb_scan_type.currentData() is None:
+            return
+
+        if self.cb_source_format.currentData() is None:
+            return
+
+        field_type = self.selected_field_type
+        scan_type = self.selected_scan_type
+        source_type = self.selected_source_format
+
         polarization_formats = []
-        for loader in loaders.values():
-            attributes = loader.__attributes__
-            if (
-                attributes["source"] == source_type
-                and attributes["field"] == field_type
-            ):
-                polarization_formats.append(attributes["data_polarization"])
 
-        # Remove all items before updating items
-        for _ in range(self.cb_data_polarization.count()):
-            self.cb_data_polarization.removeItem(0)
+        for loader in registry.loaders.fields.values():
+            md = loader.__loader_metadata__
+
+            if (
+                md.field == field_type
+                and md.scan_type == scan_type
+                and md.source == source_type
+                and md.data_polarization not in polarization_formats
+            ):
+                polarization_formats.append(md.data_polarization)
 
         for polarization_format in polarization_formats:
-            # NOTE: Qt casts StrEnum to plain str which breaks some things;
-            #       we'll wrap this in a tuple here to mitigate this behavior
             self.cb_data_polarization.addItem(
-                polarization_format.value, (polarization_format,)
+                polarization_format.value,
+                (polarization_format,),
             )
+
+        self._update_help_label()
+
+    def _update_scan_formats(self) -> None:
+        """Update scan types based on the selected field type."""
+        self.cb_scan_type.clear()
+
+        if self.cb_field_type.currentData() is None:
+            self._update_source_file_formats()
+            return
+
+        field_type = self.selected_field_type
+        scan_types = self._loader_info[field_type].keys()
+
+        logger.debug(
+            "Available scan types for %r: %r",
+            field_type,
+            scan_types,
+        )
+
+        for scan_type in scan_types:
+            self.cb_scan_type.addItem(
+                scan_type.value,
+                (scan_type,),
+            )
+
+        # Explicitly update dependent widgets.
+        self._update_source_file_formats()
 
     def _update_file_fields_shown(self):
         # Enable/disable data polarization specific data selection boxes
@@ -282,36 +336,51 @@ class NewFieldMeasurementDialog(QDialog):
             f"Available extensions are: {', '.join(self._get_available_extensions())}"
         )
 
-    def _get_available_extensions(self, glob_format=True) -> list[str]:
-        field_type = self.cb_field_type.currentText()
-        source_type = self.cb_source_format.currentText()
+    def _get_available_extensions(
+        self,
+        glob_format: bool = True,
+    ) -> list:
+        """
+        Return extensions for the selected field, scan, and source types.
+        """
+        if self.cb_field_type.currentData() is None:
+            return []
 
-        file_extensions = self._loaders_info(registry.loaders.fields)[field_type][
-            source_type
-        ]
+        if self.cb_scan_type.currentData() is None:
+            return []
+
+        if self.cb_source_format.currentData() is None:
+            return []
+
+        field_type = self.selected_field_type
+        scan_type = self.selected_scan_type
+        source_type = self.selected_source_format
+
+        file_extensions = self._loader_info[field_type][scan_type][source_type]
+
         if glob_format:
             return [f"*{extension}" for extension in file_extensions]
-        else:
-            return file_extensions
+
+        return list(file_extensions)
 
     def _loaders_info(self, file_registry):
         """
-        Return dictionary of field type, source type and accepted file
-        extensions and polarizations store in file.
+        Return loader information grouped by field, scan, and source type.
+
+        Structure:
+            loader_info[field_type][scan_type][source_type] -> list[str]
         """
-        loader_dict = {
-            FieldType.NEAR: defaultdict(list),
-            FieldType.FAR: defaultdict(list),
-        }
+        loader_info = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
 
-        for loader in file_registry._loaders.values():
-            attr_dict = loader.__attributes__
-            source = attr_dict["source"]
-            field = attr_dict["field"]
-            extension = attr_dict["extension"]
-            loader_dict[field][source].append(extension)
+        for loader in file_registry.values():
+            md = loader.__loader_metadata__
 
-        return loader_dict
+            extensions = loader_info[md.field][md.scan_type][md.source]
+
+            if md.extension not in extensions:
+                extensions.append(md.extension)
+
+        return loader_info
 
     def _is_input_valid(self, silent: bool) -> bool:
         name = self.field_name_field.text().strip()
@@ -323,7 +392,7 @@ class NewFieldMeasurementDialog(QDialog):
                 )
             return False
 
-        # TODO: re-implement file path testing to handle FileEntryRow (maybe inside the class)
+        # TODO/FIXME: re-implement file path testing to handle FileEntryRow (maybe inside the class)
 
         # if not raw_path:
         #     if not silent:
@@ -447,18 +516,30 @@ class FileEntryRow(QWidget):
 
     def _on_le_path_update(self) -> None:
         """Update SP field."""
-        field_type = self.parent.selected_field
-        source_format = self.parent.selected_source_format
 
         extension = Path(self.le_path.text()).suffix
 
-        # try:
-        loader = registry.loaders.fields.get_loader(
-            source_format, field_type, extension
-        )
-        self.show_sp = loader.__attributes__["has_sp"]
-        # except Exception as e:
-        #     pass
+        self.show_sp = False
+
+        dialog = self.parentWidget()
+
+        if dialog is None:
+            return
+
+        try:
+            loader = registry.loaders.fields.get_loader(
+                source=dialog.selected_source_format,
+                field_type=dialog.selected_field_type,
+                scan_type=dialog.selected_scan_type,
+                extension=extension,
+            )
+        except NotImplementedError:
+            # The path is incomplete or its extension is not supported by the
+            # current field, scan, and source selections.
+            return
+
+        metadata = loader.__loader_metadata__
+        self.show_sp = metadata.has_sp
 
     @property
     def show_sp(self):

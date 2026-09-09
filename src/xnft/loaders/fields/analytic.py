@@ -15,7 +15,6 @@ from ...antennas.aperture.rectangular import rect_e_far_field, rect_e_near_field
 from ...antennas.wire.dipole import dipole_e, dipole_e_far_field
 from ...common.enums import (
     DataPolarizationType,
-    DataSourceType,
     FieldType,
     PolarizationType,
     ScanType,
@@ -25,13 +24,20 @@ from ...common.types import FileInfo
 
 logger = logging.getLogger(__name__)
 
+
 # === REGISTER LOADERS ===========================================================
+
+# Register DataSource
+ANALYTIC_SOURCE = registry.data_sources.register(
+    id="xnft.analytic",
+    display_name="Analytic Source",
+)
 
 
 @registry.loaders.fields.register(
-    source=DataSourceType.ANALYTIC,
+    source=ANALYTIC_SOURCE,
     field=FieldType.NEAR,
-    scan=ScanType.PLANAR,
+    scan_type=ScanType.PLANAR,
     data_polarization=DataPolarizationType.COMBO_POL,
     extension=".yaml",
 )
@@ -44,9 +50,9 @@ def load_analytic_near_field_planar_yaml(file_list: list[FileInfo]) -> xr.Datase
 
 
 @registry.loaders.fields.register(
-    source=DataSourceType.ANALYTIC,
+    source=ANALYTIC_SOURCE,
     field=FieldType.NEAR,
-    scan=ScanType.SPHERICAL,
+    scan_type=ScanType.SPHERICAL,
     data_polarization=DataPolarizationType.COMBO_POL,
     extension=".yaml",
 )
@@ -59,9 +65,9 @@ def load_analytic_near_field_spherical_yaml(file_list: list[FileInfo]) -> xr.Dat
 
 
 @registry.loaders.fields.register(
-    source=DataSourceType.ANALYTIC,
+    source=ANALYTIC_SOURCE,
     field=FieldType.FAR,
-    scan=ScanType.SPHERICAL,
+    scan_type=ScanType.SPHERICAL,
     data_polarization=DataPolarizationType.COMBO_POL,
     extension=".yaml",
 )

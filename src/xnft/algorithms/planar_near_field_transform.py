@@ -23,7 +23,8 @@ from ..antennas.probes.probes import MeasurementProbe
 from ..calibration.gain import GainCalibration
 
 # from numpy.typing import ArrayLike
-from ..common.enums import CoordinateSystemType, DataSourceType, FieldType
+from ..common.enums import CoordinateSystemType, FieldType
+from ..common.registry import registry
 from ..common.types import FieldDataset
 
 logger = logging.getLogger(__name__)
@@ -367,7 +368,7 @@ def planar_near_field_transform(
         frequency=frequencies,
         coordinate_system=CoordinateSystemType.SPHERICAL,
         field_type=FieldType.FAR,
-        data_source=DataSourceType.HFSS,
+        data_source=registry.data_sources.get("xnft"),
         aperture_size=near_field.attrs["aperture_size"],
         gain_calibration=gain_calibration,
     )
