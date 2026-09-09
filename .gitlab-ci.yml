@@ -5,12 +5,16 @@ stages:
 variables:
   # GIT_LFS_SKIP_SMUDGE: "1"
   DEBIAN_FRONTEND: "noninteractive"
-  PIXI_CACHE_DIR: .pixi-cache
+  PIXI_CACHE_DIR: "$CI_PROJECT_DIR/.pixi-cache"
 
 # Store our package cache in our git repo so we can cache it
 cache:
+  key:
+    files:
+      - pixi.lock
   paths:
     - .pixi-cache/ # installed pixi environments
+  policy: pull-push
 
 # Run test cases
 test-job:
