@@ -25,7 +25,7 @@ Frequency 5.800000e+09
 
 Sample Locations
 ----------------
-The file header begins with the near-field sample locations in cartesian coordinates in units of meters. Unfortunately, the sample locations array is dimensions are not provided ahead of time and must be computed based on reading in the entire dataset.
+The file header begins with the near-field sample locations in cartesian coordinates in unit of meters. Unfortunately, the sample locations array is dimensions are not provided ahead of time and must be computed based on reading in the entire dataset.
 
 Frequencies
 -----------

@@ -39,15 +39,15 @@ from quantiphy import Quantity
 
 from ....common.enums import NodeType
 from ....project.nodes.node import DataNode, Node
-from ....reports.plot.plot_functions.field_components import FieldComponent
-from ....reports.plot.plot_functions.field_quantities import (
+from ....reports.plot.functions.field_components import FieldComponent
+from ....reports.plot.functions.field_quantities import (
     FieldQuantities,
     FieldQuantity,
 )
-from ....reports.plot.plot_functions.functions import PlotFunction
-from ....reports.plot.plot_functions.normalizations import PlotNorm, PlotNorms
-from ....reports.plot.plot_functions.scales import PlotScale
-from ....reports.plot.plot_helpers import trace_preview
+from ....reports.plot.functions.functions import PlotFunction
+from ....reports.plot.functions.normalizations import PlotNorm, PlotNorms
+from ....reports.plot.functions.scales import PlotScale
+from ....reports.plot.helpers.helpers import trace_preview
 from ..common import ListWidgetTitle
 
 

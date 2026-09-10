@@ -174,7 +174,7 @@ class FieldDataset:
             "E": (
                 dims,
                 e_field,
-                {"units": f"{unyt.volt}/{unyt.meter}"},
+                {"units": ""},
             )
         }
 
@@ -182,7 +182,7 @@ class FieldDataset:
             data_vars["H"] = (
                 dims,
                 h_field,
-                {"units": f"{unyt.ampere}/{unyt.meter}"},
+                {"units": ""},
             )
 
         return xr.Dataset(

@@ -128,7 +128,7 @@ class Scale(StrEnum):
     DB = "Decibels"
 
 
-class Units(Enum):
+class Unit(Enum):
     METERS = unyt.meter
     RADIANS = unyt.radian
     DEGREES = unyt.degree

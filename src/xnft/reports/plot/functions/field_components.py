@@ -154,7 +154,7 @@ class FieldComponents(Enum):
         scales=(PlotScales.LINEAR, PlotScales.DECIBELS_20),
         field_types={FieldType.FAR},
         plot_functions=PlotFunctions,  # All plot functions valid
-        enabled=True,
+        enabled=False,
     )
     LUDWIG_3_CROSS = FieldComponent(
         name="L3 Cross",
@@ -162,5 +162,5 @@ class FieldComponents(Enum):
         scales=(PlotScales.LINEAR, PlotScales.DECIBELS_20),
         field_types={FieldType.FAR},
         plot_functions=PlotFunctions,  # All plot functions valid
-        enabled=True,
+        enabled=False,
     )

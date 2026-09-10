@@ -51,6 +51,8 @@ exclude_lines = [
   "if __name__ == .__main__.:",
 ]
 
+# === Ruff Configuration ===
+
 [tool.ruff]
 # Exclude CI pixi cache folder.
 extend-exclude = [".pixi-cache"]

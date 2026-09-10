@@ -8,7 +8,6 @@ from collections import namedtuple
 from enum import Enum
 
 import numpy as np
-import unyt
 
 from ....common.enums import FieldType
 from .field_components import FieldComponents
@@ -73,7 +72,7 @@ class FieldQuantities(Enum):
         field_types=(FieldType.FAR,),  # ratio
         field_components=FieldComponents,  # All components valid
         enabled=lambda field: True,
-        units=unyt.volt / unyt.meter,
+        units="",  # unyt.volt / unyt.meter,  # NOTE: We can't guarantee unit here
     )
     E = FieldQuantity(
         name="E",
@@ -82,7 +81,7 @@ class FieldQuantities(Enum):
         field_types=(FieldType.NEAR),  # ratio
         field_components=FieldComponents,  # All components valid
         enabled=lambda field: True,
-        units=unyt.volt / unyt.meter,
+        units="",  # unyt.volt / unyt.meter,  # NOTE: We can't guarantee unit here
     )
     GAIN = FieldQuantity(
         name="Gain",
@@ -94,5 +93,5 @@ class FieldQuantities(Enum):
             "gain_calibration" in field.attrs
             and field.attrs["gain_calibration"] is not None
         ),
-        units="dBi",
+        units="i",
     )

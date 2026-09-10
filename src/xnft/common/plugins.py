@@ -14,7 +14,7 @@ from importlib.metadata import entry_points
 logger = logging.getLogger(__name__)
 
 
-def discover_plugins() -> None:
+def register_plugins() -> None:
     """Import all installed xNFT plugin modules."""
 
     for entry_point in entry_points(group="xnft.plugins"):

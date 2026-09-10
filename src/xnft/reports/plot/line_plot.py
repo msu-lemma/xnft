@@ -5,6 +5,7 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 """
 
 import logging
+from collections.abc import Collection
 from types import NoneType
 from typing import ClassVar
 
@@ -29,8 +30,8 @@ from PySide6.QtWidgets import (
 from ...common.enums import CoordinateSystemType
 from ...gui.dialogs.reports.new_trace_dialog import NewTraceDialog, TraceParameters
 from ...project.nodes.node import DataNode
-from .plot_functions.scales import PlotScale
-from .plot_helpers import trace_preview
+from .functions.scales import PlotScale
+from .helpers.helpers import trace_preview
 
 logger = logging.getLogger(__name__)
 
@@ -98,7 +99,7 @@ class PlotTrace(pg.PlotDataItem):
 class Plot1D(QWidget):
     # Mapping of valid source coordinates to plotting coordinates
     __coordinate_domains__: ClassVar[
-        dict[CoordinateSystemType, tuple[CoordinateSystemType]]
+        dict[CoordinateSystemType, Collection[CoordinateSystemType]]
     ] = {
         CoordinateSystemType.SPHERICAL: (
             CoordinateSystemType.SPHERICAL,

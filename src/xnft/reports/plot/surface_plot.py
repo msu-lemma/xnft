@@ -8,6 +8,7 @@ TODO: Add colormap selection (based on type of scale user selected, e.g., cyclic
 
 import logging
 from collections import namedtuple
+from collections.abc import Collection
 from dataclasses import dataclass
 from typing import Any, ClassVar
 
@@ -33,12 +34,12 @@ from scipy.interpolate import griddata  # , CloughTocher2DInterpolator
 
 from ...common.enums import CoordinateSystemType
 from ...project.nodes.fields import FieldNode
-from .coordinate_transforms import phitheta_to_unit
-from .plot_functions.field_components import FieldComponent
-from .plot_functions.field_quantities import FieldQuantities, FieldQuantity
-from .plot_functions.functions import PlotFunction, PlotFunctions
-from .plot_functions.normalizations import PlotNorm, PlotNorms
-from .plot_functions.scales import PlotScale
+from .functions.field_components import FieldComponent
+from .functions.field_quantities import FieldQuantities, FieldQuantity
+from .functions.functions import PlotFunction, PlotFunctions
+from .functions.normalizations import PlotNorm, PlotNorms
+from .functions.scales import PlotScale
+from .helpers.coordinate_transforms import phitheta_to_unit
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +82,7 @@ class SurfacePlot2DParameters:
 class Plot2D(QWidget):
     # Mapping of valid source coordinates to plotting domain
     __coordinate_domains__: ClassVar[
-        dict[CoordinateSystemType, tuple[CoordinateSystemType]]
+        dict[CoordinateSystemType, Collection[CoordinateSystemType]]
     ] = {
         CoordinateSystemType.SPHERICAL: (
             CoordinateSystemType.SPHERICAL,
@@ -612,8 +613,13 @@ class Plot2D(QWidget):
         self.last_plot_domain = self.selected_plot_domain
 
         # Set applicate label on LUT histogram
-        applicate_label = "Placeholder"
-        applicate_units = "placeholderUnit"
+        field_quantity = self.plot_parameters.field_quantity
+        function = self.plot_parameters.applicate_function
+        scale = self.plot_parameters.applicate_scale
+
+        applicate_label = f"{function.name_short}({field_quantity.name})"
+        applicate_units = scale.unit_modifier(field_quantity.units)
+
         self.hist.axis.setLabel(applicate_label, units=applicate_units)
 
     def _autoscale_lut_range(self, min_percentile=20, max_percentile=100):
