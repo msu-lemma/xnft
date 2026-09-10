@@ -37,7 +37,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-# from ..common.plugins import discover_plugins
+from ..common.plugins import discover_plugins
 from ..loaders import register_builtin_loaders
 from ..project import manager
 from ..project.io import read_project
@@ -460,7 +460,7 @@ class MainWindow(QMainWindow):
 
 def init_application():
     register_builtin_loaders()
-    # discover_plugins()
+    discover_plugins()
 
     # TODO/FIXME: for debug only
     import faulthandler

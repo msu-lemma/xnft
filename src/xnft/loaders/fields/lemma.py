@@ -38,7 +38,7 @@ LEMMA_SOURCE = registry.data_sources.register(
 
 @registry.loaders.fields.register(
     source=LEMMA_SOURCE,
-    field=FieldType.NEAR,
+    field_type=FieldType.NEAR,
     scan_type=ScanType.PLANAR,
     data_polarization=DataPolarizationType.SINGLE_POL,
     extension=".h5",

@@ -8,13 +8,19 @@ will read the plugins manifest using the importlib.metadata.EntryPoints listed i
 Copyright 2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
+import logging
 from importlib.metadata import entry_points
 
-from .registry import registry
+logger = logging.getLogger(__name__)
 
 
-def discover_plugins():
-    for ep in entry_points(group="xnft.plugins"):
-        plugin = ep.load()
+def discover_plugins() -> None:
+    """Import all installed xNFT plugin modules."""
 
-        registry.loaders.update(plugin.get("loaders", {}))
+    for entry_point in entry_points(group="xnft.plugins"):
+        logger.debug(
+            "Loading plugin %s from %s",
+            entry_point.name,
+            entry_point.value,
+        )
+        entry_point.load()

@@ -26,7 +26,7 @@ class LoaderMetadata:
     source: DataSource
     data_polarization: DataPolarizationType
     extension: str
-    field: FieldType
+    field_type: FieldType
     scan_type: ScanType
     has_sp: bool
 
@@ -110,7 +110,7 @@ class FieldLoaderRegistry(BaseRegistry):
         source: DataSource,
         data_polarization: DataPolarizationType,
         extension: str,
-        field: FieldType = FieldType.NEAR,
+        field_type: FieldType = FieldType.NEAR,
         scan_type: ScanType = ScanType.PLANAR,
         has_sp: bool = False,
     ):
@@ -130,7 +130,7 @@ class FieldLoaderRegistry(BaseRegistry):
             - DataPolarizationType.COMBO_POL : Combined polarization in file
         extension : str
             File extension (e.g., .csv, .nfd, .ffd, etc.).
-        field : FieldType
+        field_type : FieldType
             Field type of measurement.
             - FieldType.NEAR : Near-field measurement
             - FieldType.FAR : Far-field measurement
@@ -152,7 +152,7 @@ class FieldLoaderRegistry(BaseRegistry):
             source=source,
             data_polarization=data_polarization,
             extension=extension,
-            field=field,
+            field_type=field_type,
             scan_type=scan_type,
             has_sp=has_sp,
         )
@@ -161,7 +161,7 @@ class FieldLoaderRegistry(BaseRegistry):
             # Generate entry in loader dicionary
             key = self.loader_key(
                 source=source,
-                field_type=field,
+                field_type=field_type,
                 scan_type=scan_type,
                 extension=extension,
             )

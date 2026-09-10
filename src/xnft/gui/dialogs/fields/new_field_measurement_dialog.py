@@ -271,7 +271,7 @@ class NewFieldMeasurementDialog(QDialog):
             md = loader.__loader_metadata__
 
             if (
-                md.field == field_type
+                md.field_type == field_type
                 and md.scan_type == scan_type
                 and md.source == source_type
                 and md.data_polarization not in polarization_formats
@@ -375,7 +375,7 @@ class NewFieldMeasurementDialog(QDialog):
         for loader in file_registry.values():
             md = loader.__loader_metadata__
 
-            extensions = loader_info[md.field][md.scan_type][md.source]
+            extensions = loader_info[md.field_type][md.scan_type][md.source]
 
             if md.extension not in extensions:
                 extensions.append(md.extension)

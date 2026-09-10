@@ -7,6 +7,7 @@ University.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -39,6 +40,15 @@ NEAR_FIELD_CS_TYPES = {
 FAR_FIELD_CS_TYPES = {
     CoordinateSystemType.SPHERICAL: {"phi": unyt.radian, "theta": unyt.radian},
 }
+
+
+@dataclass(frozen=True)
+class PluginManifest:
+    name: str
+    version: str | None = None
+    loaders: Mapping[str, type] = field(default_factory=dict)
+    algorithms: Mapping[str, type] = field(default_factory=dict)
+    reports: Mapping[str, type] = field(default_factory=dict)
 
 
 @dataclass(frozen=True, slots=True)

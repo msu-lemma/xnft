@@ -36,7 +36,7 @@ ANALYTIC_SOURCE = registry.data_sources.register(
 
 @registry.loaders.fields.register(
     source=ANALYTIC_SOURCE,
-    field=FieldType.NEAR,
+    field_type=FieldType.NEAR,
     scan_type=ScanType.PLANAR,
     data_polarization=DataPolarizationType.COMBO_POL,
     extension=".yaml",
@@ -51,7 +51,7 @@ def load_analytic_near_field_planar_yaml(file_list: list[FileInfo]) -> xr.Datase
 
 @registry.loaders.fields.register(
     source=ANALYTIC_SOURCE,
-    field=FieldType.NEAR,
+    field_type=FieldType.NEAR,
     scan_type=ScanType.SPHERICAL,
     data_polarization=DataPolarizationType.COMBO_POL,
     extension=".yaml",
@@ -66,7 +66,7 @@ def load_analytic_near_field_spherical_yaml(file_list: list[FileInfo]) -> xr.Dat
 
 @registry.loaders.fields.register(
     source=ANALYTIC_SOURCE,
-    field=FieldType.FAR,
+    field_type=FieldType.FAR,
     scan_type=ScanType.SPHERICAL,
     data_polarization=DataPolarizationType.COMBO_POL,
     extension=".yaml",
