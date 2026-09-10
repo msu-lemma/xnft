@@ -170,7 +170,8 @@ def load_lemma_v2_h5(file_list: list[FileInfo]) -> xr.Dataset:
             sample_locations = dataset["points"][()] / POINTS_PER_METER
             x_locs = sample_locations[:, 0]
             y_locs = sample_locations[:, 1]
-            z_locs = sample_locations[:, 2]
+            # TODO/FIXME: temporary hardcoded z-distance; need scanner to report correct value
+            z_locs = sample_locations[:, 2] + 0.07
 
             # NOTE: We're only taking the first item in the set
             if file_info.s_parameters != set():
