@@ -623,15 +623,11 @@ class Plot2D(QWidget):
         self.hist.axis.setLabel(applicate_label, units=applicate_units)
 
     def _autoscale_lut_range(self, min_percentile=20, max_percentile=100):
-        low, high = np.percentile(
-            np.where(
-                np.isnan(self.image_item.image),
-                np.nanmin(self.image_item.image),
-                self.image_item.image,
-            ),
+        low, high = np.nanpercentile(
+            self.image_item.image,
             [min_percentile, max_percentile],
         )
-        print(f"{low=}, {high=}")
+        logger.debug(f"autoscale_lut: {low=}, {high=}")
         self.hist.setLevels(low, high)
 
 
