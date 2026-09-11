@@ -416,7 +416,7 @@ class NewTraceDialog(QDialog):
         for fc in field_components:
             item = QListWidgetItem(fc.value.name)
             item.setData(Qt.UserRole, fc.value)
-            if not fc.value.enabled:
+            if not fc.value.enabled(self.selected_field.data):
                 item.setFlags(item.flags() & ~Qt.ItemIsEnabled)
             self.lwt_field_quantity.lw.addItem(item)
 
