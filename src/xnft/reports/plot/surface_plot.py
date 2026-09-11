@@ -390,8 +390,6 @@ class Plot2D(QWidget):
         for _ in range(self.cb_field_quantity.count()):
             self.cb_field_quantity.removeItem(0)
 
-        logger.debug(f"field_node.data = {self.field_node.data}")
-
         field_quantities = FieldQuantities
 
         newitem_index = 0
