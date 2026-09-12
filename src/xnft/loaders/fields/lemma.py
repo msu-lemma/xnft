@@ -157,7 +157,7 @@ def load_lemma_v1_h5(file_list: list[FileInfo]) -> xr.Dataset:
     source=LEMMA_SOURCE_V2,
     field_type=FieldType.NEAR,
     scan_type=ScanType.PLANAR,
-    data_polarization=DataPolarizationType.COMBO_POL,
+    data_polarization=DataPolarizationType.SINGLE_POL,
     extension=".h5",
     has_sp=True,
 )
@@ -182,6 +182,9 @@ def load_lemma_v2_h5(file_list: list[FileInfo]) -> xr.Dataset:
             field_amplitude = dataset[f"{sp}real"][()] + 1.0j * dataset[f"{sp}imag"][()]
 
             # TODO/FIXME: Assumes all measurements are co-pol ONLY
+            logger.warning(
+                "LEmmA V2 loader currently assumes _all_ measurements are co-pol only. Cross-pol measurements are treated as co-pol."
+            )
             ey_array = field_amplitude
             ex_array = np.zeros_like(ey_array)
 
