@@ -4,6 +4,7 @@ Reporting functions available to transform data.
 Copyright 2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
+import logging
 from collections import namedtuple
 from enum import Enum
 
@@ -12,6 +13,8 @@ import xarray as xr
 
 from ....common.enums import FieldType
 from .scales import PlotScales
+
+logger = logging.getLogger(__name__)
 
 PlotFunction = namedtuple(
     "PlotFunction",
