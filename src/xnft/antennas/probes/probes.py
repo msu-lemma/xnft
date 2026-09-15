@@ -4,11 +4,14 @@ Measurement probe class.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
+import logging
+
 import numpy as np
 
-# import scipy.constants as spc
 from ...common.enums import ProbeType
 from ..aperture.rectangular import RectWaveguide, rect_e_far_field
+
+logger = logging.getLogger(__name__)
 
 
 class MeasuredProbe:
@@ -58,19 +61,18 @@ class MeasurementProbe:
         """
         Generate probe correction values to be applied via hadamard product to measurement array.
         """
-        # Reverse phi vector rotation due to probe facing AUT
-        phi_vec *= -1
 
         if self.correction_type == ProbeType.MEASURED:
             raise NotImplementedError("Measured probe corrections not yet implemented.")
 
         elif self.correction_type == ProbeType.IDEAL_RECT:
+            # NOTE: Reverse phi vector rotation due to probe facing AUT
             print(f"{wavelength=}")
             co_pol_e_field = rect_e_far_field(
                 ap_x=self.source.x,
                 ap_y=self.source.y,
                 wavelength_array=wavelength,
-                phi_sample_vec=phi_vec,
+                phi_sample_vec=-phi_vec,
                 theta_sample_vec=theta_vec,
                 excitation="te10",
                 apply_prop_const=False,
@@ -79,13 +81,13 @@ class MeasurementProbe:
                 ap_x=self.source.x,
                 ap_y=self.source.y,
                 wavelength_array=wavelength,
-                phi_sample_vec=phi_vec,
+                phi_sample_vec=-phi_vec,
                 rotation=np.pi / 2,
                 theta_sample_vec=theta_vec,
                 excitation="te10",
                 apply_prop_const=False,
             )["E"]
-            # Dims: ('component', 'phi', 'theta', 'frequency)
+            # Dims: ('component', 'phi', 'theta', 'frequency')
 
             # Reorder dimensions s.t. vector components is at the end
             co_pol_e_field = co_pol_e_field.transpose(
@@ -94,6 +96,8 @@ class MeasurementProbe:
             cx_pol_e_field = cx_pol_e_field.transpose(
                 "frequency", "phi", "theta", "component"
             ).values
+
+            logger.debug(f"{co_pol_e_field=}")
 
             co_pol_e_field = co_pol_e_field[..., [1, 0]]
             cx_pol_e_field = cx_pol_e_field[..., [1, 0]]
