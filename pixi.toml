@@ -68,6 +68,7 @@ noarch = false
 jupyter = ["dev", "test", "jupyter"]
 docs = ["docs"]
 build = ["build"]
+test = ["test"]
 dev = ["test", "docs", "dev"]
 
 [tasks]
