@@ -91,6 +91,20 @@ def field_component_l3_cross(field: xr.DataArray):
     return np.cos(phi_grid) * e_theta - np.sin(phi_grid) * e_phi
 
 
+def field_component_rhcp(field: xr.DataArray):
+    """Right-hand Circular Polarization"""
+    e_theta = field.sel(component="theta")
+    e_phi = field.sel(component="phi")
+    return 2**-0.5 * (e_theta + 1.0j * e_phi)
+
+
+def field_component_lhcp(field: xr.DataArray):
+    """Left-hand Circular Polarization"""
+    e_theta = field.sel(component="theta")
+    e_phi = field.sel(component="phi")
+    return 2**-0.5 * (e_theta - 1.0j * e_phi)
+
+
 class FieldComponents(Enum):
     TOTAL = FieldComponent(
         name="Total",
@@ -162,5 +176,21 @@ class FieldComponents(Enum):
         scales=(PlotScales.LINEAR, PlotScales.DECIBELS_20),
         field_types={FieldType.FAR},
         plot_functions=PlotFunctions,  # All plot functions valid
+        enabled=True,
+    )
+    RHCP = FieldComponent(
+        name="RHCP",
+        function=field_component_rhcp,
+        scales=(PlotScales.LINEAR, PlotScales.DECIBELS_20),
+        field_types=(FieldType.FAR),
+        plot_functions=PlotFunctions,
+        enabled=True,
+    )
+    LHCP = FieldComponent(
+        name="LHCP",
+        function=field_component_lhcp,
+        scales=(PlotScales.LINEAR, PlotScales.DECIBELS_20),
+        field_types=(FieldType.FAR),
+        plot_functions=PlotFunctions,
         enabled=True,
     )
