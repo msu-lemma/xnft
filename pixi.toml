@@ -68,7 +68,6 @@ noarch = false
 jupyter = ["dev", "test", "jupyter"]
 docs = ["docs"]
 build = ["build"]
-test = ["test"]
 dev = ["test", "docs", "dev"]
 
 [tasks]
@@ -223,6 +222,7 @@ pytest-cov = ">=7.1.0,<8"
 pytest-xdist = ">=3.8.0,<4"
 types-pyyaml = ">=6.0.12.20260906,<7"
 ruff = ">=0.16.6,<0.17"
+pytest-qt = ">=4.5.0,<5"
 
 [feature.test.target.osx.dependencies]
 pytest-memray = ">=1.9.0,<2"

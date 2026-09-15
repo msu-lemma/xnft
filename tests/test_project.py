@@ -1,4 +1,8 @@
-"""Test theory file loader."""
+"""
+Test theory file loader.
+
+Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
+"""
 
 from xnft.project import manager
 from xnft.project.nodes.project import Project

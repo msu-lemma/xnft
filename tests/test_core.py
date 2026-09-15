@@ -1,4 +1,8 @@
-"""Test file loaders."""
+"""
+Test file loaders.
+
+Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
+"""
 
 from collections import defaultdict
 from pathlib import Path
@@ -18,7 +22,7 @@ from xnft.common.registry import registry
 from xnft.common.types import FileInfo
 from xnft.loaders import register_builtin_loaders
 
-test_dir = Path(__file__).parent.parent
+test_dir = Path(__file__).parent
 test_dict = {
     "source": registry.loaders.fields.items(),  # Test all registered loaders
     "field": [x for x in FieldType],
