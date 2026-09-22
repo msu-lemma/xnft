@@ -4,14 +4,18 @@ Reporting functions available to transform field data to various derived quantit
 Copyright 2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
+import logging
 from collections import namedtuple
 from enum import Enum
 
 import numpy as np
+import xarray as xr
 
 from ....common.enums import FieldType
 from .field_components import FieldComponents
 from .scales import PlotScales
+
+logger = logging.getLogger(__name__)
 
 FieldQuantity = namedtuple(
     "FieldQuantity",
@@ -30,11 +34,11 @@ FieldQuantity = namedtuple(
 # -------------- Field Quantities ------------------
 
 
-def field_quantity_e(field):
+def field_quantity_e(field: xr.Dataset):
     return field["E"]
 
 
-def field_quantity_gain(field):
+def field_quantity_gain(field: xr.Dataset):
     if (
         "gain_calibration" in field.attrs
         and field.attrs["gain_calibration"] is not None

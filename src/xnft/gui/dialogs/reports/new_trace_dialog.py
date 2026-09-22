@@ -304,7 +304,7 @@ class NewTraceDialog(QDialog):
                 field_quantity=self.lwt_field_quantity.lw.selectedItems()[0].data(
                     Qt.UserRole
                 ),
-                field_component=self.lwt_field_quantity.lw.selectedItems()[0].data(
+                field_component=self.lwt_field_component.lw.selectedItems()[0].data(
                     Qt.UserRole
                 ),
                 ordinate_function=self.lwt_ordinate_function.lw.selectedItems()[0].data(

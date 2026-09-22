@@ -58,11 +58,7 @@ def plot_phase(field: xr.DataArray, dim=2):
     ArrayLike
         Field value after function is applied
     """
-    if len(field.shape) >= dim + 1:
-        # Only compute the x-y and phi-theta components (not the z/rho)
-        return np.angle(np.sum(field[:2], axis=0))
-    else:
-        return np.angle(field)
+    return np.angle(field)
 
 
 class PlotFunctions(Enum):
