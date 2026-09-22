@@ -111,7 +111,7 @@ class FieldComponents(Enum):
         function=lambda x: x,  # Pass everything through
         scales=(PlotScales.LINEAR, PlotScales.DECIBELS_20),
         field_types={FieldType.NEAR, FieldType.FAR},
-        plot_functions=PlotFunctions,  # All plot functions valid
+        plot_functions={PlotFunctions.MAGNITUDE},  # All plot functions valid
         enabled=True,
     )
     X = FieldComponent(

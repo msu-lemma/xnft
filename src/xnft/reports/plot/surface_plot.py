@@ -302,6 +302,9 @@ class Plot2D(QWidget):
         # ---- Connections ----
         self.cb_field_quantity.currentTextChanged.connect(self._update_plot)
         self.lw_frequency_range.itemSelectionChanged.connect(self._update_plot)
+        self.cb_field_component.currentTextChanged.connect(
+            self._update_plotting_function_options
+        )
         self.cb_field_component.currentTextChanged.connect(self._update_plot)
         self.cb_plot_domain.currentTextChanged.connect(self._update_plot)
         self.cb_plot_function.currentTextChanged.connect(self._update_plot)
@@ -376,7 +379,7 @@ class Plot2D(QWidget):
         for _ in range(self.cb_plot_function.count()):
             self.cb_plot_function.removeItem(0)
 
-        for plot_function in PlotFunctions:
+        for plot_function in self.selected_field_component.plot_functions:
             if (
                 self.field_node.data.attrs["field_type"]
                 in plot_function.value.field_types

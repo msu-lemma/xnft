@@ -287,15 +287,20 @@ class Plot1D(QWidget):
 
                     # -- Ordinate --
 
+                    logger.debug(source_field)
+
                     # Get quantity from field values
                     ordinate_raw_values = tp.field_quantity.function(
-                        source_field.sel(**tp.slice_dict)
+                        tp.field_component.function(source_field).sel(**tp.slice_dict)
                     )
+
+                    logger.debug(ordinate_raw_values)
 
                     # Apply norm, function, and scale
                     ordinate_values = tp.ordinate_scale.function(
                         tp.ordinate_function.function(
-                            tp.field_norm.function(ordinate_raw_values), dim=1
+                            tp.field_norm.function(ordinate_raw_values),
+                            dim=1,
                         )
                     )
 
