@@ -90,7 +90,7 @@ class Project(Node):
     @context_action(
         "Close Project",
         order=20,
-        enabled=False,
+        enabled=True,
         icon_name="window-close",
         action="close_project",
         separator=True,
