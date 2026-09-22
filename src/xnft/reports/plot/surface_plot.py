@@ -650,6 +650,10 @@ def get_transformed_data(spp: SurfacePlot2DParameters):
 
     field_data = field_ds.sel(frequency=spp.selected_frequency, component=component)
 
+    if field_data.attrs["coordinate_system"] == CoordinateSystemType.CARTESIAN:
+        # FIXME: hack to select only z-coordinate for near-field scan to avoid data reduction of X coordinate in mag plot
+        field_data = field_data.sel(z=field_data["z"][0])
+
     # -- Apply selected component / functions --
     field_scaled = spp.applicate_scale.function(
         spp.applicate_function.function(

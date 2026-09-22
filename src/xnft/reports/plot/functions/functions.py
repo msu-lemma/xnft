@@ -37,7 +37,8 @@ def plot_mag(field: xr.DataArray, dim=2):
     ArrayLike
         Field value after function is applied
     """
-    if len(field.shape) >= dim + 1:
+    if len(field.shape) > dim:
+        logger.debug(f"{field=}")
         return np.linalg.norm(field, axis=0)
     else:
         return np.abs(field)
