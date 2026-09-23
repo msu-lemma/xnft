@@ -375,6 +375,9 @@ class Plot2D(QWidget):
             self.hist.gradient.showTicks(False)
 
     def _update_plotting_function_options(self):
+        # Save previous state when rebuilding the list
+        previous_selection = self.cb_plot_function.currentData()
+
         # Remove all items before updating items
         for _ in range(self.cb_plot_function.count()):
             self.cb_plot_function.removeItem(0)
@@ -387,6 +390,11 @@ class Plot2D(QWidget):
                 self.cb_plot_function.addItem(
                     plot_function.value.name, plot_function.value
                 )
+
+        # Restore previous state
+        idx = self.cb_plot_function.findData(previous_selection)
+        if idx != -1:
+            self.cb_plot_function.setCurrentIndex(idx)
 
     def _update_report_field_quantities(self):
         # Remove all items before updating items
