@@ -38,7 +38,7 @@ from .functions.field_components import FieldComponent
 from .functions.field_quantities import FieldQuantities, FieldQuantity
 from .functions.functions import PlotFunction, PlotFunctions
 from .functions.normalizations import PlotNorm, PlotNorms
-from .functions.scales import PlotScale
+from .functions.scales import PlotScale, PlotScales
 from .helpers.coordinate_transforms import phitheta_to_unit
 
 logger = logging.getLogger(__name__)
@@ -430,6 +430,8 @@ class Plot2D(QWidget):
                     )
                     newitem_index += 1
 
+        logger.debug(f"Selected field component: {self.selected_field_component}")
+
     def _update_plotting_scale_options(self):
         # Remove all items before updating items
         for _ in range(self.cb_plot_scale.count()):
@@ -536,12 +538,34 @@ class Plot2D(QWidget):
             x_idx_mesh, y_idx_mesh = np.meshgrid(x_idx, y_idx, indexing="ij")
 
             # TODO/FIXME: implement faster interpolator using pre-computed Delaunay triangulation
-            field_fun_scaled = griddata(
-                points=np.column_stack([ux_vals.ravel(), uy_vals.ravel()]),
-                values=field_fun_scaled.ravel(),
-                xi=(x_idx_mesh, y_idx_mesh),
-                method="linear",
-            )
+            points = np.column_stack([ux_vals.ravel(), uy_vals.ravel()])
+            if self.selected_field_function == PlotFunctions.PHASE.value:
+                ang_rad = field_fun_scaled.ravel()
+                if self.selected_field_scale == PlotScales.DEGREES.value:
+                    ang_rad = np.deg2rad(ang_rad)
+                z = np.exp(1j * ang_rad)
+                z_real = griddata(
+                    points=points,
+                    values=z.real,
+                    xi=(x_idx_mesh, y_idx_mesh),
+                    method="linear",
+                )
+                z_imag = griddata(
+                    points=points,
+                    values=z.imag,
+                    xi=(x_idx_mesh, y_idx_mesh),
+                    method="linear",
+                )
+                field_fun_scaled = np.angle(z_real + 1j * z_imag)
+                if self.selected_field_scale == PlotScales.DEGREES.value:
+                    field_fun_scaled = np.rad2deg(field_fun_scaled)
+            else:
+                field_fun_scaled = griddata(
+                    points=points,
+                    values=field_fun_scaled.ravel(),
+                    xi=(x_idx_mesh, y_idx_mesh),
+                    method="linear",
+                )
 
             self.image_item.setImage(field_fun_scaled)
             self.image_item.setRect((-1, 1, 2, -2))
