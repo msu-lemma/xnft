@@ -6,6 +6,7 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 
 from __future__ import annotations
 
+import logging
 import platform
 from dataclasses import dataclass
 from itertools import product
@@ -49,6 +50,8 @@ from ....reports.plot.functions.normalizations import PlotNorm, PlotNorms
 from ....reports.plot.functions.scales import PlotScale
 from ....reports.plot.helpers.helpers import trace_preview
 from ..common import ListWidgetTitle
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -413,12 +416,19 @@ class NewTraceDialog(QDialog):
 
         field_components = FieldQuantities
 
+        logger.debug(f"{self.fields_node=}")
+
+        # Selected field type
+        field_type = self.selected_field.data.attrs["field_type"]
+
         for fc in field_components:
-            item = QListWidgetItem(fc.value.name)
-            item.setData(Qt.UserRole, fc.value)
-            if not fc.value.enabled(self.selected_field.data):
-                item.setFlags(item.flags() & ~Qt.ItemIsEnabled)
-            self.lwt_field_quantity.lw.addItem(item)
+            # Only add item if valid for field type
+            if field_type in fc.value.field_types:
+                item = QListWidgetItem(fc.value.name)
+                item.setData(Qt.UserRole, fc.value)
+                if not fc.value.enabled(self.selected_field.data):
+                    item.setFlags(item.flags() & ~Qt.ItemIsEnabled)
+                self.lwt_field_quantity.lw.addItem(item)
 
         self.lwt_field_quantity.lw.setCurrentRow(0)
 
