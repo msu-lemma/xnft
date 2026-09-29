@@ -70,9 +70,9 @@ def load_lemma_v1_h5(file_list: list[FileInfo]) -> xr.Dataset:
         with h5py.File(file_info.path, "r") as dataset:
             sample_frequencies = dataset["f"][()][0]
             sample_locations = dataset["points"][()] / POINTS_PER_METER
-            x_locs = sample_locations[:, 0]
+            x_locs = sample_locations[:, 2]
             # NOTE: Swap y and z axes
-            y_locs = sample_locations[:, 2]
+            y_locs = sample_locations[:, 0]
 
             # TODO/FIXME: Hardcoded z-distance!!
             z_locs = sample_locations[:, 1] + 0.069
