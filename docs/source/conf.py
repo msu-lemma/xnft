@@ -37,8 +37,14 @@ extensions = [
     "numpydoc",
     "sphinx.ext.ifconfig",
     "sphinx.ext.viewcode",
-    "sphinx.ext.imgmath",
     "sphinx_copybutton",
+    "myst_parser",
+    "sphinx.ext.mathjax",
+]
+# For LaTeX in md files
+myst_enable_extensions = [
+    "dollarmath",
+    "alert",
 ]
 
 autodoc_typehints = "description"

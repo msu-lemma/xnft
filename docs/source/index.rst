@@ -31,3 +31,5 @@ API Reference
    :nosignatures:
 
    xnft
+
+:doc:`/theory/probe_correction/probe_correction_v2`

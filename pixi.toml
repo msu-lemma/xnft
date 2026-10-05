@@ -66,10 +66,15 @@ noarch = false
 
 [environments]
 jupyter = ["dev", "test", "jupyter"]
-docs = ["docs"]
 build = ["build"]
 test = ["test"]
 dev = ["test", "docs", "dev"]
+
+[environments.docs]
+features = ["docs"]
+
+[environments.docs.dependencies]
+myst-parser = ">=5.1.0,<6"
 
 [tasks]
 

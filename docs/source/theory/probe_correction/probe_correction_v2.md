@@ -1,11 +1,6 @@
 # Probe correction
 
-![**Figure 1:** Geometry of the problem. Note: the spherical coordinates
-$(\theta ’,\ \varphi ’)$ of the reference system associated with the
-probe are equal to $(\theta,\  - \varphi)$ to those of the reference
-system centered on the sampling
-plane.](images/media/image10.svg){width="1.9578313648293963in"
-height="1.164426946631671in"}
+![](images/media/image10.svg)
 
 **Figure 1:** Geometry of the problem. Note: the spherical coordinates
 $(\theta ’,\ \varphi ’)$ of the reference system associated with the
@@ -21,7 +16,8 @@ field over a rectangular aperture at $z=z_0.$ By convention it
 will be assumed that the antenna aperture is the antenna under test
 (AUT) and is transmitting and the measurement probe is the receiver.
 
-> [!Note] 
+> [!NOTE]
+>
 > The angles $(\theta\ ’,\ \varphi\ ’)$ in the reference system centered with the probe are equal to $(\theta, - \ \varphi)$ of the spherical coordinate associated to the reference system centered on the sampling aperture.
 
 The sampled field can be expressed in the form of an inverse Fourier
