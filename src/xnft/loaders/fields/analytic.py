@@ -169,19 +169,19 @@ def load_rect_aperture_yaml(fd, field_type, scan_type):
 
     elif field_type == FieldType.FAR:
         # Get far-field sample locations
-        phi_max = fd["samples"]["far_field"]["phi"]["bounds"][1]
-        phi_min = fd["samples"]["far_field"]["phi"]["bounds"][0]
-        phi_num_samples = fd["samples"]["far_field"]["phi"]["size"]
-
         theta_max = fd["samples"]["far_field"]["theta"]["bounds"][1]
         theta_min = fd["samples"]["far_field"]["theta"]["bounds"][0]
         theta_num_samples = fd["samples"]["far_field"]["theta"]["size"]
 
-        phi_sample_location_array = (
-            np.linspace(phi_min, phi_max, phi_num_samples) * np.pi / 180
-        )
+        phi_max = fd["samples"]["far_field"]["phi"]["bounds"][1]
+        phi_min = fd["samples"]["far_field"]["phi"]["bounds"][0]
+        phi_num_samples = fd["samples"]["far_field"]["phi"]["size"]
+
         theta_sample_location_array = (
             np.linspace(theta_min, theta_max, theta_num_samples) * np.pi / 180
+        )
+        phi_sample_location_array = (
+            np.linspace(phi_min, phi_max, phi_num_samples) * np.pi / 180
         )
 
         ap_x = aperture_x_max - aperture_x_min
@@ -198,8 +198,8 @@ def load_rect_aperture_yaml(fd, field_type, scan_type):
             ap_x=ap_x,
             ap_y=ap_y,
             wavelength_array=wavelength,
-            phi_sample_vec=phi_sample_location_array,
             theta_sample_vec=theta_sample_location_array,
+            phi_sample_vec=phi_sample_location_array,
             r_ff=r_ff,
             amplitude=e_0,
             excitation=excitation,

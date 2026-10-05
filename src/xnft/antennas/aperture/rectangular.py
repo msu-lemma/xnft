@@ -87,9 +87,11 @@ def rect_e_near_field(
 def rect_e_far_field(
     ap_x: float,  # Cross-pol
     ap_y: float,  # Co-pol
-    phi_sample_vec: NDArray[np.float64],
     theta_sample_vec: NDArray[np.float64],
+    phi_sample_vec: NDArray[np.float64],
     wavelength_array: float | NDArray,
+    flip_x: bool = False,
+    flip_y: bool = False,
     rotation: float = 0.0,
     r_ff: float = 100,
     amplitude: float = 1.0,
@@ -106,12 +108,18 @@ def rect_e_far_field(
         X-extent of the aperture (cross-pol) in meters
     ap_y : float
         Y-extent of the aperture (co-pol) in meters
-    phi_sample_vec : NDArray
-        1D vector of phi sample locations of the far-field in radians
     theta_sample_vec : NDArray
         1D vector of theta sample locations of the far-field in radians
+    phi_sample_vec : NDArray
+        1D vector of phi sample locations of the far-field in radians
     wavelength_array : float | NDArray
         Wavelengths to sample aperture at in meters
+    flip_x : bool
+        Flip antenna pattern 180° about the x-axis, by default False
+    flip_y : bool
+        Flip antenna pattern 180° about the y-axis, by default False
+    rotation : float
+        Counter-clockwise antenna rotation about the z-axis (if flip_x xor flip_y is True, z-axis is down), by default 0.0
     r_ff : float, optional
         Far-field radius to compute field at in meters (important for absolute phase comparisons), by default 100 m
     amplitude : float, optional
@@ -136,10 +144,19 @@ def rect_e_far_field(
     [1] C. A. Balanis, Antenna theory: analysis and design, 3. ed. Hoboken,
         N.J: Wiley-Interscience, 2005.
     """
+    if flip_x:
+        phi_sample_vec = -phi_sample_vec
+        rotation = -rotation  # Handle z-axis flip
+        phi_sample_vec = -phi_sample_vec
+    if flip_y:
+        phi_sample_vec = np.pi - phi_sample_vec
+        rotation = -rotation  # Handle z-axis flip
+        phi_sample_vec = -phi_sample_vec
+
     # Create sampling grid
-    phi_grid, theta_grid = np.meshgrid(phi_sample_vec, theta_sample_vec, indexing="ij")
-    phi_grid = phi_grid[:, :, np.newaxis]
+    theta_grid, phi_grid = np.meshgrid(theta_sample_vec, phi_sample_vec, indexing="ij")
     theta_grid = theta_grid[:, :, np.newaxis]
+    phi_grid = phi_grid[:, :, np.newaxis]
 
     e_0 = amplitude
 
@@ -158,25 +175,27 @@ def rect_e_far_field(
 
     # Constants from [Table 12.1, 1]
 
-    X = k_0 * ap_x / 2 * np.sin(theta_grid) * np.cos(phi_grid)
-    Y = k_0 * ap_y / 2 * np.sin(theta_grid) * np.sin(phi_grid)
+    phi_grid_local = phi_grid - rotation
+
+    X = k_0 * ap_x / 2 * np.sin(theta_grid) * np.cos(phi_grid_local)
+    Y = k_0 * ap_y / 2 * np.sin(theta_grid) * np.sin(phi_grid_local)
 
     if excitation == "uniform":
         cx = np.sinc(X / np.pi)
         cy = np.sinc(Y / np.pi)
-        e_theta = np.sin(phi_grid + rotation) * cx * cy
-        e_phi = np.cos(theta_grid) * np.cos(phi_grid + rotation) * cx * cy
+        e_theta = np.sin(phi_grid_local) * cx * cy
+        e_phi = np.cos(theta_grid) * np.cos(phi_grid_local) * cx * cy
     elif excitation == "te10":
         cx = np.cos(X) / (X**2 - (np.pi / 2) ** 2)
         cy = np.sinc(Y / np.pi)
-        e_theta = -np.pi / 2 * np.sin(phi_grid + rotation) * cx * cy
-        e_phi = -np.pi / 2 * np.cos(theta_grid) * np.cos(phi_grid + rotation) * cx * cy
+        e_theta = -np.pi / 2 * np.sin(phi_grid_local) * cx * cy
+        e_phi = -np.pi / 2 * np.cos(theta_grid) * np.cos(phi_grid_local) * cx * cy
     else:
         raise NotImplementedError(
             f"Excitation mode {excitation} is not yet implemented."
         )
 
-    e_field = np.stack([e_phi, e_theta], dtype=np.complex128)
+    e_field = np.stack([e_theta, e_phi], dtype=np.complex128)
 
     # Include propagation effects
     if apply_prop_const:
@@ -187,8 +206,8 @@ def rect_e_far_field(
     fields = FieldDataset.create(
         e_field=e_field,
         spatial_coords={
-            "phi": phi_sample_vec,
             "theta": theta_sample_vec,
+            "phi": phi_sample_vec,
         },
         frequency=spc.c / wavelength_array,
         coordinate_system=CoordinateSystemType.SPHERICAL,

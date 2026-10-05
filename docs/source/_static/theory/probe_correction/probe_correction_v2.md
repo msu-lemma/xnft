@@ -16,14 +16,13 @@ plane.
 The geometry of the problem is shown in Fig. 1.
 
 We consider an open-ended waveguide operating in its principal
-Transverse Electric (TE10) mode, serving as a probe to sample the
+Transverse Electric ($\mathrm{TE}_{10}$) mode, serving as a probe to sample the
 field over a rectangular aperture at $z=z_0.$ By convention it
 will be assumed that the antenna aperture is the antenna under test
 (AUT) and is transmitting and the measurement probe is the receiver.
-Note that the angles $(\theta\ ’,\ \varphi\ ’)$ in the reference system
-centered with the probe are equal to $(\theta, - \ \varphi)$ of the
-spherical coordinate associated to the reference system centered on the
-sampling aperture.
+
+> [!Note] 
+> The angles $(\theta\ ’,\ \varphi\ ’)$ in the reference system centered with the probe are equal to $(\theta, - \ \varphi)$ of the spherical coordinate associated to the reference system centered on the sampling aperture.
 
 The sampled field can be expressed in the form of an inverse Fourier
 transform (IFT) as [[1]](#1)-[[3]](#3):
@@ -52,7 +51,9 @@ The FT of the sample field can also be expressed as:
 
 $$
 \begin{equation}
-\mathbf{B}\left( k_{x}{,k}_{y} \right)\mathbf{= \ }\int_{- \infty}^{\infty}{\int_{- \infty}^{\infty}{\mathbf{b}\left( x,y,z = z_{0} \right)}e^{jk_{x}x}e^{jk_{y}y}{dx}{dy}},
+\begin{aligned}
+\mathbf{B}\left( k_{x}{,k}_{y} \right) &= \int_{- \infty}^{\infty}{\int_{- \infty}^{\infty}{\mathbf{b}\left( x,y,z = z_{0} \right)}e^{jk_{x}x}e^{jk_{y}y}{dx}{dy}},
+\end{aligned}
 \end{equation}
 $$
 
@@ -78,25 +79,25 @@ ${\overline{\overline{\mathbf{R}}}}^{- 1}\left( k_{x}{,k}_{y} \right)$
 is known.
 
 The correction can be applied directly to the radiated fields. The
-radiated fields in a spherical coordinate system are given by:
+radiated fields in a spherical coordinate system are given by
 
 $$
-\mathbf{E}(r,\theta,\phi) \approx \frac{jke^{- jkr}}{2\pi r}\mathbf{\ }e^{j\cos\theta z_{0}}{\overline{\overline{\mathbf{R}}}}^{- 1}\left( k_{x0}{,k}_{y0} \right) \bullet \mathbf{B}\left( k_{x0}{,k}_{y0} \right).
+\mathbf{E}(r,\theta,\phi) \approx \frac{jke^{- jkr}}{2\pi r}\mathbf{\ }e^{j\cos\theta k_z z_{0}}{\overline{\overline{\mathbf{R}}}}^{- 1}\left( k_{x0}{,k}_{y0} \right) \bullet \mathbf{B}\left( k_{x0}{,k}_{y0} \right)
 $$
-
-or:
-
+or
 $$
 \begin{equation}
-\mathbf{E}(r,\theta,\phi) \approx \mathbf{\ }e^{j\cos\theta z_{0}}{\overline{\overline{\mathbf{R}}}}^{- 1}\left( k_{x0}{,k}_{y0} \right) \bullet \left( \frac{jke^{- jkr}}{2\pi r}\mathbf{B}\left( k_{x0}{,k}_{y0} \right) \right) = e^{j\cos\theta z_{0}}{\overline{\overline{\mathbf{R}}}}^{- 1}\left( k_{x0}{,k}_{y0} \right) \bullet \mathbf{E}_{\mathbf{NC}}(r,\theta,\phi).
+\begin{aligned}
+\mathbf{E}(r,\theta,\phi) &\approx e^{j\cos\theta k_z z_{0}}{\overline{\overline{\mathbf{R}}}}^{- 1}\left( k_{x0}{,k}_{y0} \right) \bullet \left( \frac{jke^{- jkr}}{2\pi r}\mathbf{B}\left( k_{x0}{,k}_{y0} \right) \right) \\
+&= e^{j\cos\theta k_z z_{0}}{\overline{\overline{\mathbf{R}}}}^{- 1}\left( k_{x0}{,k}_{y0} \right) \bullet \mathbf{E}_{\mathbf{NC}}(r,\theta,\phi)
+\end{aligned}
 \end{equation}
 $$
-
-where $k_{x0} = k\sin\theta\cos\phi{,\ \ k}_{y0} = \sin\theta\sin\phi$.
+where $k_{x0} = k\sin\theta\cos\phi{,\ \ k}_{y0} = k\sin\theta\sin\phi$.
 $\mathbf{E}_{\mathbf{NC}}(r,\theta,\phi)$ is the radiated field derived
 from the sampled field over the aperture without any correction or in
 other words the field derived using the FT,
-$\mathbf{B}\left( k_{x}{,k}_{y} \right)$. It is worth noting that
+$\mathbf{B}\left( k_{x}{,k}_{y} \right).$ It is worth noting that
 $\mathbf{E}_{\mathbf{NC}}(r,\theta,\phi)$ is here expressed as
 $\mathbf{E}_{\mathbf{NC}}(r,\theta,\phi) = E_{\theta}\widehat{\theta} + E_{\phi}\widehat{\phi}$
 and we derive the corrected $\widehat{\theta}$ and $\widehat{\phi}$ of
@@ -108,13 +109,13 @@ found by using the expressions of the field radiated by an open-ended
 waveguide. It can be shown by reciprocity that for an antenna:
 
 $$
-\eta_{mode}\mathbf{R}\left( k_{x0}{,k}_{y0} \right)\mathbf{= -}\eta\mathbf{T}\left( - k_{x0}{, - k}_{y0} \right)
+\eta_{\mathrm{mode}}\mathbf{R}\left( k_{x0}{,k}_{y0} \right)\mathbf{= -}\eta\mathbf{T}\left( - k_{x0}{, - k}_{y0} \right)
 $$
 
-In which $\eta_{mode}$ and $\eta$ are the characteristic impedance of
+In which $\eta_{\mathrm{mode}}$ and $\eta$ are the characteristic impedance of
 the mode feeding the antenna and the free space impedance. For an
-open-ended waveguide, $\eta_{mode}$ corresponds to the TE~10~ impedance
-$\eta_{mode} = \frac{k\eta}{k_{z}}$.
+open-ended waveguide, $\eta_{\mathrm{mode}}$ corresponds to the $\mathrm{TE}_{10}$ impedance
+$\eta_{\mathrm{mode}} = \frac{k\eta}{k_{z}}$.
 
 The function $\mathbf{T}\left( k_{x0}{,k}_{y0} \right)$ can be retrieved
 by using the field radiated by an open-ended waveguide with the electric
@@ -122,44 +123,44 @@ field oriented along $\widehat{x}$ and $\widehat{y}$, to take into
 account the two orientations of the probe while measuring the field. In
 particular, the radiated field can be derived using [[3]](#3):
 
- $$
+$$
 \begin{equation}
-\mathbf{E}(r,\theta,\phi) \approx \frac{jke^{- jkr}}{2\pi r}\mathbf{\ T}\left( k_{x0}{,k}_{y0} \right) = \frac{jke^{- jkr}}{2\pi r}\left( T_{\mathbf{\theta}}\left( k_{x0}{,k}_{y0} \right)\widehat{\theta} + T_{\mathbf{\phi}}\left( k_{x0}{,k}_{y0} \right)\widehat{\phi} \right)\end{equation}
+\begin{aligned}
+\mathbf{E}(r,\theta,\phi) &\approx \frac{jke^{- jkr}}{2\pi r}\mathbf{\ T}\left( k_{x0}{,k}_{y0} \right) \\
+&= \frac{jke^{- jkr}}{2\pi r}\left( T_{\mathbf{\theta}}\left( k_{x0}{,k}_{y0} \right)\widehat{\theta} + T_{\mathbf{\phi}}\left( k_{x0}{,k}_{y0} \right)\widehat{\phi} \right)
+\end{aligned}
+\end{equation}
 $$
 
 For a waveguide with the electric field along $\widehat{y}$, the
 radiated field is given by [[3]](#3):
 
 $$
-\begin{equation}E_{\theta}(r,\theta,\phi) \approx \frac{jke^{- jkr}}{2\pi r}C_{0}\left( \sin\phi\frac{\cos X}{X^{2} - \left( \frac{\pi}{2} \right)^{2}}\frac{\sin Y}{Y} \right).
+\begin{equation}E_{\theta}(r,\theta,\phi) \approx \frac{jke^{- jkr}}{2\pi r}C_{0}\left( \sin\phi\frac{\cos X}{X^{2} - \left( \frac{\pi}{2} \right)^{2}}\frac{\sin Y}{Y} \right)
 \end{equation}
 $$
-
 $$
 \begin{equation}E_{\phi}(r,\theta,\phi) \approx \frac{jke^{- jkr}}{2\pi r}C_{0}\left( \cos\theta\cos\phi\frac{\cos X}{X^{2} - \left( \frac{\pi}{2} \right)^{2}}\frac{\sin Y}{Y} \right)
 \end{equation}
 $$
-
-with
-
+where
 $$
 \begin{equation}
 X = \frac{ka}{2}\sin\theta\cos\phi
 \end{equation}
 $$
-
 $$
-\begin{equation}Y = \frac{kb}{2}\sin\theta\sin\phi
+\begin{equation}
+Y = \frac{kb}{2}\sin\theta\sin\phi
 \end{equation}
 $$
-
-and $C_{0}$ a normalization factor.
+where $a$ is the length of the aperture in the cross-pol dimension, $b$ is the length of the aperture in the co-pol dimension, and $C_{0}$ a normalization factor.
 
 For a waveguide with the electric field along $\widehat{x}$, the
 radiated field is given by [[3]](#3):
 
 $$
-\begin{equation}E_{\theta}(r,\theta,\phi) \approx \frac{jke^{- jkr}}{2\pi r}C_{0}\left( \cos\phi\frac{\cos X}{X^{2} - \left( \frac{\pi}{2} \right)^{2}}\frac{\sin Y}{Y} \right).
+\begin{equation}E_{\theta}(r,\theta,\phi) \approx \frac{jke^{- jkr}}{2\pi r}C_{0}\left( \cos\phi\frac{\cos X}{X^{2} - \left( \frac{\pi}{2} \right)^{2}}\frac{\sin Y}{Y} \right)
 \end{equation}
 $$
 
@@ -176,7 +177,7 @@ becomes:
 $$
 \begin{equation}
 \begin{aligned}
-\overline{\overline{\mathbf{R}}}\left( k_{x0}{,k}_{y0} \right) &= - \frac{\eta}{\eta_{mode}}C_{0}\begin{bmatrix}
+\overline{\overline{\mathbf{R}}}\left( k_{x0}{,k}_{y0} \right) &= - \frac{\eta}{\eta_{\mathrm{mode}}}C_{0}\begin{bmatrix}
 \sin\phi\frac{\cos X}{X^{2} - \left( \frac{\pi}{2} \right)^{2}}\frac{\sin Y}{Y} & \cos\theta\cos\phi\frac{\cos X}{X^{2} - \left( \frac{\pi}{2} \right)^{2}}\frac{\sin Y}{Y} \\
 \cos\phi\frac{\cos X}{X^{2} - \left( \frac{\pi}{2} \right)^{2}}\frac{\sin Y}{Y} & \mathbf{-}\cos\theta\sin\phi\frac{\cos X}{X^{2} - \left( \frac{\pi}{2} \right)^{2}}\frac{\sin Y}{Y}
 \end{bmatrix}\\
@@ -184,27 +185,23 @@ $$
 &= - C_{1}
 \begin{bmatrix}
 \sin\phi\frac{\cos X}{X^{2} - \left( \frac{\pi}{2} \right)^{2}}\frac{\sin Y}{Y} & \cos\theta\cos\phi\frac{\cos X}{X^{2} - \left( \frac{\pi}{2} \right)^{2}}\frac{\sin Y}{Y} \\
-\cos\phi\frac{\cos X}{X^{2} - \left( \frac{\pi}{2} \right)^{2}}\frac{\sin Y}{Y} & \mathbf{-}\cos\theta\sin\phi\frac{\cos X}{X^{2} - \left( \frac{\pi}{2} \right)^{2}}\frac{\sin Y}{Y} 
-\end{bmatrix}.
+\cos\phi\frac{\cos X}{X^{2} - \left( \frac{\pi}{2} \right)^{2}}\frac{\sin Y}{Y} & \mathbf{-}\cos\theta\sin\phi\frac{\cos X}{X^{2} - \left( \frac{\pi}{2} \right)^{2}}\frac{\sin Y}{Y}
+\end{bmatrix}
 \end{aligned}
 \end{equation}
 $$
-
-In which
-$C_{1}$=$\frac{\eta}{\eta_{mode}}C_{0}.\ {\overline{\overline{\mathbf{R}}}}^{- 1}\left( k_{x0}{,k}_{y0} \right)$
+in which
+$C_{1}$=$\frac{\eta}{\eta_{\mathrm{mode}}}C_{0}.\ {\overline{\overline{\mathbf{R}}}}^{- 1}\left( k_{x0}{,k}_{y0} \right)$
 is then given by:
-
 $$
 \begin{equation}
 {\overline{\overline{\mathbf{R}}}}^{- 1} = - \frac{C_{1}}{\det(\overline{\overline{\mathbf{R}}})}\begin{bmatrix}
   {- cos}\theta\sin\phi\frac{\cos X}{X^{2} - \left( \frac{\pi}{2} \right)^{2}}\frac{\sin Y}{Y} & \mathbf{-}\cos\theta\cos\phi\frac{\cos X}{X^{2} - \left( \frac{\pi}{2} \right)^{2}}\frac{\sin Y}{Y} \\
   \mathbf{-}\cos\phi\frac{\cos X}{X^{2} - \left( \frac{\pi}{2} \right)^{2}}\frac{\sin Y}{Y} & \sin\phi\frac{\cos X}{X^{2} - \left( \frac{\pi}{2} \right)^{2}}\frac{\sin Y}{Y}
-  \end{bmatrix}.
+  \end{bmatrix}
 \end{equation}
 $$
-
-with
-
+where
 $$
 \begin{equation}
 \begin{aligned}
@@ -216,7 +213,6 @@ $$
 $$
 
 Finally, we have:
-
 $$
 \begin{equation}
 {\overline{\overline{\mathbf{R}}}}^{- 1} = \frac{C_{1}}{{\cos\theta\left( \frac{\cos X}{X^{2} - \left( \frac{\pi}{2} \right)^{2}}\frac{\sin Y}{Y} \right)}^{2}}\begin{bmatrix} 

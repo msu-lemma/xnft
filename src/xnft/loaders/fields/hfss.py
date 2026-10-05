@@ -272,8 +272,8 @@ def load_hfss_far_field_ffd(file_list: list[FileInfo]) -> xr.Dataset:
                 # arrays now
                 fields_shape = (
                     2,  # 2 for phi, theta components of the field
-                    phi_sample_location_array.size,
                     theta_sample_location_array.size,
+                    phi_sample_location_array.size,
                     num_frequencies,
                 )
                 logger.debug("fields_shape: %s", fields_shape)
@@ -304,9 +304,9 @@ def load_hfss_far_field_ffd(file_list: list[FileInfo]) -> xr.Dataset:
                 phi_index = int(data_index % phi_num_steps)
                 theta_index = int(data_index // phi_num_steps)
 
-                e_field[:, phi_index, theta_index, frequency_index] = (
-                    e_phi,
+                e_field[:, theta_index, phi_index, frequency_index] = (
                     e_theta,
+                    e_phi,
                 )
 
             # Increment the data row index for current frequency

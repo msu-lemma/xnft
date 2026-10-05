@@ -73,8 +73,8 @@ class CoordinateSystemType(Enum):
         components=("rho", "phi", "z"),
     )
     SPHERICAL = CoordinateSystemTuple(
-        name="Spherical (r,θ,φ)",  # For label purposes only, does not represent internal format
-        components=("r", "phi", "theta"),
+        name="Spherical (r,θ,φ)",
+        components=("r", "theta", "phi"),
     )
     DIRECTION_COSINE = CoordinateSystemTuple(
         name="Direction Cosine (u,v)", components=("u", "v")

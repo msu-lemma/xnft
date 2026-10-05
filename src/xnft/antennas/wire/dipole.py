@@ -164,8 +164,8 @@ def dipole_e_far_field(theta, phi=0, r=1, i_0=1, len=0.5, k=1):
         e_field=e_field,
         spatial_coords={
             "r": r,
-            "phi": phi,
             "theta": theta,
+            "phi": phi,
         },
         frequency=freq_vec,
         coordinate_system=CoordinateSystemType.SPHERICAL,

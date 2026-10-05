@@ -57,57 +57,59 @@ class MeasurementProbe:
                 f"Probe source must be type MeasuredProbe or RectWaveguide, got {type(source)}."
             )
 
-    def get_correction(self, phi_vec, theta_vec, wavelength):
+    def get_reception_matrix(self, theta_vec, phi_vec, wavenumber):
         """
-        Generate probe correction values to be applied via hadamard product to measurement array.
+        Generate probe reception matrix values.
         """
 
         if self.correction_type == ProbeType.MEASURED:
             raise NotImplementedError("Measured probe corrections not yet implemented.")
 
         elif self.correction_type == ProbeType.IDEAL_RECT:
-            # NOTE: Reverse phi vector rotation due to probe facing AUT
+            wavelength = 2.0 * np.pi / wavenumber
+
             print(f"{wavelength=}")
-            co_pol_e_field = rect_e_far_field(
+            # x-oriented probe
+            x_pol_e_field = rect_e_far_field(
                 ap_x=self.source.x,
                 ap_y=self.source.y,
                 wavelength_array=wavelength,
-                phi_sample_vec=-phi_vec,
                 theta_sample_vec=theta_vec,
+                phi_sample_vec=phi_vec,
+                rotation=-np.pi / 2,  # Rotate clockwise 90° about the z-axis
+                flip_x=False,
+                flip_y=True,  # Flip pattern 180° about y-axis
                 excitation="te10",
                 apply_prop_const=False,
             )["E"]
-            cx_pol_e_field = rect_e_far_field(
+
+            # y-oriented probe
+            y_pol_e_field = rect_e_far_field(
                 ap_x=self.source.x,
                 ap_y=self.source.y,
                 wavelength_array=wavelength,
-                phi_sample_vec=-phi_vec,
-                rotation=np.pi / 2,
                 theta_sample_vec=theta_vec,
+                phi_sample_vec=phi_vec,
+                flip_x=False,
+                flip_y=True,  # Flip pattern 180° about y-axis
                 excitation="te10",
                 apply_prop_const=False,
             )["E"]
-            # Dims: ('component', 'phi', 'theta', 'frequency')
+            # Dims: ('component', 'theta', 'phi', 'frequency')
 
             # Reorder dimensions s.t. vector components is at the end
-            co_pol_e_field = co_pol_e_field.transpose(
-                "frequency", "phi", "theta", "component"
+            x_pol_e_field = x_pol_e_field.transpose(
+                "frequency", "theta", "phi", "component"
             ).values
-            cx_pol_e_field = cx_pol_e_field.transpose(
-                "frequency", "phi", "theta", "component"
+            y_pol_e_field = y_pol_e_field.transpose(
+                "frequency", "theta", "phi", "component"
             ).values
 
-            logger.debug(f"{co_pol_e_field=}")
-
-            co_pol_e_field = co_pol_e_field[..., [1, 0]]
-            cx_pol_e_field = cx_pol_e_field[..., [1, 0]]
-
-            r_mat = np.stack([co_pol_e_field, cx_pol_e_field], axis=-1)
-            # Axis order: (frequency, phi, theta, polarization, component)
+            r_mat = np.stack([x_pol_e_field, y_pol_e_field], axis=-2)
+            # Axis order: (frequency, theta, phi, polarization, component)
 
             r_mat_inv = np.linalg.inv(r_mat)
 
-            # return r_mat
             return r_mat_inv
         else:
             raise TypeError(
