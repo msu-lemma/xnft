@@ -1,8 +1,7 @@
 """
 Field transform algorithms.
 
-Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
-University.
+Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
 from __future__ import annotations
@@ -42,7 +41,7 @@ def planar_near_field_transform_t3(
     e_x,
     e_y,
     z_val,
-    r_far_field=1000,
+    r_far_field=None,
     probe_correction: MeasurementProbe | None = None,
 ):
     """Compute the planar near-to-far field transform for a single frequency
@@ -69,7 +68,7 @@ def planar_near_field_transform_t3(
         E-field x-component
     e_y : ArrayLike
         E-field y-component
-    e_y : float
+    z_val : float
         Z-height above AUT samples collected at (in meters)
     r_far_field : int, optional
         Far-field radius compute transform at, by default 1000
@@ -79,7 +78,7 @@ def planar_near_field_transform_t3(
     Returns
     -------
     Tuple[ArrayLike]
-        Typle of $E_\\mathrm{phi}$ and $E_\\mathrm{theta}$ fields
+        Tuple of $E_\\mathrm{phi}$ and $E_\\mathrm{theta}$ fields
     """
     # TODO: Add a type-2 NUFFT implementation for improved performance (GPU won't be effective with type-3)
 
@@ -112,32 +111,45 @@ def planar_near_field_transform_t3(
     field_values_x = (win * e_x).ravel().astype(np.complex128)
     field_values_y = (win * e_y).ravel().astype(np.complex128)
 
-    fe_x = plan.execute(field_values_x).reshape(theta_grid_target.shape)
-    fe_y = plan.execute(field_values_y).reshape(phi_grid_target.shape)
+    target_shape = theta_grid_target.shape
+    fe_x = plan.execute(field_values_x).reshape(target_shape)
+    fe_y = plan.execute(field_values_y).reshape(target_shape)
 
-    e_phi = np.cos(theta_grid_target) * (
-        -fe_x * np.sin(phi_grid_target) + fe_y * np.cos(phi_grid_target)
-    )
-    e_theta = fe_x * np.cos(phi_grid_target) + fe_y * np.sin(phi_grid_target)
-    e_mat = np.stack([e_phi, e_theta], axis=-1)
+    if probe_correction:
+        # Apply corrections in k-space
+        fe_mat = np.stack([fe_x, fe_y], axis=-1)
+
+        # reception_mat_inv is in (theta, phi)
+        reception_mat_inv = probe_correction.get_reception_matrix(
+            theta_vec=theta_grid_target[:, 0],
+            phi_vec=phi_grid_target[0, :],
+            wavenumber=k0,
+        )[0]  # remove frequency axis [0] that is always of size 1
+
+        logger.debug(f"{reception_mat_inv.shape=}")
+        logger.debug(f"{fe_mat.shape=}")
+
+        # Perform matrix multiplication of R^-1 matrix and E-field
+        # Probe compensation matrix include transform to spherical
+        e_mat = (reception_mat_inv @ fe_mat[..., np.newaxis])[..., 0]
+
+        # Add propagation phase to probe
+        # TODO: make this correction optional
+        e_mat *= np.exp(1j * k0 * z_val * np.cos(theta_grid_target[..., np.newaxis]))
+
+    else:
+        e_theta = fe_x * np.cos(phi_grid_target) + fe_y * np.sin(phi_grid_target)
+        e_phi = np.cos(theta_grid_target) * (
+            -fe_x * np.sin(phi_grid_target) + fe_y * np.cos(phi_grid_target)
+        )
+        e_mat = np.stack([e_theta, e_phi], axis=-1)
 
     # Apply propagation constants
     # Phase correction term such that phase at measured radius is constant
-    greens_func = np.exp(-1j * k0 * r_far_field) / r_far_field
-    c0 = 1j * k0 / (2.0 * np.pi) * greens_func
-    e_mat *= c0
-
-    # Apply probe corrections, if available
-    if probe_correction:
-        reception_mat_inv = probe_correction.get_correction(
-            phi_vec=phi_grid_target[:, 0],
-            theta_vec=theta_grid_target[0, :],
-            wavelength=2.0 * np.pi / k0,
-        ).squeeze()  # remove frequency axis that is of size 1
-
-        # Perform matrix multiplication of R^-1 matrix and E-field
-        e_mat = (reception_mat_inv @ e_mat[..., np.newaxis])[..., 0]
-        e_mat *= np.exp(1j * np.cos(theta_grid_target[..., np.newaxis]) * z_val)
+    if r_far_field is not None:
+        greens_func = np.exp(-1j * k0 * r_far_field) / r_far_field
+        c0 = 1j * k0 / (2.0 * np.pi) * greens_func
+        e_mat *= c0
 
     return e_mat
 
@@ -150,7 +162,7 @@ def planar_near_field_transform(
     dphi: float = 1.0,
     dtheta: float = 1.0,
     window: Callable = windows.boxcar,
-    r_far_field=1000,  # meters
+    r_far_field=None,  # meters
     z_displacement=None,
 ) -> xr.Dataset:
     """Compute the near to far-field transform via non-uniform fast Fourier transform (NUFFT).
@@ -266,8 +278,8 @@ def planar_near_field_transform(
         (theta_target >= -max_theta) & (theta_target <= max_theta)
     ]
 
-    phi_grid_target, theta_grid_target = np.meshgrid(
-        phi_target, theta_target, indexing="ij"
+    theta_grid_target, phi_grid_target = np.meshgrid(
+        theta_target, phi_target, indexing="ij"
     )
 
     # Generate windowing function (rectangular by default)
@@ -356,14 +368,14 @@ def planar_near_field_transform(
     logger.debug(f"Far-field transform: {elapsed_time}")
 
     # Generate field output
-    # Reorder output to: (component, phi, theta, frequency)
+    # Reorder output to: (component, theta, phi, frequency)
     e_field = np.transpose(e_mat_list, (3, 1, 2, 0))
 
     fields = FieldDataset.create(
         e_field=e_field,
         spatial_coords={
-            "phi": phi_target,
             "theta": theta_target,
+            "phi": phi_target,
         },
         frequency=frequencies,
         coordinate_system=CoordinateSystemType.SPHERICAL,

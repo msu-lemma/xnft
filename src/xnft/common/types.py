@@ -32,13 +32,13 @@ NEAR_FIELD_CS_TYPES = {
     },
     CoordinateSystemType.SPHERICAL: {
         "r": unyt.meter,
-        "phi": unyt.radian,
         "theta": unyt.radian,
+        "phi": unyt.radian,
     },
 }
 
 FAR_FIELD_CS_TYPES = {
-    CoordinateSystemType.SPHERICAL: {"phi": unyt.radian, "theta": unyt.radian},
+    CoordinateSystemType.SPHERICAL: {"theta": unyt.radian, "phi": unyt.radian},
 }
 
 

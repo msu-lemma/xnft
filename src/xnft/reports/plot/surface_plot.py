@@ -701,8 +701,14 @@ def get_transformed_data(spp: SurfacePlot2DParameters):
     # -- Get axis values, labels, and units --
     components = field_ds.coords["component"]
 
-    x_key = components[0].values.item()
-    y_key = components[1].values.item()
+    if field_ds.coordinate_system == CoordinateSystemType.SPHERICAL:
+        # For spherical, show theta on x-axis
+        x_key = components[1].values.item()
+        y_key = components[0].values.item()
+        field_scaled = field_scaled.T
+    else:
+        x_key = components[0].values.item()
+        y_key = components[1].values.item()
 
     axis_dict = {
         "x": AxisData(
