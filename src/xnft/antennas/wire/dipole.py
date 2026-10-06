@@ -55,9 +55,12 @@ def dipole_e(r, theta, phi, i_0=1, dipole_len=1.0, k=1):
 
     # Cast k to ensure it's an NDArray
     k = np.atleast_1d(k)
-    k_m = k[:, None, None]
 
     theta_m, phi_m = np.meshgrid(theta, phi, indexing="ij")
+
+    theta_m = theta_m[None, ..., None]
+    phi_m = phi_m[None, ..., None]
+    k_m = k[None, None, None, :]
 
     x = r * np.sin(theta_m) * np.cos(phi_m)
     y = r * np.sin(theta_m) * np.sin(phi_m)
@@ -76,17 +79,22 @@ def dipole_e(r, theta, phi, i_0=1, dipole_len=1.0, k=1):
         - (2 * z) * np.cos(k_m * dipole_len / 2) * np.exp(-1j * k_m * r) / r
     )
 
-    e_x = e_rho * np.cos(phi_m)
-
-    e_y = e_rho * np.sin(phi_m)
-
     e_z = -const * (
         np.exp(-1j * k_m * R1) / R1
         + np.exp(-1j * k_m * R2) / R2
         - 2 * np.cos(k_m * dipole_len / 2) * np.exp(-1j * k_m * r) / r
     )
 
-    e_field = np.stack([e_x, e_y, e_z], axis=-1)[:, None, :, :, :]
+    # Clip theta to NaN near poles of the dipole to avoid singularity bahavior
+    theta_m = np.where(np.abs(theta_m - np.pi / 2) - np.pi / 2 > -1e-6, np.nan, theta_m)
+
+    # Convert cylindrical components to spherical components
+    e_r = e_rho * np.sin(theta_m) + e_z * np.cos(theta_m)
+    e_theta = e_rho * np.cos(theta_m) - e_z * np.sin(theta_m)
+    e_phi = np.zeros_like(e_r)
+
+    # Shape: (component, r, theta, phi, frequency)
+    e_field = np.stack([e_r, e_theta, e_phi], axis=0)
 
     freq_vec = k * spc.c / (2 * np.pi)
 
