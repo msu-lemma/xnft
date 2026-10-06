@@ -37,11 +37,10 @@ def plot_mag(field: xr.DataArray, dim=2):
     ArrayLike
         Field value after function is applied
     """
-    if len(field.shape) > dim:
-        logger.debug(f"{field=}")
-        return np.linalg.norm(field, axis=0)
-    else:
-        return np.abs(field)
+    if "component" in field.dims:
+        return np.sqrt((np.abs(field) ** 2).sum(dim="component"))
+
+    return np.abs(field)
 
 
 def plot_phase(field: xr.DataArray, dim=2):

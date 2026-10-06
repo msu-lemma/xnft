@@ -30,6 +30,7 @@ from PySide6.QtWidgets import (
 from ...common.enums import CoordinateSystemType
 from ...gui.dialogs.reports.new_trace_dialog import NewTraceDialog, TraceParameters
 from ...project.nodes.node import DataNode
+from .functions.domains import PlotDomain, PlotDomains
 from .functions.scales import PlotScale
 from .helpers.helpers import trace_preview
 
@@ -99,14 +100,15 @@ class PlotTrace(pg.PlotDataItem):
 class Plot1D(QWidget):
     # Mapping of valid source coordinates to plotting coordinates
     __coordinate_domains__: ClassVar[
-        dict[CoordinateSystemType, Collection[CoordinateSystemType]]
+        dict[CoordinateSystemType, Collection[PlotDomain]]
     ] = {
         CoordinateSystemType.SPHERICAL: (
-            CoordinateSystemType.SPHERICAL,
-            CoordinateSystemType.DIRECTION_COSINE,
-            # CoordinateSystemType.SPHERICAL_AZEL,
+            PlotDomains.SPHERICAL,
+            PlotDomains.DIRECTION_COSINE_XY,
+            PlotDomains.DIRECTION_COSINE_XZ,
+            PlotDomains.DIRECTION_COSINE_YZ,
         ),
-        CoordinateSystemType.CARTESIAN: (CoordinateSystemType.CARTESIAN,),
+        CoordinateSystemType.CARTESIAN: (PlotDomains.CARTESIAN,),
     }
 
     def __init__(

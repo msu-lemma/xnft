@@ -34,12 +34,12 @@ from scipy.interpolate import griddata  # , CloughTocher2DInterpolator
 
 from ...common.enums import CoordinateSystemType
 from ...project.nodes.fields import FieldNode
+from .functions.domains import PlotDomain, PlotDomains
 from .functions.field_components import FieldComponent
 from .functions.field_quantities import FieldQuantities, FieldQuantity
 from .functions.functions import PlotFunction, PlotFunctions
 from .functions.normalizations import PlotNorm, PlotNorms
 from .functions.scales import PlotScale, PlotScales
-from .helpers.coordinate_transforms import phitheta_to_unit
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +54,7 @@ class SurfacePlot2DParameters:
     source: FieldNode
     field_quantity: FieldQuantity
     field_component: FieldComponent
-    plot_domain: CoordinateSystemType
+    plot_domain: PlotDomain
 
     applicate_function: PlotFunction
     applicate_scale: PlotScale
@@ -82,14 +82,15 @@ class SurfacePlot2DParameters:
 class Plot2D(QWidget):
     # Mapping of valid source coordinates to plotting domain
     __coordinate_domains__: ClassVar[
-        dict[CoordinateSystemType, Collection[CoordinateSystemType]]
+        dict[CoordinateSystemType, Collection[PlotDomain]]
     ] = {
         CoordinateSystemType.SPHERICAL: (
-            CoordinateSystemType.SPHERICAL,
-            CoordinateSystemType.DIRECTION_COSINE,
-            # CoordinateSystemType.SPHERICAL_AZEL,
+            PlotDomains.SPHERICAL,
+            PlotDomains.DIRECTION_COSINE_XY,
+            PlotDomains.DIRECTION_COSINE_XZ,
+            PlotDomains.DIRECTION_COSINE_YZ,
         ),
-        CoordinateSystemType.CARTESIAN: (CoordinateSystemType.CARTESIAN,),
+        CoordinateSystemType.CARTESIAN: (PlotDomains.CARTESIAN,),
     }
 
     def __init__(
@@ -265,7 +266,8 @@ class Plot2D(QWidget):
         # Store temp plot items for uniformly sampled image and mesh item
         # (pcolormesh is much slower tha imageitem)
         # TODO: replace pcolormesh with interpolated regularly sampled image
-        self.image_item = pg.ImageItem()
+        # self.image_item = pg.ImageItem()
+        self.image_item = pg.ImageItem(axisOrder="row-major")
         # self.mesh_item = pg.PColorMeshItem()
 
         # Layout
@@ -473,9 +475,7 @@ class Plot2D(QWidget):
         valid_plot_domains = self.__coordinate_domains__[source_coordiante_system]
 
         for coordinates_domain in valid_plot_domains:
-            self.cb_plot_domain.addItem(
-                coordinates_domain.value.name, coordinates_domain.value
-            )
+            self.cb_plot_domain.addItem(coordinates_domain.name, coordinates_domain)
 
     def _update_frequency_options(self):
         # Remove all items before updating items
@@ -524,25 +524,35 @@ class Plot2D(QWidget):
 
         # NOTE: Native domain is spherical
         # Direction cosines require nonlinear transformation so we need to use pcolormesh for
-        if self.selected_plot_domain == CoordinateSystemType.DIRECTION_COSINE.value:
+        if self.selected_plot_domain in (
+            PlotDomains.DIRECTION_COSINE_XY,
+            PlotDomains.DIRECTION_COSINE_XZ,
+            PlotDomains.DIRECTION_COSINE_YZ,
+        ):
             # Get phi and theta as numpy arrays
             phi = self.field_node.data.phi.values
             theta = self.field_node.data.theta.values
 
-            phi_grid, theta_grid = np.meshgrid(phi, theta, indexing="ij")
-            ux_vals, uy_vals, _ = phitheta_to_unit(phi=phi_grid, theta=theta_grid)
+            theta_grid, phi_grid = np.meshgrid(theta, phi, indexing="ij")
+            ux_vals, uy_vals = self.selected_plot_domain.function(
+                phi=phi_grid, theta=theta_grid
+            )
 
             num_x_samples, num_y_samples = 2048, 2048
             x_idx = np.linspace(ux_vals.min(), ux_vals.max(), num_x_samples)
             y_idx = np.linspace(uy_vals.min(), uy_vals.max(), num_y_samples)
-            x_idx_mesh, y_idx_mesh = np.meshgrid(x_idx, y_idx, indexing="ij")
+            x_idx_mesh, y_idx_mesh = np.meshgrid(x_idx, y_idx, indexing="xy")
 
             # TODO/FIXME: implement faster interpolator using pre-computed Delaunay triangulation
             points = np.column_stack([ux_vals.ravel(), uy_vals.ravel()])
+
             if self.selected_field_function == PlotFunctions.PHASE.value:
+                # For phase we need to perform interpolation around the circle
                 ang_rad = field_fun_scaled.ravel()
+
                 if self.selected_field_scale == PlotScales.DEGREES.value:
                     ang_rad = np.deg2rad(ang_rad)
+
                 z = np.exp(1j * ang_rad)
                 z_real = griddata(
                     points=points,
@@ -556,9 +566,12 @@ class Plot2D(QWidget):
                     xi=(x_idx_mesh, y_idx_mesh),
                     method="linear",
                 )
+
                 field_fun_scaled = np.angle(z_real + 1j * z_imag)
+
                 if self.selected_field_scale == PlotScales.DEGREES.value:
                     field_fun_scaled = np.rad2deg(field_fun_scaled)
+
             else:
                 field_fun_scaled = griddata(
                     points=points,
@@ -686,6 +699,8 @@ def get_transformed_data(spp: SurfacePlot2DParameters):
         # FIXME: hack to select only z-coordinate for near-field scan to avoid data reduction of X coordinate in mag plot
         field_data = field_data.sel(z=field_data["z"][0])
 
+    logger.debug(f"{field_data=}")
+
     # -- Apply selected component / functions --
     field_scaled = spp.applicate_scale.function(
         spp.applicate_function.function(
@@ -700,15 +715,41 @@ def get_transformed_data(spp: SurfacePlot2DParameters):
 
     # -- Get axis values, labels, and units --
     components = field_ds.coords["component"]
+    logger.debug(f"{components=}")
 
     if field_ds.coordinate_system == CoordinateSystemType.SPHERICAL:
-        # For spherical, show theta on x-axis
-        x_key = components[1].values.item()
-        y_key = components[0].values.item()
-        field_scaled = field_scaled.T
+        x_key = "phi"
+        y_key = "theta"
+    elif field_ds.coordinate_system == CoordinateSystemType.CARTESIAN:
+        x_key = "x"
+        y_key = "y"
     else:
-        x_key = components[0].values.item()
-        y_key = components[1].values.item()
+        raise NotImplementedError(
+            "SurfacePlot only supports spherical and Cartesian coordinates"
+        )
+
+    if isinstance(field_scaled, xr.DataArray):
+        field_scaled = field_scaled.squeeze(drop=True)
+        field_scaled = field_scaled.transpose(y_key, x_key)
+    else:
+        field_scaled = np.squeeze(field_scaled)
+
+        expected_shape = (
+            field_ds.sizes[y_key],
+            field_ds.sizes[x_key],
+        )
+
+        if field_scaled.shape == (
+            field_ds.sizes[x_key],
+            field_ds.sizes[y_key],
+        ):
+            field_scaled = field_scaled.T
+
+        elif field_scaled.shape != expected_shape:
+            raise ValueError(
+                f"Expected Cartesian data with shape "
+                f"{expected_shape}, got {field_scaled.shape}"
+            )
 
     axis_dict = {
         "x": AxisData(
