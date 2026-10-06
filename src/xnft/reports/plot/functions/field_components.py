@@ -150,7 +150,7 @@ class FieldComponents(Enum):
         name="Theta",  # "θ",
         function=field_component_theta,
         scales=(PlotScales.LINEAR, PlotScales.DECIBELS_20),
-        field_types={FieldType.FAR},  # {FieldType.NEAR, FieldType.FAR},
+        field_types={FieldType.NEAR, FieldType.FAR},
         plot_functions=PlotFunctions,  # All plot functions valid
         enabled=True,
     )
@@ -158,7 +158,7 @@ class FieldComponents(Enum):
         name="Phi",  # "φ",
         function=field_component_phi,
         scales=(PlotScales.LINEAR, PlotScales.DECIBELS_20),
-        field_types={FieldType.FAR},  # {FieldType.NEAR, FieldType.FAR},
+        field_types={FieldType.NEAR, FieldType.FAR},
         plot_functions=PlotFunctions,  # All plot functions valid
         enabled=True,
     )
