@@ -235,27 +235,26 @@ def load_dipole_yaml(fd, field_type, scan_type):
 
     if field_type == FieldType.NEAR:
         # Dipole electric fields everywhere
-        fields = dipole_e(
-            r=r_sample_vec,
-            theta=theta_sample_vec,
-            phi=phi_sample_vec,
-            i_0=excitation_current,
-            len=length,
-            k=wavenumber_vec,
-        )
+        dipole_field = dipole_e
     elif field_type == FieldType.FAR:
         # Dipole electric far-field approximation
-        fields = dipole_e_far_field(
-            r=r_sample_vec,
-            theta=theta_sample_vec,
-            phi=phi_sample_vec,
-            i_0=excitation_current,
-            len=length,
-            k=wavenumber_vec,
-        )
+        dipole_field = dipole_e_far_field
     else:
         raise ValueError(
             f"Field type {field_type} is not valid. Must be FieldType.NEAR or FieldType.FAR"
         )
+
+    args = {
+        "r": r_sample_vec,
+        "theta": theta_sample_vec,
+        "phi": phi_sample_vec,
+        "i_0": excitation_current,
+        "dipole_len": length,
+        "k": wavenumber_vec,
+    }
+
+    # logger.debug(f"{args=}")
+
+    fields = dipole_field(**args)
 
     return fields
