@@ -158,3 +158,11 @@ pixi upgrade <packages>
 ```
 
 Omitting the `<packages>` will upgrade _all_ packages.  It may be useful to first run this using the `--dry-run` flag to only print the packages which will be upgraded prior to actually commiting the changes to the file.
+
+## License
+
+Copyright 2026 Michigan State University. All rights reserved.
+
+The original source code for this project is distributed under the MIT license. See [LICENSE](LICENSE).
+
+This project depends on third-party libraries which are distributed separately and remain subject to their respective licenses.  For a complete list of runtime dependencies, see the `package.run-dependencies` section of the [`pixi.toml`](pixi.toml) file.
