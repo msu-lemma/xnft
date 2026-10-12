@@ -271,7 +271,7 @@ class MainWindow(QMainWindow):
             f"{meta.get('Summary')}\n\n"
             "Copyright 2025-2026 The Laboratory for Electromagnetics and mm-Wave Antennas (LEmmA), Electromagnetics Research Group (EMRG), Michigan State University.\n\n"
             f"Authors:\n{authors}\n\n"
-            f"License: {meta.get('License')}",
+            f"License: {meta.get('License-Expression')}",
         )
 
     def create_plot_area(self):
