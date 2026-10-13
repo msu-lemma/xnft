@@ -85,19 +85,17 @@ This will install all packages necessary into the `default` Pixi environment, th
 
 #### Download Test Data (Optional)
 
-Optional test data (stored in git LFS) in the `tests/data/...` and `analysis/data/...` folders may be downloaded using `git lfs`. Note that these archives contain sevaral gigabytes of data and are thus not downloaded by default. The default pixi environment includes `git-lfs` so you can run
+Optional test data is stored in a secondary `xnft-data` repository included as a git submodule in this project.  Note that these archives contain sevaral gigabytes of data and are thus not downloaded by default.
+
+To pull the datasets, run:
 
 ```sh
-git lfs pull
+git submodule init && git submodule update --recursive
 ```
 
-to pull the remaining test datasets.
+This will download datasets in to the `data/...` folders.
 
-## Development
-
-TODO: Add further development documentation.
-
-### Documentation
+## Documentation
 
 > [!NOTE]
 > The documentation currently only contains API docs. Further user/theory documentation is in progress.
@@ -121,9 +119,6 @@ If you do not have a LaTeX toolchain installed locally, the above command will f
 ```shell
 pixi run -e docs build-html-docs
 ```
-
-> [!NOTE]
-> The CI pipeline does not have a LaTeX toolchain, so it will only generate HTML docs, not PDF.
 
 ## License
 
