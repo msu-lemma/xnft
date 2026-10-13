@@ -7,8 +7,7 @@
 | ------ | ------ |
 | Testing | [![Pipeline Status](https://gitlab.msu.edu/delta/internal/libs/python-packages/delta-python-package/badges/main/pipeline.svg?ignore_skipped=true&job=test-job)](https://gitlab.msu.edu/delta/internal/libs/python-packages/delta-python-package/-/pipelines) ![Test Coverage](https://gitlab.msu.edu/delta/internal/libs/python-packages/delta-python-package/badges/main/coverage.svg) |
 | Package | [![Latest Release](/../../badges/release.svg)](/../../releases) |
-| Meta    | ![License: MIT](https://img.shields.io/badge/License-MIT-green) |
-
+| Meta | ![License: MIT](https://img.shields.io/badge/License-MIT-green) |
 
 ## What is xNFT?
 
@@ -17,31 +16,36 @@
 ![xnft Screenshot](docs/source/assets/xnft_screenshot.png)
 > Screenshot of xNFT running on macOS.  Measurements show an NSI-MI ANT-SGH-26.5-40 standard gain horn at 40 GHz collected using the LEmmA planar near-field scanner.
 
+## Known Issues
+
+xNFT is in active development and has several known limitations that are currently being addressed.  A summary of the high-impact issues are included in the [Work Items](https://www.gitlab.msu.edu/ece-lemma/internal/xnft-antenna-measurement-software/xnft/-/work_items?sort=created_date&state=opened&or%5Blabel_name%5D%5B%5D=Impact%3A%3AHigh&or%5Blabel_name%5D%5B%5D=Priority%3A%3ACritical&or%5Blabel_name%5D%5B%5D=Priority%3A%3AHigh&not%5Blabel_name%5D%5B%5D=docs&first_page_size=100).
+
+</details>
+
 ## Requirements
 
 xNFT is designed to run on a wide range of operating systems and architectures.  A list of system configurations designed to be compatible is included below. Other configurations may work, but are not currently considered supported configurations.
 
-
 ### xNFT Design System Compatability Matrix
 
-| Operating System | Versions | Architectures |
-| ------ | ------ | ------ |
-| macOS | >= 15.0 (Sequoia) | arm-64, x86-64 |
-| Linux  | —— | x86-64, aarch64 |
-| Windows | 10, 11 | x86-64 |
+| Operating System | Versions          | Architectures    |
+| ---------------- | ----------------- | ---------------- |
+| macOS            | >= 15.0 (Sequoia) | arm-64, x86-64   |
+| Linux            | ——                | x86-64, aarch64  |
+| Windows          | 10, 11            | x86-64           |
 
 ### Validated Configurations
 
 <details>
 <summary>(Click to view table)</summary>
 
-| Operating System | Versions | Architecture |
-| ------ | ------ | ------ |
-| macOS | 26 (Tahoe) | arm-64 |
-| | 27 (Golden Gate) | arm-64 |
-| Alma Linux | 8.10, 9.6, 9.8 | x86-64 |
-| Ubuntu | 26.04 | aarch64 |
-| Windows | 11 | x86-64 |
+| Operating System | Versions         | Architecture |
+| ---------------- | ---------------- | ------------ |
+| macOS            | 26 (Tahoe)       | arm-64       |
+|                  | 27 (Golden Gate) | arm-64       |
+| Alma Linux       | 8.10, 9.6, 9.8   | x86-64       |
+| Ubuntu           | 26.04            | aarch64      |
+| Windows          | 11               | x86-64       |
 
 </details>
 
@@ -70,7 +74,7 @@ For the latest features and bug fixes, install from source.
    pixi --version
    ```
 
-2. Install `git` and `git-lfs`. This may be installed via the OS package manager or pixi. 
+2. Install `git` and `git-lfs`. This may be installed via the OS package manager or pixi.
 
    Choose only **_one_** option below:
     - **Windows (Winget):** In any "PowerShell" run:
