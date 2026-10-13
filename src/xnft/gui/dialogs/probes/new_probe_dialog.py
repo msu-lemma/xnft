@@ -42,6 +42,7 @@ class NewProbeDialog(QDialog):
         Parent widget for dialog, by default None
     target_node : Node | None, optional
         Target node invoking this dialog, by default None
+
     """
 
     def __init__(
@@ -83,7 +84,7 @@ class NewProbeDialog(QDialog):
             self.cb_standard_waveguide_type.addItem(label, field_type)
 
         layout_dim.addWidget(
-            LabeledWidget("Probe Type", self.cb_standard_waveguide_type)
+            LabeledWidget("Probe Type", self.cb_standard_waveguide_type),
         )
 
         self.units_label = QLabel("Units: mm")
@@ -115,7 +116,7 @@ class NewProbeDialog(QDialog):
         )
 
         layout_meas.addWidget(
-            LabeledWidget("Probe Measurement file:", self.fe_measured_probe)
+            LabeledWidget("Probe Measurement file:", self.fe_measured_probe),
         )
 
         self.units_label = QLabel("File types: *.nist")
@@ -126,7 +127,9 @@ class NewProbeDialog(QDialog):
 
         # -- Buttons --
         self.buttons = QDialogButtonBox(
-            QDialogButtonBox.Ok | QDialogButtonBox.Cancel, Qt.Horizontal, self
+            QDialogButtonBox.Ok | QDialogButtonBox.Cancel,
+            Qt.Horizontal,
+            self,
         )
         self.buttons.button(QDialogButtonBox.Ok).setText("Create")
         self.buttons.button(QDialogButtonBox.Cancel).setText("Cancel")
@@ -149,7 +152,7 @@ class NewProbeDialog(QDialog):
 
         self.cb_probe_type.currentTextChanged.connect(self._update_fields_shown)
         self.cb_standard_waveguide_type.currentTextChanged.connect(
-            self._update_waveguide_selection
+            self._update_waveguide_selection,
         )
         self._update_fields_shown()
 
@@ -174,7 +177,8 @@ class NewProbeDialog(QDialog):
                 source = self.cb_standard_waveguide_type.currentData().value
 
             probe = MeasurementProbe(
-                name=self.le_probe_name.text().strip(), source=source
+                name=self.le_probe_name.text().strip(),
+                source=source,
             )
 
         elif probe_type == ProbeType.MEASURED:
@@ -182,7 +186,7 @@ class NewProbeDialog(QDialog):
             raise NotImplementedError("Measured probe type not yet implemented.")
         else:
             raise TypeError(
-                f"probe_type must be ProbeType.MEASURED or ProbeType.IDEAL_RECT, got {type(probe_type)}"
+                f"probe_type must be ProbeType.MEASURED or ProbeType.IDEAL_RECT, got {type(probe_type)}",
             )
 
         return {"probe": probe}
@@ -223,7 +227,9 @@ class NewProbeDialog(QDialog):
         if not name:
             if not silent:
                 QMessageBox.warning(
-                    self, "Missing Name", "Please enter a field node name."
+                    self,
+                    "Missing Name",
+                    "Please enter a field node name.",
                 )
             return False
 
@@ -267,7 +273,8 @@ class FileEntryRow(QWidget):
         get_available_extensions=None,
         parent=None,
     ):
-        """Create field entry row with path item and browse button.
+        """
+        Create field entry row with path item and browse button.
 
         Parameters
         ----------
@@ -277,6 +284,7 @@ class FileEntryRow(QWidget):
             Function which returns valid extensions, by default None
         has_sp : bool, optional
             Whether file has S-Parameters, by default False
+
         """
         super().__init__(parent)
         self.parent = parent

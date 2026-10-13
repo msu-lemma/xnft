@@ -83,7 +83,9 @@ def load_analytic_far_field_yaml(file_list: list[FileInfo]) -> xr.Dataset:
 
 
 def load_analytic_yaml(
-    file_list: list[FileInfo], field_type: FieldType, scan_type: ScanType
+    file_list: list[FileInfo],
+    field_type: FieldType,
+    scan_type: ScanType,
 ) -> xr.Dataset:
     """
     Generic analytic YAML loader based on simple description file.  Calls specific loaders for various scan type and field parameters.
@@ -101,7 +103,6 @@ def load_analytic_yaml(
         Field dataset with validated components and attributes
 
     """
-
     if len(file_list) != 1:
         raise ValueError(f"Analytic loader accepts exactly one file. Got: {file_list}")
     if file_list[0].polarization != {
@@ -109,11 +110,11 @@ def load_analytic_yaml(
         PolarizationType.CROSS_POL,
     }:
         raise ValueError(
-            "Analytic loader only accepts files containing both co-pol and cross-pol."
+            "Analytic loader only accepts files containing both co-pol and cross-pol.",
         )
 
     file_path = file_list[0].path
-    with open(file_path, "r", encoding="utf-8") as file:
+    with open(file_path, encoding="utf-8") as file:
         fd = yaml.safe_load(file)
 
     # Call specific loader based on antenna type
@@ -206,7 +207,7 @@ def load_rect_aperture_yaml(fd, field_type, scan_type):
         )
     else:
         raise ValueError(
-            f"Field type {field_type} is not valid. Must be FieldType.NEAR or FieldType.FAR"
+            f"Field type {field_type} is not valid. Must be FieldType.NEAR or FieldType.FAR",
         )
 
     return fields
@@ -241,7 +242,7 @@ def load_dipole_yaml(fd, field_type, scan_type):
         dipole_field = dipole_e_far_field
     else:
         raise ValueError(
-            f"Field type {field_type} is not valid. Must be FieldType.NEAR or FieldType.FAR"
+            f"Field type {field_type} is not valid. Must be FieldType.NEAR or FieldType.FAR",
         )
 
     args = {

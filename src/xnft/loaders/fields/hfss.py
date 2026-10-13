@@ -50,6 +50,7 @@ def load_hfss_near_field_ndf(file_list: list[FileInfo]) -> xr.Dataset:
     -------
     xarray.Dataset
         Dataset containing "E" and "H" fields.
+
     """
     if len(file_list) != 1:
         raise ValueError("HFSS .nfd loader accepts exactly one file.")
@@ -59,7 +60,7 @@ def load_hfss_near_field_ndf(file_list: list[FileInfo]) -> xr.Dataset:
         PolarizationType.CROSS_POL,
     }:
         raise ValueError(
-            "HFSS .nfd loader only accepts files containing both co-pol and cross-pol."
+            "HFSS .nfd loader only accepts files containing both co-pol and cross-pol.",
         )
 
     # Ensure file_list.path is a Path
@@ -72,7 +73,7 @@ def load_hfss_near_field_ndf(file_list: list[FileInfo]) -> xr.Dataset:
 
     logger.debug('Loading HFSS near-field file "%s".', file_path)
 
-    with open(file_path, "r", encoding="utf-8") as file:
+    with open(file_path, encoding="utf-8") as file:
         # Initialize temporary data variables
         x_list = []
         y_list = []
@@ -208,6 +209,7 @@ def load_hfss_far_field_ffd(file_list: list[FileInfo]) -> xr.Dataset:
     -------
     xarray.Dataset
         Dataset containing "E" and "H" fields.
+
     """
     if len(file_list) != 1:
         raise ValueError("HFSS .ffd loader accepts exactly one file.")
@@ -217,7 +219,7 @@ def load_hfss_far_field_ffd(file_list: list[FileInfo]) -> xr.Dataset:
         PolarizationType.CROSS_POL,
     }:
         raise ValueError(
-            "HFSS .ffd loader only accepts files containing both co-pol and cross-pol."
+            "HFSS .ffd loader only accepts files containing both co-pol and cross-pol.",
         )
 
     # Ensure file_list.path is a Path
@@ -228,7 +230,7 @@ def load_hfss_far_field_ffd(file_list: list[FileInfo]) -> xr.Dataset:
 
     logger.debug('Loading HFSS far-field file "%s".', file_path)
 
-    with open(file_path, "r", encoding="utf-8") as file:
+    with open(file_path, encoding="utf-8") as file:
         # Initialize parsing variables
         num_frequencies = None
         current_frequency = None
@@ -247,12 +249,12 @@ def load_hfss_far_field_ffd(file_list: list[FileInfo]) -> xr.Dataset:
 
             # Extract phi/theta sample locations (first two rows)
             # Elevation (Theta)
-            elif line_idx == 0:
+            if line_idx == 0:
                 theta_start_deg, theta_stop_deg, theta_num_steps = [
                     float(x.strip()) for x in line.split(" ")
                 ]
                 theta_sample_location_array = np.radians(
-                    np.linspace(theta_start_deg, theta_stop_deg, int(theta_num_steps))
+                    np.linspace(theta_start_deg, theta_stop_deg, int(theta_num_steps)),
                 )
             # Azimuth (Phi)
             elif line_idx == 1:
@@ -260,7 +262,7 @@ def load_hfss_far_field_ffd(file_list: list[FileInfo]) -> xr.Dataset:
                     float(x) for x in line.split(" ")
                 ]
                 phi_sample_location_array = np.radians(
-                    np.linspace(phi_start_deg, phi_stop_deg, int(phi_num_steps))
+                    np.linspace(phi_start_deg, phi_stop_deg, int(phi_num_steps)),
                 )
 
             # Extract number of frequencies from header

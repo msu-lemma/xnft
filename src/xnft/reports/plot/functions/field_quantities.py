@@ -53,7 +53,9 @@ def field_quantity_gain(field: xr.Dataset):
 
         # Configure gain cal interpolation
         gain_cal_interp = gain_cal_table.interp(
-            frequency=frequency, method="linear", assume_sorted=True
+            frequency=frequency,
+            method="linear",
+            assume_sorted=True,
         )
 
         # Take amplitude norm over phi/theta dimensions at current frequency

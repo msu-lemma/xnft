@@ -1,7 +1,4 @@
 {
-    "mypy-type-checker.importStrategy": "fromEnvironment",
-    "black-formatter.importStrategy": "fromEnvironment",
-    "flake8.importStrategy": "fromEnvironment",
     "python.testing.pytestArgs": [
         "tests"
     ],
@@ -11,10 +8,4 @@
     "python.analysis.diagnosticSeverityOverrides": {
         "reportMissingImports": "none"
     },
-    "mypy-type-checker.args": [
-        "--ignore-missing-imports",
-        "--follow-imports=normal"
-    ],
-    "python-envs.defaultEnvManager": "ms-python.python:system",
-    "python-envs.defaultPackageManager": "ms-python.python:pip"
 }

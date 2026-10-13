@@ -9,7 +9,5 @@ from pathlib import Path
 
 
 def resource_path(*parts: str) -> Path:
-    """
-    Return a path to a bundled resource.
-    """
+    """Return a path to a bundled resource."""
     return files("xnft.resources").joinpath(*parts)

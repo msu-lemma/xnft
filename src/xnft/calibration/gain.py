@@ -23,7 +23,9 @@ logger = logging.getLogger(__name__)
 
 gain_cal_dir = (
     Path(
-        QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppDataLocation)
+        QStandardPaths.writableLocation(
+            QStandardPaths.StandardLocation.AppDataLocation
+        ),
     )
     / "calibrations"
     / "gain"
@@ -57,7 +59,6 @@ class GainCalibration:
 
 def copy_gain_cal_file(file_path):
     """Copy a gain cal file to the calibration file path."""
-
     src_file = Path(file_path)
 
     if src_file.suffix.lower() not in (".cal", ".ngt"):
@@ -74,9 +75,11 @@ def copy_gain_cal_file(file_path):
 
 
 def load_gain_cal(
-    path: str | Path, name_only: bool = False
+    path: str | Path,
+    name_only: bool = False,
 ) -> GainCalibrationReference | str:
-    """Load gain calibration files
+    """
+    Load gain calibration files
 
     Parameters
     ----------
@@ -89,12 +92,13 @@ def load_gain_cal(
     -------
     GainCalibration | str
         GainCalibration or GainCalibration.name if "name_only" is True
+
     """
     gain_cal = GainCalibrationReference()
 
     path = Path(path)
 
-    with open(path, "r") as f:
+    with open(path) as f:
         while True:
             # Store offest in bytes of start of line
             pos = f.tell()
@@ -126,48 +130,46 @@ def load_gain_cal(
         if name_only:
             return path.stem if gain_cal.name == "" else gain_cal.name
 
+        # read_csv will parse the rest of the file
+        df = pd.read_csv(f)
+        df.columns = df.columns.str.strip()
+
+        logger.debug(df)
+
+        # Get file type
+        if path.suffix == ".cal":
+            # Convert dataframe to DataArray for interpolation
+            gain_cal.data = xr.DataArray(
+                df["gain_dbi"].to_numpy(),
+                coords={
+                    "frequency": df["frequency_hz"].to_numpy(),
+                },
+                dims=("frequency",),
+                name="gain_ref",
+                attrs={"units": "dBi"},
+            )
+
+        elif path.suffix == ".ngt":
+            # Convert dataframe to DataArray for interpolation
+            df["Freq"] *= 1e9  # convert to Hertz
+            gain_cal.data = xr.DataArray(
+                df["Gain"].to_numpy(),
+                coords={
+                    "frequency": df["Freq"].to_numpy(),
+                },
+                dims=("frequency",),
+                name="gain_ref",
+                attrs={"units": "dBi"},
+            )
+
         else:
-            # read_csv will parse the rest of the file
-            df = pd.read_csv(f)
-            df.columns = df.columns.str.strip()
+            raise NotImplementedError(f"File type {path.suffix} is not supported.")
 
-            logger.debug(df)
-
-            # Get file type
-            if path.suffix == ".cal":
-                # Convert dataframe to DataArray for interpolation
-                gain_cal.data = xr.DataArray(
-                    df["gain_dbi"].to_numpy(),
-                    coords={
-                        "frequency": df["frequency_hz"].to_numpy(),
-                    },
-                    dims=("frequency",),
-                    name="gain_ref",
-                    attrs={"units": "dBi"},
-                )
-
-            elif path.suffix == ".ngt":
-                # Convert dataframe to DataArray for interpolation
-                df["Freq"] *= 1e9  # convert to Hertz
-                gain_cal.data = xr.DataArray(
-                    df["Gain"].to_numpy(),
-                    coords={
-                        "frequency": df["Freq"].to_numpy(),
-                    },
-                    dims=("frequency",),
-                    name="gain_ref",
-                    attrs={"units": "dBi"},
-                )
-
-            else:
-                raise NotImplementedError(f"File type {path.suffix} is not supported.")
-
-            return gain_cal
+        return gain_cal
 
 
 def get_gain_cal_files(name_only):
     """Get gain cal files from calibration folder."""
-
     calib_dir = gain_cal_dir
 
     # If path doesn't exist, create it
@@ -184,7 +186,8 @@ def get_gain_cal_files(name_only):
 
 
 def get_gain_correction(frequency: NDArray | float, interpolation: str | None = None):
-    """Get gain correction value for a given input frequency.
+    """
+    Get gain correction value for a given input frequency.
 
     Parameters
     ----------
@@ -200,4 +203,5 @@ def get_gain_correction(frequency: NDArray | float, interpolation: str | None = 
     ------
     NDArray or float
         Gain value in dBi to be _added_ to gain to correct value
+
     """

@@ -45,13 +45,13 @@ class NewFieldMeasurementDialog(QDialog):
     """
     Input dialog for field measurement data.
 
-
     Parameters
     ----------
     parent : QWidget | None, optional
         Parent widget for dialog, by default None
     target_node : Node | None, optional
         Target node invoking this dialog, by default None
+
     """
 
     def __init__(
@@ -72,7 +72,7 @@ class NewFieldMeasurementDialog(QDialog):
         self._loader_info = self._loaders_info(registry.loaders.fields)
 
         field_types = self._loader_info.keys()
-        for idx, field_type in enumerate(field_types):
+        for field_type in field_types:
             # NOTE: Qt casts StrEnum to plain str which breaks some things;
             #       we'll wrap this in a tuple here to mitigate this behavior
             self.cb_field_type.addItem(field_type.value, (field_type,))
@@ -103,13 +103,15 @@ class NewFieldMeasurementDialog(QDialog):
         self.sb_aut_size.setRange(0.0, 1e12)
 
         self.label_file_help = QLabel(
-            f"Available extensions are: {', '.join(self._get_available_extensions())}"
+            f"Available extensions are: {', '.join(self._get_available_extensions())}",
         )
         self.label_file_help.setStyleSheet("color: #777")
 
         # Buttons
         self.buttons = QDialogButtonBox(
-            QDialogButtonBox.Ok | QDialogButtonBox.Cancel, Qt.Horizontal, self
+            QDialogButtonBox.Ok | QDialogButtonBox.Cancel,
+            Qt.Horizontal,
+            self,
         )
         self.buttons.button(QDialogButtonBox.Ok).setText("Create")
         self.buttons.button(QDialogButtonBox.Cancel).setText("Cancel")
@@ -145,12 +147,12 @@ class NewFieldMeasurementDialog(QDialog):
         self.cb_field_type.currentTextChanged.connect(self._update_scan_formats)
         self.cb_scan_type.currentTextChanged.connect(self._update_source_file_formats)
         self.cb_source_format.currentTextChanged.connect(
-            self._update_source_polarization_formats
+            self._update_source_polarization_formats,
         )
         self.cb_source_format.currentTextChanged.connect(self._update_help_label)
 
         self.cb_data_polarization.currentTextChanged.connect(
-            self._update_file_fields_shown
+            self._update_file_fields_shown,
         )
         self.cb_data_polarization.currentTextChanged.connect(self._update_default_name)
 
@@ -172,7 +174,7 @@ class NewFieldMeasurementDialog(QDialog):
                     path=Path(self.fe_combined.le_path.text().strip()),
                     polarization={PolarizationType.CO_POL, PolarizationType.CROSS_POL},
                     s_parameters=set(self.fe_combined.cb_sp.currentData()),
-                )
+                ),
             ]
         else:
             co_pol_path = self.fe_co_pol.le_path.text().strip()
@@ -184,7 +186,7 @@ class NewFieldMeasurementDialog(QDialog):
                         path=Path(co_pol_path),
                         polarization=PolarizationType.CO_POL,
                         s_parameters=set(self.fe_co_pol.cb_sp.currentData()),
-                    )
+                    ),
                 )
             if cross_pol_path:
                 file_info_list.append(
@@ -192,7 +194,7 @@ class NewFieldMeasurementDialog(QDialog):
                         path=Path(cross_pol_path),
                         polarization=PolarizationType.CROSS_POL,
                         s_parameters=set(self.fe_cx_pol.cb_sp.currentData()),
-                    )
+                    ),
                 )
 
         return {
@@ -333,16 +335,14 @@ class NewFieldMeasurementDialog(QDialog):
 
     def _update_help_label(self) -> None:
         self.label_file_help.setText(
-            f"Available extensions are: {', '.join(self._get_available_extensions())}"
+            f"Available extensions are: {', '.join(self._get_available_extensions())}",
         )
 
     def _get_available_extensions(
         self,
         glob_format: bool = True,
     ) -> list:
-        """
-        Return extensions for the selected field, scan, and source types.
-        """
+        """Return extensions for the selected field, scan, and source types."""
         if self.cb_field_type.currentData() is None:
             return []
 
@@ -388,7 +388,9 @@ class NewFieldMeasurementDialog(QDialog):
         if not name:
             if not silent:
                 QMessageBox.warning(
-                    self, "Missing Name", "Please enter a field node name."
+                    self,
+                    "Missing Name",
+                    "Please enter a field node name.",
                 )
             return False
 
@@ -456,7 +458,8 @@ class FileEntryRow(QWidget):
         get_available_extensions=None,
         parent=None,
     ):
-        """Create field entry row with path item and browse button.
+        """
+        Create field entry row with path item and browse button.
 
         Parameters
         ----------
@@ -466,6 +469,7 @@ class FileEntryRow(QWidget):
             Function which returns valid extensions, by default None
         has_sp : bool, optional
             Whether file has S-Parameters, by default False
+
         """
         super().__init__(parent)
         self.parent = parent
@@ -516,7 +520,6 @@ class FileEntryRow(QWidget):
 
     def _on_le_path_update(self) -> None:
         """Update SP field."""
-
         extension = Path(self.le_path.text()).suffix
 
         self.show_sp = False

@@ -54,9 +54,7 @@ logger = logging.getLogger(__name__)
 
 
 class MainWindow(QMainWindow):
-    """
-    Main Qt window object.
-    """
+    """Main Qt window object."""
 
     def __init__(self, project_manager):
         super().__init__()
@@ -215,7 +213,7 @@ class MainWindow(QMainWindow):
         selection_model = self.project_tree.selectionModel()
         if selection_model is not None:
             selection_model.currentChanged.connect(
-                lambda current_index, _: self._node_info_from_index(current_index)
+                lambda current_index, _: self._node_info_from_index(current_index),
             )
 
     def _node_info_from_index(self, index: QModelIndex):
@@ -231,7 +229,9 @@ class MainWindow(QMainWindow):
             attr = getattr(node.__class__, name, None)
             # NOTE: fget is the getter of a property
             if isinstance(attr, property) and getattr(
-                attr.fget, "__gui_property__", False
+                attr.fget,
+                "__gui_property__",
+                False,
             ):
                 label = attr.fget.__gui_property__["label"]
                 order = attr.fget.__gui_property__["order"]
@@ -322,11 +322,18 @@ class MainWindow(QMainWindow):
             self.statusBar().showMessage("No project selected to save.")
 
     def _ui_action(
-        self, helper_dialog, target_node, invoke_function, spawn_thread=False
+        self,
+        helper_dialog,
+        target_node,
+        invoke_function,
+        spawn_thread=False,
     ):
-        """Perform actions that interact with the UI from external models
+        """
+        Perform actions that interact with the UI from external models
             (e.g., nodes).
-        Examples:
+
+        Examples
+        --------
             - add child node to "target_node"
             - create window in MDI area
 
@@ -338,8 +345,8 @@ class MainWindow(QMainWindow):
             Node to add child to.
         invoke_function : Callable
             A function to callback from the project to perform project action.
-        """
 
+        """
         invoke_kwargs = {}
         run_function = True
 
@@ -469,9 +476,7 @@ def init_application():
 
 
 def main():
-    """
-    Main GUI entrypoint.
-    """
+    """Main GUI entrypoint."""
     init_application()
 
     sys.argv[0] = "xNFT"  # Overwrite name of command to show application name

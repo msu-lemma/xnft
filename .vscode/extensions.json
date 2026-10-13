@@ -2,8 +2,9 @@
     "recommendations": [
         "ms-python.python",
         "ms-python.vscode-python-envs",
-        "ms-python.mypy-type-checker",
         "charliermarsh.ruff",
         "njpwerner.autodocstring",
+        "astral-sh.ty",
+        "tamasfe.even-better-toml",
     ]
 }

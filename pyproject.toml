@@ -56,3 +56,22 @@ exclude_lines = [
 [tool.ruff]
 # Exclude CI pixi cache folder.
 extend-exclude = [".pixi-cache"]
+
+[tool.ruff.lint]
+# select = ["E", "F", "I"]
+# select = ["ALL"]
+preview = true
+select = ["correctness", "suspicious", "complexity", "performance", "style"]
+# select = [
+#   "E",   # pycodestyle
+#   "F",   # Pyflakes
+#   "UP",  # pyupgrade
+#   "B",   # flake8-bugbear
+#   "SIM", # flake8-simplify
+#   "I",   # isort
+# ]
+ignore = [
+  "D212",   # Prefer multi-line summary starting on the second line
+  "COM812", # Ruff formatter already enforces this rule
+  "DTZ",    # Not acceptable if attempting to use local timezones
+]

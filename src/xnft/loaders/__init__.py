@@ -15,8 +15,6 @@ _BUILTIN_LOADERS = (
 
 
 def register_builtin_loaders():
-    """
-    Import builin loader modules to registry.
-    """
+    """Import builin loader modules to registry."""
     for mod in _BUILTIN_LOADERS:
         importlib.import_module(mod)

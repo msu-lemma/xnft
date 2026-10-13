@@ -40,6 +40,7 @@ class MeasurementProbe:
     ------
     TypeError
         Probe source type must be MeasuredProbe or RectWaveguide
+
     """
 
     def __init__(self, name: str, source: MeasuredProbe | RectWaveguide) -> None:
@@ -54,18 +55,15 @@ class MeasurementProbe:
             self.correction_type = ProbeType.IDEAL_RECT
         else:
             raise TypeError(
-                f"Probe source must be type MeasuredProbe or RectWaveguide, got {type(source)}."
+                f"Probe source must be type MeasuredProbe or RectWaveguide, got {type(source)}.",
             )
 
     def get_reception_matrix(self, theta_vec, phi_vec, wavenumber):
-        """
-        Generate probe reception matrix values.
-        """
-
+        """Generate probe reception matrix values."""
         if self.correction_type == ProbeType.MEASURED:
             raise NotImplementedError("Measured probe corrections not yet implemented.")
 
-        elif self.correction_type == ProbeType.IDEAL_RECT:
+        if self.correction_type == ProbeType.IDEAL_RECT:
             wavelength = 2.0 * np.pi / wavenumber
 
             print(f"{wavelength=}")
@@ -99,10 +97,16 @@ class MeasurementProbe:
 
             # Reorder dimensions s.t. vector components is at the end
             x_pol_e_field = x_pol_e_field.transpose(
-                "frequency", "theta", "phi", "component"
+                "frequency",
+                "theta",
+                "phi",
+                "component",
             ).values
             y_pol_e_field = y_pol_e_field.transpose(
-                "frequency", "theta", "phi", "component"
+                "frequency",
+                "theta",
+                "phi",
+                "component",
             ).values
 
             r_mat = np.stack([x_pol_e_field, y_pol_e_field], axis=-2)
@@ -111,7 +115,6 @@ class MeasurementProbe:
             r_mat_inv = np.linalg.inv(r_mat)
 
             return r_mat_inv
-        else:
-            raise TypeError(
-                f"Probe source must be type MeasuredProbe or RectWaveguide, got {type(self.source)}."
-            )
+        raise TypeError(
+            f"Probe source must be type MeasuredProbe or RectWaveguide, got {type(self.source)}.",
+        )

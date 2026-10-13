@@ -47,10 +47,12 @@ def rect_e_near_field(
 ):
 
     e_x = e_z = np.zeros(
-        (x_sample_vec.size, y_sample_vec.size, 1, freq_sample_vec.size), np.complex128
+        (x_sample_vec.size, y_sample_vec.size, 1, freq_sample_vec.size),
+        np.complex128,
     )
     e_y = amplitude * np.ones(
-        (x_sample_vec.size, y_sample_vec.size, 1, freq_sample_vec.size), np.complex128
+        (x_sample_vec.size, y_sample_vec.size, 1, freq_sample_vec.size),
+        np.complex128,
     )
 
     yy, xx = np.meshgrid(y_sample_vec, x_sample_vec)
@@ -98,7 +100,8 @@ def rect_e_far_field(
     excitation: str = "te10",  # [te10, uniform]
     apply_prop_const: bool = True,
 ) -> xr.Dataset:
-    """Generate ideal rectangular aperture field.
+    """
+    Generate ideal rectangular aperture field.
 
     Based on derivation in [§12, 1].  It is assumed the E-field excitation is in the y-hat direction.
 
@@ -143,6 +146,7 @@ def rect_e_far_field(
     ----------
     [1] C. A. Balanis, Antenna theory: analysis and design, 3. ed. Hoboken,
         N.J: Wiley-Interscience, 2005.
+
     """
     if flip_x:
         phi_sample_vec = -phi_sample_vec
@@ -192,7 +196,7 @@ def rect_e_far_field(
         e_phi = -np.pi / 2 * np.cos(theta_grid) * np.cos(phi_grid_local) * cx * cy
     else:
         raise NotImplementedError(
-            f"Excitation mode {excitation} is not yet implemented."
+            f"Excitation mode {excitation} is not yet implemented.",
         )
 
     e_field = np.stack([e_theta, e_phi], dtype=np.complex128)

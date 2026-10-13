@@ -33,7 +33,7 @@ class PlotScales(Enum):
     )
     DEGREES = PlotScale(
         name="Degrees",
-        function=lambda x: np.rad2deg(x),
+        function=np.rad2deg,
         unit_modifier=lambda x: "°",
         enabled=True,
     )

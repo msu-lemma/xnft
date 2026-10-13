@@ -86,7 +86,8 @@ class FileEntryRow(QWidget):
         get_available_extensions=None,
         parent=None,
     ):
-        """Create field entry row with path item and browse button.
+        """
+        Create field entry row with path item and browse button.
 
         Parameters
         ----------
@@ -96,6 +97,7 @@ class FileEntryRow(QWidget):
             Function which returns valid extensions, by default None
         has_sp : bool, optional
             Whether file has S-Parameters, by default False
+
         """
         super().__init__(parent)
         self.parent = parent

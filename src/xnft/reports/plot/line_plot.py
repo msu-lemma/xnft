@@ -125,6 +125,7 @@ class Plot1D(QWidget):
             components.
         coordinates_type : str
             Coordinate system type to plot in.
+
         """
         super().__init__(parent)
 
@@ -133,7 +134,7 @@ class Plot1D(QWidget):
         if coordinates_type not in self.__coordinate_domains__:
             raise ValueError(
                 f"Plot coordinates must be one of {[x.name for x in self.__coordinate_domains__]},"
-                f" got {coordinates_type.name}"
+                f" got {coordinates_type.name}",
             )
 
         self._abscissa = None
@@ -158,7 +159,8 @@ class Plot1D(QWidget):
         # -- Add Trace List --
         self.trace_list_widget = TraceList(self.plot)
         self.trace_list_widget.setSizePolicy(
-            QSizePolicy.Expanding, QSizePolicy.Expanding
+            QSizePolicy.Expanding,
+            QSizePolicy.Expanding,
         )
 
         # Add +/-, edit buttons
@@ -264,7 +266,6 @@ class Plot1D(QWidget):
 
     def _add_trace(self, clicked: bool = False, trace: PlotTrace | None = None):
         """Add a trace object to ReportNode to hold plot state."""
-
         trace_list = []
         if trace is None:
             dialog = NewTraceDialog(parent=self, project_node=self.report_node.root)
@@ -293,7 +294,7 @@ class Plot1D(QWidget):
 
                     # Get quantity from field values
                     ordinate_raw_values = tp.field_quantity.function(
-                        tp.field_component.function(source_field).sel(**tp.slice_dict)
+                        tp.field_component.function(source_field).sel(**tp.slice_dict),
                     )
 
                     logger.debug(ordinate_raw_values)
@@ -303,11 +304,11 @@ class Plot1D(QWidget):
                         tp.ordinate_function.function(
                             tp.field_norm.function(ordinate_raw_values),
                             dim=1,
-                        )
+                        ),
                     )
 
                     ordinate_units = tp.ordinate_scale.unit_modifier(
-                        tp.field_norm.unit_modifier(tp.field_quantity.units)
+                        tp.field_norm.unit_modifier(tp.field_quantity.units),
                     )
 
                     ordinate_name = tp.field_quantity.name
@@ -413,13 +414,14 @@ class TraceList(QTreeWidget):
         self.setEditTriggers(
             QAbstractItemView.DoubleClicked
             | QAbstractItemView.EditKeyPressed
-            | QAbstractItemView.SelectedClicked
+            | QAbstractItemView.SelectedClicked,
         )
 
         self.itemChanged.connect(self._update_traces)
 
     def add_trace(self, trace):
-        """Add trace to list.
+        """
+        Add trace to list.
 
         Parameters
         ----------
@@ -427,8 +429,8 @@ class TraceList(QTreeWidget):
             Trace object to add to trace list.
         enabled : bool, optional
             Whether the trace is shown or not, by default True
-        """
 
+        """
         item = QTreeWidgetItem(self)
         item.setText(0, trace.name())
         item.setData(0, Qt.UserRole, trace)
@@ -447,17 +449,20 @@ class TraceList(QTreeWidget):
         self.resizeColumnToContents(2)
 
     def remove_trace(self, trace_index):
-        """Remove trace from trace list.
+        """
+        Remove trace from trace list.
 
         Parameters
         ----------
         trace_index : int
             Integer index of row to remove.
+
         """
         self.takeTopLevelItem(trace_index)
 
     def _get_trace_icon(self, trace: PlotTrace, width=40, height=20):
-        """Generate trace icon to display in trace list widget.
+        """
+        Generate trace icon to display in trace list widget.
 
         Parameters
         ----------
@@ -472,6 +477,7 @@ class TraceList(QTreeWidget):
         -------
         QLabel
             QLabel containing the Pixmap to show in the table widget
+
         """
         # Get screen dpi to render image properly
         # screen = trace.scene().views()[0].screen()

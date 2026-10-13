@@ -35,11 +35,11 @@ class QMdiAreaWatermark(QMdiArea):
         # self._lemma_logo_path = "src/xnft/resources/logos/lemma_logo_transparent.png"
 
         self._emrg_logo_path = str(
-            files("xnft.resources.logos").joinpath("emrg_logo_vector.svg")
+            files("xnft.resources.logos").joinpath("emrg_logo_vector.svg"),
         )
 
         self._lemma_logo_path = str(
-            files("xnft.resources.logos").joinpath("lemma_logo_transparent.png")
+            files("xnft.resources.logos").joinpath("lemma_logo_transparent.png"),
         )
 
         self._emrg_logo = QSvgRenderer(self._emrg_logo_path)
@@ -72,7 +72,10 @@ class QMdiAreaWatermark(QMdiArea):
         return QSize(round(size.width() * dpr), round(size.height() * dpr))
 
     def _svg_to_pixmap(
-        self, renderer: QSvgRenderer, size: QSizeF, dpr: float
+        self,
+        renderer: QSvgRenderer,
+        size: QSizeF,
+        dpr: float,
     ) -> QPixmap:
         pixmap = QPixmap(self._scale_pixels(size, dpr))
         pixmap.fill(Qt.transparent)

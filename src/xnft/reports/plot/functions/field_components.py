@@ -31,7 +31,7 @@ def field_component_x(field: xr.DataArray):
             + np.cos(theta_grid) * np.cos(phi_grid) * e_theta
             - np.sin(phi_grid) * e_phi
         )
-    elif field.attrs["field_type"] == FieldType.NEAR:
+    if field.attrs["field_type"] == FieldType.NEAR:
         return field.sel(component="x")
 
 
@@ -46,7 +46,7 @@ def field_component_y(field: xr.DataArray):
             + np.cos(theta_grid) * np.sin(phi_grid) * e_theta
             + np.cos(phi_grid) * e_phi
         )
-    elif field.attrs["field_type"] == FieldType.NEAR:
+    if field.attrs["field_type"] == FieldType.NEAR:
         return field.sel(component="y")
 
 
@@ -56,7 +56,7 @@ def field_component_z(field: xr.DataArray):
         e_theta = field.sel(component="theta")
         e_r = field.sel(component="r") if "r" in field.component else 0
         return np.cos(theta_grid) * e_r - np.sin(theta_grid) * e_theta
-    elif field.attrs["field_type"] == FieldType.NEAR:
+    if field.attrs["field_type"] == FieldType.NEAR:
         return field.sel(component="z")
 
 

@@ -13,7 +13,8 @@ from ..resources.paths import resource_path
 
 
 def center_window(window: QWindow, target_size_ratio: float = 0.7):
-    """Center and resize the window to fill a fraction of the display.
+    """
+    Center and resize the window to fill a fraction of the display.
 
     Parameters
     ----------
@@ -21,6 +22,7 @@ def center_window(window: QWindow, target_size_ratio: float = 0.7):
         Window to be resized
     target_size_ratio : float, optional
         Fraction of the display to resize the window to, by default 0.7
+
     """
     min_width = 768  # px
     min_height = 576  # px
@@ -69,6 +71,7 @@ def get_icon(name: str, from_theme=False) -> QIcon:
     -------
     QIcon
         Icon asset.
+
     """
     if from_theme:
         icon = QIcon.fromTheme(name)

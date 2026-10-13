@@ -25,8 +25,8 @@ from xnft.loaders import register_builtin_loaders
 test_dir = Path(__file__).parent
 test_dict = {
     "source": registry.loaders.fields.items(),  # Test all registered loaders
-    "field": [x for x in FieldType],
-    "scan": [x for x in ScanType],
+    "field": list(FieldType),
+    "scan": list(ScanType),
 }
 
 
@@ -83,7 +83,7 @@ def generate_tests(
                             FileInfo(
                                 path=path,
                                 polarization=polarization,
-                            )
+                            ),
                         )
 
                 for file_info_list in test_file_dict.values():
@@ -93,7 +93,7 @@ def generate_tests(
                             field,
                             scan,
                             file_info_list,
-                        )
+                        ),
                     )
 
     return tests_list
@@ -101,9 +101,7 @@ def generate_tests(
 
 @pytest.fixture
 def load_test_file(request: pytest.FixtureRequest):
-    """
-    Load file to test.
-    """
+    """Load file to test."""
     source, field, scan, file_list = request.param
     result = registry.loaders.fields.load(source, field, scan, file_list)
     return result, request.param
@@ -130,7 +128,7 @@ def test_file_loader(load_test_file: tuple[Any, Any]):
     indirect=True,
 )
 def test_planar_near_field_transform(load_test_file: tuple[Any, Any]):
-    # TODO/FIXME: Create _numerical_ accuracy test instead of just output type test
+    # TODO: Create _numerical_ accuracy test instead of just output type test
     source_field, params = load_test_file
 
     if source_field.attrs["coordinate_system"] == CoordinateSystemType.CARTESIAN:
@@ -144,7 +142,7 @@ def test_planar_near_field_transform(load_test_file: tuple[Any, Any]):
             assert isinstance(result, xr.Dataset)
         except AssertionError as e:
             raise AssertionError(
-                f"Error processing single frequency test: {params} / {result}"
+                f"Error processing single frequency test: {params} / {result}",
             ) from e
 
         # Test multi-frequency transform

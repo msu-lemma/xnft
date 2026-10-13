@@ -46,6 +46,7 @@ class NewGainCalibrationDialog(QDialog):
         Parent widget for dialog, by default None
     target_node : Node | None, optional
         Target node invoking this dialog, by default None
+
     """
 
     def __init__(
@@ -62,7 +63,7 @@ class NewGainCalibrationDialog(QDialog):
         self.le_calibration_name = QLineEdit(self)
         self.le_calibration_name.setText("Gain Calibration")
         self.le_calibration_name.setPlaceholderText(
-            "Enter the name for the gain calibration"
+            "Enter the name for the gain calibration",
         )
 
         # Load all source field options (near and far) from active project
@@ -98,7 +99,9 @@ class NewGainCalibrationDialog(QDialog):
 
         # Buttons
         self.buttons = QDialogButtonBox(
-            QDialogButtonBox.Ok | QDialogButtonBox.Cancel, Qt.Horizontal, self
+            QDialogButtonBox.Ok | QDialogButtonBox.Cancel,
+            Qt.Horizontal,
+            self,
         )
         self.buttons.button(QDialogButtonBox.Ok).setText("Create")
         self.buttons.button(QDialogButtonBox.Cancel).setText("Cancel")
@@ -124,7 +127,7 @@ class NewGainCalibrationDialog(QDialog):
 
         # --- Add Connections ---
         self.cb_gain_cal_reference.currentIndexChanged.connect(
-            self._on_cal_standard_changed
+            self._on_cal_standard_changed,
         )
 
         self.buttons.accepted.connect(self._on_accept)
@@ -183,7 +186,7 @@ class NewGainCalibrationDialog(QDialog):
             # Restore previous selection (avoid leaving it on "Import...")
             self.cb_gain_cal_reference.blockSignals(True)
             self.cb_gain_cal_reference.setCurrentIndex(
-                self.cb_gain_cal_standard_last_index
+                self.cb_gain_cal_standard_last_index,
             )
             self.cb_gain_cal_reference.blockSignals(False)
         elif index == self.manage_index:
@@ -192,7 +195,7 @@ class NewGainCalibrationDialog(QDialog):
             # Restore previous selection (avoid leaving it on "Import...")
             self.cb_gain_cal_reference.blockSignals(True)
             self.cb_gain_cal_reference.setCurrentIndex(
-                self.cb_gain_cal_standard_last_index
+                self.cb_gain_cal_standard_last_index,
             )
             self.cb_gain_cal_reference.blockSignals(False)
         else:
@@ -204,7 +207,9 @@ class NewGainCalibrationDialog(QDialog):
         if not name:
             if not silent:
                 QMessageBox.warning(
-                    self, "Missing Name", "Please enter a field node name."
+                    self,
+                    "Missing Name",
+                    "Please enter a field node name.",
                 )
             return False
 

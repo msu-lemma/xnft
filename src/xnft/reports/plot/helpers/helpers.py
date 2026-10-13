@@ -34,6 +34,7 @@ def trace_preview(
     -------
     QPixmap
         QPixmap render of plot trace
+
     """
     pixmap = QPixmap(int(width), int(height))
     pixmap.fill(background)

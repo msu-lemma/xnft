@@ -44,7 +44,8 @@ def planar_near_field_transform_t3(
     r_far_field=None,
     probe_correction: MeasurementProbe | None = None,
 ):
-    """Compute the planar near-to-far field transform for a single frequency
+    r"""
+    Compute the planar near-to-far field transform for a single frequency
 
     Parameters
     ----------
@@ -79,6 +80,7 @@ def planar_near_field_transform_t3(
     -------
     Tuple[ArrayLike]
         Tuple of $E_\\mathrm{phi}$ and $E_\\mathrm{theta}$ fields
+
     """
     # TODO: Add a type-2 NUFFT implementation for improved performance (GPU won't be effective with type-3)
 
@@ -165,7 +167,8 @@ def planar_near_field_transform(
     r_far_field=None,  # meters
     z_displacement=None,
 ) -> xr.Dataset:
-    """Compute the near to far-field transform via non-uniform fast Fourier transform (NUFFT).
+    """
+    Compute the near to far-field transform via non-uniform fast Fourier transform (NUFFT).
 
     The NUFFT performed here uses the fiNUFFT package [1]_, [2]_, [3]_. The plnar near-to-far field transform
     implementation proceeds from Ch 12.9 [4]_ and the derivation included in the documentation.
@@ -259,7 +262,7 @@ def planar_near_field_transform(
         aut_size / 2
     )  # - (probe_size / 2)
     logger.debug(
-        f"max_aperture_displacement: {Quantity(max_aperture_displacement, units='m')}"
+        f"max_aperture_displacement: {Quantity(max_aperture_displacement, units='m')}",
     )
 
     max_theta = np.atan2(max_aperture_displacement, max_z_displacement).values.squeeze()
@@ -267,10 +270,16 @@ def planar_near_field_transform(
 
     # Compute uniform Theta, Phi grid for target field points
     theta_target = np.linspace(
-        -np.pi / 2, np.pi / 2, round(np.pi / np.deg2rad(dtheta)) + 1, endpoint=True
+        -np.pi / 2,
+        np.pi / 2,
+        round(np.pi / np.deg2rad(dtheta)) + 1,
+        endpoint=True,
     )
     phi_target = np.linspace(
-        -np.pi / 2, np.pi / 2, round(np.pi / np.deg2rad(dphi)) + 1, endpoint=True
+        -np.pi / 2,
+        np.pi / 2,
+        round(np.pi / np.deg2rad(dphi)) + 1,
+        endpoint=True,
     )
 
     # Trim theta
@@ -279,7 +288,9 @@ def planar_near_field_transform(
     ]
 
     theta_grid_target, phi_grid_target = np.meshgrid(
-        theta_target, phi_target, indexing="ij"
+        theta_target,
+        phi_target,
+        indexing="ij",
     )
 
     # Generate windowing function (rectangular by default)
@@ -298,7 +309,8 @@ def planar_near_field_transform(
     )
 
     near_field_yy, near_field_xx = np.meshgrid(
-        near_field_e.y.values, near_field_e.x.values
+        near_field_e.y.values,
+        near_field_e.x.values,
     )
 
     near_field_x_scaled = (x_scale * near_field_xx).ravel()
@@ -321,8 +333,9 @@ def planar_near_field_transform(
         if nearest_freq != freq:
             warnings.warn(
                 "Provided frequency {:} not in available frequencies, using nearest frequency {:} instead".format(
-                    Quantity(freq, "Hz"), Quantity(nearest_freq, "Hz")
-                )
+                    Quantity(freq, "Hz"),
+                    Quantity(nearest_freq, "Hz"),
+                ),
             )
             freq = nearest_freq
 
@@ -353,7 +366,7 @@ def planar_near_field_transform(
                 "z_val": z_val,
                 "r_far_field": r_far_field,
                 "probe_correction": probe_correction,
-            }
+            },
         )
 
     # Call planar near-field transform in parallel

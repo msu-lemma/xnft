@@ -27,9 +27,7 @@ class ProjectManagerTreeModel(QAbstractItemModel):
         self._project_manager = project_manager
 
     def columnCount(self, parent=None) -> int:
-        """
-        Return number of colums. Our model only has one column.
-        """
+        """Return number of colums. Our model only has one column."""
         if parent is None:
             parent = QModelIndex()
         return 1
@@ -47,10 +45,9 @@ class ProjectManagerTreeModel(QAbstractItemModel):
         # Top-level node is project manager
         if not parent.isValid():
             return self._project_manager.project_count
-        else:
-            # For lower-level nodes, return child_count
-            parent_node = parent.internalPointer()
-            return parent_node.child_count
+        # For lower-level nodes, return child_count
+        parent_node = parent.internalPointer()
+        return parent_node.child_count
 
     def index(self, row: int, column: int, parent=None) -> QModelIndex:
         """Return QModelIndex at requested location."""
@@ -75,14 +72,13 @@ class ProjectManagerTreeModel(QAbstractItemModel):
 
         Get parent of node, then create associated QModelIndex.
         """
-
         parent_node = index.internalPointer().parent
 
         if isinstance(parent_node, Project):
             row = self._project_manager.index_of_project(parent_node)
             return self.createIndex(row, 0, parent_node)
 
-        elif isinstance(parent_node, Node):
+        if isinstance(parent_node, Node):
             row = parent_node.parent.children.index(parent_node)
             return self.createIndex(row, 0, parent_node)
 
@@ -104,6 +100,7 @@ class ProjectManagerTreeModel(QAbstractItemModel):
         -------
         object
             Data stored in the model index role.
+
         """
         # Return labels for tree items
         if role in (Qt.DisplayRole, Qt.EditRole):
@@ -123,13 +120,13 @@ class ProjectManagerTreeModel(QAbstractItemModel):
             # otherwise, assume it's from the theme.
             if "." in icon_name:
                 return get_icon(icon_name)
-            else:
-                return get_icon(icon_name, from_theme=True)
+            return get_icon(icon_name, from_theme=True)
 
         return None
 
     def insert_project(self, project: Project) -> QModelIndex:
-        """Insert a top-level project into the project manager tree.
+        """
+        Insert a top-level project into the project manager tree.
 
         Parameters
         ----------
@@ -140,6 +137,7 @@ class ProjectManagerTreeModel(QAbstractItemModel):
         -------
         QModelIndex
             Newly intserted model index.
+
         """
         parent_index = QModelIndex()
 
@@ -156,7 +154,8 @@ class ProjectManagerTreeModel(QAbstractItemModel):
         return model_index
 
     def remove_project(self, project: Project):
-        """Remove a top-level project in the project manager tree.
+        """
+        Remove a top-level project in the project manager tree.
 
         Should be called when closing a project.
 
@@ -164,6 +163,7 @@ class ProjectManagerTreeModel(QAbstractItemModel):
         ----------
         proj : project.Project
             Project to be removed.
+
         """
         remove_row_index = self._project_manager.index_of_project(project)
 
@@ -174,7 +174,8 @@ class ProjectManagerTreeModel(QAbstractItemModel):
         self.endRemoveRows()
 
     def insert_node(self, parent_item: Node, node: Node) -> QModelIndex:
-        """Insert a node in the project manager tree.
+        """
+        Insert a node in the project manager tree.
 
         Parameters
         ----------
@@ -187,6 +188,7 @@ class ProjectManagerTreeModel(QAbstractItemModel):
         -------
         QModelIndex
             Newly intserted model index.
+
         """
         parent_row_index = parent_item.parent.children.index(parent_item)
 
@@ -204,7 +206,8 @@ class ProjectManagerTreeModel(QAbstractItemModel):
         return model_index
 
     def remove_node(self, parent_item: Node, node: Node):
-        """Remove a node from the project manager tree.
+        """
+        Remove a node from the project manager tree.
 
         Parameters
         ----------
@@ -212,6 +215,7 @@ class ProjectManagerTreeModel(QAbstractItemModel):
             Parent of item being removed.
         node : project.Node
             Node object to remove.
+
         """
         parent_row_index = parent_item.parent.children.index(parent_item)
 
@@ -223,7 +227,8 @@ class ProjectManagerTreeModel(QAbstractItemModel):
         self.endRemoveRows()
 
     def flags(self, index: QModelIndex) -> Qt.ItemFlag:
-        """Returns the item flags for the given index.
+        """
+        Returns the item flags for the given index.
 
         Returns a combination of flags that enables the item (ItemIsEnabled),
         allows it to be selected (ItemIsSelectable), and if specified by the
@@ -238,6 +243,7 @@ class ProjectManagerTreeModel(QAbstractItemModel):
         -------
         ItemFlag
             Item flags.
+
         """
         if not index.isValid():
             return Qt.NoItemFlags
@@ -255,7 +261,8 @@ class ProjectManagerTreeModel(QAbstractItemModel):
         return flags
 
     def setData(self, index: QModelIndex, value, role=Qt.EditRole) -> bool:
-        """Sets the `role` data for the item at `index` to `value`.
+        """
+        Sets the `role` data for the item at `index` to `value`.
 
         The dataChanged() signal should be emitted if the data was
         successfully set.
@@ -273,8 +280,8 @@ class ProjectManagerTreeModel(QAbstractItemModel):
         -------
         bool
             True if successful; otherwise False.
-        """
 
+        """
         if role not in (Qt.EditRole, Qt.DisplayRole):
             return False
 

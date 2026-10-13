@@ -107,13 +107,14 @@ class Plot2D(QWidget):
             components.
         coordinates_type : str
             Coordinate system type to plot in.
+
         """
         super().__init__(parent)
 
         if coordinates_type not in self.__coordinate_domains__:
             raise ValueError(
                 f"Plot coordinates must be one of {[x.name for x in self.__coordinate_domains__]},"
-                f" got {coordinates_type.name}"
+                f" got {coordinates_type.name}",
             )
 
         self.report_node = report_node
@@ -129,7 +130,8 @@ class Plot2D(QWidget):
         # -- Add Frequency Selection --
         self.lw_frequency_range = QListWidget()
         self.lw_frequency_range.setSizePolicy(
-            QSizePolicy.Expanding, QSizePolicy.Expanding
+            QSizePolicy.Expanding,
+            QSizePolicy.Expanding,
         )
 
         layout_controls.addWidget(QLabel("Frequency"))
@@ -305,17 +307,17 @@ class Plot2D(QWidget):
         self.cb_field_quantity.currentTextChanged.connect(self._update_plot)
         self.lw_frequency_range.itemSelectionChanged.connect(self._update_plot)
         self.cb_field_component.currentTextChanged.connect(
-            self._update_plotting_function_options
+            self._update_plotting_function_options,
         )
         self.cb_field_component.currentTextChanged.connect(self._update_plot)
         self.cb_plot_domain.currentTextChanged.connect(self._update_plot)
         self.cb_plot_function.currentTextChanged.connect(self._update_plot)
         self.cb_plot_norm.currentTextChanged.connect(self._update_plot)
         self.cb_plot_function.currentTextChanged.connect(
-            self._update_plotting_scale_options
+            self._update_plotting_scale_options,
         )
         self.cb_plot_function.currentTextChanged.connect(
-            self._update_plotting_norm_options
+            self._update_plotting_norm_options,
         )
         self.cb_plot_scale.currentTextChanged.connect(self._update_plot)
 
@@ -390,7 +392,8 @@ class Plot2D(QWidget):
                 in plot_function.value.field_types
             ):
                 self.cb_plot_function.addItem(
-                    plot_function.value.name, plot_function.value
+                    plot_function.value.name,
+                    plot_function.value,
                 )
 
         # Restore previous state
@@ -410,7 +413,7 @@ class Plot2D(QWidget):
             if self.field_node.data.attrs["field_type"] in fc.value.field_types:
                 self.cb_field_quantity.addItem(fc.value.name, fc.value)
                 self.cb_field_quantity.model().item(newitem_index).setEnabled(
-                    fc.value.enabled(self.field_node.data)
+                    fc.value.enabled(self.field_node.data),
                 )
                 newitem_index += 1
 
@@ -428,7 +431,7 @@ class Plot2D(QWidget):
                 if self.field_node.field_type in fc.value.field_types:
                     self.cb_field_component.addItem(fc.value.name, fc.value)
                     self.cb_field_component.model().item(newitem_index).setEnabled(
-                        fc.value.enabled
+                        fc.value.enabled,
                     )
                     newitem_index += 1
 
@@ -460,7 +463,7 @@ class Plot2D(QWidget):
                 if plot_function in [x.value for x in fc.value.functions]:
                     self.cb_plot_norm.addItem(fc.value.name, fc.value)
                     self.cb_plot_norm.model().item(newitem_index).setEnabled(
-                        fc.value.enabled
+                        fc.value.enabled,
                     )
                     newitem_index += 1
 
@@ -487,7 +490,7 @@ class Plot2D(QWidget):
         frequencies = list(set(frequencies))
 
         frequencies_items = sorted(
-            [(str(Quantity(x, units="Hz")), x) for x in frequencies]
+            [(str(Quantity(x, units="Hz")), x) for x in frequencies],
         )
         for label, data in frequencies_items:
             item = QListWidgetItem(label)
@@ -535,7 +538,8 @@ class Plot2D(QWidget):
 
             theta_grid, phi_grid = np.meshgrid(theta, phi, indexing="ij")
             ux_vals, uy_vals = self.selected_plot_domain.function(
-                phi=phi_grid, theta=theta_grid
+                phi=phi_grid,
+                theta=theta_grid,
             )
 
             num_x_samples, num_y_samples = 2048, 2048
@@ -682,7 +686,7 @@ def get_transformed_data(spp: SurfacePlot2DParameters):
 
     if not isinstance(field_ds, xr.Dataset):
         raise TypeError(
-            f"SurfacePlot2DParameters.source.data must be of type xarray.Dataset, not {type(field_ds)}"
+            f"SurfacePlot2DParameters.source.data must be of type xarray.Dataset, not {type(field_ds)}",
         )
 
     if spp.field_component.name in field_ds.coords["component"]:
@@ -725,7 +729,7 @@ def get_transformed_data(spp: SurfacePlot2DParameters):
         y_key = "y"
     else:
         raise NotImplementedError(
-            "SurfacePlot only supports spherical and Cartesian coordinates"
+            "SurfacePlot only supports spherical and Cartesian coordinates",
         )
 
     if isinstance(field_scaled, xr.DataArray):
@@ -748,7 +752,7 @@ def get_transformed_data(spp: SurfacePlot2DParameters):
         elif field_scaled.shape != expected_shape:
             raise ValueError(
                 f"Expected Cartesian data with shape "
-                f"{expected_shape}, got {field_scaled.shape}"
+                f"{expected_shape}, got {field_scaled.shape}",
             )
 
     axis_dict = {

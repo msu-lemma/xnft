@@ -42,6 +42,7 @@ class ExportDataDirectoryDialog(QDialog):
         Parent widget for dialog, by default None
     target_node : Node | None, optional
         Target node invoking this dialog, by default None
+
     """
 
     def __init__(
@@ -74,7 +75,9 @@ class ExportDataDirectoryDialog(QDialog):
 
         # Buttons
         self.buttons = QDialogButtonBox(
-            QDialogButtonBox.Ok | QDialogButtonBox.Cancel, Qt.Horizontal, self
+            QDialogButtonBox.Ok | QDialogButtonBox.Cancel,
+            Qt.Horizontal,
+            self,
         )
         self.buttons.button(QDialogButtonBox.Ok).setText("Create")
         self.buttons.button(QDialogButtonBox.Cancel).setText("Cancel")
@@ -114,16 +117,17 @@ class ExportDataDirectoryDialog(QDialog):
         file_extensions = self.target_node.file_export_types
         if glob_format:
             return [f"*{extension}" for extension in file_extensions]
-        else:
-            return file_extensions
+        return file_extensions
 
     def _is_input_valid(self, silent: bool) -> bool:
         directory_path = Path(self.fe_directory_location.le_path.text().strip())
 
-        if directory_path.parent == Path(".") or not directory_path.parent.exists():
+        if directory_path.parent == Path() or not directory_path.parent.exists():
             if not silent:
                 QMessageBox.warning(
-                    self, "Invalid Directory", "Please enter a valid directory path."
+                    self,
+                    "Invalid Directory",
+                    "Please enter a valid directory path.",
                 )
             return False
 
@@ -155,7 +159,8 @@ class FileEntryRow(QWidget):
         get_available_extensions=None,
         parent=None,
     ):
-        """Create field entry row with path item and browse button.
+        """
+        Create field entry row with path item and browse button.
 
         Parameters
         ----------
@@ -163,6 +168,7 @@ class FileEntryRow(QWidget):
             Placeholder test to show in file box, by default "Choose or enter the path to the file"
         get_available_extensions : Callable, optional
             Function which returns valid extensions, by default None
+
         """
         super().__init__(parent)
         self.parent = parent
@@ -189,7 +195,9 @@ class FileEntryRow(QWidget):
         """Create folder selection dialog."""
         start_dir = self.le_path.text().strip() or str(Path.home())
         chosen = QFileDialog.getExistingDirectory(
-            self, "Select data export destination", start_dir
+            self,
+            "Select data export destination",
+            start_dir,
         )
 
         if chosen:

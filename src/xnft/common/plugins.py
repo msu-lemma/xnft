@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 
 def register_plugins() -> None:
     """Import all installed xNFT plugin modules."""
-
     for entry_point in entry_points(group="xnft.plugins"):
         logger.debug(
             "Loading plugin %s from %s",

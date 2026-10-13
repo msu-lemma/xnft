@@ -57,7 +57,8 @@ class Project(Node):
 
     @context_action("Save Project", order=10, enabled=True, icon_name="document-save")
     def save(self, path=None):
-        """Saves project to `self.path` specified at project creation.
+        """
+        Saves project to `self.path` specified at project creation.
 
         Parameters
         ----------
@@ -68,6 +69,7 @@ class Project(Node):
         -------
         str
             Status message to display in status bar in main window.
+
         """
         if path is not None:
             self._path = path

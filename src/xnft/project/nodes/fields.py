@@ -7,6 +7,7 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import ClassVar
 
 from quantiphy import Quantity
 
@@ -42,7 +43,13 @@ class FieldsNode(Node):
         spawn_thread=True,
     )
     def new_measured_field(
-        self, field_type, source_type, scan_type, field_name, file_info_list, aut_size
+        self,
+        field_type,
+        source_type,
+        scan_type,
+        field_name,
+        file_info_list,
+        aut_size,
     ):
 
         # Read measured field file
@@ -103,7 +110,9 @@ class FieldsNode(Node):
 @dataclass(kw_only=True)
 class FieldNode(DataNode):
     _coordinates_node: CoordinateNode | None = field(
-        default=None, init=False, repr=False
+        default=None,
+        init=False,
+        repr=False,
     )
     _field_type: FieldType = field(default=FieldType.UNKNOWN, init=False)
     _source_type: DataSource = field(
@@ -114,7 +123,7 @@ class FieldNode(DataNode):
     name_editable: bool | None = True
 
     # TODO/FIXME: populate with exporter registry
-    file_export_types = (".h5", ".csv")
+    file_export_types: ClassVar[tuple[str, ...]] = (".h5", ".csv")
 
     def __init__(
         self,
@@ -177,8 +186,7 @@ class FieldNode(DataNode):
     def gain_calibration_gui(self):
         if self.data.attrs["gain_calibration"]:
             return f"{self.data.attrs['gain_calibration'].name}"
-        else:
-            return "None"
+        return "None"
 
     @context_action(
         label="Export Field",
@@ -205,5 +213,5 @@ class FieldNode(DataNode):
         else:
             raise NotImplementedError(
                 f"File extention type of {file_type} is not implemented. "
-                f"Available options are {', '.join(self.file_export_types)}"
+                f"Available options are {', '.join(self.file_export_types)}",
             )

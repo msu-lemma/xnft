@@ -23,7 +23,8 @@ PlotFunction = namedtuple(
 
 
 def plot_mag(field: xr.DataArray, dim=2):
-    """Plot magnitude of a quantity
+    """
+    Plot magnitude of a quantity
 
     Parameters
     ----------
@@ -36,6 +37,7 @@ def plot_mag(field: xr.DataArray, dim=2):
     -------
     ArrayLike
         Field value after function is applied
+
     """
     if "component" in field.dims:
         return np.sqrt((np.abs(field) ** 2).sum(dim="component"))
@@ -44,7 +46,8 @@ def plot_mag(field: xr.DataArray, dim=2):
 
 
 def plot_phase(field: xr.DataArray, dim=2):
-    """Plot phase angle of a quantity
+    """
+    Plot phase angle of a quantity
 
     Parameters
     ----------
@@ -57,6 +60,7 @@ def plot_phase(field: xr.DataArray, dim=2):
     -------
     ArrayLike
         Field value after function is applied
+
     """
     return np.angle(field)
 

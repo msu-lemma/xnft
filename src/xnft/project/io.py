@@ -21,7 +21,8 @@ if TYPE_CHECKING:
 
 
 def write_project(project: Project, compression_level=10):
-    """Write `project` to disk at specified `compression_level`.
+    """
+    Write `project` to disk at specified `compression_level`.
 
     Parameters
     ----------
@@ -29,6 +30,7 @@ def write_project(project: Project, compression_level=10):
         Project to write to disk.
     compression_level : int, optional
         Compression level for `zstd` to use when writing, by default 10.
+
     """
     # if project._path is not None:
     #     with zstd.open(project._path, mode="wb", level=compression_level) as f:
@@ -58,7 +60,8 @@ def write_project(project: Project, compression_level=10):
 
 
 def read_project(project_path: Path) -> Project:
-    """Read project from `project_path` and return object.
+    """
+    Read project from `project_path` and return object.
 
     Parameters
     ----------
@@ -69,6 +72,7 @@ def read_project(project_path: Path) -> Project:
     -------
     Project
         Project loaded from disk.
+
     """
     with zstd.open(project_path, "rb") as f:
         project = pickle.load(f)

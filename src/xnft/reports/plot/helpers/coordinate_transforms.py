@@ -26,6 +26,7 @@ def phitheta_to_unit(phi, theta):
     -------
     np.ndarray
         (ux, uy, uz)
+
     """
     ux = np.sin(theta) * np.cos(phi)
     uy = np.sin(theta) * np.sin(phi)

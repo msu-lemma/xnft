@@ -33,6 +33,7 @@ class NewProjectDialog(QDialog):
         Parent widget for dialog, by default None
     target_node : Node | None, optional
         Target node invoking this dialog, by default None
+
     """
 
     def __init__(self, parent: QWidget | None = None):
@@ -45,7 +46,7 @@ class NewProjectDialog(QDialog):
         self.name_field.setPlaceholderText("Enter project name")
 
         self.name_field.setText(
-            f"Project_{datetime.now(tz=None).strftime('%Y%m%d_%H%M%S')}"  # noqa: DTZ005
+            f"Project_{datetime.now(tz=None).strftime('%Y%m%d_%H%M%S')}",
         )
 
         self.path_field = QLineEdit(self)
@@ -57,7 +58,9 @@ class NewProjectDialog(QDialog):
 
         # Buttons
         self.buttons = QDialogButtonBox(
-            QDialogButtonBox.Ok | QDialogButtonBox.Cancel, Qt.Horizontal, self
+            QDialogButtonBox.Ok | QDialogButtonBox.Cancel,
+            Qt.Horizontal,
+            self,
         )
         self.buttons.button(QDialogButtonBox.Ok).setText("Create")
         self.buttons.button(QDialogButtonBox.Cancel).setText("Cancel")
@@ -110,7 +113,9 @@ class NewProjectDialog(QDialog):
         if not name:
             if not silent:
                 QMessageBox.warning(
-                    self, "Missing Name", "Please enter a project name."
+                    self,
+                    "Missing Name",
+                    "Please enter a project name.",
                 )
             return False
 
@@ -137,19 +142,11 @@ class NewProjectDialog(QDialog):
         return True
 
     def _try_accept(self) -> None:
-        """
-        Wrapper for QDialog `accept` function.
-
-        Silently check if inputs are valid before accepting.
-        """
+        """Silently check if inputs are valid before accepting."""
         if self._is_input_valid(silent=True):
             self.accept()
 
     def _on_accept(self) -> None:
-        """
-        Wrapper for QDialog `accept` function.
-
-        Check if inputs are valid before accepting with message box on failure.
-        """
+        """Check if inputs are valid before accepting with message box on failure."""
         if self._is_input_valid(silent=False):
             self.accept()

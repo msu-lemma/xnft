@@ -10,6 +10,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass, field
 from functools import partial
 from pathlib import Path
+from typing import ClassVar
 
 import numpy as np
 import xarray as xr
@@ -79,7 +80,9 @@ class ReportsNode(Node):
         enabled=True,
         action="ui_action",
         helper_dialog=partial(
-            NewFieldReport, show_fields=True, select_multiple_fields=False
+            NewFieldReport,
+            show_fields=True,
+            select_multiple_fields=False,
         ),
         icon_name="document-new",
     )
@@ -127,7 +130,7 @@ class ReportNode(DataNode):
     name_editable: bool | None = True
     icon_name: str = "utilities-system-monitor"
 
-    file_export_types = (".h5", ".csv")
+    file_export_types: ClassVar[tuple[str, ...]] = (".h5", ".csv")
 
     def __init__(
         self,
@@ -161,7 +164,7 @@ class ReportNode(DataNode):
     def report_type(self, report: ReportType):
         if not isinstance(report, ReportType):
             raise TypeError(
-                f'Argument "report_type" must be of type {ReportType} got {type(report)}'
+                f'Argument "report_type" must be of type {ReportType} got {type(report)}',
             )
         self._report_type = report
 
@@ -224,7 +227,7 @@ class ReportNodeSurfacePlot2D(ReportNode):
 
         if not isinstance(self.data, SurfacePlot2DParameters):
             raise TypeError(
-                f"Export data must be of type SurfacePlot2DParameters not {type(self.data)}"
+                f"Export data must be of type SurfacePlot2DParameters not {type(self.data)}",
             )
 
         field_values, axes_dict = get_transformed_data(self.data)
@@ -259,7 +262,7 @@ class ReportNodeSurfacePlot2D(ReportNode):
         else:
             raise NotImplementedError(
                 f"File extention type of {file_type} is not implemented. "
-                f"Available options are {', '.join(self.file_export_types)}"
+                f"Available options are {', '.join(self.file_export_types)}",
             )
 
 
@@ -343,7 +346,7 @@ class ReportNodeLinePlot(ReportNode):
         for trace in self.data:
             if not isinstance(trace, PlotTrace):
                 raise TypeError(
-                    f"Export traces must be of type PlotTrace not {type(trace)}"
+                    f"Export traces must be of type PlotTrace not {type(trace)}",
                 )
 
             plot_data, attrs = trace.serialize()
@@ -365,5 +368,5 @@ class ReportNodeLinePlot(ReportNode):
             else:
                 raise NotImplementedError(
                     f"File extention type of {file_type} is not implemented. "
-                    f"Available options are {', '.join(self.file_export_types)}"
+                    f"Available options are {', '.join(self.file_export_types)}",
                 )

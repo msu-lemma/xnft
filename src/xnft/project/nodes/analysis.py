@@ -208,7 +208,7 @@ class TransformNode(DataNode):
     def analysis_type(self, analysis: AnalysisType):
         if not isinstance(analysis, AnalysisType):
             raise TypeError(
-                f'Argument "analysis_type" must be of type {AnalysisType} got {type(self.analysis)}'
+                f'Argument "analysis_type" must be of type {AnalysisType} got {type(self.analysis)}',
             )
         self._analysis_type = analysis
 
@@ -217,5 +217,4 @@ class TransformNode(DataNode):
     def probe_correction(self):
         if self._probe_correction:
             return f"{self._probe_correction.name} ({self._probe_correction.correction_type})"
-        else:
-            return "None"
+        return "None"

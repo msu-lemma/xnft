@@ -23,7 +23,8 @@ eta = (spc.mu_0 / spc.epsilon_0) ** 0.5
 
 
 def dipole_e(r, theta, phi, i_0=1, dipole_len=1.0, k=1):
-    """Electric field of a finte dipole_length thin wire dipole for all space [§8.5.2A, 1].
+    """
+    Electric field of a finte dipole_length thin wire dipole for all space [§8.5.2A, 1].
 
     Parameters
     ----------
@@ -115,7 +116,8 @@ def dipole_e(r, theta, phi, i_0=1, dipole_len=1.0, k=1):
 
 
 def dipole_e_far_field(theta, phi=0, r=1, i_0=1, dipole_len=1.0, k=1):
-    """Far-field approximation of the electric field for a finite dipole_length thin wire dipole [§4.5.2, 1].
+    """
+    Far-field approximation of the electric field for a finite dipole_length thin wire dipole [§4.5.2, 1].
 
     Dipole oriented along the y-axis.
 
@@ -145,6 +147,7 @@ def dipole_e_far_field(theta, phi=0, r=1, i_0=1, dipole_len=1.0, k=1):
     ----------
     [1] C. A. Balanis, Antenna theory: analysis and design, 3. ed. Hoboken,
         N.J: Wiley-Interscience, 2005.
+
     """
     k = np.atleast_1d(k)
     k_m = k[None, None, :]

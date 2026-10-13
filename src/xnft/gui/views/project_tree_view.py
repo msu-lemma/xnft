@@ -27,7 +27,7 @@ class ProjectTreeView(QTreeView):
         self.setEditTriggers(
             QAbstractItemView.EditKeyPressed
             | QAbstractItemView.SelectedClicked
-            | QAbstractItemView.DoubleClicked
+            | QAbstractItemView.DoubleClicked,
         )
 
         self.setUniformRowHeights(True)
@@ -106,11 +106,12 @@ class ProjectTreeView(QTreeView):
                         node,
                         invoke_function,
                         spawn_thread=spawn_thread,
-                    )
+                    ),
                 )
 
             elif context_action.action == "close_project" and isinstance(
-                node, manager.Project
+                node,
+                manager.Project,
             ):
                 model = self.model()
                 # fmt: off
@@ -119,7 +120,7 @@ class ProjectTreeView(QTreeView):
                     checked=False,
                     model=model,
                     proj=node:
-                    model.remove_project(proj)
+                    model.remove_project(proj),
                 )
                 # fmt: on
             else:
@@ -141,10 +142,9 @@ class ProjectTreeView(QTreeView):
         selected_idx = self.selectedIndexes()
         if not selected_idx:
             return None
-        else:
-            # Only possible to select one project at a time, so just
-            # return project at that index
-            selected_idx = selected_idx[0]
+        # Only possible to select one project at a time, so just
+        # return project at that index
+        selected_idx = selected_idx[0]
         project_node = selected_idx.internalPointer()
 
         # Find root node (project)

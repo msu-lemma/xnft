@@ -59,7 +59,7 @@ def load_lemma_v1_h5(file_list: list[FileInfo]) -> xr.Dataset:
         else:
             raise TypeError(
                 "LEmmA loader only accepts polarization types CO_POL and CROSS_POL, not both "
-                "or none"
+                "or none",
             )
 
     if co_file_info is None and cx_file_info is None:
@@ -183,7 +183,7 @@ def load_lemma_v2_h5(file_list: list[FileInfo]) -> xr.Dataset:
 
             # TODO/FIXME: Assumes all measurements are co-pol ONLY
             logger.warning(
-                "LEmmA V2 loader currently assumes _all_ measurements are co-pol only. Cross-pol measurements are treated as co-pol."
+                "LEmmA V2 loader currently assumes _all_ measurements are co-pol only. Cross-pol measurements are treated as co-pol.",
             )
             ey_array = field_amplitude
             ex_array = np.zeros_like(ey_array)

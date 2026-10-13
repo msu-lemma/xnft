@@ -45,7 +45,8 @@ def context_action(
     separator: bool | None = False,
     spawn_thread: bool | None = False,
 ):
-    """Decorator to add a ContextAction (right-click menu item) to a method.
+    """
+    Decorator to add a ContextAction (right-click menu item) to a method.
 
     For further details on implementation, see xnft/gui/project_tree_view.py
     where a QAction is constructed using these parameters, or xnft/gui/main.py
@@ -79,6 +80,7 @@ def context_action(
         Add a separator _before_ this item, by default False
     spawn_thread : bool, optional
         Spawn function in separate worker thread off main GUI thread.  Recommended for non-GUI operations.
+
     """
 
     def decorator(func):
@@ -239,17 +241,20 @@ class Node:
 
     @property
     def context_actions(self) -> list[ContextAction]:
-        """Collect all ContextAction items added by decorator.
+        """
+        Collect all ContextAction items added by decorator.
 
         Returns
         -------
         list[ContextAction]
             A list of all ContextActions added via decorators.
+
         """
         actions: list[ContextAction] = []
 
         for name, function in inspect.getmembers(
-            self.__class__, predicate=inspect.isfunction
+            self.__class__,
+            predicate=inspect.isfunction,
         ):
             meta = getattr(function, "__context_action__", None)
             if not meta:
@@ -269,7 +274,7 @@ class Node:
                     helper_dialog=meta["helper_dialog"],
                     separator=meta["separator"],
                     spawn_thread=meta["spawn_thread"],
-                )
+                ),
             )
 
         # Sort by order provided
@@ -324,7 +329,7 @@ class DataNode(Node):
     def source(self, source_node: Node | None):
         if source_node is not None and not isinstance(source_node, (Node)):
             raise TypeError(
-                f'Argument "source_node" must be of type {Node} or None got {type(source_node)}'
+                f'Argument "source_node" must be of type {Node} or None got {type(source_node)}',
             )
         # logger.debug(f"{source_node=}")
         self._source = source_node

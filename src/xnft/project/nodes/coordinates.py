@@ -68,7 +68,7 @@ class CoordinateNode(DataNode):
     def coordinate_type(self, system: CoordinateSystemType):
         if not isinstance(system, CoordinateSystemType):
             raise TypeError(
-                f'Argument "system" must be of type {CoordinateSystemType} got {type(system)}'
+                f'Argument "system" must be of type {CoordinateSystemType} got {type(system)}',
             )
         self._coordinate_type = system
 

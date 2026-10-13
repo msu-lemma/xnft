@@ -45,6 +45,7 @@ class ExportDataDialog(QDialog):
         Parent widget for dialog, by default None
     target_node : Node | None, optional
         Target node invoking this dialog, by default None
+
     """
 
     def __init__(
@@ -68,14 +69,16 @@ class ExportDataDialog(QDialog):
         )
 
         self.label_file_help = QLabel(
-            f"Available file types are: {', '.join(self._get_available_extensions())}."
+            f"Available file types are: {', '.join(self._get_available_extensions())}.",
         )
         self.label_file_help.setWordWrap(True)
         self.label_file_help.setStyleSheet("color: #777")
 
         # Buttons
         self.buttons = QDialogButtonBox(
-            QDialogButtonBox.Ok | QDialogButtonBox.Cancel, Qt.Horizontal, self
+            QDialogButtonBox.Ok | QDialogButtonBox.Cancel,
+            Qt.Horizontal,
+            self,
         )
         self.buttons.button(QDialogButtonBox.Ok).setText("Create")
         self.buttons.button(QDialogButtonBox.Cancel).setText("Cancel")
@@ -108,7 +111,7 @@ class ExportDataDialog(QDialog):
 
     def _update_help_label(self) -> None:
         self.label_file_help.setText(
-            f"Available extensions are: {', '.join(self._get_available_extensions())}"
+            f"Available extensions are: {', '.join(self._get_available_extensions())}",
         )
 
     def _get_available_extensions(self, glob_format=True) -> list[str]:
@@ -117,8 +120,7 @@ class ExportDataDialog(QDialog):
         file_extensions = self.target_node.file_export_types
         if glob_format:
             return [f"*{extension}" for extension in file_extensions]
-        else:
-            return file_extensions
+        return file_extensions
 
     def _loaders_info(self, file_registry):
         """
@@ -143,10 +145,12 @@ class ExportDataDialog(QDialog):
         file_path = Path(self.fe_file_location.le_path.text().strip())
         file_type = file_path.suffix
 
-        if file_path.parent == Path(".") or not file_path.parent.exists():
+        if file_path.parent == Path() or not file_path.parent.exists():
             if not silent:
                 QMessageBox.warning(
-                    self, "Invalid File Path", "Please enter a valid file path."
+                    self,
+                    "Invalid File Path",
+                    "Please enter a valid file path.",
                 )
             return False
 
@@ -190,7 +194,8 @@ class FileEntryRow(QWidget):
         get_available_extensions=None,
         parent=None,
     ):
-        """Create field entry row with path item and browse button.
+        """
+        Create field entry row with path item and browse button.
 
         Parameters
         ----------
@@ -198,6 +203,7 @@ class FileEntryRow(QWidget):
             Placeholder test to show in file box, by default "Choose or enter the path to the file"
         get_available_extensions : Callable, optional
             Function which returns valid extensions, by default None
+
         """
         super().__init__(parent)
         self.parent = parent

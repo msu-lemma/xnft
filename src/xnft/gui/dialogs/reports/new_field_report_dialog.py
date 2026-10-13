@@ -40,6 +40,7 @@ class NewFieldReport(QDialog):
         Show fields selection in helper, by default True
     select_multiple_fields : bool, optional
         Allow user to select multiple fields in the dialog, by default False
+
     """
 
     def __init__(
@@ -85,7 +86,7 @@ class NewFieldReport(QDialog):
         # Generate help label based on platform type
         mod_key = "⌘" if platform.system() == "Darwin" else "ctrl"
         label_freq_help = QLabel(
-            f"To select multiple fields hold {mod_key} or shift, or {mod_key}-A to select all."
+            f"To select multiple fields hold {mod_key} or shift, or {mod_key}-A to select all.",
         )
         label_freq_help.setStyleSheet("color: #777")
 
@@ -103,7 +104,9 @@ class NewFieldReport(QDialog):
         # -- Dialog Butons --
 
         self.buttons = QDialogButtonBox(
-            QDialogButtonBox.Ok | QDialogButtonBox.Cancel, Qt.Horizontal, self
+            QDialogButtonBox.Ok | QDialogButtonBox.Cancel,
+            Qt.Horizontal,
+            self,
         )
         self.buttons.button(QDialogButtonBox.Ok).setText("Create")
         self.buttons.button(QDialogButtonBox.Cancel).setText("Cancel")
@@ -168,7 +171,9 @@ class NewFieldReport(QDialog):
         if not name:
             if not silent:
                 QMessageBox.warning(
-                    self, "Missing Name", "Please enter a transform node name."
+                    self,
+                    "Missing Name",
+                    "Please enter a transform node name.",
                 )
             return False
 

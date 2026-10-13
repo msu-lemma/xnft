@@ -64,9 +64,7 @@ class DataSource:
 
 
 class FieldDataset:
-    """
-    Simple helper constructor to store fields as xarray datasets.
-    """
+    """Simple helper constructor to store fields as xarray datasets."""
 
     @staticmethod
     def create(
@@ -81,7 +79,8 @@ class FieldDataset:
         aperture_size: float = 0.0,
         gain_calibration: GainCalibration | None = None,
     ) -> xr.Dataset:
-        """Create xarray field dataset with data validation.
+        """
+        Create xarray field dataset with data validation.
 
         Parameters
         ----------
@@ -110,8 +109,8 @@ class FieldDataset:
         -------
         xr.Dataset
             Field dataset with validated components and attributes
-        """
 
+        """
         components = coordinate_system.value.components
 
         frequency = np.atleast_1d(frequency)
@@ -119,7 +118,7 @@ class FieldDataset:
         if e_field.shape[-1] != len(frequency):
             raise ValueError(
                 f"Mismatch: e_field.shape[-1]={e_field.shape[-1]} "
-                f"but len(frequency)={len(frequency)}"
+                f"but len(frequency)={len(frequency)}",
             )
 
         # Ignore first dimension (radial) if in far-field
@@ -139,7 +138,7 @@ class FieldDataset:
             and coordinate_system not in NEAR_FIELD_CS_TYPES
         ):
             raise ValueError(
-                f"Invalid coordinate system for near-field. Must be one of {','.join([x.name for x in NEAR_FIELD_CS_TYPES])}"
+                f"Invalid coordinate system for near-field. Must be one of {','.join([x.name for x in NEAR_FIELD_CS_TYPES])}",
             )
 
         expected_ndim = len(dims)
@@ -152,7 +151,7 @@ class FieldDataset:
 
         if h_field is not None and e_field.shape != h_field.shape:
             raise ValueError(
-                "E- and H-field shapes must match, otherwise H-field must be None"
+                "E- and H-field shapes must match, otherwise H-field must be None",
             )
 
         # --- Create Dataset ---
@@ -175,7 +174,7 @@ class FieldDataset:
                 dims,
                 e_field,
                 {"units": ""},
-            )
+            ),
         }
 
         if h_field is not None:
@@ -213,6 +212,7 @@ class FileInfo:
         and cross-pol, by default {PolarizationType.CO_POL, PolarizationType.CROSS_POL}
     s_parameters : Set[SParameterType]
         S-Parameter in file to load for processing
+
     """
 
     path: Path
@@ -220,6 +220,6 @@ class FileInfo:
         default_factory=lambda: {
             PolarizationType.CO_POL,
             PolarizationType.CROSS_POL,
-        }
+        },
     )
     s_parameters: set[SParameterType] = field(default_factory=set)

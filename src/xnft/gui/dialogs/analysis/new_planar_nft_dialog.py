@@ -39,6 +39,7 @@ class NewPlanarNearFieldTransform(QDialog):
         Parent widget for dialog, by default None
     target_node : Node | None, optional
         Target node invoking this dialog, by default None
+
     """
 
     def __init__(
@@ -121,7 +122,7 @@ class NewPlanarNearFieldTransform(QDialog):
         # Generate help label based on platform type
         mod_key = "⌘" if platform.system() == "Darwin" else "Ctrl"
         label_freq_help = QLabel(
-            f"To select multiple frequencies hold {mod_key} or Shift, or {mod_key}-A to select all."
+            f"To select multiple frequencies hold {mod_key} or Shift, or {mod_key}-A to select all.",
         )
         label_freq_help.setStyleSheet("color: #777")
 
@@ -131,7 +132,9 @@ class NewPlanarNearFieldTransform(QDialog):
 
         # Buttons
         self.buttons = QDialogButtonBox(
-            QDialogButtonBox.Ok | QDialogButtonBox.Cancel, Qt.Horizontal, self
+            QDialogButtonBox.Ok | QDialogButtonBox.Cancel,
+            Qt.Horizontal,
+            self,
         )
         self.buttons.button(QDialogButtonBox.Ok).setText("Create")
         self.buttons.button(QDialogButtonBox.Cancel).setText("Cancel")
@@ -173,11 +176,7 @@ class NewPlanarNearFieldTransform(QDialog):
                 if self.cb_probe_corrections.currentData()
                 else None
             ),
-            "gain_calibration": (
-                self.cb_gain_cal.currentData()
-                if self.cb_gain_cal.currentData()
-                else None
-            ),
+            "gain_calibration": (self.cb_gain_cal.currentData() or None),
             "frequencies": [
                 x.data(Qt.UserRole) for x in self.lw_frequencies.selectedItems()
             ],
@@ -201,7 +200,8 @@ class NewPlanarNearFieldTransform(QDialog):
                 self.lw_frequencies.addItem(item)
 
     def _is_input_valid(self, silent=True) -> bool:
-        """Check if inputs are valid.
+        """
+        Check if inputs are valid.
 
         Parameters
         ----------
@@ -212,13 +212,16 @@ class NewPlanarNearFieldTransform(QDialog):
         -------
         bool
             If input is valid.
+
         """
         name = self.le_transform_name.text().strip()
 
         if not name:
             if not silent:
                 QMessageBox.warning(
-                    self, "Missing Name", "Please enter a transform node name."
+                    self,
+                    "Missing Name",
+                    "Please enter a transform node name.",
                 )
             return False
 
@@ -248,17 +251,18 @@ class NewPlanarNearFieldTransform(QDialog):
             gain_cal_freqs = self.cb_gain_cal.currentData().gain_cal_ref.data.frequency
 
             freq_overlap = max(
-                np.nanmin(gain_cal_freqs), np.nanmin(selected_freq_list)
+                np.nanmin(gain_cal_freqs),
+                np.nanmin(selected_freq_list),
             ) <= min(np.nanmax(gain_cal_freqs), np.nanmax(selected_freq_list))
 
             if not freq_overlap:
                 msgBox = QMessageBox(self)
                 msgBox.setText("Invalid gain calibration frequencies.")
                 msgBox.setInformativeText(
-                    "Gain calibration does not overlap with selected frequencies.  Continue anyway?"
+                    "Gain calibration does not overlap with selected frequencies.  Continue anyway?",
                 )
                 msgBox.setStandardButtons(
-                    QMessageBox.Yes | QMessageBox.StandardButton.Cancel
+                    QMessageBox.Yes | QMessageBox.StandardButton.Cancel,
                 )
                 msgBox.setDefaultButton(QMessageBox.Save)
                 ret = msgBox.exec()

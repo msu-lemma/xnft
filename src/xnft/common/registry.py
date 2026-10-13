@@ -5,7 +5,6 @@ Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State Unive
 """
 
 import logging
-from abc import ABC
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
@@ -31,19 +30,24 @@ class LoaderMetadata:
     has_sp: bool
 
 
-class BaseRegistry(ABC):
+# class BaseRegistry(ABC):
+class BaseRegistry:
+    # @abstractmethod
     def __len__(self) -> int:
         """Return number of registered objects."""
         raise NotImplementedError
 
+    # @abstractmethod
     def clear(self) -> None:
         """Removes all registered objects."""
         raise NotImplementedError
 
+    # @abstractmethod
     def items(self):
         """Returns registered items."""
         raise NotImplementedError
 
+    # @abstractmethod
     def values(self):
         """Returns registered functions."""
         raise NotImplementedError
@@ -77,9 +81,7 @@ class DataSourceRegistry(BaseRegistry):
 
 
 class FieldLoaderRegistry(BaseRegistry):
-    """
-    File loader registry class to handle addition of new data loaders dynamically.
-    """
+    """File loader registry class to handle addition of new data loaders dynamically."""
 
     def __init__(self) -> None:
         # Dict to store loader functions into
@@ -141,6 +143,7 @@ class FieldLoaderRegistry(BaseRegistry):
             - ScanType.SPHERICAL : Spherical measurement coordinates
         has_sp : bool, optional
             File has s-parameters to select from, by default False
+
         """
         extension = extension.strip().casefold()
 
@@ -169,7 +172,7 @@ class FieldLoaderRegistry(BaseRegistry):
             if key in self._loaders:
                 current = self._loaders[key]
                 raise ValueError(
-                    f"Loader {key!r} already registered by {current.__module__}.{current.__qualname__}. Cannot register {func.__module__}.{func.__qualname__}."
+                    f"Loader {key!r} already registered by {current.__module__}.{current.__qualname__}. Cannot register {func.__module__}.{func.__qualname__}.",
                 )
 
             self._loaders[key] = func
@@ -212,6 +215,7 @@ class FieldLoaderRegistry(BaseRegistry):
             - ScanType.SPHERICAL : Spherical measurement coordinates
         file_list : List[FileInfo]
             List of FileInfo objects containing files and measurement information.
+
         """
         if not file_list:
             raise ValueError("At least one file is required.")
@@ -244,7 +248,8 @@ class FieldLoaderRegistry(BaseRegistry):
         scan_type: ScanType,
         extension: str,
     ):
-        """Get loader for the specified data format.
+        """
+        Get loader for the specified data format.
 
         Parameters
         ----------
@@ -269,6 +274,7 @@ class FieldLoaderRegistry(BaseRegistry):
         ------
         NotImplementedError
             If no matching loader is registered.
+
         """
         loader_key = self.loader_key(
             source=source,
@@ -284,7 +290,7 @@ class FieldLoaderRegistry(BaseRegistry):
             raise NotImplementedError(
                 f"No file loader exists for: {{ {source=}, {field_type=}, "
                 f"{scan_type=}, {extension=} }} . Available options are "
-                f"{self._loaders}. {e}"
+                f"{self._loaders}. {e}",
             ) from e
         return loader_function
 

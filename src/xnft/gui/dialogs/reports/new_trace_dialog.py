@@ -77,6 +77,7 @@ class NewTraceDialog(QDialog):
     ----------
     parent : QWidget | None, optional
         Parent widget for dialog, by default None
+
     """
 
     def __init__(self, parent: QWidget, project_node: Node | None = None):
@@ -145,7 +146,7 @@ class NewTraceDialog(QDialog):
         # Generate help label based on platform type
         mod_key = "⌘" if platform.system() == "Darwin" else "ctrl"
         self.label_slice_help = QLabel(
-            f"To select multiple slice parameters hold {mod_key} or shift, or {mod_key}-A to select all.  Multiple traces will be generated from the product of all column selections; trace style will be automatically cycled (user style will be ignored)."
+            f"To select multiple slice parameters hold {mod_key} or shift, or {mod_key}-A to select all.  Multiple traces will be generated from the product of all column selections; trace style will be automatically cycled (user style will be ignored).",
         )
         self.label_slice_help.setWordWrap(True)
         self.label_slice_help.setStyleSheet("color: #777")
@@ -174,7 +175,9 @@ class NewTraceDialog(QDialog):
         # -- Dialog Butons --
 
         self.buttons = QDialogButtonBox(
-            QDialogButtonBox.Ok | QDialogButtonBox.Cancel, Qt.Horizontal, self
+            QDialogButtonBox.Ok | QDialogButtonBox.Cancel,
+            Qt.Horizontal,
+            self,
         )
         self.buttons.button(QDialogButtonBox.Ok).setText("Create")
         self.buttons.button(QDialogButtonBox.Cancel).setText("Cancel")
@@ -192,23 +195,23 @@ class NewTraceDialog(QDialog):
 
         # === Connections ===
         self.lwt_source_field.lw.itemSelectionChanged.connect(
-            self._update_abscissa_options
+            self._update_abscissa_options,
         )
         self.lwt_abscissa.lw.itemSelectionChanged.connect(self._update_slice_options)
         self.lwt_source_field.lw.itemSelectionChanged.connect(
-            self._update_field_quantities
+            self._update_field_quantities,
         )
         self.lwt_field_quantity.lw.itemSelectionChanged.connect(
-            self._update_field_components
+            self._update_field_components,
         )
         self.lwt_field_component.lw.itemSelectionChanged.connect(
-            self._update_ordinate_functions
+            self._update_ordinate_functions,
         )
         self.lwt_ordinate_function.lw.itemSelectionChanged.connect(
-            self._update_ordinate_scales
+            self._update_ordinate_scales,
         )
         self.lwt_ordinate_scale.lw.itemSelectionChanged.connect(
-            self._update_field_norms
+            self._update_field_norms,
         )
 
         self.buttons.accepted.connect(self._on_accept)
@@ -298,23 +301,23 @@ class NewTraceDialog(QDialog):
                 trace_marker_symbol=trace_marker_symbol,
                 # -- Source Data --
                 source_field=self.lwt_source_field.lw.selectedItems()[0].data(
-                    Qt.UserRole
+                    Qt.UserRole,
                 ),
                 abscissa=self.lwt_abscissa.lw.selectedItems()[0].data(Qt.UserRole),
                 # -- Slice Parameters --
                 slice_dict=slice_dict,
                 # -- Ordinate Parameters --
                 field_quantity=self.lwt_field_quantity.lw.selectedItems()[0].data(
-                    Qt.UserRole
+                    Qt.UserRole,
                 ),
                 field_component=self.lwt_field_component.lw.selectedItems()[0].data(
-                    Qt.UserRole
+                    Qt.UserRole,
                 ),
                 ordinate_function=self.lwt_ordinate_function.lw.selectedItems()[0].data(
-                    Qt.UserRole
+                    Qt.UserRole,
                 ),
                 ordinate_scale=self.lwt_ordinate_scale.lw.selectedItems()[0].data(
-                    Qt.UserRole
+                    Qt.UserRole,
                 ),
                 field_norm=self.lwt_field_norm.lw.selectedItems()[0].data(Qt.UserRole),
             )
@@ -504,7 +507,9 @@ class NewTraceDialog(QDialog):
         if not name:
             if not silent:
                 QMessageBox.warning(
-                    self, "Missing Name", "Please enter a transform node name."
+                    self,
+                    "Missing Name",
+                    "Please enter a transform node name.",
                 )
             return False
 
@@ -555,7 +560,7 @@ class TraceStyleGroupBox(QGroupBox):
         super().__init__(title, parent)
 
         self.current_color = pg.mkColor(
-            pg.getConfigOption("foreground")
+            pg.getConfigOption("foreground"),
         )  # QColor("#ffffff")
 
         layout = QHBoxLayout(self)
@@ -588,7 +593,9 @@ class TraceStyleGroupBox(QGroupBox):
             )
             self.cb_line_style.addItem(icon, name)
             self.cb_line_style.setItemData(
-                self.cb_line_style.count() - 1, style, Qt.UserRole
+                self.cb_line_style.count() - 1,
+                style,
+                Qt.UserRole,
             )
 
         layout.addLayout(self._labeled_control("Line Style", self.cb_line_style))
@@ -625,7 +632,9 @@ class TraceStyleGroupBox(QGroupBox):
             )
             self.cb_marker_symbol.addItem(icon, name)
             self.cb_marker_symbol.setItemData(
-                self.cb_marker_symbol.count() - 1, symbol, Qt.UserRole
+                self.cb_marker_symbol.count() - 1,
+                symbol,
+                Qt.UserRole,
             )
         layout.addLayout(self._labeled_control("marker_symbol", self.cb_marker_symbol))
 
@@ -640,7 +649,7 @@ class TraceStyleGroupBox(QGroupBox):
         self.cb_line_style.currentIndexChanged.connect(lambda _: self._update_preview())
         self.sb_line_width.valueChanged.connect(lambda _: self._update_preview())
         self.cb_marker_symbol.currentIndexChanged.connect(
-            lambda _: self._update_preview()
+            lambda _: self._update_preview(),
         )
 
         layout.addStretch()
@@ -688,7 +697,8 @@ class TraceStyleGroupBox(QGroupBox):
             """)
 
     def _update_preview(self, width=40, height=20):
-        """Light wrapper on trace_preview to update preview for menu.
+        """
+        Light wrapper on trace_preview to update preview for menu.
 
         Parameters
         ----------
@@ -696,6 +706,7 @@ class TraceStyleGroupBox(QGroupBox):
             Width of trace preview, by default 40
         height : int, optional
             Height of trace preview, by default 20
+
         """
         pixmap = trace_preview(
             pen=self.get_pen(),
