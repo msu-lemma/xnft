@@ -1,8 +1,8 @@
 # xNFT: An Open Near-Field Antenna Measurement Software Suite
 
-<!-- [![Latest Release](/../../badges/release.svg)](/../../releases) 
+[![Latest Release](/../../badges/release.svg)](/../../releases) 
 [![Test Coverage](../../badges/main/coverage.svg)
-![Pipeline Status](badges/main/pipeline.svg?ignore_skipped=true&job=test-job)](/-/pipelines) -->
+![Pipeline Status](badges/main/pipeline.svg?ignore_skipped=true&job=test-job)](/-/pipelines)
 
 > [!CAUTION] ⚠️ xNFT is in active development (Beta)
 > xNFT is in active development. In beta, user interfaces and APIs may continue to change. For the most stable operation, use the latest tagged release. For the most up-to-date features and bug fixes, consider using `main` branch.
@@ -12,7 +12,7 @@
 **xNFT** is a cross-platform, high-performance, general purpose antenna measurement and analysis software tool, primarily focusing on near-to-far field transformations (NFTs), permissively distributed under the MIT license.
 
 ![xnft Screenshot](docs/source/assets/xnft_screenshot.png)
-
+> Screenshot of xNFT running on macOS.  Measurements show an NSI-MI ANT-SGH-26.5-40 standard gain horn at 40 GHz collected using the LEmmA planar near-field scanner.
 
 ## Installation
 
