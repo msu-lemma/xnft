@@ -22,25 +22,26 @@
 xNFT is designed to run on a wide range of operating systems and architectures.  A list of system configurations designed to be compatible is included below. Other configurations may work, but are not currently considered supported configurations.
 
 
-### xNFT Design System Compatability Matrix 
+### xNFT Design System Compatability Matrix
 
-| Operating System | Architectures | Versions |
+| Operating System | Versions | Architectures |
 | ------ | ------ | ------ |
-| macOS | arm-64, x86-64 | >= 15.0 (Sequoia) |
-| Linux | x86-64, aarch64 | —— |
-| Windows | x86-64 | 10, 11 |
+| macOS | >= 15.0 (Sequoia) | arm-64, x86-64 |
+| Linux  | —— | x86-64, aarch64 |
+| Windows | 10, 11 | x86-64 |
 
 ### Validated Configurations
 
 <details>
 <summary>(Click to view table)</summary>
 
-| Operating System | Architectures | Versions |
+| Operating System | Versions | Architecture |
 | ------ | ------ | ------ |
-| macOS | arm-64 | >= 15.0 (Sequoia) |
-| Ubuntu | aarch64 | 26.04 |
-| Ubuntu | aarch64 | 26.04 |
-| Windows | x86-64 | 11 |
+| macOS | 26 (Tahoe) | arm-64 |
+| | 27 (Golden Gate) | arm-64 |
+| Alma Linux | 8.10, 9.6, 9.8 | x86-64 |
+| Ubuntu | 26.04 | aarch64 |
+| Windows | 11 | x86-64 |
 
 </details>
 
