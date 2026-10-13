@@ -78,7 +78,7 @@ class FieldQuantities(Enum):
         field_types=(FieldType.FAR,),  # ratio
         field_components=FieldComponents,  # All components valid
         enabled=lambda field: True,
-        units="",  # unyt.volt / unyt.meter,  # NOTE: We can't guarantee unit here
+        units="",  # NOTE: We can't guarantee unit here
     )
     E = FieldQuantity(
         name="E",
@@ -87,7 +87,7 @@ class FieldQuantities(Enum):
         field_types=(FieldType.NEAR),  # ratio
         field_components=FieldComponents,  # All components valid
         enabled=lambda field: True,
-        units="",  # unyt.volt / unyt.meter,  # NOTE: We can't guarantee unit here
+        units="",  # NOTE: We can't guarantee unit here
     )
     GAIN = FieldQuantity(
         name="Gain",
