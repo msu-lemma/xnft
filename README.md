@@ -18,20 +18,19 @@
 
 ## Table of Contents
 
-1. [Known Issues](#known-issues)
+1. [Main Features](#main-features)
 2. [Requirements](#requirements)
 3. [Installation](#installation)
 4. [Documentation](#documentation)
+1. [Known Issues](#known-issues)
 5. [Contributing](#contributing)
 6. [Citing xNFT](#citing-xnft)
 7. [License](#license)
 8. [Acknowledgements](#acknowledgements)
 
-## Known Issues
+## Main Features
 
-A summary of the high-impact issues are included in the [Work Items](https://www.gitlab.msu.edu/ece-lemma/internal/xnft-antenna-measurement-software/xnft/-/work_items?sort=created_date&state=opened&or%5Blabel_name%5D%5B%5D=Impact%3A%3AHigh&or%5Blabel_name%5D%5B%5D=Priority%3A%3ACritical&or%5Blabel_name%5D%5B%5D=Priority%3A%3AHigh&not%5Blabel_name%5D%5B%5D=docs&first_page_size=100).
-
-</details>
+TODO
 
 ## Requirements
 
@@ -183,6 +182,12 @@ If you do not have a LaTeX toolchain installed locally, the above command will f
 ```shell
 pixi run -e docs build-html-docs
 ```
+
+
+## Known Issues
+
+A summary of the high-impact issues are included in the [Work Items](https://www.gitlab.msu.edu/ece-lemma/internal/xnft-antenna-measurement-software/xnft/-/work_items?sort=created_date&state=opened&or%5Blabel_name%5D%5B%5D=Impact%3A%3AHigh&or%5Blabel_name%5D%5B%5D=Priority%3A%3ACritical&or%5Blabel_name%5D%5B%5D=Priority%3A%3AHigh&not%5Blabel_name%5D%5B%5D=docs&first_page_size=100).
+
 
 ## Contributing
 
