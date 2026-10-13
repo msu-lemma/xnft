@@ -208,6 +208,6 @@ The original source code for this project is distributed under the [MIT license]
 
 This project depends on third-party libraries which are distributed separately and remain subject to their respective licenses.  For a complete list of runtime dependencies, see the `package.run-dependencies` section of the [`pixi.toml`](pixi.toml) file.
 
-## Acknowledgement
+## Acknowledgements
 
 This work was sponsored by the Air Force Research Laboratory (AFRL) under grant number FA87502510001. The views expressed are those of the authors and do not reﬂect the ofﬁcial policy or position of he Department of Defense or the U.S. Government
