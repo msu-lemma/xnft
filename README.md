@@ -4,8 +4,10 @@
 [![Test Coverage](../../badges/main/coverage.svg)
 ![Pipeline Status](badges/main/pipeline.svg?ignore_skipped=true&job=test-job)](/-/pipelines) -->
 
-> [!CAUTION] ⚠️ xNFT is in active development (Beta)
-> xNFT is in active development. User interfaces and APIs may change frequently. For the most stable operation, use the latest release. For the most up-to-date features and bug fixes, consider building from source.
+> [!CAUTION] xNFT is in active development (Beta)
+> xNFT is in active development. In beta, user interfaces and APIs may continue to change. For the most stable operation, use the latest tagged release. For the most up-to-date features and bug fixes, consider using `main`.
+
+**xNFT** is intended to be a general purpose antenna measurement and analysis software tool, primarily focusing on near-to-far field transformations (NFTs).  
 
 ![xnft Screenshot](docs/source/assets/xnft_screenshot_2026-04-17.png)
 
