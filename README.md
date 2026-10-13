@@ -179,6 +179,16 @@ If you find a bug or feature, please check if an issue exists in [Work Items](ht
 
 Refer to [CONTRIBUTING](CONTRIBUTING.md) for further guidance.
 
+## Citing xNFT
+
+If you use xNFT in your work, please consider citing it.
+
+BibTex reference format:
+
+```text
+TODO
+```
+
 ## License
 
 Copyright 2026 Michigan State University. All rights reserved.

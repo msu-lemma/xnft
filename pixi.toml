@@ -8,6 +8,7 @@ platforms = [
 ]
 channels = ["https://prefix.dev/conda-forge"]
 preview = ["pixi-build"]
+exclude-newer = "14d" # Wait two weeks before using new packages
 
 [package]
 name = "xnft"
