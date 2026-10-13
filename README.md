@@ -173,11 +173,17 @@ If you do not have a LaTeX toolchain installed locally, the above command will f
 pixi run -e docs build-html-docs
 ```
 
+## Contributing
+
+If you find a bug or feature, please check if an issue exists in [Work Items](%{project_path}-/work_items). submit an issue in the .
+
+Refer to [CONTRIBUTING](CONTRIBUTING.md) for further guidance.
+
 ## License
 
 Copyright 2026 Michigan State University. All rights reserved.
 
-The original source code for this project is distributed under the MIT license. See [LICENSE](LICENSE).
+The original source code for this project is distributed under the [MIT license](LICENSE).
 
 This project depends on third-party libraries which are distributed separately and remain subject to their respective licenses.  For a complete list of runtime dependencies, see the `package.run-dependencies` section of the [`pixi.toml`](pixi.toml) file.
 
