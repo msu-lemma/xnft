@@ -1,5 +1,8 @@
 # xNFT: An Open Near-Field Antenna Measurement Software Suite
 
+
+![License: MIT](https://img.shields.io/badge/License-MIT-green)
+
 > [!CAUTION] ⚠️ xNFT is in active development (Beta)
 > xNFT is in active development. In beta, user interfaces and APIs may continue to change. For the most stable operation, use the latest tagged release. For the most up-to-date features and bug fixes, consider using `main` branch.
 
@@ -28,14 +31,23 @@ For the latest features and bug fixes, install from source.
 </summary>
 
 1. Install Pixi package manager by following the steps at: <https://pixi.prefix.dev/latest/installation/>
-2. Install `git`. This may be installed via the OS package manager or pixi. Choose **_one_** option below:
-    - **Winget (Windows):** In any "PowerShell" run:
+
+   After installation, you may need to close and re-open your terminal to properly source the Pixi executable.  Verify the installation was successful by running:
+
+   ```sh
+   pixi --version
+   ```
+
+2. Install `git` and `git-lfs`. This may be installed via the OS package manager or pixi. 
+
+   Choose only **_one_** option below:
+    - **Windows (Winget):** In any "PowerShell" run:
 
         ```PowerShell
         winget install --id Git.Git -e --source winget
         ```
 
-    - **Pixi (macOS or Linux):** in a terminal run:
+    - **macOS or Linux (Pixi):** in a terminal run:
 
         ```sh
         pixi global install --environment git --expose git git-lfs
@@ -43,19 +55,24 @@ For the latest features and bug fixes, install from source.
 
         This will add the `git` and `git-lfs` executables to a global directory (typically in your home folder) and add the `git` executable to your terminal's search path.
 
-    - **Homebrew (macOS):** In terminal install via xcode-select or [Homebrew](https://brew.sh):
+    - **macOS (Homebrew):** In terminal install via [Homebrew](https://brew.sh):
 
         ```sh
-        xcode-select --install
-        # or
-        brew install git
+        brew install git git-lfs
         ```
 
-    - **APT (Ubuntu/Debian):** In terminal install via apt:
+    - **Ubuntu or Debian (APT):** In terminal install via apt:
 
         ```sh
-        apt install git
+        sudo apt update
+        sudo apt install git git-lfs
         ```
+
+3. Install git-lfs hooks:
+
+    ```sh
+    git lfs install
+    ```
 
 </details>
 
