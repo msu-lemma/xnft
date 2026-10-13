@@ -175,7 +175,7 @@ pixi run -e docs build-html-docs
 
 ## Contributing
 
-If you find a bug or feature, please check if an issue exists in [Work Items](./-/work_items). submit an issue in the .
+If you find a bug or feature, please check if an issue exists in [Work Items](../../work_items). submit an issue in the .
 
 Refer to [CONTRIBUTING](CONTRIBUTING.md) for further guidance.
 
