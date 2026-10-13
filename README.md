@@ -21,6 +21,7 @@
 1. [Main Features](#main-features)
 2. [Requirements](#requirements)
 3. [Installation](#installation)
+4. [Dependencies](#dependencies)
 4. [Documentation](#documentation)
 1. [Known Issues](#known-issues)
 5. [Contributing](#contributing)
@@ -61,9 +62,13 @@ xNFT is designed to run on a wide range of operating systems and architectures. 
 
 ## Installation
 
+### Conda
+
+TODO
+
 ### From Source
 
-For the latest features and bug fixes, install from source.
+For the latest features and bug fixes, install from source using Pixi.
 
 > [!NOTE]
 > The development environment uses the Pixi package manager (<https://pixi.prefix.dev/latest/>) and git (<https://git-scm.com>) to manage the envrionment and source code. It may be helpful to have a basic understanding of Pixi and git to install and use this software.
@@ -157,6 +162,10 @@ git submodule update --init --recursive
 ```
 
 This will download datasets in to the `data/...` folders.
+
+## Dependencies
+
+TODO
 
 ## Documentation
 
