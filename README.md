@@ -18,14 +18,14 @@
 
 ## Table of Contents
 
-1. [Known Issues](#Known-Issues)
-2. [Requirements](#Requirements)
-3. [Installation](#Installation)
-4. [Documentation](#Documentation)
-5. [Contributing](#Contributing)
-6. [Citing xNFT](#Citing-xNFT)
-7. [License](#License)
-8. [Acknowledgements](#Acknowledgements)
+1. [Known Issues](#known-issues)
+2. [Requirements](#requirements)
+3. [Installation](#installation)
+4. [Documentation](#documentation)
+5. [Contributing](#contributing)
+6. [Citing xNFT](#citing-xnft)
+7. [License](#license)
+8. [Acknowledgements](#acknowledgements)
 
 ## Known Issues
 
