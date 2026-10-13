@@ -1,0 +1,3 @@
+[submodule "data"]
+	path = data
+	url = git@gitlab.msu.edu:ece-lemma/internal/xnft-antenna-measurement-software/xnft-data.git
