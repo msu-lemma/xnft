@@ -89,6 +89,8 @@ docs-build:
 release:
   stage: release
   image: registry.gitlab.com/gitlab-org/cli:latest
+  variables:
+    GLAB_ENABLE_CI_AUTOLOGIN: "true"
   cache:
     <<: *pixi-cache
   needs:
@@ -97,9 +99,9 @@ release:
     - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+(a\d+|b\d+|rc\d+)?$/'
   before_script: []
   script:
-    - echo "Createing release..."
+    - echo "Creating release for $CI_COMMIT_TAG..."
   release:
     name: "Release $CI_COMMIT_TAG"
-    description: "Release created using the release-cli."
+    description: "Release created by pipeline $CI_PIPELINE_URL."
     tag_name: "$CI_COMMIT_TAG"
-    ref: "$CI_COMMIT_TAG"
+    ref: "$CI_COMMIT_SHA"
