@@ -5,7 +5,7 @@
 
 | | |
 | ------ | ------ |
-| Testing | [![Pipeline Status](https://gitlab.msu.edu/delta/internal/libs/python-packages/delta-python-package/badges/main/pipeline.svg?ignore_skipped=true&job=test-job)](https://gitlab.msu.edu/delta/internal/libs/python-packages/delta-python-package/-/pipelines) ![Test Coverage](https://gitlab.msu.edu/delta/internal/libs/python-packages/delta-python-package/badges/main/coverage.svg) |
+| Testing | [![Pipeline Status](../../../badges/main/pipeline.svg?ignore_skipped=true&job=test-job)](../../pipelines) ![Test Coverage](../../../badges/main/coverage.svg) |
 | Package | [![Latest Release](/../../badges/release.svg)](/../../releases) |
 | Meta | ![License: MIT](https://img.shields.io/badge/License-MIT-green) |
 
@@ -18,7 +18,7 @@
 
 ## Known Issues
 
-xNFT is in active development and has several known limitations that are currently being addressed.  A summary of the high-impact issues are included in the [Work Items](https://www.gitlab.msu.edu/ece-lemma/internal/xnft-antenna-measurement-software/xnft/-/work_items?sort=created_date&state=opened&or%5Blabel_name%5D%5B%5D=Impact%3A%3AHigh&or%5Blabel_name%5D%5B%5D=Priority%3A%3ACritical&or%5Blabel_name%5D%5B%5D=Priority%3A%3AHigh&not%5Blabel_name%5D%5B%5D=docs&first_page_size=100).
+xNFT is in active development and has several known limitations that are currently being addressed.  A summary of the high-impact issues are included in the [Work Items](../../work_items?sort=created_date&state=opened&or%5Blabel_name%5D%5B%5D=Impact%3A%3AHigh&or%5Blabel_name%5D%5B%5D=Priority%3A%3ACritical&or%5Blabel_name%5D%5B%5D=Priority%3A%3AHigh&not%5Blabel_name%5D%5B%5D=docs&first_page_size=100).
 
 </details>
 
@@ -175,7 +175,7 @@ pixi run -e docs build-html-docs
 
 ## Contributing
 
-If you find a bug or feature, please check if an issue exists in [Work Items](%{project_path}-/work_items). submit an issue in the .
+If you find a bug or feature, please check if an issue exists in [Work Items](../../work_items). submit an issue in the .
 
 Refer to [CONTRIBUTING](CONTRIBUTING.md) for further guidance.
 
