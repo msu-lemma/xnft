@@ -12,12 +12,6 @@
 
 ## Installation
 
-### Latest Release
-
-[![Latest Release](/../../badges/release.svg)](/../../releases)
-
-The simplest method to use xNFT is to install the lasted packaged release for Windows or macOS from the [releases page](/../../releases).
-
 ### From Source
 
 For the latest features and bug fixes, install from source.
@@ -99,25 +93,9 @@ git lfs pull
 
 to pull the remaining test datasets.
 
-### Updating
-
-If no uncommitted changes have been made to tracked files, simply update the source once it's been downloaded, simply run:
-
-```sh
-git pull
-```
-
-If any changes to tracked files have been made to your local copy, you may need to commit your changes or stash and reapply these changes to successfully pull and merge in the new upstream changes, e.g.:
-
-```sh
-git stash        # Pushes local changes onto the stash stack and resets the local working tree to last commit HEAD
-git pull         # Pulls upstream changes and applies to local working tree moving the local HEAD to the same point as the remote
-git stash apply  # Pops changes from the top of the stash stack and applies to the local working tree
-```
-
 ## Development
 
-TODO...
+TODO: Add further development documentation.
 
 ### Documentation
 
@@ -167,3 +145,7 @@ Copyright 2026 Michigan State University. All rights reserved.
 The original source code for this project is distributed under the MIT license. See [LICENSE](LICENSE).
 
 This project depends on third-party libraries which are distributed separately and remain subject to their respective licenses.  For a complete list of runtime dependencies, see the `package.run-dependencies` section of the [`pixi.toml`](pixi.toml) file.
+
+## Acknowledgement
+
+This work was sponsored by the Air Force Research Laboratory (AFRL) under grant number FA87502510001. The views expressed are those of the authors and do not reﬂect the ofﬁcial policy or position of he Department of Defense or the U.S. Government
