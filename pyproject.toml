@@ -2,9 +2,9 @@
 name = "xnft"
 dynamic = ["version"]
 authors = [
-  { name = "LEmmA Group, Michigan State University" },
   { name = "Jason Merlo", email = "merlojas@msu.edu" },
   { name = "Mauro Ettorre", email = "ettorre@msu.edu" },
+  { name = "LEmmA Group, Michigan State University" },
 ]
 maintainers = [{ name = "Jason Merlo", email = "merlojas@msu.edu" }]
 readme = "README.md"

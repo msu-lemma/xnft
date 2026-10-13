@@ -4,6 +4,7 @@ Module providing graphical user interfaces.
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 
+import html
 import importlib.metadata
 import logging
 import sys
@@ -260,19 +261,44 @@ class MainWindow(QMainWindow):
             self.properties_table.setItem(row, 1, value_item)
 
     def _about(self):
+
         meta = importlib.metadata.metadata("xnft")
 
-        authors = "\n".join([meta.get("Author"), *meta.get("Author-email").split(", ")])
+        author_values = [
+            meta.get("Author"),
+            *(meta.get("Author-email") or "").split(", "),
+        ]
+        authors = "<br>".join(html.escape(author) for author in author_values if author)
 
-        QMessageBox.about(
-            self,
-            "About xNFT",
-            f"xNFT Version {meta.get('Version')}\n\n"
-            f"{meta.get('Summary')}\n\n"
-            "Copyright 2025-2026 The Laboratory for Electromagnetics and mm-Wave Antennas (LEmmA), Electromagnetics Research Group (EMRG), Michigan State University.\n\n"
-            f"Authors:\n{authors}\n\n"
-            f"License: {meta.get('License-Expression')}",
+        raw_project_url_list = meta.get_all("Project-URL")
+
+        if raw_project_url_list:
+            project_urls = "<br>".join(
+                [
+                    f"<b>{x.split(',')[0]}</b>: "
+                    f'<a href="{x.split(",", 1)[1].strip()}">{x.split(",", 1)[1].strip()}</a>'
+                    for x in raw_project_url_list
+                ]
+            )
+        else:
+            project_urls = ""
+
+        msg = QMessageBox(self)
+        msg.setWindowTitle("About xNFT")
+        msg.setTextFormat(Qt.TextFormat.RichText)
+        msg.setText(
+            f"""
+            <p><b>xNFT Version {meta.get("Version")}</b></p>
+            <p>{meta.get("Summary")}</p>
+            <p>{project_urls}</p>
+            <p><b>Authors:</b><br>{authors}</p>
+            <p>Copyright 2025-2026 Michigan State University.</p>
+            <p><b>License:</b> {meta.get("License-Expression")}</p>
+            """
         )
+        msg.setTextInteractionFlags(Qt.TextInteractionFlag.TextBrowserInteraction)
+
+        msg.exec()
 
     def create_plot_area(self):
         # Create MDI area for windows to exist
