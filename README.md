@@ -5,7 +5,7 @@
 
 | | |
 | ------ | ------ |
-| Testing | [![Pipeline Status](../../../badges/main/pipeline.svg?ignore_skipped=true&job=test-job)](../../pipelines) ![Test Coverage](../../../badges/main/coverage.svg) |
+| Testing | [![Pipeline Status](https://www.gitlab.msu.edu/ece-lemma/internal/xnft-antenna-measurement-software/xnft/badges/main/pipeline.svg?ignore_skipped=true&job=test-job)](../../pipelines) ![Test Coverage](https://www.gitlab.msu.edu/ece-lemma/internal/xnft-antenna-measurement-software/xnft/badges/main/coverage.svg) |
 | Package | [![Latest Release](/../../badges/release.svg)](/../../releases) |
 | Meta | ![License: MIT](https://img.shields.io/badge/License-MIT-green) |
 
@@ -175,7 +175,7 @@ pixi run -e docs build-html-docs
 
 ## Contributing
 
-If you find a bug or feature, please check if an issue exists in [Work Items](../../work_items). submit an issue in the .
+If you find a bug or feature, please check if an issue exists in [Work Items](https://www.gitlab.msu.edu/ece-lemma/internal/xnft-antenna-measurement-software/xnft/work_items). submit an issue in the .
 
 Refer to [CONTRIBUTING](CONTRIBUTING.md) for further guidance.
 
