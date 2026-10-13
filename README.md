@@ -16,6 +16,17 @@
 ![xnft Screenshot](docs/source/assets/xnft_screenshot.png)
 > Screenshot of xNFT running on macOS.  Measurements show an NSI-MI ANT-SGH-26.5-40 standard gain horn at 40 GHz collected using the LEmmA planar near-field scanner.
 
+## Table of Contents
+
+1. [Known Issues](#Known-Issues)
+2. [Requirements](#Requirements)
+3. [Installation](#Installation)
+4. [Documentation](#Documentation)
+5. [Contributing](#Contributing)
+6. [Citing xNFT](#Citing-xNFT)
+7. [License](#License)
+8. [Acknowledgements](#Acknowledgements)
+
 ## Known Issues
 
 A summary of the high-impact issues are included in the [Work Items](https://www.gitlab.msu.edu/ece-lemma/internal/xnft-antenna-measurement-software/xnft/-/work_items?sort=created_date&state=opened&or%5Blabel_name%5D%5B%5D=Impact%3A%3AHigh&or%5Blabel_name%5D%5B%5D=Priority%3A%3ACritical&or%5Blabel_name%5D%5B%5D=Priority%3A%3AHigh&not%5Blabel_name%5D%5B%5D=docs&first_page_size=100).
