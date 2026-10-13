@@ -90,7 +90,7 @@ Optional test data is stored in a secondary `xnft-data` repository included as a
 To pull the datasets, run:
 
 ```sh
-git submodule init && git submodule update --recursive
+git submodule update --init --recursive
 ```
 
 This will download datasets in to the `data/...` folders.
@@ -100,13 +100,13 @@ This will download datasets in to the `data/...` folders.
 > [!NOTE]
 > The documentation currently only contains API docs. Further user/theory documentation is in progress.
 
-#### Pre-built Docs
+### Pre-built Docs
 
 The latest automated docs build can be downloaded here: [**Download Latest Documentation**](https://gitlab.msu.edu/api/v4/projects/28094/jobs/artifacts/main/download?job=docs-build-job)
 
 Once downloaded, unzip the archive and navigate to **`build/html/index.html`** to access the documentation.
 
-#### Local Docs Generation
+### Local Docs Generation
 
 To build all docs locally (PDF and HTML), run:
 
