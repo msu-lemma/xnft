@@ -1,10 +1,14 @@
 # xNFT: An Open Near-Field Antenna Measurement Software Suite
 
-
-![License: MIT](https://img.shields.io/badge/License-MIT-green)
-
 > [!CAUTION] ⚠️ xNFT is in active development (Beta)
 > xNFT is in active development. In beta, user interfaces and APIs may continue to change. For the most stable operation, use the latest tagged release. For the most up-to-date features and bug fixes, consider using `main` branch.
+
+| | |
+| ------ | ------ |
+| Testing | [![Pipeline Status](https://gitlab.msu.edu/delta/internal/libs/python-packages/delta-python-package/badges/main/pipeline.svg?ignore_skipped=true&job=test-job)](https://gitlab.msu.edu/delta/internal/libs/python-packages/delta-python-package/-/pipelines) ![Test Coverage](https://gitlab.msu.edu/delta/internal/libs/python-packages/delta-python-package/badges/main/coverage.svg) |
+| Package | [![Latest Release](/../../badges/release.svg)](/../../releases) |
+| Meta    | ![License: MIT](https://img.shields.io/badge/License-MIT-green) |
+
 
 ## What is xNFT?
 
@@ -12,6 +16,33 @@
 
 ![xnft Screenshot](docs/source/assets/xnft_screenshot.png)
 > Screenshot of xNFT running on macOS.  Measurements show an NSI-MI ANT-SGH-26.5-40 standard gain horn at 40 GHz collected using the LEmmA planar near-field scanner.
+
+## Requirements
+
+xNFT is designed to run on a wide range of operating systems and architectures.  A list of system configurations designed to be compatible is included below. Other configurations may work, but are not currently considered supported configurations.
+
+
+### xNFT Design System Compatability Matrix 
+
+| Operating System | Architectures | Versions |
+| ------ | ------ | ------ |
+| macOS | arm-64, x86-64 | >= 15.0 (Sequoia) |
+| Linux | x86-64, aarch64 | —— |
+| Windows | x86-64 | 10, 11 |
+
+### Validated Configurations
+
+<details>
+<summary>(Click to view table)</summary>
+
+| Operating System | Architectures | Versions |
+| ------ | ------ | ------ |
+| macOS | arm-64 | >= 15.0 (Sequoia) |
+| Ubuntu | aarch64 | 26.04 |
+| Ubuntu | aarch64 | 26.04 |
+| Windows | x86-64 | 11 |
+
+</details>
 
 ## Installation
 
