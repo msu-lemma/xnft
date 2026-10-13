@@ -22,7 +22,7 @@ from xnft.common.registry import registry
 from xnft.common.types import FileInfo
 from xnft.loaders import register_builtin_loaders
 
-test_dir = Path(__file__).parent
+root_dir = Path(__file__).parent.parent
 test_dict = {
     "source": registry.loaders.fields.items(),  # Test all registered loaders
     "field": list(FieldType),
@@ -52,7 +52,7 @@ def generate_tests(
         for field in fields:
             for scan in scans:
                 test_dir_path = (
-                    test_dir
+                    root_dir
                     / "data"
                     / field.lower().replace(" ", "_")
                     / scan.lower().replace(" ", "_")
