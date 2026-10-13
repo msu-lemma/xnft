@@ -11,7 +11,7 @@
 
 **xNFT** is a cross-platform, high-performance, general purpose antenna measurement and analysis software tool, primarily focusing on near-to-far field transformations (NFTs), permissively distributed under the MIT license.
 
-![xnft Screenshot](docs/source/assets/xnft_screenshot_2026-04-17.png)
+![xnft Screenshot](docs/source/assets/xnft_screenshot.png)
 
 
 ## Installation
