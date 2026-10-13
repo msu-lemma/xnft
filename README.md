@@ -100,7 +100,7 @@ TODO: Add further development documentation.
 ### Documentation
 
 > [!NOTE]
-> The documentation currently only contains API docs.
+> The documentation currently only contains API docs. Further user/theory documentation is in progress.
 
 #### Pre-built Docs
 
@@ -124,19 +124,6 @@ pixi run -e docs build-html-docs
 
 > [!NOTE]
 > The CI pipeline does not have a LaTeX toolchain, so it will only generate HTML docs, not PDF.
-
-### Upgrading Dependencies
-
-> [!warning]
-> Upgrading all dependencies may break software due to incompatible changes in newer versions of libraries.
-
-To upgrade dependencies listed in the `pyproject.toml` using pixi, run
-
-```shell
-pixi upgrade <packages>
-```
-
-Omitting the `<packages>` will upgrade _all_ packages.  It may be useful to first run this using the `--dry-run` flag to only print the packages which will be upgraded prior to actually commiting the changes to the file.
 
 ## License
 
