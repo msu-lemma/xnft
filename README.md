@@ -174,7 +174,7 @@ TODO
 
 ### Pre-built Docs
 
-The latest automated docs build can be downloaded here: [**Download Latest Documentation**](https://gitlab.msu.edu/api/v4/projects/28094/jobs/artifacts/main/download?job=docs-build-job)
+The latest automated docs build can be downloaded here: [**Download Latest Documentation**](https://gitlab.msu.edu/api/v4/projects/28094/jobs/artifacts/main/download?job=docs-build)
 
 Once downloaded, unzip the archive and navigate to **`build/html/index.html`** to access the documentation.
 
