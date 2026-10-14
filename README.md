@@ -150,7 +150,7 @@ This will install all packages necessary into the `default` Pixi environment, th
 
 #### Download Test Data (Optional)
 
-Optional test data is stored in a secondary `xnft-data` repository included as a git submodule in this project.  Note that these archives contain sevaral gigabytes of data and are thus not downloaded by default.
+Optional test data is stored in a secondary **[`xnft-data`](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft-data)** repository included as a git submodule in this project.  Note that these archives contain sevaral gigabytes of data and are thus not downloaded by default.
 
 To pull the datasets, run:
 
