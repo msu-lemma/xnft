@@ -73,9 +73,6 @@ For the latest features and bug fixes, install from source using Pixi.
 > [!NOTE]
 > The development environment uses the Pixi package manager (<https://pixi.prefix.dev/latest/>) and git (<https://git-scm.com>) to manage the envrionment and source code. It may be helpful to have a basic understanding of Pixi and git to install and use this software.
 
-> [!WARNING]
-> Installing from the `main` branch may be unstable.  For the most stable operation, install the latest release.
-
 <details>
 <summary>
 <h3>Prerequisites</h3> (Click to view)
