@@ -56,8 +56,8 @@ xNFT is designed to run on a wide range of operating systems and architectures. 
 | ---------------- | ----------------- | -------------------------- |
 | macOS            | 26 (Tahoe)        | arm-64                     |
 |                  | 27 (Golden Gate)  | arm-64                     |
-| Alma Linux       | 8.10, 9.6, 9.8    | x86-64                     |
-| Ubuntu           | 26.04             | aarch64                    |
+| Linux            | Alma 8.10, Alma 9.6, Alma 9.8    | x86-64                     |
+|                  | Ubuntu 26.04             | aarch64                    |
 | Windows          | 11                | x86-64                     |
 |                  | 11                | arm-64 (via [Prism](https://learn.microsoft.com/en-us/windows/arm/apps-on-arm-x86-emulation)) |
 | Windows (WSL2)   | 11 (Ubuntu 24.04) | x86-64                     |
