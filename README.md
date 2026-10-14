@@ -174,7 +174,10 @@ TODO
 
 ### Pre-built Docs
 
-The latest automated docs build can be downloaded here: [**Download Latest Documentation**](https://gitlab.msu.edu/api/v4/projects/28094/jobs/artifacts/main/download?job=docs-build)
+The latest automated docs build can be downloaded here: 
+
+- [**PDF Documentation**](https://gitlab.msu.edu/api/v4/projects/28094/jobs/artifacts/main/raw/docs/build/xnft-docs.pdf?job=docs-build)
+- [**HTML Documentation**](https://gitlab.msu.edu/api/v4/projects/28094/jobs/artifacts/main/raw/docs/build/html?job=docs-build)
 
 Once downloaded, unzip the archive and navigate to **`build/html/index.html`** to access the documentation.
 
@@ -186,12 +189,17 @@ To build all docs locally (PDF and HTML), run:
 pixi run -e docs build-docs
 ```
 
-If you do not have a LaTeX toolchain installed locally, the above command will fail. You can still build the HTML-only docs by running
+Just the HTML docs or just the PDF docs may be built by running
 
 ```shell
 pixi run -e docs build-html-docs
 ```
 
+or 
+
+```shell
+pixi run -e docs build-pdf-docs
+```
 
 ## Known Issues
 

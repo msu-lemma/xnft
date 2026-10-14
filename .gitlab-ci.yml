@@ -84,7 +84,8 @@ docs-build:
     - pixi run -e docs build-docs
   artifacts:
     paths:
-      - docs/build/
+      - docs/build/*.pdf
+      - docs/build/html
 
 release:
   stage: release
