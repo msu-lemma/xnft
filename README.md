@@ -21,8 +21,8 @@
 1. [Main Features](#main-features)
 2. [Requirements](#requirements)
 3. [Installation](#installation)
-4. [Dependencies](#dependencies)
-5. [Documentation](#documentation)
+4. [Documentation](#documentation)
+5. [Dependencies](#dependencies)
 6. [Known Issues](#known-issues)
 7. [Contributing](#contributing)
 8. [Citing xNFT](#citing-xnft)
@@ -163,12 +163,11 @@ git submodule update --init --recursive
 
 This will download datasets in to the `data/...` folders.
 
-## Dependencies
-
-TODO
-
 ## Documentation
 
+The **[Getting Started](docs/getting_started.md)** can be found in the **[docs folder](docs)**.
+
+<!-- 
 ### Pre-built Docs
 
 The latest automated docs build can be downloaded here: 
@@ -197,6 +196,11 @@ or
 ```shell
 pixi run -e docs build-pdf-docs
 ```
+ -->
+
+## Dependencies
+
+TODO
 
 ## Known Issues
 
