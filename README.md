@@ -13,7 +13,7 @@
 
 **xNFT** is a cross-platform, high-performance, general purpose antenna measurement and analysis software tool, primarily focusing on near-to-far field transformations (NFTs), permissively distributed under the MIT license.
 
-![xnft Screenshot](docs/source/assets/xnft_screenshot.png)
+![xnft Screenshot](docs/images/xnft_screenshot.png)
 > Screenshot of xNFT running on macOS.  Measurements show an NSI-MI ANT-SGH-26.5-40 standard gain horn at 40 GHz collected using the LEmmA planar near-field scanner.
 
 ## Table of Contents
