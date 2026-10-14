@@ -82,10 +82,11 @@ docs-build:
     - rm -rf /var/lib/apt/lists/*
   script:
     - pixi run -e docs build-docs
+    - tar -czf docs/build/xnft-docs.tar.gz docs/build/html
   artifacts:
     paths:
       - docs/build/*.pdf
-      - docs/build/html
+      - docs/build/xnft-docs.tar.gz
 
 release:
   stage: release

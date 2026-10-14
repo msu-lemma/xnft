@@ -174,7 +174,7 @@ TODO
 The latest automated docs build can be downloaded here: 
 
 - [**PDF Documentation**](https://gitlab.msu.edu/api/v4/projects/28094/jobs/artifacts/main/raw/docs/build/xnft-docs.pdf?job=docs-build)
-- [**HTML Documentation**](https://gitlab.msu.edu/api/v4/projects/28094/jobs/artifacts/main/raw/docs/build/html?job=docs-build)
+- [**HTML Documentation**](https://gitlab.msu.edu/api/v4/projects/28094/jobs/artifacts/main/raw/docs/build/xnft-docs.tar.gz?job=docs-build)
 
 Once downloaded, unzip the archive and navigate to **`build/html/index.html`** to access the documentation.
 
