@@ -5,7 +5,7 @@
 
 | | |
 | ------ | ------ |
-| Testing | [![Pipeline Status](https://www.gitlab.msu.edu/ece-lemma/internal/xnft-antenna-measurement-software/xnft/badges/main/pipeline.svg?ignore_skipped=true&job=test-job)](../../pipelines) ![Test Coverage](https://www.gitlab.msu.edu/ece-lemma/internal/xnft-antenna-measurement-software/xnft/badges/main/coverage.svg) |
+| Testing | [![Pipeline Status](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/badges/main/pipeline.svg?ignore_skipped=true&job=test-job)](../../pipelines) ![Test Coverage](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/badges/main/coverage.svg) |
 | Package | [![Latest Release](/../../badges/release.svg)](/../../releases) |
 | Meta | ![License: MIT](https://img.shields.io/badge/License-MIT-green) |
 
@@ -22,12 +22,12 @@
 2. [Requirements](#requirements)
 3. [Installation](#installation)
 4. [Dependencies](#dependencies)
-4. [Documentation](#documentation)
-1. [Known Issues](#known-issues)
-5. [Contributing](#contributing)
-6. [Citing xNFT](#citing-xnft)
-7. [License](#license)
-8. [Acknowledgements](#acknowledgements)
+5. [Documentation](#documentation)
+6. [Known Issues](#known-issues)
+7. [Contributing](#contributing)
+8. [Citing xNFT](#citing-xnft)
+9. [License](#license)
+10. [Acknowledgements](#acknowledgements)
 
 ## Main Features
 
@@ -64,7 +64,7 @@ xNFT is designed to run on a wide range of operating systems and architectures. 
 
 ### Conda
 
-TODO
+🚧 TODO
 
 ### From Source
 
@@ -195,12 +195,12 @@ pixi run -e docs build-html-docs
 
 ## Known Issues
 
-A summary of the high-impact issues are included in the [Work Items](https://www.gitlab.msu.edu/ece-lemma/internal/xnft-antenna-measurement-software/xnft/-/work_items?sort=created_date&state=opened&or%5Blabel_name%5D%5B%5D=Impact%3A%3AHigh&or%5Blabel_name%5D%5B%5D=Priority%3A%3ACritical&or%5Blabel_name%5D%5B%5D=Priority%3A%3AHigh&not%5Blabel_name%5D%5B%5D=docs&first_page_size=100).
+A summary of the high-impact issues are included in the [Work Items](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/work_items?sort=created_date&state=opened&or%5Blabel_name%5D%5B%5D=Impact%3A%3AHigh&or%5Blabel_name%5D%5B%5D=Priority%3A%3ACritical&or%5Blabel_name%5D%5B%5D=Priority%3A%3AHigh&not%5Blabel_name%5D%5B%5D=docs&first_page_size=100).
 
 
 ## Contributing
 
-If you find a bug or feature, please check if an issue exists in [Work Items](https://www.gitlab.msu.edu/ece-lemma/internal/xnft-antenna-measurement-software/xnft/-/work_items). submit an issue in the .
+If you find a bug or feature, please check if an issue exists in [Work Items](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/work_items). submit an issue in the .
 
 Refer to [CONTRIBUTING](CONTRIBUTING.md) for further guidance.
 
@@ -211,8 +211,11 @@ If you use xNFT in your work, please consider citing it.
 BibTex reference format:
 
 ```text
-TODO
+🚧 TODO
 ```
+
+- Zendoo?
+- .cff file?
 
 ## License
 
