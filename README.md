@@ -59,7 +59,7 @@ xNFT is designed to run on a wide range of operating systems and architectures. 
 | Alma Linux       | 8.10, 9.6, 9.8    | x86-64                     |
 | Ubuntu           | 26.04             | aarch64                    |
 | Windows          | 11                | x86-64                     |
-| Windows          | 11                | arm-64 (via x86 emulation) |
+|                  | 11                | arm-64 (via [Prism](https://learn.microsoft.com/en-us/windows/arm/apps-on-arm-x86-emulation)) |
 | Windows (WSL2)   | 11 (Ubuntu 24.04) | x86-64                     |
 
 </details>
@@ -206,7 +206,6 @@ TODO
 ## Known Issues
 
 A summary of the high-impact issues are included in the [Work Items](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/work_items?sort=created_date&state=opened&or%5Blabel_name%5D%5B%5D=Impact%3A%3AHigh&or%5Blabel_name%5D%5B%5D=Priority%3A%3ACritical&or%5Blabel_name%5D%5B%5D=Priority%3A%3AHigh&not%5Blabel_name%5D%5B%5D=docs&first_page_size=100).
-
 
 ## Contributing
 
