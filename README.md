@@ -169,9 +169,6 @@ TODO
 
 ## Documentation
 
-> [!NOTE]
-> The documentation currently only contains API docs. Further user/theory documentation is in progress.
-
 ### Pre-built Docs
 
 The latest automated docs build can be downloaded here: 
