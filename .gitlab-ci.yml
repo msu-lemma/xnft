@@ -65,28 +65,28 @@ code-quality:
       codequality: $CI_PROJECT_DIR/code-quality-report.json
 
 # Builds the sphinx documentation for the project
-docs-build:
-  image: ghcr.io/prefix-dev/pixi:latest
-  stage: build-test
-  cache:
-    <<: *pixi-cache
-  before_script:
-    - >
-      apt-get update && apt-get install -y --no-install-recommends 
-      xindy
-      texlive-xetex
-      texlive-fonts-recommended
-      texlive-fonts-extra
-      fonts-freefont-otf
-      fontconfig
-    - rm -rf /var/lib/apt/lists/*
-  script:
-    - pixi run -e docs build-docs
-    - tar -czf docs/build/xnft-docs.tar.gz docs/build/html
-  artifacts:
-    paths:
-      - docs/build/*.pdf
-      - docs/build/xnft-docs.tar.gz
+# docs-build:
+#   image: ghcr.io/prefix-dev/pixi:latest
+#   stage: build-test
+#   cache:
+#     <<: *pixi-cache
+#   before_script:
+#     - >
+#       apt-get update && apt-get install -y --no-install-recommends
+#       xindy
+#       texlive-xetex
+#       texlive-fonts-recommended
+#       texlive-fonts-extra
+#       fonts-freefont-otf
+#       fontconfig
+#     - rm -rf /var/lib/apt/lists/*
+#   script:
+#     - pixi run -e docs build-docs
+#     - tar -czf docs/build/xnft-docs.tar.gz docs/build/html
+#   artifacts:
+#     paths:
+#       - docs/build/*.pdf
+#       - docs/build/xnft-docs.tar.gz
 
 release:
   stage: release
