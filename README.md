@@ -1,5 +1,5 @@
 # _xNFT_: An Open Near-Field Antenna Measurement Software Suite
-<img src="src/xnft/resources/icons/xnft.svg"  width="80" height="80" alt="xNFT Logo">
+<img src="src/xnft/resources/icons/xnft.svg"  width="80" height="80" alt="xNFT Logo" style="box-shadow: 0px 0px 10px gray; border-radius: 12px;">
 
 > [!CAUTION] ⚠️ _xNFT_ is in active development (Beta)
 > _xNFT_ is in active development. In beta, user interfaces and APIs may continue to change. For the most stable operation, use the latest tagged release. For the most up-to-date features and bug fixes, consider using `main` branch.
