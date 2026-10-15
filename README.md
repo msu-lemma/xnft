@@ -1,7 +1,8 @@
-# xNFT: An Open Near-Field Antenna Measurement Software Suite
+# _xNFT_: An Open Near-Field Antenna Measurement Software Suite
+![xNFT Logo](src/xnft/resources/icons/xnft.svg)
 
-> [!CAUTION] ⚠️ xNFT is in active development (Beta)
-> xNFT is in active development. In beta, user interfaces and APIs may continue to change. For the most stable operation, use the latest tagged release. For the most up-to-date features and bug fixes, consider using `main` branch.
+> [!CAUTION] ⚠️ _xNFT_ is in active development (Beta)
+> _xNFT_ is in active development. In beta, user interfaces and APIs may continue to change. For the most stable operation, use the latest tagged release. For the most up-to-date features and bug fixes, consider using `main` branch.
 
 | | |
 | ------ | ------ |
@@ -9,12 +10,12 @@
 | Package | [![Latest Release](/../../badges/release.svg)](/../../releases) |
 | Meta | ![License: MIT](https://img.shields.io/badge/License-MIT-green) |
 
-## What is xNFT?
+## What is _xNFT_?
 
-**xNFT** is a cross-platform, high-performance, general purpose antenna measurement and analysis software tool, primarily focusing on **near-to-far field transformations (NFTs)**, permissively distributed under the **MIT license**.  
+**_xNFT_** is a cross-platform, high-performance, general purpose antenna measurement and analysis software tool, primarily focusing on **near-to-far field transformations (NFTs)**, permissively distributed under the **MIT license**.  
 
 ![xnft Screenshot](docs/images/xnft_screenshot.png)
-> Screenshot of xNFT running on macOS.  Measurements show an NSI-MI ANT-SGH-26.5-40 standard gain horn at 40 GHz collected using the LEmmA planar near-field scanner.
+> Screenshot of _xNFT_ running on macOS.  Measurements show an NSI-MI ANT-SGH-26.5-40 standard gain horn at 40 GHz collected using the LEmmA planar near-field scanner.
 
 ## Table of Contents
 
@@ -25,19 +26,19 @@
 5. [Dependencies](#dependencies)
 6. [Known Issues](#known-issues)
 7. [Contributing](#contributing)
-8. [Citing xNFT](#citing-xnft)
+8. [Citing _xNFT_](#citing-xnft)
 9. [License](#license)
 10. [Acknowledgements](#acknowledgements)
 
 ## Highlights
 
-Some of the main features currently available in xNFT are:
+Some of the main features currently available in _xNFT_ are:
 
-- **Planar near-to-far field transforms (PNFT).** xNFT uses the [FINUFFT](https://finufft.readthedocs.io/en/latest/) library to compute the PNFT, enabling fast and accurate transforms from uniform and nonuniform* sampled source grids directly into uniformly sampled spherical coordinates.  
-- **Probe Compensation.** Ideal open-ended waveguide measurement probe correction options are built into xNFT.
-- **Graphical user interface (GUI).** xNFT provides a rich GUI (via [Qt/PySide6](https://doc.qt.io/qtforpython-6/)) designed to look like common professional engineering tools with interactive plotting (via [PyQtGraph](https://www.pyqtgraph.org)) and analysis tools.
+- **Planar near-to-far field transforms (PNFT).** _xNFT_ uses the [FINUFFT](https://finufft.readthedocs.io/en/latest/) library to compute the PNFT, enabling fast and accurate transforms from uniform and nonuniform* sampled source grids directly into uniformly sampled spherical coordinates.  
+- **Probe Compensation.** Ideal open-ended waveguide measurement probe correction options are built into _xNFT_.
+- **Graphical user interface (GUI).** _xNFT_ provides a rich GUI (via [Qt/PySide6](https://doc.qt.io/qtforpython-6/)) designed to look like common professional engineering tools with interactive plotting (via [PyQtGraph](https://www.pyqtgraph.org)) and analysis tools.
 - **Data exporting.** Exporting options are availble in `.h5` and `.csv` formats for imported fields (data conversion) and processed report results.  Images may be exported using the underlying PyQtGraph framework (via right-click menu).
-- **Plugin framework.** xNFT has an extensible plugin framework allowing users to create custom data loaders in separate python packages allowing users to separate internal tools from the general xNFT framework.
+- **Plugin framework.** _xNFT_ has an extensible plugin framework allowing users to create custom data loaders in separate python packages allowing users to separate internal tools from the general _xNFT_ framework.
 
 *Nonuniform source sampling has not yet been validated.
 
@@ -48,9 +49,9 @@ Some of the main features currently available in xNFT are:
 
 ## System Requirements
 
-xNFT is designed to run on a wide range of operating systems and architectures.  A list of system configurations designed to be compatible is included below. Other configurations may work, but are not currently considered supported configurations.
+_xNFT_ is designed to run on a wide range of operating systems and architectures.  A list of system configurations designed to be compatible is included below. Other configurations may work, but are not currently considered supported configurations.
 
-### xNFT Design System Compatability Matrix
+### _xNFT_ Design System Compatability Matrix
 
 | Operating System | Versions          | Architectures    |
 | ---------------- | ----------------- | ---------------- |
@@ -155,13 +156,13 @@ For the latest features and bug fixes, install from source using Pixi.
 
 #### Install and Run
 
-To quickly install the environment to run xNFT, run:
+To quickly install the environment to run _xNFT_, run:
 
 ```shell
 pixi run xnft
 ```
 
-This will install all packages necessary into the `default` Pixi environment, then run xNFT in the environment.
+This will install all packages necessary into the `default` Pixi environment, then run _xNFT_ in the environment.
 > [!NOTE]
 > On the first run of `xnft` it may take some time to open as packages are compiled to Python bytecode. These compiled packages will be cached and it will open and run much faster on subsequent launches.
 
@@ -226,9 +227,9 @@ If you find a bug or feature, please check if an issue exists in [Work Items](ht
 
 Refer to [CONTRIBUTING](CONTRIBUTING.md) for further guidance.
 
-## Citing xNFT
+## Citing _xNFT_
 
-If you use xNFT in your work, please consider citing it.
+If you use _xNFT_ in your work, please consider citing it.
 
 BibTex reference format:
 
