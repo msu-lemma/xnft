@@ -9,7 +9,7 @@
 | Package | [![Latest Release](/../../badges/release.svg)](/../../releases) |
 | Meta | ![License: MIT](https://img.shields.io/badge/License-MIT-green) |
 
-<img src="docs/images/xnft.svg"  width="100" height="100" alt="xNFT Logo">
+<!-- <img src="docs/images/xnft.svg"  width="100" height="100" alt="xNFT Logo"> -->
 
 ## What is _xNFT_?
 
