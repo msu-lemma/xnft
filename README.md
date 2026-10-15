@@ -219,7 +219,7 @@ pixi run -e docs build-pdf-docs
 
 ## Dependencies
 
-TODO
+🚧TODO
 
 ## Known Issues
 
