@@ -11,15 +11,15 @@
 
 ## What is xNFT?
 
-**xNFT** is a cross-platform, high-performance, general purpose antenna measurement and analysis software tool, primarily focusing on near-to-far field transformations (NFTs), permissively distributed under the MIT license.
+**xNFT** is a cross-platform, high-performance, general purpose antenna measurement and analysis software tool, primarily focusing on **near-to-far field transformations (NFTs)**, permissively distributed under the **MIT license**.  
 
 ![xnft Screenshot](docs/images/xnft_screenshot.png)
 > Screenshot of xNFT running on macOS.  Measurements show an NSI-MI ANT-SGH-26.5-40 standard gain horn at 40 GHz collected using the LEmmA planar near-field scanner.
 
 ## Table of Contents
 
-1. [Main Features](#main-features)
-2. [Requirements](#requirements)
+1. [Highlights](#highlights)
+2. [System Requirements](#system-requirements)
 3. [Installation](#installation)
 4. [Documentation](#documentation)
 5. [Dependencies](#dependencies)
@@ -29,11 +29,24 @@
 9. [License](#license)
 10. [Acknowledgements](#acknowledgements)
 
-## Main Features
+## Highlights
 
-🚧 TODO
+Some of the main features currently available in xNFT are:
 
-## Requirements
+- **Planar near-to-far field transforms (PNFT).** xNFT uses the [FINUFFT](https://finufft.readthedocs.io/en/latest/) library to compute the PNFT, enabling fast and accurate transforms from uniform and nonuniform* sampled source grids directly into uniformly sampled spherical coordinates.  
+- **Probe Compensation.** Ideal open-ended waveguide measurement probe correction options are built into xNFT.
+- **Graphical user interface (GUI).** xNFT provides a rich GUI (via [Qt/PySide6](https://doc.qt.io/qtforpython-6/)) designed to look like common professional engineering tools with interactive plotting (via [PyQtGraph](https://www.pyqtgraph.org)) and analysis tools.
+- **Data exporting.** Exporting options are availble in `.h5` and `.csv` formats for imported fields (data conversion) and processed report results.  Images may be exported using the underlying PyQtGraph framework (via right-click menu).
+- **Plugin framework.** xNFT has an extensible plugin framework allowing users to create custom data loaders in separate python packages allowing users to separate internal tools from the general xNFT framework.
+
+*Nonuniform source sampling has not yet been validated.
+
+### In Progress
+
+- Spherical near-to-far field transform (SNFT)
+- Expanded plugin package capabilities. E.g., custom _Analysis_ options and _Report_ options.
+
+## System Requirements
 
 xNFT is designed to run on a wide range of operating systems and architectures.  A list of system configurations designed to be compatible is included below. Other configurations may work, but are not currently considered supported configurations.
 
