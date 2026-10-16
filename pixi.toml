@@ -87,11 +87,11 @@ test = "pytest -s"
 build-apidoc = { cmd = [
   "rm",
   "-rf",
-  "docs/source/api",
+  "docs/api/source/api",
   "&&",
   "sphinx-apidoc",
   "-o",
-  "docs/source/api",
+  "docs/api/source/api",
   "src/xnft",
 ] }
 
@@ -102,8 +102,8 @@ build-html-docs = { cmd = [
   "sphinx-build",
   "-M",
   "html",
-  "$PIXI_PROJECT_ROOT/docs/source",
-  "$PIXI_PROJECT_ROOT/docs/build",
+  "$PIXI_PROJECT_ROOT/docs/api/source",
+  "$PIXI_PROJECT_ROOT/docs/api/build",
 ], depends-on = [
   "build-apidoc",
 ] }
@@ -115,12 +115,12 @@ build-pdf-docs = { cmd = [
   "sphinx-build",
   "-M",
   "latexpdf",
-  "$PIXI_PROJECT_ROOT/docs/source",
-  "$PIXI_PROJECT_ROOT/docs/build",
+  "$PIXI_PROJECT_ROOT/docs/api/source",
+  "$PIXI_PROJECT_ROOT/docs/api/build",
   "&&",
   "mv",
-  "$PIXI_PROJECT_ROOT/docs/build/latex/*.pdf",
-  "$PIXI_PROJECT_ROOT/docs/build",
+  "$PIXI_PROJECT_ROOT/docs/api/build/latex/*.pdf",
+  "$PIXI_PROJECT_ROOT/docs/api/build",
 ], depends-on = [
   "build-apidoc",
 ] }
