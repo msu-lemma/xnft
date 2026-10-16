@@ -35,17 +35,32 @@ prepare-pixi-cache:
 test:
   image: ghcr.io/prefix-dev/pixi:latest
   stage: build-test
+
+  variables:
+    GIT_SUBMODULE_STRATEGY: normal
+    GIT_SUBMODULE_PATHS: "data"
+    GIT_SUBMODULE_DEPTH: "1"
+    GIT_SUBMODULE_FORCE_HTTPS: "true"
+    GIT_LFS_SKIP_SMUDGE: "1"
+
   parallel:
     matrix:
       - PIXI_ENVIRONMENT:
           - test-py312
           - test-py313
           - test-py314
+
   cache:
     <<: *pixi-cache
+
+  before_script:
+    - git -C data lfs install --local
+    - git -C data lfs pull
+
   script:
     - pixi run -e "$PIXI_ENVIRONMENT" python --version
     - pixi run -e "$PIXI_ENVIRONMENT" test
+
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   artifacts:
     when: always
