@@ -261,7 +261,6 @@ release:
     - echo "Creating release for ${CI_COMMIT_TAG}..."
 
   release:
-  interruptible: false
     name: "Release $CI_COMMIT_TAG"
     description: "Release created by pipeline $CI_PIPELINE_URL."
     tag_name: "$CI_COMMIT_TAG"
