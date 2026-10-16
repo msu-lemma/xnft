@@ -79,7 +79,6 @@ noarch = true
 # BUILD_EDITABLE_PYTHON = "true"
 
 [environments]
-jupyter = ["dev", "test", "jupyter"]
 build = ["build"]
 test = ["test"]
 dev = ["test", "docs", "dev"]
@@ -267,14 +266,6 @@ memray = ">=1.19.3,<2"
 [feature.dev.target.linux.dependencies]
 memray = ">=1.19.3,<2"
 
-[feature.jupyter.dependencies]
-jupyter = ">=1.1.1,<2"
-ipympl = ">=0.10.0,<0.11"
-tqdm = ">=4.70.1,<5"
-numba-progress = ">=1.1.0,<2"
-matplotlib = ">=3.11.2,<4"
-seaborn = ">=0.13.2,<0.14"
-
 [feature.build.dependencies]
 pyinstaller = ">=6.22.3,<7"
 pillow = ">=12.3.0,<13"
@@ -283,6 +274,7 @@ glab = ">=1.120.0,<2"
 imagemagick = ">=7.1.2_31,<8"
 hatchling = ">=1.32.4,<2"
 hatch-vcs = ">=0.5.0,<0.6"
+twine = ">=7.0.0,<8"
 
 [feature.py312.dependencies]
 python = "3.12.*"

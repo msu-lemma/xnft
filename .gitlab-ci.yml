@@ -111,22 +111,28 @@ docs-build:
 package:
   image: ghcr.io/prefix-dev/pixi:latest
   stage: package
+
   variables:
     GIT_STRATEGY: clone
     GIT_DEPTH: "0"
+
   cache:
     <<: *pixi-cache
+
   before_script:
     - apt-get update && apt-get install -y --no-install-recommends git
     - git fetch --force --tags
     - git describe --tags --always --dirty
+
   script:
     - pixi run --frozen -e build build-wheel
     - pixi publish --target-dir=dist
+
     # Get file names for release stages
     - echo "CONDA_FILE=$(find dist -maxdepth 1 -type f -name '*.conda' -printf '%f\n')" >> package.env
     - echo "WHEEL_FILE=$(find dist -maxdepth 1 -type f -name '*.whl' -printf '%f\n')" >> package.env
     - echo "SDIST_FILE=$(find dist -maxdepth 1 -type f -name '*.tar.gz' -printf '%f\n')" >> package.env
+
   artifacts:
     expire_in: 30 days
     paths:
@@ -135,6 +141,54 @@ package:
       - "dist/*.tar.gz"
     reports:
       dotenv: package.env
+
+# Publish the latest build wheel
+publish-wheel:
+  stage: release
+  image: ghcr.io/prefix-dev/pixi:latest
+
+  variables:
+    TWINE_USERNAME: "gitlab-ci-token"
+    TWINE_PASSWORD: "$CI_JOB_TOKEN"
+
+  needs:
+    - job: test
+    - job: package
+      artifacts: true
+
+  rules:
+    - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
+
+  script:
+    - pixi run -e build python -m twine upload
+      --non-interactive
+      --repository-url
+      "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi"
+      dist/*.whl
+      dist/*.tar.gz
+
+# Publish the latest conda package
+publish-conda:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/cli:latest
+
+  variables:
+    GLAB_ENABLE_CI_AUTOLOGIN: "true"
+
+  needs:
+    - job: test
+    - job: package
+      artifacts: true
+
+  rules:
+    - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
+
+  script:
+    - CONDA_FILE="$(find dist -maxdepth 1 -type f -name '*.conda' -print -quit)"
+    - echo "Uploading $(basename "${CONDA_FILE}")"
+    - glab packages upload "${CONDA_FILE}" \
+      --name "${CI_PROJECT_NAME}-dev" \
+      --version "${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}"
 
 # Upload packages to registry
 package-release:
