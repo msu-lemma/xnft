@@ -10,6 +10,33 @@ channels = ["https://prefix.dev/conda-forge"]
 preview = ["pixi-build"]
 exclude-newer = "14d" # Wait two weeks before using new packages
 
+[workspace.dependencies]
+python = ">=3.14.7,<3.15"
+
+# Core numerical packages
+scipy = ">=1.18.1,<2"
+numpy = ">=2.3.5,<3"
+numba = ">=0.63.1,<0.64"
+xarray = ">=2026.7.0,<2027"
+finufft = ">=2.5.1,<3"
+
+# Graphical user interface
+pyside6 = ">=6.11.2,<7"
+pyqtgraph = ">=0.14.0,<0.15"
+
+# Plot formatting
+colorcet = ">=3.2.1,<4"
+
+# File IO
+pyyaml = ">=6.0.3,<7"  # Load theoretical aperture files
+netcdf4 = ">=1.7.4,<2" # Export xarray to HDF5 (reports exporting)
+h5py = ">=3.16.0,<4"   # Read HDF5 files for LEmmA formatted measurement loader
+pandas = ">=3.0.6,<4"  # Gain calibration file loader
+
+# Unit handling/formatting
+quantiphy = ">=2.23,<3"
+unyt = ">=3.1.0,<4"
+
 [package]
 name = "xnft"
 version = "0.0.0.dev0"
@@ -23,11 +50,25 @@ channels = ["https://prefix.dev/conda-forge"]
 git = ">=2.53.0,<3"
 
 [package.host-dependencies]
-# setuptools = ">=82.0.0,<83"
-# setuptools_scm = ">=9.2.2,<10"
 hatchling = ">=1.32.4,<2"
 hatch-vcs = ">=0.5.0,<0.6"
 
+[package.run-dependencies]
+python = { workspace = true }
+scipy = { workspace = true }
+numpy = { workspace = true }
+numba = { workspace = true }
+xarray = { workspace = true }
+finufft = { workspace = true }
+pyside6 = { workspace = true }
+pyqtgraph = { workspace = true }
+colorcet = { workspace = true }
+pyyaml = { workspace = true }
+netcdf4 = { workspace = true }
+h5py = { workspace = true }
+pandas = { workspace = true }
+quantiphy = { workspace = true }
+unyt = { workspace = true }
 
 [package.build.config]
 noarch = false
@@ -187,7 +228,7 @@ pytest = ">=9.1.1,<10"
 pytest-cov = ">=7.1.0,<8"
 pytest-xdist = ">=3.8.0,<4"
 types-pyyaml = ">=6.0.12.20260906,<7"
-ruff = ">=0.16.9,<0.17"
+ruff = ">=0.16.10,<0.17"
 pytest-qt = ">=4.5.0,<5"
 
 [feature.test.target.osx.dependencies]
@@ -213,7 +254,7 @@ texlive-core = ">=20260301,<20260302"
 [feature.dev.dependencies]
 ty = ">=0.0.84,<0.0.85"
 flake8 = ">=7.4.1,<8"
-pyflakes = ">=4.0.0,<5"
+pyflakes = ">=4.0.1,<5"
 black = ">=26.5.1,<27"
 scipy-stubs = ">=1.18.1.1,<2"
 pandas-stubs = ">=3.0.5.260914,<4"
@@ -236,8 +277,7 @@ seaborn = ">=0.13.2,<0.14"
 [feature.build.dependencies]
 pyinstaller = ">=6.22.3,<7"
 pillow = ">=12.3.0,<13"
-# setuptools_scm = ">=10.3.4,<11"
-uv = ">=0.12.20,<0.13"
+uv = ">=0.12.21,<0.13"
 glab = ">=1.120.0,<2"
 imagemagick = ">=7.1.2_31,<8"
 hatchling = ">=1.32.4,<2"
