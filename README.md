@@ -9,7 +9,7 @@
 | Package | [![Latest Release](/../../badges/release.svg)](/../../releases) |
 | Meta | ![License: MIT](https://img.shields.io/badge/License-MIT-green) |
 
-<!-- <img src="docs/images/xnft.svg"  width="100" height="100" alt="xNFT Logo"> -->
+<img src="docs/images/xnft.svg" height="120" width="100" alt="xNFT Logo" style="padding-right: 30px;"><img src="src/xnft/resources/logos/lemma_logo_transparent.png"  height="120" alt="LEmmA Group Logo" style="padding-right: 30px;"><img src="src/xnft/resources/logos/emrg_logo_vector.svg"  height="100" width="175" alt="Electromagnetics Research Group Wordmark" style="padding-right: 30px;">
 
 ## What is _xNFT_?
 
