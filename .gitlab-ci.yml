@@ -1,10 +1,10 @@
 stages:
   - pixi-cache
   - build-test
+  - package
   - release
 
 variables:
-  # GIT_LFS_SKIP_SMUDGE: "1"
   DEBIAN_FRONTEND: "noninteractive"
   PIXI_CACHE_DIR: "$CI_PROJECT_DIR/.pixi-cache"
   QT_QPA_PLATFORM: "offscreen" # Allow rendering on headless platforms
@@ -88,22 +88,102 @@ docs-build:
       - docs/api/build/*.pdf
       - docs/api/build/xnft-docs.tar.gz
 
+# Generate packaged applications
+package:
+  image: ghcr.io/prefix-dev/pixi:latest
+  stage: package
+  cache:
+    <<: *pixi-cache
+
+  script:
+    - pixi run -e build build-wheel
+    - pixi publish --path dist
+
+    # Get file names for release stages
+    - echo "CONDA_FILE=$(find dist -maxdepth 1 -type f -name '*.conda' -printf '%f\n')" >> package.env
+    - echo "WHEEL_FILE=$(find dist -maxdepth 1 -type f -name '*.whl' -printf '%f\n')" >> package.env
+    - echo "SDIST_FILE=$(find dist -maxdepth 1 -type f -name '*.tar.gz' -printf '%f\n')" >> package.env
+
+  artifacts:
+    expire_in: 30 days
+    paths:
+      - "dist/*.conda"
+      - "dist/*.whl"
+      - "dist/*.tar.gz"
+    reports:
+      dotenv: package.env
+
+# Upload packages to registry
+package-release:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/cli:latest
+
+  variables:
+    GLAB_ENABLE_CI_AUTOLOGIN: "true"
+
+  needs:
+    - job: test
+    - job: package
+      artifacts: true
+
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+(a\d+|b\d+|rc\d+)?$/'
+
+  script:
+    - |
+      for PACKAGE_FILE in dist/*.conda dist/*.whl dist/*.tar.gz; do
+        if [ ! -f "${PACKAGE_FILE}" ]; then
+          continue
+        fi
+
+        echo "Uploading $(basename "${PACKAGE_FILE}")"
+
+        glab packages upload "${PACKAGE_FILE}" \
+          --name "${CI_PROJECT_NAME}" \
+          --version "${CI_COMMIT_TAG}"
+      done
+
+# Create release for tagged versions
 release:
   stage: release
   image: registry.gitlab.com/gitlab-org/cli:latest
+
   variables:
     GLAB_ENABLE_CI_AUTOLOGIN: "true"
-  cache:
-    <<: *pixi-cache
+
   needs:
     - job: test
+    - job: package
+      artifacts: true
+    - job: package-release
+
   rules:
     - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+(a\d+|b\d+|rc\d+)?$/'
+
   before_script: []
+
   script:
-    - echo "Creating release for $CI_COMMIT_TAG..."
+    - echo "Creating release for ${CI_COMMIT_TAG}..."
+
   release:
     name: "Release $CI_COMMIT_TAG"
     description: "Release created by pipeline $CI_PIPELINE_URL."
     tag_name: "$CI_COMMIT_TAG"
     ref: "$CI_COMMIT_SHA"
+
+    assets:
+      links:
+        - name: "$CONDA_FILE"
+          url: "$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/generic/$CI_PROJECT_NAME/$CI_COMMIT_TAG/$CONDA_FILE"
+          filepath: "/packages/$CONDA_FILE"
+          link_type: "package"
+
+        - name: "$WHEEL_FILE"
+          url: "$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/generic/$CI_PROJECT_NAME/$CI_COMMIT_TAG/$WHEEL_FILE"
+          filepath: "/packages/$WHEEL_FILE"
+          link_type: "package"
+
+        - name: "$SDIST_FILE"
+          url: "$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/generic/$CI_PROJECT_NAME/$CI_COMMIT_TAG/$SDIST_FILE"
+          filepath: "/packages/$SDIST_FILE"
+          link_type: "package"
