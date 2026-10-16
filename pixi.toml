@@ -11,7 +11,7 @@ preview = ["pixi-build"]
 exclude-newer = "14d" # Wait two weeks before using new packages
 
 [workspace.dependencies]
-python = ">=3.12,<3.15"
+python = ">=3.12,<3.16"
 
 # Core numerical packages
 scipy = ">=1.18.1,<2"
@@ -71,11 +71,7 @@ quantiphy = { workspace = true }
 unyt = { workspace = true }
 
 [package.build.config]
-noarch = false
-# compilers = [
-#     "cxx",
-# ]
-
+noarch = true
 
 [activation.env]
 # Workaround to enforce editable installation -- see:
@@ -290,9 +286,11 @@ hatch-vcs = ">=0.5.0,<0.6"
 
 [feature.py312.dependencies]
 python = "3.12.*"
+"backports.zstd" = ">=1.7,<2"
 
 [feature.py313.dependencies]
 python = "3.13.*"
+"backports.zstd" = ">=1.7,<2"
 
 [feature.py314.dependencies]
 python = "3.14.*"
