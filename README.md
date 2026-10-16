@@ -2,9 +2,9 @@
 
 <table>
   <tr>
-    <td><img src="docs/images/xnft.svg" height="140" alt="xNFT Logo" ></td>
-    <td><img src="src/xnft/resources/logos/lemma_logo_transparent.png"  height="140" alt="LEmmA Group Logo" ></td>
-    <td><br><br><img src="src/xnft/resources/logos/emrg_logo_vector.svg"  height="70" alt="Electromagnetics Research Group Wordmark"></td>
+    <td><a><img src="docs/images/xnft.svg" height="140" alt="xNFT Logo" ></a></td>
+    <td><a href="https://sites.google.com/site/mauroettorre/home"><img src="src/xnft/resources/logos/lemma_logo_transparent.png"  height="140" alt="LEmmA Group Logo" ></a></td>
+    <td><br><br><a href="https://www.egr.msu.edu/emrg/"><img src="src/xnft/resources/logos/emrg_logo_vector.svg"  height="70" alt="Electromagnetics Research Group Wordmark"></a></td>
   </tr>
 </table>
 
