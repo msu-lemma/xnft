@@ -27,21 +27,27 @@ prepare-pixi-cache:
     <<: *pixi-cache
     policy: pull-push
   script:
-    - pixi install -e test
-  rules:
-    - changes:
-        - pixi.lock
-        - pixi.toml
-        - pyproject.toml
+    - pixi install -e test-py310
+    - pixi install -e test-py311
+    - pixi install -e test-py312
+    - pixi install -e test-py313
+    - pixi install -e test-py314
 
-# Run test cases
+# Run test cases for all supported python versions
 test:
   image: ghcr.io/prefix-dev/pixi:latest
   stage: build-test
+  parallel:
+    matrix:
+      - PIXI_ENVIRONMENT:
+          - test-py312
+          - test-py313
+          - test-py314
   cache:
     <<: *pixi-cache
   script:
-    - pixi run -e test test
+    - pixi run -e "$PIXI_ENVIRONMENT" python --version
+    - pixi run -e "$PIXI_ENVIRONMENT" test
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   artifacts:
     when: always

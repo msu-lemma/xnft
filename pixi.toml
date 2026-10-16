@@ -11,7 +11,7 @@ preview = ["pixi-build"]
 exclude-newer = "14d" # Wait two weeks before using new packages
 
 [workspace.dependencies]
-python = ">=3.14.7,<3.15"
+python = ">=3.12,<3.15"
 
 # Core numerical packages
 scipy = ">=1.18.1,<2"
@@ -87,6 +87,11 @@ jupyter = ["dev", "test", "jupyter"]
 build = ["build"]
 test = ["test"]
 dev = ["test", "docs", "dev"]
+
+# Python version testing environments
+test-py312 = ["test", "py312"]
+test-py313 = ["test", "py313"]
+test-py314 = ["test", "py314"]
 
 [environments.docs]
 features = ["docs"]
@@ -282,3 +287,12 @@ glab = ">=1.120.0,<2"
 imagemagick = ">=7.1.2_31,<8"
 hatchling = ">=1.32.4,<2"
 hatch-vcs = ">=0.5.0,<0.6"
+
+[feature.py312.dependencies]
+python = "3.12.*"
+
+[feature.py313.dependencies]
+python = "3.13.*"
+
+[feature.py314.dependencies]
+python = "3.14.*"
