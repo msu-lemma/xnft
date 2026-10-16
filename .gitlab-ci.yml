@@ -107,7 +107,7 @@ package:
     - git describe --tags --always --dirty
   script:
     - pixi run --frozen -e build build-wheel
-    - pixi publish --path dist
+    - pixi publish --target-dir=dist
     # Get file names for release stages
     - echo "CONDA_FILE=$(find dist -maxdepth 1 -type f -name '*.conda' -printf '%f\n')" >> package.env
     - echo "WHEEL_FILE=$(find dist -maxdepth 1 -type f -name '*.whl' -printf '%f\n')" >> package.env
