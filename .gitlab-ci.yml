@@ -4,6 +4,14 @@ stages:
   - package
   - release
 
+workflow:
+  auto_cancel:
+    on_new_commit: interruptible
+    on_job_failure: all
+
+default:
+  interruptible: true
+
 variables:
   DEBIAN_FRONTEND: "noninteractive"
   PIXI_CACHE_DIR: "$CI_PROJECT_DIR/.pixi-cache"
@@ -59,7 +67,7 @@ test:
 
   script:
     - pixi run -e "$PIXI_ENVIRONMENT" python --version
-    - pixi run -e "$PIXI_ENVIRONMENT" test
+    - pixi run -e "$PIXI_ENVIRONMENT" pytest -s -n 8
 
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   artifacts:
@@ -149,7 +157,8 @@ package:
       dotenv: package.env
 
 # Publish the latest build wheel
-publish-wheel:
+publish-wheel: 
+  interruptible: false
   stage: release
   image: ghcr.io/prefix-dev/pixi:latest
 
@@ -175,6 +184,7 @@ publish-wheel:
 
 # Publish the latest conda package
 publish-conda:
+  interruptible: false
   stage: release
   image: registry.gitlab.com/gitlab-org/cli:latest
 
@@ -198,6 +208,7 @@ publish-conda:
 
 # Upload packages to registry
 package-release:
+  interruptible: false
   stage: release
   image: registry.gitlab.com/gitlab-org/cli:latest
 
@@ -228,6 +239,7 @@ package-release:
 
 # Create release for tagged versions
 release:
+  interruptible: false
   stage: release
   image: registry.gitlab.com/gitlab-org/cli:latest
 
@@ -249,6 +261,7 @@ release:
     - echo "Creating release for ${CI_COMMIT_TAG}..."
 
   release:
+  interruptible: false
     name: "Release $CI_COMMIT_TAG"
     description: "Release created by pipeline $CI_PIPELINE_URL."
     tag_name: "$CI_COMMIT_TAG"
