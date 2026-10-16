@@ -54,6 +54,7 @@ test:
     <<: *pixi-cache
 
   before_script:
+    - apt-get update && apt-get install -y --no-install-recommends git git-lfs
     - git -C data lfs install --local
     - git -C data lfs pull
 
