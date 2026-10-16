@@ -174,7 +174,8 @@ Optional test data is stored in a secondary **[`xnft-data`](https://www.gitlab.m
 To pull the datasets, run:
 
 ```sh
-git submodule update --init --recursive
+GIT_LFS_SKIP_SMUDGE=1 git submodule update --init --recursive
+git submodule foreach --recursive "git lfs pull"
 ```
 
 This will download datasets in to the `data/...` folders.
