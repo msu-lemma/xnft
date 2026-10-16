@@ -27,8 +27,6 @@ prepare-pixi-cache:
     <<: *pixi-cache
     policy: pull-push
   script:
-    - pixi install -e test-py310
-    - pixi install -e test-py311
     - pixi install -e test-py312
     - pixi install -e test-py313
     - pixi install -e test-py314
