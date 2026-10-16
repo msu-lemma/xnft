@@ -9,11 +9,15 @@ from __future__ import annotations
 
 import os
 import pickle
+import sys
 import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from compression import zstd
+if sys.version_info >= (3, 14):
+    from compression import zstd
+else:
+    from backports import zstd
 
 # Only imports Projec tfor type checking
 if TYPE_CHECKING:

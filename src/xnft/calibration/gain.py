@@ -17,7 +17,7 @@ from numpy.typing import NDArray
 from PySide6.QtCore import QStandardPaths
 
 if TYPE_CHECKING:
-    from ..project.nodes.fields import FieldNode  # noqa: TC004
+    from ..project.nodes.fields import FieldNode
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +54,7 @@ class GainCalibrationReference:
 @dataclass
 class GainCalibration:
     reference: GainCalibrationReference
-    measurement: FieldNode
+    measurement: "FieldNode"
 
 
 def copy_gain_cal_file(file_path):
