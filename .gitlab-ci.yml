@@ -128,6 +128,7 @@ package:
     <<: *pixi-cache
 
   before_script:
+    - apt-get update && apt-get install -y --no-install-recommends git
     - git fetch --force --tags
     - git describe --tags --always --dirty
 
@@ -157,7 +158,7 @@ package:
       dotenv: package.env
 
 # Publish the latest build wheel
-publish-wheel: 
+publish-wheel:
   interruptible: false
   stage: release
   image: ghcr.io/prefix-dev/pixi:latest
