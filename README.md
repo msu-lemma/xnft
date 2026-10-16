@@ -184,7 +184,7 @@ This will download datasets in to the `data/...` folders.
 
 Documentation can be found in the **[docs folder](docs)**.
 
-- The **[Getting Started](docs/getting_started.md)** tutorial is the best place to start.
+- The **[Getting Started](docs/getting_started.md)** tutorial and video is the best place to start.
 - A more in depth **[User Guide](docs/user_guide.md)** is also available.
 
 <!-- 
