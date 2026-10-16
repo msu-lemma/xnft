@@ -1,5 +1,16 @@
 # _xNFT_: An Open Near-Field Antenna Measurement Software Suite
 
+<table>
+  <tr>
+    <td><img src="docs/images/xnft.svg" height="140" alt="xNFT Logo" ></td>
+    <td><img src="src/xnft/resources/logos/lemma_logo_transparent.png"  height="140" alt="LEmmA Group Logo" ></td>
+    <td><br><br><img src="src/xnft/resources/logos/emrg_logo_vector.svg"  height="70" alt="Electromagnetics Research Group Wordmark"></td>
+  </tr>
+</table>
+
+
+
+
 > [!CAUTION] ⚠️ xNFT is in active development (Beta)
 > _xNFT_ is in active development. In beta, user interfaces and APIs may continue to change. For the most stable operation, use the latest tagged release. For the most up-to-date features and bug fixes, consider using `main` branch.
 
@@ -9,7 +20,7 @@
 | Package | [![Latest Release](/../../badges/release.svg)](/../../releases) |
 | Meta | ![License: MIT](https://img.shields.io/badge/License-MIT-green) |
 
-<img src="docs/images/xnft.svg" height="120" width="100" alt="xNFT Logo" style="padding-right: 30px;"><img src="src/xnft/resources/logos/lemma_logo_transparent.png"  height="120" alt="LEmmA Group Logo" style="padding-right: 30px;"><img src="src/xnft/resources/logos/emrg_logo_vector.svg"  height="100" width="175" alt="Electromagnetics Research Group Wordmark" style="padding-right: 30px;">
+
 
 ## What is _xNFT_?
 
