@@ -87,104 +87,7 @@ _xNFT_ is designed to run on a wide range of operating systems and architectures
 
 ## Installation
 
-### Conda
-
-🚧 TODO
-
-### From Source
-
-For the latest features and bug fixes, install from source using Pixi.
-
-> [!NOTE]
-> The development environment uses the Pixi package manager (<https://pixi.prefix.dev/latest/>) and git (<https://git-scm.com>) to manage the envrionment and source code. It may be helpful to have a basic understanding of Pixi and git to install and use this software.
-
-<details>
-<summary>
-<h3>Prerequisites</h3> (Click to view)
-</summary>
-
-1. Install Pixi package manager by following the steps at: <https://pixi.prefix.dev/latest/installation/>
-
-   After installation, you may need to close and re-open your terminal to properly source the Pixi executable.  Verify the installation was successful by running:
-
-   ```sh
-   pixi --version
-   ```
-
-2. Install `git` and `git-lfs`. This may be installed via the OS package manager or pixi.
-
-   Choose only **_one_** option below:
-    - **Windows (Winget):** In any "PowerShell" run:
-
-        ```PowerShell
-        winget install --id Git.Git -e --source winget
-        ```
-
-    - **macOS or Linux (Pixi):** in a terminal run:
-
-        ```sh
-        pixi global install --environment git --expose git git-lfs
-        ```
-
-        This will add the `git` and `git-lfs` executables to a global directory (typically in your home folder) and add the `git` executable to your terminal's search path.
-
-    - **macOS (Homebrew):** In terminal install via [Homebrew](https://brew.sh):
-
-        ```sh
-        brew install git git-lfs
-        ```
-
-    - **Ubuntu or Debian (APT):** In terminal install via apt:
-
-        ```sh
-        sudo apt update
-        sudo apt install git git-lfs
-        ```
-
-3. Install git-lfs hooks:
-
-    ```sh
-    git lfs install
-    ```
-
-</details>
-
-#### Download
-
-1. Open a terminal/PowerShell and navigate to the location where you would like to download the project
-2. Clone this repository by clicking the **Code** button in the upper right and selecting either "Clone with SSH" or "Clone with HTTPS" to copy the repo URL, then run:
-
-    ```shell
-    git clone <copied-url>
-    ```
-
-> [!Note]
-> The SSH option will use your SSH keys allowing for more convenient passwordless authentication if your ssh-agent is properly configured.
-
-#### Install and Run
-
-To quickly install the environment to run _xNFT_, run:
-
-```shell
-pixi run xnft
-```
-
-This will install all packages necessary into the `default` Pixi environment, then run _xNFT_ in the environment.
-> [!NOTE]
-> On the first run of `xnft` it may take some time to open as packages are compiled to Python bytecode. These compiled packages will be cached and it will open and run much faster on subsequent launches.
-
-#### Download Test Data (Optional)
-
-Optional test data is stored in a secondary **[`xnft-data`](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft-data)** repository included as a git submodule in this project.  Note that these archives contain sevaral gigabytes of data and are thus not downloaded by default.
-
-To pull the datasets, run:
-
-```sh
-GIT_LFS_SKIP_SMUDGE=1 git submodule update --init --recursive
-git submodule foreach --recursive "git lfs pull"
-```
-
-This will download datasets in to the `data/...` folders.
+To install _xNFT_ and download test data, refer to **[Installing _xNFT_](docs/installing.md)**.
 
 ## Documentation
 
@@ -257,7 +160,7 @@ Copyright 2026 Michigan State University. All rights reserved.
 
 The original source code for this project is distributed under the [MIT license](LICENSE).
 
-This project depends on third-party libraries which are distributed separately and remain subject to their respective licenses.  For a complete list of runtime dependencies, see the `package.run-dependencies` section of the [`pixi.toml`](pixi.toml) file.
+This project depends on third-party libraries which are distributed separately and remain subject to their respective licenses.  For a complete list of runtime dependencies, see the `workspace.run-dependencies` section of the [`pixi.toml`](pixi.toml) file.
 
 ## Acknowledgements
 
