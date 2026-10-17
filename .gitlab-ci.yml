@@ -192,7 +192,6 @@ publish-conda:
 
   variables:
     GLAB_ENABLE_CI_AUTOLOGIN: "true"
-    GITLAB_HOST: "gitlab.msu.edu"
 
   needs:
     - job: test
@@ -203,6 +202,7 @@ publish-conda:
     - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
 
   script:
+    - unset GITLAB_HOST
     - CONDA_FILE="$(find dist -maxdepth 1 -type f -name '*.conda' -print -quit)"
     - echo "Uploading $(basename "${CONDA_FILE}")"
     - glab packages upload "${CONDA_FILE}"
