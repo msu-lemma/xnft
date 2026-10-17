@@ -67,7 +67,7 @@ test:
 
   script:
     - pixi run -e "$PIXI_ENVIRONMENT" python --version
-    - pixi run -e "$PIXI_ENVIRONMENT" pytest -s -n 8
+    - pixi run -e "$PIXI_ENVIRONMENT" pytest -s -n 16
 
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   artifacts:
