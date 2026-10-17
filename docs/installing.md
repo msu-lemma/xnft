@@ -1,5 +1,10 @@
 # Installing _xNFT_
 
+## Table of Contents
+
+1. [Install via Package (pip/conda/pixi)](#install-via-package-pipcondapixi)
+2. [Install From Source](#installing-from-source)
+
 ## Install via Package (pip/conda/pixi)
 
 > [!warning] 🚧 Work in progress 🚧
@@ -85,7 +90,7 @@ To install _xNFT_ from source, it is recommended to use Pixi to manage the envir
 
 </details>
 
-#### Download
+### 1. Download Source
 
 1. Open a terminal/PowerShell and navigate to the location where you would like to download the project
 2. Clone this repository by clicking the **Code** button in the upper right and selecting either "Clone with SSH" or "Clone with HTTPS" to copy the repo URL, then run:
@@ -97,19 +102,7 @@ To install _xNFT_ from source, it is recommended to use Pixi to manage the envir
 > [!Note]
 > The SSH option will use your SSH keys allowing for more convenient passwordless authentication if your ssh-agent is properly configured.
 
-#### Install and Run
-
-To quickly install the environment to run _xNFT_, run:
-
-```shell
-pixi run xnft
-```
-
-This will install all packages necessary into the `default` Pixi environment, then run _xNFT_ in the environment.
-> [!NOTE]
-> On the first run of `xnft` it may take some time to open as packages are compiled to Python bytecode. These compiled packages will be cached and it will open and run much faster on subsequent launches.
-
-#### Download Test Data (Optional)
+### 2. Download Test Data (Optional)
 
 Optional test data is stored in a secondary **[`xnft-data`](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft-data)** repository included as a git submodule in this project.  Note that these archives contain sevaral gigabytes of data and are thus not downloaded by default.
 
@@ -121,3 +114,15 @@ git submodule foreach --recursive "git lfs pull"
 ```
 
 This will download datasets in to the `data/...` folders.
+
+### 3. Install and Run
+
+To quickly install the environment to run _xNFT_, run:
+
+```shell
+pixi run xnft
+```
+
+This will install all packages necessary into the `default` Pixi environment, then run _xNFT_ in the environment.
+> [!NOTE]
+> On the first run of `xnft` it may take some time to open as packages are compiled to Python bytecode. These compiled packages will be cached and it will open and run much faster on subsequent launches.

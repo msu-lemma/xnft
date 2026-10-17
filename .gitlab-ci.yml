@@ -202,10 +202,10 @@ publish-conda:
     - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
 
   script:
-    - unset GITLAB_HOST
     - CONDA_FILE="$(find dist -maxdepth 1 -type f -name '*.conda' -print -quit)"
     - echo "Uploading $(basename "${CONDA_FILE}")"
-    - glab packages upload "${CONDA_FILE}"
+    - GITLAB_HOST="${CI_SERVER_HOST}" glab packages upload "${CONDA_FILE}"
+      --repo "${CI_PROJECT_PATH}"
       --name "${CI_PROJECT_NAME}-dev"
       --version "${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}"
 
