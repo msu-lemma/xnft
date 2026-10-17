@@ -137,7 +137,7 @@ A summary of the high-impact issues are included in the [Work Items](https://www
 
 ## Contributing
 
-If you find a bug or feature, please check if an issue exists in [Work Items](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/work_items). submit an issue in the .
+If you find a bug or feature, please check if an issue exists in [Work Items](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/work_items). submit an issue in the 🚧TODO.
 
 Refer to [CONTRIBUTING](CONTRIBUTING.md) for further guidance.
 
