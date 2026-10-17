@@ -62,8 +62,6 @@ test:
     <<: *pixi-cache
 
   before_script:
-    # Rewrite to use HTTPS instead of ssh
-    - git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@www.gitlab.msu.edu/".insteadOf "ssh://git@gitlab.msu.edu/"
     - apt-get update && apt-get install -y --no-install-recommends git git-lfs
     - git -C data lfs pull
 
