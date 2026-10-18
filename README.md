@@ -11,8 +11,8 @@
 | | |
 | ------ | ------ |
 | Testing | [![Pipeline Status](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/badges/main/pipeline.svg?ignore_skipped=true&job=test-job)](../../pipelines) ![Test Coverage](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/badges/main/coverage.svg) |
-| Package | [![Latest Release](/../../badges/release.svg)](/../../releases) |
-| Meta | ![License: MIT](https://img.shields.io/badge/License-MIT-green) |
+| Package | [![Latest Release](/../../badges/release.svg)](/../../releases) ![python: 3.12 , 3.13 , 3.14](https://img.shields.io/badge/python-3.12\|3.13\|3.14-orange) |
+| Meta | ![License: MIT](https://img.shields.io/badge/License-MIT-green) ![status: beta](https://img.shields.io/badge/status-beta-blue) |
 
 > [!CAUTION] ⚠️ xNFT is in active development (Beta)
 > _xNFT_ is in active development. In beta, user interfaces and APIs may continue to change.
