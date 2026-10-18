@@ -25,7 +25,7 @@ After installation the _xNFT_ application should be included in the `PATH` and s
 
 Once _xNFT_ starts, a window similar the window below should open.
 
-![New _xNFT_ Window](images/quick_start/xnft_new_window.png)
+<img src="images/quick_start/xnft_new_window.png" width=640px>
 > Fig. 1.  New _xNFT_ Window.
 
 The user interface (UI) elements are annotated in the picture below. These names will be used to refer to the various section of the UI throughout this tutorial.
