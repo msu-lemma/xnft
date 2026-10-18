@@ -85,7 +85,7 @@ For the AUT aperture size, enter `93.1 mm`. This is the largest extent of the AU
 
 To apply probe corrections, a probe must be added to the project.  This can be performed by right-clicking on the Probes node and selecting "New Measurement Probe".
 
-A dialog will appear where the user can select a standard probe size or enter custom probe dimensions.
+A dialog will appear where the user can select a standard probe size or enter custom probe dimensions. This test data used a WR28 probe so we will select that from the menu.
 
 <img src="images/quick_start/new_measurement_probe_dialog.png" width=640px alt="New measurement probe dialog">
 
