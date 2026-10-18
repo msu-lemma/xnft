@@ -4,7 +4,7 @@
 
 The main xNFT window, shown in Fig. 1, is structured to be similar to other engineering design software.
 
-![User Interface Overview](images/user_interface_overview.png)
+![User Interface Overview](images/user_guide/user_interface_overview.png)
 
 > **Fig. 1.**  xNFT main window.
 
@@ -21,7 +21,7 @@ The main window is separated into five areas:
 
 ## Project Manager
 
-![User Interface Overview](images/project_manager.png)
+![User Interface Overview](images/user_guide/project_manager.png)
 
 > **Fig. 2:** Project manager view of a typical project.
 
@@ -38,15 +38,15 @@ By right-clicking on a _Node_ an additional list of actions is presented.
 
 ### Project Node
 
-![Project Node](images/pm_project.png)
+![Project Node](images/user_guide/pm_project.png)
 > **Fig. 3:** Project node.
 
 ### Fields Node
 
-![Fields Node](images/pm_fields.png)
+![Fields Node](images/user_guide/pm_fields.png)
 > **Fig. 4:** Fields node.
 
-![Field Node](images/pm_field.png)
+![Field Node](images/user_guide/pm_field.png)
 > **Fig. 5:** Field node.
 
 ### Exporting Fields Data
@@ -59,39 +59,39 @@ The _Field Node_  provides the functionality to export field data to HDF5 `.h5` 
 
 ### Probes Node
 
-![Probes Node](images/pm_probes.png)
+![Probes Node](images/user_guide/pm_probes.png)
 > **Fig. 6:** Probes node.
 
-![Probe Node](images/pm_probe.png)
+![Probe Node](images/user_guide/pm_probe.png)
 > **Fig. 7:** Probe node.
 
 ### Calibrations Node
 
-![Calibrations Node](images/pm_calibration.png)
+![Calibrations Node](images/user_guide/pm_calibration.png)
 > **Fig. 8:** Calibrations node.
 
 ### Analysis Node
 
-![Analysis Node](images/pm_analysis.png)
+![Analysis Node](images/user_guide/pm_analysis.png)
 > **Fig. 9:** Analysis node.
 
-![Analysis Node](images/pm_analysis_pnft.png)
+![Analysis Node](images/user_guide/pm_analysis_pnft.png)
 > **Fig. 10:** Analysis: Planar near-field transform node.
 
 ### Reports Node
 
-![Reports Node](images/pm_reports.png)
+![Reports Node](images/user_guide/pm_reports.png)
 > **Fig. 11:** Reports node.
 
-![Report Node](images/pm_report.png)
+![Report Node](images/user_guide/pm_report.png)
 > **Fig. 12:** Report node.
 
 ### Coordinates Node
 
-![Coordinates Node](images/pm_coordinates.png)
+![Coordinates Node](images/user_guide/pm_coordinates.png)
 > **Fig. 13:** Coordinates node.
 
-![Coordinate Node](images/pm_coordinate_scan.png)
+![Coordinate Node](images/user_guide/pm_coordinate_scan.png)
 > **Fig. 14:** Coordinate node.
 
 ## Report Generation
@@ -102,10 +102,10 @@ Reports can be generated for any field by right-clicking on the _Reports Node_. 
 
 The _Line Plot_ report window (Fig. 15) allows the user to add and remove traces by interfacing with the "Traces" list on the left side of the MDI window.  To add a new trace, press the <kbd>+</kbd> button; to remove a selected trace, press the <kbd>–</kbd> button.  When adding a new trace, the _New Trace Dialog_ will open, shown in Fig. 16.
 
-![Line Plot](images/report_line_plot.png)
+![Line Plot](images/user_guide/report_line_plot.png)
 > **Fig. 15:** Line plot displaying the E- and H-Plane cuts of a standard gain horn antenna.
 
-![Line Plot New Trace Dialog](images/report_line_plot_new_trace.png)
+![Line Plot New Trace Dialog](images/user_guide/report_line_plot_new_trace.png)
 > **Fig. 16:** New Trace dialog for Line Plot.
 
 The _New Trace Dialog_ allows the user to select the trace style and slice through the multi-dimensional data to produce the desired plot.  Data selection and slicing options are:
@@ -119,10 +119,10 @@ The _New Trace Dialog_ allows the user to select the trace style and slice throu
 
 The Surface Plot displays an interactive window which allows the user to quickly view field patterns by frequency. The field quantity, component, plotting domain, function, scale, and normalization may be interactive adjusted as well.
 
-![Coordinate Node](images/report_surface_plot_nf.png)
+![Coordinate Node](images/user_guide/report_surface_plot_nf.png)
 > **Fig. 17:** Surface plot of near-field magnitude (left) and phase (right) for a standard gain horn antenna.
 
-![Coordinate Node](images/report_surface_plot_ff.png)
+![Coordinate Node](images/user_guide/report_surface_plot_ff.png)
 > **Fig. 18:** Surface plot of far-field magnitude (left), phase (upper-right), and magnitude in UV coordinates (lower-right) for a standard gain horn antenna.
 
 ### Common Plotting Parameters/Functions
@@ -150,7 +150,7 @@ Report values may be exported by right-clicking on a _Report Node_ and selecting
 
 The Line Plot export dialog (Fig. 19) displays the export directory and file type options.  The Line Plot will save each trace as a new file inside the directory selected.
 
-![Line Plot Export](images/report_export_line_plot.png)
+![Line Plot Export](images/user_guide/report_export_line_plot.png)
 > **Fig. 19**: Line Plot export.
 
 The Surface Plot export dialog (Fig. 20) displays the export directory. The export file type may be selected simply by providing the desired file extension (`.h5` or `.csv`).
@@ -158,5 +158,5 @@ The Surface Plot export dialog (Fig. 20) displays the export directory. The expo
 > [!NOTE]
 > It's _strongly_ encouraged to use HDF5 `.h5` for exporting field data.  Writing fields to CSV `.csv` files can create very large files (100's of megabytes) which are slow to read and write and may result in loss of numerical precision.
 
-![Surface Plot Export](images/report_export_surface_plot.png)
+![Surface Plot Export](images/user_guide/report_export_surface_plot.png)
 > **Fig. 20**: Surface Plot export.
