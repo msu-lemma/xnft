@@ -15,7 +15,6 @@ from PySide6.QtCore import (
     Qt,
 )
 from PySide6.QtGui import (
-    QImage,
     QPainter,
     QPixmap,
 )
@@ -39,17 +38,17 @@ class QMdiAreaWatermark(QMdiArea):
         )
 
         self._lemma_logo_path = str(
-            files("xnft.resources.logos").joinpath("lemma_logo_transparent.png"),
+            files("xnft.resources.logos").joinpath("lemma_logo.svg"),
         )
 
         self._emrg_logo = QSvgRenderer(self._emrg_logo_path)
-        self._lemma_logo = QPixmap.fromImage(QImage(self._lemma_logo_path))
+        self._lemma_logo = QSvgRenderer(self._lemma_logo_path)
 
         self._opacity = 0.5
         self._margin = 12
 
         self._emrg_target_size = QSizeF(510.2 / 2, 164 / 2)
-        self._lemma_target_size = QSizeF(381 / 1.5, 325 / 1.5)
+        self._lemma_target_size = QSizeF(245, 245)
 
         self._oversample_ratio = 2.0
 
@@ -61,7 +60,7 @@ class QMdiAreaWatermark(QMdiArea):
             dpr,
         )
 
-        self._lemma_logo_pixmap = self._scale_pixmap(
+        self._lemma_logo_pixmap = self._svg_to_pixmap(
             self._lemma_logo,
             self._lemma_target_size,
             dpr,
