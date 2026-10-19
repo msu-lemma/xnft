@@ -37,7 +37,6 @@ Development packages are generated from the `main` branch which contain the late
 
 ### Installation
 
-
 ## Installing From Source
 
 To install _xNFT_ from source, it is recommended to use Pixi to manage the environment (<https://pixi.prefix.dev/latest/>).
@@ -92,13 +91,19 @@ To install _xNFT_ from source, it is recommended to use Pixi to manage the envir
 
 ### 1. Download Source
 
-🚧 TODO FIXME: NEEDS HTTPS URL FROM MAIN PAGE 🚧 
+🚧 TODO FIXME: NEEDS HTTPS URL FROM MAIN PAGE 🚧
 
 1. Open a terminal/PowerShell and navigate to the location where you would like to download the project
 2. Clone this repository by clicking the **Code** button in the upper right and selecting either "Clone with SSH" or "Clone with HTTPS" to copy the repo URL, then run:
 
     ```shell
     git clone git@gitlab.msu.edu:ece-lemma/public/xnft/xnft.git
+    ```
+
+3. Enter into the `xnft` directory
+
+    ```shell
+    cd xnft
     ```
 
 > [!Note]
