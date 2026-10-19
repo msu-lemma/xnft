@@ -115,10 +115,25 @@ Optional test data is stored in a secondary **[`xnft-data`](https://www.gitlab.m
 
 To pull the datasets, run:
 
-```sh
-GIT_LFS_SKIP_SMUDGE=1 git submodule update --init --recursive
-git submodule foreach --recursive "git lfs pull"
-```
+1. Pull the file pointers:
+
+   On macOS/Linux:
+
+   ```shell
+   GIT_LFS_SKIP_SMUDGE=1 git submodule update --init --recursive
+   ```
+
+   On Windows (PowerShell):
+
+   ```shell
+   $env:GIT_LFS_SKIP_SMUDGE = '1'; git submodule update --init --recursive
+   ```
+
+2. Download the files
+
+   ```shell
+   git submodule update --init --recursive
+   ```
 
 This will download datasets in to the `data/...` folders.
 
