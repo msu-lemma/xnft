@@ -95,8 +95,8 @@ To install _xNFT_ and download test data, see **[Installing _xNFT_](docs/install
 
 Documentation can be found in the **[docs folder](docs)**.
 
-- The **[Getting Started](docs/getting_started.md)** tutorial and video is the best place to start.
-- A more in depth **[User Guide](docs/user_guide.md)** is also available.
+- **[Getting Started](docs/getting_started.md)**: A quick-start guide including a written tutorial and usage video.
+- **[User Guide](docs/user_guide.md)**: Documentation of user interface and antenna analysis workflow.
 
 ### Developer Documentation
 
