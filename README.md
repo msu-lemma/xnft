@@ -166,4 +166,4 @@ This project depends on third-party libraries which are distributed separately a
 
 ## Acknowledgements
 
-This work was sponsored by the Air Force Research Laboratory (AFRL) under grant number FA87502510001. The views expressed are those of the authors and do not reﬂect the ofﬁcial policy or position of he Department of Defense or the U.S. Government
+This work was sponsored by the Air Force Research Laboratory (AFRL) under grant number FA87502510001. The views expressed are those of the authors and do not reﬂect the ofﬁcial policy or position of the Department of Defense or the U.S. Government.
