@@ -19,11 +19,6 @@ Packaged versions of _xNFT_ are provided in `.conda` (conda/pixi format) and `.w
 
 #### Latest Release Packages
 
-<!-- > [!NOTE]
-> Releases are generally considered stable code. However, as _xNFT_ is still in the beta development cycle (designated as `v#.#.#b#`), releases are not yet considered to be stable.
->
-> For the latest bug fixes and features see [latest development](#latest-development). -->
-
 The latest release can be downloaded from **[Releases](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/releases)**.   Each release contains `.conda` and `.whl` artifacts to install.
 
 - **[Latest Release](https://gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/releases/permalink/latest)**
@@ -148,3 +143,6 @@ pixi run xnft
 This will install all packages necessary into the `default` Pixi environment, then run _xNFT_ in the environment.
 > [!NOTE]
 > On the first run of `xnft` it may take some time to open as packages are compiled to Python bytecode. These compiled packages will be cached and it will open and run much faster on subsequent launches.
+
+
+# TODO ADD NOTE ON HOW TO BUILD .EXE PACKAGE
