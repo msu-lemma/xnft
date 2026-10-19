@@ -4,6 +4,7 @@
 
 1. [Install via Package (pip/conda/pixi)](#install-via-package-pipcondapixi)
 2. [Install From Source](#installing-from-source)
+3. [Build Distributable Package with Embedded Dependencies (Optional)](#build-distributable-package-optional)
 
 ## Install via Package (pip/conda/pixi)
 
@@ -25,10 +26,26 @@ The latest release can be downloaded from **[Releases](https://www.gitlab.msu.ed
 
 #### Latest Development Packages
 
-Development packages are generated from the `main` branch which contain the latest features and bug fixes but may be less stable than the [latest release packages](#latest-release-packages).
+Development packages are generated from the `main` branch which contain the latest features and bug fixes but may be less stable than the [latest release packages](#latest-release-packages). Each build contains `.conda` and `.whl` artifacts to install.
 
-- **[Current development conda package](https://gitlab.msu.edu/api/v4/projects/28094/jobs/artifacts/main/raw/dist/xnft-0.0.0.dev0-pyh4616a5c_0.conda?job=package)** (from `main`)
-- **[Current development wheel]()** (from `main`)
+- **[Development Packages](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/packages/)**
+
+<!-- - **[Current development conda package](https://gitlab.msu.edu/api/v4/projects/28094/jobs/artifacts/main/raw/dist/xnft-0.0.0.dev0-pyh4616a5c_0.conda?job=package)** (from `main`)
+- **[Current development wheel](https://gitlab.msu.edu/api/v4/projects/28094/jobs/artifacts/main/raw/dist?job=package)** (from `main`) -->
+
+##### PyPI Package Install
+
+The latest development wheel package can also be installed directly from the via `pip` by running:
+
+```shell
+pip install xnft --index-url https://www.gitlab.msu.edu/api/v4/projects/28094/packages/pypi/simple
+```
+
+> [!note]
+> When using PyPI, it is recommended to use an environment manager such as [conda](https://docs.conda.io/projects/conda/en/stable/), [pixi](https://pixi.prefix.dev/latest/), [venv](https://docs.python.org/3/library/venv.html), or [pipenv](https://pipenv.pypa.io/en/latest/) to minimize package conflicts with system Python installs.
+
+> [!warning]
+> The PyPI link above will not work until the package is made fully public.
 
 ### Installation
 
@@ -86,14 +103,16 @@ To install _xNFT_ from source, it is recommended to use Pixi to manage the envir
 
 ### 1. Download Source
 
-🚧 TODO FIXME: NEEDS HTTPS URL FROM MAIN PAGE 🚧
-
 1. Open a terminal/PowerShell and navigate to the location where you would like to download the project
 2. Clone this repository by clicking the **Code** button in the upper right and selecting either "Clone with SSH" or "Clone with HTTPS" to copy the repo URL, then run:
 
     ```shell
     git clone git@gitlab.msu.edu:ece-lemma/public/xnft/xnft.git
     ```
+
+    > [!warning]
+    > Update clone URL once project is public:
+    > https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft.git
 
 3. Enter into the `xnft` directory
 
@@ -144,5 +163,17 @@ This will install all packages necessary into the `default` Pixi environment, th
 > [!NOTE]
 > On the first run of `xnft` it may take some time to open as packages are compiled to Python bytecode. These compiled packages will be cached and it will open and run much faster on subsequent launches.
 
+## Build Distributable Package (Optional)
 
-# TODO ADD NOTE ON HOW TO BUILD .EXE PACKAGE
+> [!note]
+> Due to licensing concerns, a redistributable package with embedded third-party dependencies is not provided by the CI.  Users may create this for personal use via the provided scripts if desired.
+
+The `pixi.toml` provides packaging tasks to generate a standalone executable.  Note that this can only generate a target package to run on the same OS/architecture as the build platform, e.g., macOS/arm64, Windows-11/x86, etc.
+
+To build simply run:
+
+```shell
+pixi run build-exe
+```
+
+Once the build completes, the package will be located in the `dist` folder.

@@ -146,7 +146,6 @@ build-pdf-docs = { cmd = [
 build-docs = { depends-on = ["build-html-docs", "build-pdf-docs"] }
 
 [feature.dev.tasks]
-format = { cmd = ["black", "$PIXI_PROJECT_ROOT", "--line-length", "79"] }
 
 [feature.build.tasks.gen-icons]
 cmd = [
@@ -183,39 +182,6 @@ cmd = ["pyinstaller", "--noconfirm", "xnft.spec"]
 
 [feature.build.tasks.build-wheel]
 cmd = ["uv", "build"]
-
-[feature.build.tasks.release]
-args = [{ arg = "platform", default = "osx-arm64" }]
-cmd = [
-  "bash",
-  "-c",
-  """
-set -euo pipefail
-
-VERSION="$(git describe --tags --abbrev=0)"
-VERSION_PEP440="${VERSION#v}"   # remove leading 'v' from tag
-
-TOKEN="$(security find-generic-password -s gitlab-token -w)"
-
-PROJECT_ID=28094
-PACKAGE_NAME=xnft
-FILE="xnft-{{ platform }}-${VERSION_PEP440}.zip"
-FILE_PATH="dist/${FILE}"
-URL="https://gitlab.msu.edu/api/v4/projects/${PROJECT_ID}/packages/generic/${PACKAGE_NAME}/${VERSION}/${FILE}"
-
-curl --fail --show-error --silent \
-  --header "PRIVATE-TOKEN: ${TOKEN}" \
-  --upload-file "${FILE_PATH}" \
-  "${URL}"
-
-curl --fail --show-error --silent \
-  --request POST \
-  --header "PRIVATE-TOKEN: ${TOKEN}" \
-  --data "name={{ platform }}" \
-  --data "url=${URL}" \
-  "https://gitlab.msu.edu/api/v4/projects/${PROJECT_ID}/releases/${VERSION}/assets/links"
-""",
-]
 
 [dependencies]
 # Editable installation not yet supported -- see:
