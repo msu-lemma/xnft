@@ -8,5 +8,5 @@
     "python.analysis.diagnosticSeverityOverrides": {
         "reportMissingImports": "none"
     },
-    "search.useIgnoreFiles": false,
+    // "search.useIgnoreFiles": false,
 }
