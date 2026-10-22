@@ -19,14 +19,63 @@ from quantiphy import Quantity
 from scipy.signal import windows
 
 from ..antennas.probes.probes import MeasurementProbe
-from ..calibration.gain import GainCalibration
 
 # from numpy.typing import ArrayLike
 from ..common.enums import CoordinateSystemType, FieldType
 from ..common.registry import registry
 from ..common.types import FieldDataset
+from ..project.nodes.calibrations import GainCalibrationNode
 
 logger = logging.getLogger(__name__)
+
+
+def calibrate_gain(
+    field: xr.Dataset, gain_calibration: GainCalibrationNode
+) -> xr.Dataset:
+    """Apply gain calibrations to field."""
+    result_field = field.copy(deep=True)
+
+    gain_cal_table = gain_calibration.gain_cal_ref.data
+    gain_cal_meas_field = gain_calibration.gain_cal_field.data
+
+    logger.debug(f"{gain_cal_table=}")
+
+    # Configure gain cal interpolation across frequencies
+    gain_reference_interp = gain_cal_table.interp(
+        frequency=field.frequency,  # NOTE: frequency may be a vector of frequencies
+        method="linear",
+    )
+
+    # Take gain of measured aut field over phi/theta dimensions (max per frequency)
+    gain_meas_aut = 10 * np.log10(
+        ((np.abs(field["E"]) ** 2).sum(dim="component")).max(dim=("theta", "phi"))
+    )
+
+    logger.debug(f"{gain_meas_aut=}")
+
+    # Take gain of reference antenna measured field over phi/theta dimensions (max per frequency)
+    gain_meas_ref = 10 * np.log10(
+        ((np.abs(gain_cal_meas_field["E"]) ** 2).sum(dim="component")).max(
+            dim=("theta", "phi")
+        )
+    )
+
+    logger.debug(f"{gain_meas_ref=}")
+
+    # Correction value to add to our AUT measured field (in dB)
+    gain_correction_db = gain_reference_interp - gain_meas_ref
+    logger.debug(f"{gain_correction_db=}")
+
+    gain_correction = 10 ** (gain_correction_db / 20)
+
+    # logger.debug(f"{gain_correction=}")
+
+    # Convert from power gain back to linear amplitude gain
+    result_field["E"] = field["E"] * gain_correction
+
+    logger.debug(f"{result_field=}")
+
+    return result_field
 
 
 def planar_near_field_transform_t3(
@@ -41,7 +90,7 @@ def planar_near_field_transform_t3(
     e_x,
     e_y,
     z_val,
-    r_far_field=None,
+    r_far_field: float | None = None,
     probe_correction: MeasurementProbe | None = None,
 ):
     r"""
@@ -71,8 +120,8 @@ def planar_near_field_transform_t3(
         E-field y-component
     z_val : float
         Z-height above AUT samples collected at (in meters)
-    r_far_field : int, optional
-        Far-field radius compute transform at, by default 1000
+    r_far_field : float or None, optional
+        Far-field radius compute transform at, by default None
     probe_correction : MeasurementProbe or None, optional
         Probe correction fields to use, if any, by default None
 
@@ -160,7 +209,7 @@ def planar_near_field_transform(
     near_field: xr.Dataset,
     frequencies: np.ndarray | list[float] | None = None,
     probe_correction: MeasurementProbe | None = None,
-    gain_calibration: GainCalibration | None = None,
+    gain_calibration: GainCalibrationNode | None = None,
     dphi: float = 1.0,
     dtheta: float = 1.0,
     window: Callable = windows.boxcar,
@@ -370,7 +419,8 @@ def planar_near_field_transform(
         )
 
     # Call planar near-field transform in parallel
-    # NOTE: it's faster to not run in parallel
+    # NOTE: it's faster to not run in parallel (Observed on macOS;
+    #       performance appears much slower on other platforms, unsure if parallel would be faster)
     # e_mat_list = Parallel(n_jobs=-1, backend="multiprocessing", verbose=10)(
     #     delayed(planar_near_field_transform_t3)(**args) for args in args_list
     # )
@@ -397,5 +447,9 @@ def planar_near_field_transform(
         aperture_size=near_field.attrs["aperture_size"],
         gain_calibration=gain_calibration,
     )
+
+    # Compute gain calibration if provided
+    if gain_calibration is not None:
+        fields = calibrate_gain(fields, gain_calibration)
 
     return fields

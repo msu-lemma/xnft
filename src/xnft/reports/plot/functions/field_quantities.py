@@ -8,7 +8,6 @@ import logging
 from collections import namedtuple
 from enum import Enum
 
-import numpy as np
 import xarray as xr
 
 from ....common.enums import FieldType
@@ -38,38 +37,6 @@ def field_quantity_e(field: xr.Dataset):
     return field["E"]
 
 
-def field_quantity_gain(field: xr.Dataset):
-    if (
-        "gain_calibration" in field.attrs
-        and field.attrs["gain_calibration"] is not None
-    ):
-        gain_cal_node = field.attrs["gain_calibration"]
-        gain_cal_table = gain_cal_node.gain_cal_ref.data
-        gain_cal_field = gain_cal_node.gain_cal_field.data
-
-        frequency = field["frequency"].item()
-
-        print(f"{frequency=}")
-
-        # Configure gain cal interpolation
-        gain_cal_interp = gain_cal_table.interp(
-            frequency=frequency,
-            method="linear",
-            assume_sorted=True,
-        )
-
-        # Take amplitude norm over phi/theta dimensions at current frequency
-        amp_meas = np.sqrt((np.abs(field["E"]) ** 2).sum(dim="component"))
-
-        gain_cal_field_slice = gain_cal_field["E"].sel(frequency=frequency)
-        amp_ref = np.sqrt((np.abs(gain_cal_field_slice) ** 2).sum(dim="component"))
-
-        calibrated_gain_dbi = gain_cal_interp + 20 * np.log10(amp_meas / amp_ref.max())
-        calibrated_gain = 10 ** ((calibrated_gain_dbi) / 10)
-
-        return calibrated_gain
-
-
 class FieldQuantities(Enum):
     RE = FieldQuantity(
         name="rE",
@@ -88,16 +55,4 @@ class FieldQuantities(Enum):
         field_components=FieldComponents,  # All components valid
         enabled=lambda field: True,
         units="",  # NOTE: We can't guarantee unit here
-    )
-    GAIN = FieldQuantity(
-        name="Gain",
-        function=field_quantity_gain,
-        scales=(PlotScales.LINEAR, PlotScales.DECIBELS_10),
-        field_types={FieldType.FAR},  # ratio
-        field_components=FieldComponents,
-        enabled=lambda field: (
-            "gain_calibration" in field.attrs
-            and field.attrs["gain_calibration"] is not None
-        ),
-        units="i",
     )

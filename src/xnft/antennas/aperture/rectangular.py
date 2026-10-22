@@ -99,6 +99,7 @@ def rect_e_far_field(
     amplitude: float = 1.0,
     excitation: str = "te10",  # [te10, uniform]
     apply_prop_const: bool = True,
+    normalize: bool = False,
 ) -> xr.Dataset:
     """
     Generate ideal rectangular aperture field.
@@ -131,6 +132,8 @@ def rect_e_far_field(
         Aperture excitation mode. Must be either `uniform` or `te10`, by default `te10`
     apply_prop_const : bool, optional
         Return only the real normalized weighting values, no phase or propagation loss.
+    normalize : bool, optional
+        Normalize the pattern so that the peak amplitude is 1.0, by default `False`
 
     Returns
     -------
@@ -206,6 +209,12 @@ def rect_e_far_field(
         greens_func_ff = np.exp(-1j * k_0 * r_ff) / (2.0 * np.pi * r_ff)
         c_ff = 1j * ap_x * ap_y * k_0 * e_0
         e_field *= c_ff * greens_func_ff
+
+    if normalize:
+        # Sum over vector components (axis=0)
+        # Max over frequency component (axis=-1)
+        e_field_max = np.sqrt((np.abs(e_field) ** 2).sum(axis=0)).max(axis=(0, 1))
+        e_field /= e_field_max
 
     fields = FieldDataset.create(
         e_field=e_field,

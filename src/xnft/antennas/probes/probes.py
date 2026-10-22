@@ -79,6 +79,7 @@ class MeasurementProbe:
                 flip_y=True,  # Flip pattern 180° about y-axis
                 excitation="te10",
                 apply_prop_const=False,
+                normalize=True,
             )["E"]
 
             # y-oriented probe
@@ -92,6 +93,7 @@ class MeasurementProbe:
                 flip_y=True,  # Flip pattern 180° about y-axis
                 excitation="te10",
                 apply_prop_const=False,
+                normalize=True,
             )["E"]
             # Dims: ('component', 'theta', 'phi', 'frequency')
 
