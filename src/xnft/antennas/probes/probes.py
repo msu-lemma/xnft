@@ -66,7 +66,6 @@ class MeasurementProbe:
         if self.correction_type == ProbeType.IDEAL_RECT:
             wavelength = 2.0 * np.pi / wavenumber
 
-            print(f"{wavelength=}")
             # x-oriented probe
             x_pol_e_field = rect_e_far_field(
                 ap_x=self.source.x,

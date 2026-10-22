@@ -177,8 +177,8 @@ def planar_near_field_transform_t3(
             wavenumber=k0,
         )[0]  # remove frequency axis [0] that is always of size 1
 
-        logger.debug(f"{reception_mat_inv.shape=}")
-        logger.debug(f"{fe_mat.shape=}")
+        # logger.debug(f"{reception_mat_inv.shape=}")
+        # logger.debug(f"{fe_mat.shape=}")
 
         # Perform matrix multiplication of R^-1 matrix and E-field
         # Probe compensation matrix include transform to spherical
