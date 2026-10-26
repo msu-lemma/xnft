@@ -153,7 +153,7 @@ BibTex reference format:
 🚧 TODO
 ```
 
-- Zendoo?
+- Zenodo?
 - .cff file?
 
 ## License

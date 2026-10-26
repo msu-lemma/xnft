@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+title: xNFT - Antenna Measurement Software
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - name: Michigan State University
+    city: East Lansing
+    country: US
+    post-code: "48824"
+    region: Michigan
+  - name: Electromagnetics Research Group (EMRG)
+  - name: >-
+      The Laboratory for Electromagnetics and mm-Wave
+      Antennas (LEmmA) Group
+  - given-names: Jason
+    family-names: Merlo
+    email: merlojas@msu.edu
+    affiliation: Michigan State University
+    orcid: "https://orcid.org/0000-0002-8187-4724"
+  - given-names: Mauro
+    family-names: Ettorre
+    email: ettorre@msu.edu
+    affiliation: Michigan State University
+repository-code: "https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft"
+url: "https://sites.google.com/site/mauroettorre/home"
+abstract: >-
+  xNFT is a cross-platform, high-performance, general
+  purpose antenna measurement and analysis software tool,
+  primarily focusing on near-to-far field transformations
+  (NFTs), permissively distributed under the MIT license.
+license: MIT
