@@ -35,7 +35,7 @@ Development packages are generated from the `main` branch which contain the late
 The latest development wheel package can also be installed directly from the via `pip` by running:
 
 ```shell
-pip install xnft --index-url https://www.gitlab.msu.edu/api/v4/projects/28094/packages/pypi/simple
+uv pip install xnft --index-url https://www.gitlab.msu.edu/api/v4/projects/28094/packages/pypi/simple
 ```
 
 > [!note]
@@ -43,7 +43,29 @@ pip install xnft --index-url https://www.gitlab.msu.edu/api/v4/projects/28094/pa
 
 ### 1.2 Installation
 
-🚧 TODO 🚧
+#### Install from wheel
+
+To install the downloaded wheel run
+
+```shell
+uv pip install xnft-<version>-py3-none-any.whl
+```
+
+Replace `<version>` with the version in the file name downloaded from the link above.
+
+#### Install from conda file
+
+To install the conda package using pixi
+
+```shell
+pixi global install --path xnft-<version>.conda 
+```
+
+To install using conda
+
+```shell
+conda install xnft-<version>.conda 
+```
 
 ## 2. Installing From Source
 
