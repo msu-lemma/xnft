@@ -31,9 +31,11 @@ variables:
 prepare-pixi-cache:
   image: ghcr.io/prefix-dev/pixi:latest
   stage: pixi-cache
+
   cache:
     <<: *pixi-cache
     policy: pull-push
+
   script:
     - pixi install -e test-py312
     - pixi install -e test-py313
@@ -50,7 +52,7 @@ test:
     GIT_SUBMODULE_DEPTH: "1"
     GIT_SUBMODULE_FORCE_HTTPS: "true"
     GIT_LFS_SKIP_SMUDGE: "1"
-    PYTHON_CPU_COUNT: "16"
+    PYTHON_CPU_COUNT: "16" # limit resources on large CPU clusters
 
   parallel:
     matrix:

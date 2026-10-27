@@ -1,6 +1,8 @@
 """
 Loader functions for Ansys HFSS files.
 
+Ansys and HFSS are trademarks of ANSYS, Inc.  This project is not endorsed by, affiliated with, or sponsored by ANSYS, Inc.
+
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
 

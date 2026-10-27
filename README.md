@@ -17,6 +17,9 @@
 > [!CAUTION] ⚠️ xNFT is in active development (Beta)
 > _xNFT_ is in active development. In beta, user interfaces and APIs may continue to change.
 
+> [!NOTE]
+> This repository is [mirrored on GitHub](https://github.com/msu-lemma/xnft) for public contributions. Issues and pull requests may be submitted there. The authoritative source for xNFT is the [Michigan State University GitLab repository](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft). All changes will be first merged into the GitLab instance, then mirrored to the upstream GitHub.
+
 ## What is _xNFT_?
 
 **_xNFT_** is a cross-platform, high-performance, general purpose antenna measurement and analysis software tool, primarily focusing on **near-to-far field transformations (NFTs)**, permissively distributed under the **MIT license**.  
@@ -32,12 +35,11 @@ Check out our **[Video Demo](https://youtu.be/SiD9lgWeYf4?t=24)** to see some of
 2. [System Requirements](#system-requirements)
 3. [Installation](#installation)
 4. [Documentation](#documentation)
-5. [Dependencies](#dependencies)
-6. [Known Issues](#known-issues)
-7. [Contributing](#contributing)
-8. [Citing _xNFT_](#citing-xnft)
-9. [License](#license)
-10. [Acknowledgements](#acknowledgements)
+5. [Known Issues](#known-issues)
+6. [Contributing](#contributing)
+7. [Citing _xNFT_](#citing-xnft)
+8. [License](#license)
+9. [Acknowledgements](#acknowledgements)
 
 ## Highlights
 
@@ -122,22 +124,21 @@ Just the HTML docs or just the PDF docs may be built by running
 pixi run -e docs build-html-docs
 ```
 
-or 
+or
 
 ```shell
 pixi run -e docs build-pdf-docs
 ```
+
 </details>
-
-## Dependencies
-
-🚧TODO
 
 ## Known Issues
 
-A summary of the high-impact issues are included in the [Work Items](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/work_items?sort=created_date&state=opened&or%5Blabel_name%5D%5B%5D=Impact%3A%3AHigh&or%5Blabel_name%5D%5B%5D=Priority%3A%3ACritical&or%5Blabel_name%5D%5B%5D=Priority%3A%3AHigh&not%5Blabel_name%5D%5B%5D=docs&first_page_size=100).
+A summary of the high-impact issues are included in the [Work Items](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/work_items/views/43).
 
 ## Contributing
+
+🚧 TODO 🚧
 
 If you find a bug or feature, please check if an issue exists in [Work Items](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/work_items). submit an issue in the 🚧TODO.
 
@@ -147,22 +148,33 @@ Refer to [CONTRIBUTING](CONTRIBUTING.md) for further guidance.
 
 If you use _xNFT_ in your work, please consider citing it.
 
-BibTex reference format:
+- **CFF reference format:** [CITATION.cff](CITATION.cff)
 
-```text
-🚧 TODO
-```
+- <details>
+  <summary>
+  <b>BibTex reference format</b> (Click to view)
+  </summary>
 
-- Zenodo?
-- .cff file?
+  ```text
+  @inproceedings{xnft2026amta,
+    author={Merlo, Jason M. and Ettorre, Mauro},
+    booktitle={2026 Antenna Measurement Techniques Association Symposium (AMTA)}, 
+    title={xNFT: An Open Near-Field Antenna Measurement Software Suite}, 
+    year={2026},
+    pages={1-6},
+    keywords={Antenna measurements, near-field measurement, near-field transform, open-source software, probe compensation},
+    doi={}}
+  ```
+
+  </details>
 
 ## License
 
-Copyright 2026 Michigan State University. All rights reserved.
+Copyright ©️ 2026 Michigan State University. All rights reserved.
 
 The original source code for this project is distributed under the [MIT license](LICENSE).
 
-This project depends on third-party libraries which are distributed separately and remain subject to their respective licenses.  For a complete list of runtime dependencies, see the `workspace.run-dependencies` section of the [`pixi.toml`](pixi.toml) file.
+This project depends on third-party libraries which are distributed separately and remain subject to their respective licenses.  For a complete list of runtime dependencies, see the `workspace.dependencies` section of the [`pixi.toml`](pixi.toml#L13) file.
 
 ## Acknowledgements
 
