@@ -2,7 +2,7 @@
 
 <table>
   <tr>
-    <td><a><img src="docs/images/xnft.svg" height="140" alt="xNFT Logo" ></a></td>
+    <td><a><img src="./docs/images/xnft.svg" height="140" alt="xNFT Logo" ></a></td>
     <td><a href="https://sites.google.com/site/mauroettorre/home"><img src="src/xnft/resources/logos/lemma_logo.svg"  height="160" alt="LEmmA Group Logo" ></a></td>
     <td><br><br><a href="https://www.egr.msu.edu/emrg/"><img src="src/xnft/resources/logos/emrg_logo_vector.svg"  height="70" alt="Electromagnetics Research Group Wordmark"></a></td>
   </tr>
@@ -14,11 +14,14 @@
 | Package | [![Latest Release](/../../badges/release.svg)](/../../releases) ![python: 3.12 , 3.13 , 3.14](https://img.shields.io/badge/python-3.12\|3.13\|3.14-orange) ![status: beta](https://img.shields.io/badge/status-beta-blue) |
 | Meta | [![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE) |
 
-> [!CAUTION] ⚠️ xNFT is in active development (Beta)
-> _xNFT_ is in active development. In beta, user interfaces and APIs may continue to change.
+> [!WARNING] 
+> ⚠️ **_xNFT_ is in active development (Beta).**
+> User interfaces and APIs may continue to change.
 
 > [!NOTE]
-> This repository is [mirrored on GitHub](https://github.com/msu-lemma/xnft) for public contributions. Issues and pull requests may be submitted there. The main project source for xNFT is the [Michigan State University GitLab repository](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft). All changes will be first merged into the MSU GitLab instance, then mirrored to the upstream GitHub.
+> The primary source for xNFT is the **[MSU GitLab repository](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft)**.
+> 
+> Community contributions are welcomed via the **[GitHub Mirror](https://github.com/msu-lemma/xnft)**. Issues and pull requests may be submitted to this location for discussion.
 
 ## What is _xNFT_?
 
