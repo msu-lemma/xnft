@@ -40,6 +40,7 @@ unyt = ">=3.1.0,<4"
 [package]
 name = "xnft"
 version = "0.0.0.dev0"
+publish = true
 
 [package.build.backend]
 name = "pixi-build-python"
@@ -194,7 +195,7 @@ pytest = ">=9.1.1,<10"
 pytest-cov = ">=7.1.0,<8"
 pytest-xdist = ">=3.8.0,<4"
 types-pyyaml = ">=6.0.12.20260906,<7"
-ruff = ">=0.16.10,<0.17"
+ruff = ">=0.17.0,<0.18"
 pytest-qt = ">=4.5.0,<5"
 
 [feature.test.target.osx.dependencies]
@@ -205,7 +206,7 @@ pytest-memray = ">=1.9.0,<2"
 
 [feature.docs.dependencies]
 sphinx = ">=9.1.0,<10"
-pydata-sphinx-theme = ">=0.22.0,<0.23"
+pydata-sphinx-theme = ">=0.23.0,<0.24"
 numpydoc = ">=1.11.0,<2"
 sphinx-copybutton = ">=0.5.2,<0.6"
 make = ">=4.4.1,<5"
@@ -218,37 +219,37 @@ texlive-core = ">=20260301,<20260302"
 texlive-core = ">=20260301,<20260302"
 
 [feature.dev.dependencies]
-ty = ">=0.0.84,<0.0.85"
+ty = ">=0.0.86,<0.0.87"
 flake8 = ">=7.4.1,<8"
-pyflakes = ">=4.0.1,<5"
+pyflakes = ">=4.0.3,<5"
 black = ">=26.5.1,<27"
 scipy-stubs = ">=1.18.1.1,<2"
 pandas-stubs = ">=3.0.5.260914,<4"
-pre-commit = ">=4.6.2,<5"
+pre-commit = ">=4.7.0,<5"
 
 [feature.dev.target.osx.dependencies]
-memray = ">=1.19.3,<2"
+memray = ">=1.20.0,<2"
 
 [feature.dev.target.linux.dependencies]
-memray = ">=1.19.3,<2"
+memray = ">=1.20.0,<2"
 
 [feature.build.dependencies]
 pyinstaller = ">=6.22.3,<7"
 pillow = ">=12.3.0,<13"
-uv = ">=0.12.21,<0.13"
-glab = ">=1.120.0,<2"
+uv = ">=0.13.0,<0.14"
+glab = ">=1.123.0,<2"
 imagemagick = ">=7.1.2_31,<8"
 hatchling = ">=1.32.4,<2"
 hatch-vcs = ">=0.5.0,<0.6"
 twine = ">=7.0.0,<8"
 
 [feature.py312.dependencies]
-python = "3.12.*"
-"backports.zstd" = ">=1.7,<2"
+python = ">=3.14.8,<3.15"
+"backports.zstd" = ">=1.8.0,<2"
 
 [feature.py313.dependencies]
-python = "3.13.*"
-"backports.zstd" = ">=1.7,<2"
+python = ">=3.14.8,<3.15"
+"backports.zstd" = ">=1.8.0,<2"
 
 [feature.py314.dependencies]
-python = "3.14.*"
+python = ">=3.14.8,<3.15"
