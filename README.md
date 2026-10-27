@@ -100,6 +100,7 @@ To install _xNFT_ and download test data, see **[Installing _xNFT_](docs/install
 
 Documentation can be found in the **[docs folder](docs)**.
 
+- **[Installation](docs/installing.md):** Instructions for installing and packaging _xNFT_, and downloading test data.
 - **[Getting Started](docs/getting_started.md)**: A quick-start guide including a written tutorial and usage video.
 - **[User Guide](docs/user_guide.md)**: Documentation of user interface and antenna analysis workflow.
 
@@ -141,11 +142,11 @@ A summary of the high-impact issues are included in the [Work Items](https://www
 
 ## Contributing
 
-🚧 TODO 🚧
+Community contributions in the form of bug reports, feature requests, and pull requests are welcome!
 
-If you find a bug or feature, please check if an issue exists in [Work Items](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/work_items). submit an issue in the 🚧TODO.
+If you find a bug or would like to request a feature, please first check if a similar issue already exists in [Work Items](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/work_items) or the [GitHub Issues](https://github.com/msu-lemma/xnft/issues).  If not, please [open an issue on the GitHub project](https://github.com/msu-lemma/xnft/issues).
 
-Refer to [CONTRIBUTING](CONTRIBUTING.md) for further guidance.
+Please refer to [CONTRIBUTING](CONTRIBUTING.md) for further guidance.
 
 ## Citing _xNFT_
 
@@ -153,9 +154,9 @@ If you use _xNFT_ in your work, please consider citing it. Citation metadata is 
 
 **When citing the software package**, please specify the version used for reproduceability.  The preferred format is:
 
-> J. M. Merlo and M. Ettorre. *xNFT.* (vX.X.X). Michigan State University. [Online]. Available: https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft
+> J. M. Merlo and M. Ettorre. *xNFT - Antenna measurement software.* (v#.#.#). Michigan State University. [Online]. Available: https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft
 
-Please replace `(vX.X.X)` with the version of the software you used, e.g. `(v0.1.0)`.
+Please replace "(v#.#.#)" with the version of the software you used, e.g. "(v0.1.0)".
 
 **When citing the software package implementation**, please cite our AMTA conference paper. The preferred format is:
 
