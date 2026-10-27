@@ -146,27 +146,33 @@ Refer to [CONTRIBUTING](CONTRIBUTING.md) for further guidance.
 
 ## Citing _xNFT_
 
-If you use _xNFT_ in your work, please consider citing it.
+If you use _xNFT_ in your work, please consider citing it. Citation metadata is available in the **[CFF reference file](CITATION.cff)**.
 
-- **[CFF reference format](CITATION.cff)**
+**When citing the software package**, please specify the version used for reproduceability.  The preferred format is:
 
-- <details>
-  <summary>
-  <b>BibTex reference format</b> (Click to view)
-  </summary>
+> J. M. Merlo and M. Ettorre. *xNFT.* (vX.X.X). Michigan State University. [Online]. Available: https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft
 
-  ```text
-  @inproceedings{xnft2026amta,
-    author={Merlo, Jason M. and Ettorre, Mauro},
-    booktitle={2026 Antenna Measurement Techniques Association Symposium (AMTA)}, 
-    title={xNFT: An Open Near-Field Antenna Measurement Software Suite}, 
-    year={2026},
-    pages={1-6},
-    keywords={Antenna measurements, near-field measurement, near-field transform, open-source software, probe compensation},
-    doi={}}
-  ```
+Please replace `(vX.X.X)` with the version of the software you used, e.g. `(v0.1.0)`.
 
-  </details>
+**When citing the software package implementation**, please cite our AMTA conference paper. The preferred format is:
+
+> J. M. Merlo and M. Ettorre., "xNFT: An open near-field antenna measurement software suite," 2026 Antenna Measurement Techniques Association Symposium (AMTA), Austin, TX, USA, 2026.
+
+<details>
+<summary>BibTex Format (click to view)</summary>
+
+```text
+@inproceedings{xnft2026amta,
+  author={Merlo, Jason M. and Ettorre, Mauro},
+  booktitle={2026 Antenna Measurement Techniques Association Symposium (AMTA)}, 
+  title={xNFT: An Open Near-Field Antenna Measurement Software Suite}, 
+  year={2026},
+  pages={1-6},
+  keywords={Antenna measurements, near-field measurement, near-field transform, open-source software, probe compensation},
+  doi={}}
+```
+
+</details>
 
 ## License
 
