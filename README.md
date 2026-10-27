@@ -18,7 +18,7 @@
 > _xNFT_ is in active development. In beta, user interfaces and APIs may continue to change.
 
 > [!NOTE]
-> This repository is [mirrored on GitHub](https://github.com/msu-lemma/xnft) for public contributions. Issues and pull requests may be submitted there. The authoritative source for xNFT is the [Michigan State University GitLab repository](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft). All changes will be first merged into the GitLab instance, then mirrored to the upstream GitHub.
+> This repository is [mirrored on GitHub](https://github.com/msu-lemma/xnft) for public contributions. Issues and pull requests may be submitted there. The main project source for xNFT is the [Michigan State University GitLab repository](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft). All changes will be first merged into the MSU GitLab instance, then mirrored to the upstream GitHub.
 
 ## What is _xNFT_?
 
@@ -148,7 +148,7 @@ Refer to [CONTRIBUTING](CONTRIBUTING.md) for further guidance.
 
 If you use _xNFT_ in your work, please consider citing it.
 
-- **CFF reference format:** [CITATION.cff](CITATION.cff)
+- **[CFF reference format](CITATION.cff)**
 
 - <details>
   <summary>
