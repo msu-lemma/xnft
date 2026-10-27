@@ -152,9 +152,24 @@ Please refer to [CONTRIBUTING](CONTRIBUTING.md) for further guidance.
 
 If you use _xNFT_ in your work, please consider citing it. Citation metadata is available in the **[CFF reference file](CITATION.cff)**.
 
-**When citing the software package**, please specify the version used for reproduceability.  The preferred format is:
+**When citing the software package usage**, please specify the version used for reproduceability.  The preferred format is:
 
 > J. M. Merlo and M. Ettorre. *xNFT - Antenna measurement software.* (v#.#.#). Michigan State University. [Online]. Available: https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft
+
+<details>
+<summary>BibTex Format (click to view)</summary>
+
+🚧 TODO 🚧
+
+```text
+@software{xnft,
+  author={Merlo, Jason M. and Ettorre, Mauro},
+  title={xNFT - Antenna measurement software}, 
+  keywords={Antenna measurements, near-field measurement, near-field transform, open-source software, probe compensation},
+  doi={}}
+```
+
+</details>
 
 Please replace "(v#.#.#)" with the version of the software you used, e.g. "(v0.1.0)".
 
