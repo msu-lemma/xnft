@@ -164,9 +164,14 @@ If you use _xNFT_ in your work, please consider citing it. Citation metadata is 
 ```text
 @software{xnft,
   author={Merlo, Jason M. and Ettorre, Mauro},
-  title={xNFT - Antenna measurement software}, 
+  title={{xNFT} - {A}ntenna measurement software},
+  month={November},
+  year={2026},
+  version={v0.1.0}, 
   keywords={Antenna measurements, near-field measurement, near-field transform, open-source software, probe compensation},
-  doi={}}
+  doi={},
+  publisher={Michigan State University},
+  url={https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft}}
 ```
 
 </details>
