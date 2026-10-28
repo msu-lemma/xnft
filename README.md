@@ -30,7 +30,7 @@
 Check out our **[Video Demo](https://youtu.be/SiD9lgWeYf4?t=24)** to see some of _xNFT_'s features in action!
 
 ![xnft Screenshot](docs/images/xnft_screenshot.png)
-> Screenshot of _xNFT_ running on macOS.  Measurements show an NSI-MI ANT-SGH-26.5-40 standard gain horn at 40 GHz collected using the LEmmA planar near-field scanner.
+> Screenshot of _xNFT_ running on macOS.  Measurements show an NSI-MI ANT-SGH-26.5-40 standard gain horn at 26.5 GHz collected using the LEmmA planar near-field scanner.
 
 ## Table of Contents
 
