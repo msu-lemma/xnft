@@ -152,51 +152,51 @@ Please refer to [CONTRIBUTING](CONTRIBUTING.md) for further guidance.
 
 If you use _xNFT_ in your work, please consider citing it. Citation metadata is available in the **[CFF reference file](CITATION.cff)**.
 
-**When citing the software package usage**, please specify the version used for reproduceability.  The preferred format is:
+- **When citing the use of the software package**, please specify the version used for reproduceability.  The preferred format is:
 
-> J. M. Merlo and M. Ettorre. *xNFT - Antenna measurement software.* (v#.#.#). Michigan State University. [Online]. Available: https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft
+  > J. M. Merlo and M. Ettorre. *xNFT - Antenna measurement software.* (v#.#.#). Michigan State University. [Online]. Available: https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft
 
-<details>
-<summary>BibTex Format (click to view)</summary>
+  <details>
+  <summary>BibTex Format (click to view)</summary>
 
-🚧 TODO 🚧
+  🚧 TODO 🚧
 
-```text
-@software{xnft,
-  author={Merlo, Jason M. and Ettorre, Mauro},
-  title={{xNFT} - {A}ntenna measurement software},
-  month={November},
-  year={2026},
-  version={v0.1.0}, 
-  keywords={Antenna measurements, near-field measurement, near-field transform, open-source software, probe compensation},
-  doi={},
-  publisher={Michigan State University},
-  url={https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft}}
-```
+  ```text
+  @software{xnft,
+    author={Merlo, Jason M. and Ettorre, Mauro},
+    title={{xNFT} - {A}ntenna measurement software},
+    month={November},
+    year={2026},
+    version={v0.1.0}, 
+    keywords={Antenna measurements, near-field measurement, near-field transform, open-source software, probe compensation},
+    doi={},
+    publisher={Michigan State University},
+    url={https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft}}
+  ```
 
-</details>
+  </details>
 
-Please replace "(v#.#.#)" with the version of the software you used, e.g. "(v0.1.0)".
+  Please replace "(v#.#.#)" with the version of the software you used, e.g. "(v0.1.0)".
 
-**When citing the software package implementation**, please cite our AMTA conference paper. The preferred format is:
+- **When citing the software package implementation**, please cite our AMTA conference paper. The preferred format is:
 
-> J. M. Merlo and M. Ettorre., "xNFT: An open near-field antenna measurement software suite," 2026 Antenna Measurement Techniques Association Symposium (AMTA), Austin, TX, USA, 2026.
+  > J. M. Merlo and M. Ettorre., "xNFT: An open near-field antenna measurement software suite," 2026 Antenna Measurement Techniques Association Symposium (AMTA), Austin, TX, USA, 2026.
 
-<details>
-<summary>BibTex Format (click to view)</summary>
+  <details>
+  <summary>BibTex Format (click to view)</summary>
 
-```text
-@inproceedings{xnft2026amta,
-  author={Merlo, Jason M. and Ettorre, Mauro},
-  booktitle={2026 Antenna Measurement Techniques Association Symposium (AMTA)}, 
-  title={xNFT: An Open Near-Field Antenna Measurement Software Suite}, 
-  year={2026},
-  pages={1-6},
-  keywords={Antenna measurements, near-field measurement, near-field transform, open-source software, probe compensation},
-  doi={}}
-```
+  ```text
+  @inproceedings{xnft2026amta,
+    author={Merlo, Jason M. and Ettorre, Mauro},
+    booktitle={2026 Antenna Measurement Techniques Association Symposium (AMTA)}, 
+    title={xNFT: An Open Near-Field Antenna Measurement Software Suite}, 
+    year={2026},
+    pages={1-6},
+    keywords={Antenna measurements, near-field measurement, near-field transform, open-source software, probe compensation},
+    doi={}}
+  ```
 
-</details>
+  </details>
 
 ## License
 
