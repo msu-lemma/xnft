@@ -2,11 +2,11 @@
 
 ## Table of Contents
 
-1. [Install via Package (pip/conda/pixi)](#1-install-via-package-pipcondapixi)
+1. [Install via Package (pip/conda/pixi)](#1-install-via-package)
 2. [Install From Source](#2-installing-from-source)
 3. [Build Distributable Package with Embedded Dependencies (Optional)](#3-build-distributable-package-optional)
 
-## 1. Install via Package (pip/conda/pixi)
+## 1. Install via Package
 
 ### 1.1 Package Sources
 
@@ -15,27 +15,20 @@
 
 Packaged versions of _xNFT_ are provided in `.conda` (conda/pixi format) and `.whl` (pip format) which can be found at the links in the following section.
 
-#### Latest Release Packages
-
-The latest release can be downloaded from **[Releases](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/releases)**.   Each release contains `.conda` and `.whl` artifacts to install.
+Two package versions are available:
 
 - **[Latest Release](https://gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/releases/permalink/latest)**
 
-#### Latest Development Packages
-
-Development packages are generated from the `main` branch which contain the latest features and bug fixes but may be less stable than the [latest release packages](#latest-release-packages). Each build contains `.conda` and `.whl` artifacts to install.
+    Any release version can be downloaded from the [Releases page](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/releases).   Each release contains `.conda` and `.whl` artifacts to install.
 
 - **[Development Packages](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/packages/)**
 
-<!-- - **[Current development conda package](https://gitlab.msu.edu/api/v4/projects/28094/jobs/artifacts/main/raw/dist/xnft-0.0.0.dev0-pyh4616a5c_0.conda?job=package)** (from `main`)
-- **[Current development wheel](https://gitlab.msu.edu/api/v4/projects/28094/jobs/artifacts/main/raw/dist?job=package)** (from `main`) -->
+    Development packages are generated from the `main` branch which contain the latest features and bug fixes but may be less stable than the [Release packages](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/releases).. Each build contains `.conda` and `.whl` artifacts to install.
 
-##### PyPI Package Install
-
-The latest development wheel package can also be installed directly from the via `pip` by running:
+The latest development wheel package can also be installed using `uv` by running:
 
 ```shell
-uv pip install xnft --index-url https://www.gitlab.msu.edu/api/v4/projects/28094/packages/pypi/simple
+uv tool install xnft --index-url https://www.gitlab.msu.edu/api/v4/projects/28094/packages/pypi/simple
 ```
 
 > [!note]
@@ -43,15 +36,25 @@ uv pip install xnft --index-url https://www.gitlab.msu.edu/api/v4/projects/28094
 
 ### 1.2 Installation
 
-#### Install from wheel
+Once the desired xNFT version has been downloaded from [Package Sources](#11-package-sources), the package may be installed.
+
+#### Install via uv (recommended)
+
+**Prerequesite:** Install uv: https://docs.astral.sh/uv/getting-started/installation/. It may be necessary to close and re-open your terminal after installing `uv`.
 
 To install the downloaded wheel run
 
 ```shell
-uv pip install xnft-<version>-py3-none-any.whl
+uv tool install xnft-<version>-py3-none-any.whl
 ```
 
 Replace `<version>` with the version in the file name downloaded from the link above.
+
+Once installed, _xNFT_ may be run from the terminal simply as:
+
+```shell
+xnft
+```
 
 #### Install from conda file
 
