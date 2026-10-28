@@ -55,21 +55,21 @@ hatchling = ">=1.32.4,<2"
 hatch-vcs = ">=0.5.0,<0.6"
 
 [package.run-dependencies]
-# python = { workspace = true }
-# scipy = { workspace = true }
-# numpy = { workspace = true }
-# numba = { workspace = true }
-# xarray = { workspace = true }
-# finufft = { workspace = true }
-# pyside6 = { workspace = true }
-# pyqtgraph = { workspace = true }
-# colorcet = { workspace = true }
-# pyyaml = { workspace = true }
-# netcdf4 = { workspace = true }
-# h5py = { workspace = true }
-# pandas = { workspace = true }
-# quantiphy = { workspace = true }
-# unyt = { workspace = true }
+python = { workspace = true }
+scipy = { workspace = true }
+numpy = { workspace = true }
+numba = { workspace = true }
+xarray = { workspace = true }
+finufft = { workspace = true }
+pyside6 = { workspace = true }
+pyqtgraph = { workspace = true }
+colorcet = { workspace = true }
+pyyaml = { workspace = true }
+netcdf4 = { workspace = true }
+h5py = { workspace = true }
+pandas = { workspace = true }
+quantiphy = { workspace = true }
+unyt = { workspace = true }
 
 [package.build.config]
 noarch = true
@@ -88,6 +88,7 @@ dev = ["test", "docs", "dev"]
 test-py312 = ["test", "py312"]
 test-py313 = ["test", "py313"]
 test-py314 = ["test", "py314"]
+# test-py315 = ["test", "py315"]
 
 [environments.docs]
 features = ["docs"]
@@ -244,12 +245,15 @@ hatch-vcs = ">=0.5.0,<0.6"
 twine = ">=7.0.0,<8"
 
 [feature.py312.dependencies]
-python = ">=3.15.0,<3.16"
+python = ">=3.12.0,<3.15"
 "backports.zstd" = ">=1.8.0,<2"
 
 [feature.py313.dependencies]
-python = ">=3.15.0,<3.16"
+python = ">=3.13.0,<3.14"
 "backports.zstd" = ">=1.8.0,<2"
 
 [feature.py314.dependencies]
-python = ">=3.15.0,<3.16"
+python = ">=3.14.0,<3.15"
+
+# [feature.py315.dependencies]
+# python = ">=3.15.0,<3.16"
