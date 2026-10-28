@@ -2,13 +2,13 @@
 
 ## Table of Contents
 
-1. [Install via Package (pip/conda/pixi)](#1-install-via-package)
+1. [Install via Package](#1-install-via-package)
 2. [Install From Source](#2-installing-from-source)
-3. [Build Distributable Package with Embedded Dependencies (Optional)](#3-build-distributable-package-optional)
+3. [Build Redistributable Package with Embedded Dependencies](#3-build-distributable-package)
 
 ## 1. Install via Package
 
-### 1.1 Package Sources
+### 1.1 Download _xNFT_
 
 > [!NOTE]
 > Installation via PyPI and conda-forge are planned but not yet supported.
@@ -34,7 +34,7 @@ Two package versions are available:
 > [!note]
 > When using PyPI, it is recommended to use an environment manager such as [conda](https://docs.conda.io/projects/conda/en/stable/), [pixi](https://pixi.prefix.dev/latest/), [venv](https://docs.python.org/3/library/venv.html), or [pipenv](https://pipenv.pypa.io/en/latest/) to minimize package conflicts with system Python installs.
 
-### 1.2 Installation
+### 1.2 Install _xNFT_
 
 Once the desired xNFT version has been downloaded from [Package Sources](#11-package-sources), the package may be installed.
 
@@ -74,7 +74,7 @@ xnft
 
 ## 2. Installing From Source
 
-To install _xNFT_ from source, it is recommended to use Pixi to manage the environment (<https://pixi.prefix.dev/latest/>).
+Installing from source is required to develop or package _xNFT_. To install _xNFT_ from source, it is recommended to use Pixi to manage the environment (<https://pixi.prefix.dev/latest/>).
 
 ### Prerequisites
 
@@ -187,13 +187,15 @@ This will install all packages necessary into the `default` Pixi environment, th
 > [!NOTE]
 > On the first run of `xnft` it may take some time to open as packages are compiled to Python bytecode. These compiled packages will be cached and it will open and run much faster on subsequent launches.
 
-## 3. Build Distributable Package (Optional)
+## 3. Build Distributable Package
 
 > [!note]
 > Due to licensing concerns, a redistributable package with embedded third-party dependencies is not provided by the CI.  Users may create this for personal use via the provided scripts if desired.
 
 > [!note]
 > Building a standalone redistributable pacakge currenly only works for macOS (`.app`) and Windows (`.exe`). Currently, an issue exists with packaging some `.so` files in the Linux build path.
+
+First, follow the [Installing From Source](#2-installing-from-source) instructions above.
 
 The `pixi.toml` provides packaging tasks to generate a standalone executable.  Note that this can only generate a target package to run on the same OS/architecture as the build platform, e.g., macOS/arm64, Windows-11/x86, etc.
 
