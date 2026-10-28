@@ -78,7 +78,7 @@ The two supported methods of installation are using **[pixi](https://pixi.prefix
 
 ### 1.3 Download Test Data
 
-Test data can be found in the **[_xNFT_ Data](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft-data)** repository.  
+Test data for evaluating _xNFT_ can be found in the **[_xNFT_ Data](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft-data)** repository.  
 
 A zip of the entire data repository can be downloaded by selecting the `Code` drop-down button in the upper-right corner, then selecting one of the file options below "Download Source Code".  Note that this may be several gigabytes.
 
