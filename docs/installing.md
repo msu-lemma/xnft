@@ -150,13 +150,13 @@ To pull the datasets, run:
 
 1. Pull the file pointers:
 
-   On macOS/Linux:
+   **On macOS/Linux:**
 
    ```shell
    GIT_LFS_SKIP_SMUDGE=1 git submodule update --init --recursive
    ```
 
-   On Windows (PowerShell):
+   **On Windows (PowerShell):**
 
    ```shell
    $env:GIT_LFS_SKIP_SMUDGE = '1'; git submodule update --init --recursive
