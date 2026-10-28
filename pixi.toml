@@ -11,7 +11,7 @@ preview = ["pixi-build"]
 exclude-newer = "14d" # Wait two weeks before using new packages
 
 [workspace.dependencies]
-python = ">=3.12,<3.16"
+python = ">=3.12,<3.15"
 
 # Core numerical packages
 scipy = ">=1.18.1,<2"
