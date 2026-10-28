@@ -2,11 +2,13 @@
 
 ## Table of Contents
 
-1. [Install via Package](#1-install-via-package)
+1. [Install From Package (Recommended)](#1-install-from-package-recommended)
 2. [Install From Source](#2-installing-from-source)
 3. [Build Redistributable Package with Embedded Dependencies](#3-build-distributable-package)
 
-## 1. Install via Package
+## 1. Install From Package (Recommended)
+
+Installing from a packaged source is recommended for _xNFT_ users.  For developers, see [Installing from Source](#2-installing-from-source).
 
 ### 1.1 Download _xNFT_
 
@@ -38,39 +40,41 @@ Two package versions are available:
 
 Once the desired xNFT version has been downloaded from [Package Sources](#11-package-sources), the package may be installed.
 
-#### Install via pixi
+The two supported methods of installation are using **[pixi](https://pixi.prefix.dev/latest/)** or **[uv](https://docs.astral.sh/uv/)**. If you have no preference, we suggest using pixi.
 
-**Prerequesite:** Install pixi: https://pixi.prefix.dev/latest/installation/. It may be necessary to close and re-open your terminal after installing `uv`.
+- **Install via pixi**
 
-To install the conda package using pixi
+    **Prerequesite:** Install pixi: https://pixi.prefix.dev/latest/installation/. It may be necessary to close and re-open your terminal after installing `uv`.
 
-```shell
-pixi global install --path xnft-<version>.conda 
-```
+    To install the _xNFT_ using pixi, first download the `.conda` file, then run
 
-Once installed, _xNFT_ may be run from the terminal simply as:
+    ```shell
+    pixi global install --path xnft-<version>.conda 
+    ```
 
-```shell
-xnft
-```
+    Once installed, _xNFT_ may be run from the terminal simply as:
 
-#### Install via uv
+    ```shell
+    xnft
+    ```
 
-**Prerequesite:** Install uv: https://docs.astral.sh/uv/getting-started/installation/. It may be necessary to close and re-open your terminal after installing `uv`.
+- **Install via uv**
 
-To install the downloaded wheel run
+    **Prerequesite:** Install uv: https://docs.astral.sh/uv/getting-started/installation/. It may be necessary to close and re-open your terminal after installing `uv`.
 
-```shell
-uv tool install --python 3.14 xnft-<version>-py3-none-any.whl
-```
+    To install _xNFT_ using `uv`, first download the `.whl` file, then run
 
-Replace `<version>` with the version in the file name downloaded from the link above.
+    ```shell
+    uv tool install --python 3.14 xnft-<version>-py3-none-any.whl
+    ```
 
-Once installed, _xNFT_ may be run from the terminal simply as:
+    Replace `<version>` with the version in the file name downloaded from the link above.
 
-```shell
-xnft
-```
+    Once installed, _xNFT_ may be run from the terminal simply as:
+
+    ```shell
+    xnft
+    ```
 
 ## 2. Installing From Source
 
