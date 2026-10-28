@@ -40,25 +40,9 @@ Two package versions are available:
 
 Once the desired xNFT version has been downloaded from [Package Sources](#11-package-sources), the package may be installed.
 
-The two supported methods of installation are using **[pixi](https://pixi.prefix.dev/latest/)** or **[uv](https://docs.astral.sh/uv/)**. If you have no preference, we suggest using pixi as that is used by our developers.
+The two supported methods of installation are using **[pixi](https://pixi.prefix.dev/latest/)** or **[uv](https://docs.astral.sh/uv/)**.
 
-- **Install via pixi (recommended)**
-
-    **Prerequesite:** Install pixi: https://pixi.prefix.dev/latest/installation/. It may be necessary to close and re-open your terminal after installing `uv`.
-
-    To install the _xNFT_ using pixi, first download the `.conda` file, then run
-
-    ```shell
-    pixi global install --path xnft-<version>.conda 
-    ```
-
-    Once installed, _xNFT_ may be run from the terminal simply as:
-
-    ```shell
-    xnft
-    ```
-
-- **Install via uv**
+- **Install via uv  (recommended)**
 
     **Prerequesite:** Install uv: https://docs.astral.sh/uv/getting-started/installation/. It may be necessary to close and re-open your terminal after installing `uv`.
 
@@ -69,6 +53,22 @@ The two supported methods of installation are using **[pixi](https://pixi.prefix
     ```
 
     Replace `<version>` with the version in the file name downloaded from the link above.
+
+    Once installed, _xNFT_ may be run from the terminal simply as:
+
+    ```shell
+    xnft
+    ```
+
+- **Install via pixi**
+
+    **Prerequesite:** Install pixi: https://pixi.prefix.dev/latest/installation/. It may be necessary to close and re-open your terminal after installing `uv`.
+
+    To install the _xNFT_ using pixi, first download the `.conda` file, then run
+
+    ```shell
+    pixi global install --path xnft-<version>.conda 
+    ```
 
     Once installed, _xNFT_ may be run from the terminal simply as:
 
