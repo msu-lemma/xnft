@@ -38,6 +38,22 @@ Two package versions are available:
 
 Once the desired xNFT version has been downloaded from [Package Sources](#11-package-sources), the package may be installed.
 
+#### Install via pixi
+
+**Prerequesite:** Install pixi: https://pixi.prefix.dev/latest/installation/. It may be necessary to close and re-open your terminal after installing `uv`.
+
+To install the conda package using pixi
+
+```shell
+pixi global install --path xnft-<version>.conda 
+```
+
+Once installed, _xNFT_ may be run from the terminal simply as:
+
+```shell
+xnft
+```
+
 #### Install via uv
 
 **Prerequesite:** Install uv: https://docs.astral.sh/uv/getting-started/installation/. It may be necessary to close and re-open your terminal after installing `uv`.
@@ -49,22 +65,6 @@ uv tool install --python 3.14 xnft-<version>-py3-none-any.whl
 ```
 
 Replace `<version>` with the version in the file name downloaded from the link above.
-
-Once installed, _xNFT_ may be run from the terminal simply as:
-
-```shell
-xnft
-```
-
-#### Install via pixi
-
-**Prerequesite:** Install pixi: https://pixi.prefix.dev/latest/installation/. It may be necessary to close and re-open your terminal after installing `uv`.
-
-To install the conda package using pixi
-
-```shell
-pixi global install --path xnft-<version>.conda 
-```
 
 Once installed, _xNFT_ may be run from the terminal simply as:
 
