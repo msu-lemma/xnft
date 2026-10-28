@@ -25,11 +25,11 @@ Two package versions are available:
 
     Development packages are generated from the `main` branch which contain the latest features and bug fixes but may be less stable than the [Release packages](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/releases).. Each build contains `.conda` and `.whl` artifacts to install.
 
-The latest development wheel package can also be installed using `uv` by running:
+    The latest development wheel package may also be installed using `uv` directly from the MSU GitLab PyPI registry by running:
 
-```shell
-uv tool install xnft --index-url https://www.gitlab.msu.edu/api/v4/projects/28094/packages/pypi/simple
-```
+    ```shell
+    uv tool install xnft --index-url https://www.gitlab.msu.edu/api/v4/projects/28094/packages/pypi/simple
+    ```
 
 > [!note]
 > When using PyPI, it is recommended to use an environment manager such as [conda](https://docs.conda.io/projects/conda/en/stable/), [pixi](https://pixi.prefix.dev/latest/), [venv](https://docs.python.org/3/library/venv.html), or [pipenv](https://pipenv.pypa.io/en/latest/) to minimize package conflicts with system Python installs.
@@ -38,14 +38,14 @@ uv tool install xnft --index-url https://www.gitlab.msu.edu/api/v4/projects/2809
 
 Once the desired xNFT version has been downloaded from [Package Sources](#11-package-sources), the package may be installed.
 
-#### Install via uv (recommended)
+#### Install via uv
 
 **Prerequesite:** Install uv: https://docs.astral.sh/uv/getting-started/installation/. It may be necessary to close and re-open your terminal after installing `uv`.
 
 To install the downloaded wheel run
 
 ```shell
-uv tool install xnft-<version>-py3-none-any.whl
+uv tool install --python 3.14 xnft-<version>-py3-none-any.whl
 ```
 
 Replace `<version>` with the version in the file name downloaded from the link above.
@@ -56,7 +56,9 @@ Once installed, _xNFT_ may be run from the terminal simply as:
 xnft
 ```
 
-#### Install from conda file
+#### Install via pixi
+
+**Prerequesite:** Install pixi: https://pixi.prefix.dev/latest/installation/. It may be necessary to close and re-open your terminal after installing `uv`.
 
 To install the conda package using pixi
 
@@ -64,10 +66,10 @@ To install the conda package using pixi
 pixi global install --path xnft-<version>.conda 
 ```
 
-To install using conda
+Once installed, _xNFT_ may be run from the terminal simply as:
 
 ```shell
-conda install xnft-<version>.conda 
+xnft
 ```
 
 ## 2. Installing From Source

@@ -51,6 +51,7 @@ channels = ["https://prefix.dev/conda-forge"]
 git = ">=2.53.0,<3"
 
 [package.host-dependencies]
+python = { workspace = true }
 hatchling = ">=1.32.4,<2"
 hatch-vcs = ">=0.5.0,<0.6"
 
@@ -245,15 +246,15 @@ hatch-vcs = ">=0.5.0,<0.6"
 twine = ">=7.0.0,<8"
 
 [feature.py312.dependencies]
-python = ">=3.12.0,<3.15"
+python = "3.12.*"
 "backports.zstd" = ">=1.8.0,<2"
 
 [feature.py313.dependencies]
-python = ">=3.13.0,<3.14"
+python = "3.13*"
 "backports.zstd" = ">=1.8.0,<2"
 
 [feature.py314.dependencies]
-python = ">=3.14.0,<3.15"
+python = "3.14.*"
 
 # [feature.py315.dependencies]
-# python = ">=3.15.0,<3.16"
+# python = "3.15.*"
