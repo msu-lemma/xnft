@@ -40,9 +40,9 @@ Two package versions are available:
 
 Once the desired xNFT version has been downloaded from [Package Sources](#11-package-sources), the package may be installed.
 
-The two supported methods of installation are using **[pixi](https://pixi.prefix.dev/latest/)** or **[uv](https://docs.astral.sh/uv/)**. If you have no preference, we suggest using pixi.
+The two supported methods of installation are using **[pixi](https://pixi.prefix.dev/latest/)** or **[uv](https://docs.astral.sh/uv/)**. If you have no preference, we suggest using pixi as that is used by our developers.
 
-- **Install via pixi**
+- **Install via pixi (recommended)**
 
     **Prerequesite:** Install pixi: https://pixi.prefix.dev/latest/installation/. It may be necessary to close and re-open your terminal after installing `uv`.
 
