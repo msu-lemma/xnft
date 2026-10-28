@@ -165,7 +165,7 @@ To pull the datasets, run:
 2. Download the files
 
    ```shell
-   git submodule update --init --recursive
+   git submodule foreach --recursive 'git lfs pull'
    ```
 
 This will download datasets in to the `data/...` folders.
