@@ -3,7 +3,7 @@
 <table>
   <tr>
     <td><a><img src="docs/images/xnft_logo.png" alt="xNFT Logo" ></a></td>
-    <td><a href="https://sites.google.com/site/mauroettorre/home"><img src="docs/images/lemma_logo.png" alt="LEmmA Group Logo" ></a></td>
+    <td><a href="https://sites.google.com/site/mauroettorre/home"><img src="docs/images/lemma_logo_v2_green.png" alt="LEmmA Group Logo" ></a></td>
     <td><a href="https://www.egr.msu.edu/emrg/"><img src="docs/images/emrg_logo.png" alt="Electromagnetics Research Group Wordmark"></a></td>
   </tr>
 </table>
