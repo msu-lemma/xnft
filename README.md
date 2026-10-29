@@ -50,6 +50,7 @@ Some of the main features currently available in _xNFT_ are:
 
 - **Planar near-to-far field transforms (PNFT).** _xNFT_ uses the [FINUFFT](https://finufft.readthedocs.io/en/latest/) library to compute the PNFT, enabling fast and accurate transforms from uniform and nonuniform* sampled source grids directly into uniformly sampled spherical coordinates.  
 - **Probe Compensation.** Ideal open-ended waveguide measurement probe correction options are built into _xNFT_.
+- **Gain Calibration.** Gain calibration may be performed using the gain transfer method via a calibrated measurement antenna and gain reference table in `.csv` or `.ngt` format.
 - **Graphical user interface (GUI).** _xNFT_ provides a rich GUI (via [Qt/PySide6](https://doc.qt.io/qtforpython-6/)) designed to look like common professional engineering tools with interactive plotting (via [PyQtGraph](https://www.pyqtgraph.org)) and analysis tools.
 - **Data exporting.** Exporting options are availble in `.h5` and `.csv` formats for imported fields (data conversion) and processed report results.  Images may be exported using the underlying PyQtGraph framework (via right-click menu).
 - **Plugin framework.** _xNFT_ has an extensible plugin framework allowing users to create custom data loaders in separate python packages allowing users to separate internal tools from the general _xNFT_ framework. For more information see the [_xNFT_ Plugin Example repository](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft-example).
