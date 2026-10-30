@@ -49,6 +49,27 @@ AxisData = namedtuple("AxisData", ("values", "label", "units"))
 GradientState = dict[str, Any]
 
 
+def _val(obj: Any) -> Any:
+    """Safely retrieve underlying value if obj is an Enum member, or return obj itself."""
+    return getattr(obj, "value", obj)
+
+
+def _find_cb_index(cb: QComboBox, val: Any) -> int:
+    """Find index in QComboBox by object value or name attribute fallback."""
+    if val is None:
+        return -1
+    idx = cb.findData(val)
+    if idx != -1:
+        return idx
+    val_name = getattr(val, "name", str(val))
+    for i in range(cb.count()):
+        item_data = cb.itemData(i)
+        item_name = getattr(item_data, "name", str(item_data))
+        if item_name == val_name:
+            return i
+    return -1
+
+
 @dataclass
 class SurfacePlot2DParameters:
     source: FieldNode
@@ -196,7 +217,7 @@ class Plot2D(QWidget):
         if isinstance(self.report_node.data, SurfacePlot2DParameters):
             self.plot_parameters = self.report_node.data
 
-            # Update selections from loaded paramters
+            # Update selections from loaded parameters
             # (combobox, value, update_options_function)
             cb_field_map = [
                 (
@@ -233,7 +254,7 @@ class Plot2D(QWidget):
 
             for cb, val, update_cb_options in cb_field_map:
                 update_cb_options()
-                idx = cb.findData(val)
+                idx = _find_cb_index(cb, val)
                 if idx != -1:
                     cb.setCurrentIndex(idx)
 
@@ -331,8 +352,9 @@ class Plot2D(QWidget):
     # --- Properties ---
 
     @property
-    def selected_plot_frequency(self):
-        return self.lw_frequency_range.selectedItems()[0].data(Qt.UserRole)
+    def selected_plot_frequency(self) -> float | None:
+        selected = self.lw_frequency_range.selectedItems()
+        return selected[0].data(Qt.UserRole) if selected else None
 
     @property
     def selected_plot_domain(self):
@@ -361,10 +383,10 @@ class Plot2D(QWidget):
     # --- Private Methods ---
 
     def _set_lut_gradient(self) -> None:
-        if self.selected_field_function == PlotFunctions.MAGNITUDE.value:
+        if self.selected_field_function == _val(PlotFunctions.MAGNITUDE):
             cmap = self.plot_parameters.gradient_cmap
             state = self.plot_parameters.gradient_state
-        elif self.selected_field_function == PlotFunctions.PHASE.value:
+        elif self.selected_field_function == _val(PlotFunctions.PHASE):
             cmap = self.plot_parameters.cyclic_gradient_cmap
             state = self.plot_parameters.cyclic_gradient_state
         else:
@@ -386,18 +408,19 @@ class Plot2D(QWidget):
         for _ in range(self.cb_plot_function.count()):
             self.cb_plot_function.removeItem(0)
 
+        if self.selected_field_component is None or self.field_node.data is None:
+            return
+
         for plot_function in self.selected_field_component.plot_functions:
-            if (
-                self.field_node.data.attrs["field_type"]
-                in plot_function.value.field_types
-            ):
+            fn_val = _val(plot_function)
+            if self.field_node.data.attrs.get("field_type") in fn_val.field_types:
                 self.cb_plot_function.addItem(
-                    plot_function.value.name,
-                    plot_function.value,
+                    fn_val.name,
+                    fn_val,
                 )
 
         # Restore previous state
-        idx = self.cb_plot_function.findData(previous_selection)
+        idx = _find_cb_index(self.cb_plot_function, previous_selection)
         if idx != -1:
             self.cb_plot_function.setCurrentIndex(idx)
 
@@ -406,14 +429,18 @@ class Plot2D(QWidget):
         for _ in range(self.cb_field_quantity.count()):
             self.cb_field_quantity.removeItem(0)
 
+        if self.field_node.data is None:
+            return
+
         field_quantities = FieldQuantities
 
         newitem_index = 0
         for fc in field_quantities:
-            if self.field_node.data.attrs["field_type"] in fc.value.field_types:
-                self.cb_field_quantity.addItem(fc.value.name, fc.value)
+            fc_val = _val(fc)
+            if self.field_node.data.attrs.get("field_type") in fc_val.field_types:
+                self.cb_field_quantity.addItem(fc_val.name, fc_val)
                 self.cb_field_quantity.model().item(newitem_index).setEnabled(
-                    fc.value.enabled(self.field_node.data),
+                    fc_val.enabled(self.field_node.data),
                 )
                 newitem_index += 1
 
@@ -422,16 +449,21 @@ class Plot2D(QWidget):
         for _ in range(self.cb_field_component.count()):
             self.cb_field_component.removeItem(0)
 
-        if self.selected_field_quantity is not None:
+        if (
+            self.selected_field_quantity is not None
+            and self.field_node.data is not None
+        ):
             field_components = self.selected_field_quantity.field_components
+            field_type = self.field_node.data.attrs.get("field_type")
 
             newitem_index = 0
             for fc in field_components:
+                fc_val = _val(fc)
                 # Only add if field type is valid for that function
-                if self.field_node.field_type in fc.value.field_types:
-                    self.cb_field_component.addItem(fc.value.name, fc.value)
+                if field_type in fc_val.field_types:
+                    self.cb_field_component.addItem(fc_val.name, fc_val)
                     self.cb_field_component.model().item(newitem_index).setEnabled(
-                        fc.value.enabled,
+                        fc_val.enabled,
                     )
                     newitem_index += 1
 
@@ -443,46 +475,60 @@ class Plot2D(QWidget):
             self.cb_plot_scale.removeItem(0)
 
         plot_function = self.cb_plot_function.currentData()
+        if plot_function is None:
+            return
 
         for scale in plot_function.scales:
-            self.cb_plot_scale.addItem(scale.value.name, scale.value)
+            scale_val = _val(scale)
+            self.cb_plot_scale.addItem(scale_val.name, scale_val)
 
     def _update_plotting_norm_options(self):
         # Remove all items before updating items
         for _ in range(self.cb_plot_norm.count()):
             self.cb_plot_norm.removeItem(0)
 
-        if self.selected_field_quantity is not None:
-            field_norms = [x for x in PlotNorms]
+        plot_function = self.cb_plot_function.currentData()
+        if self.selected_field_quantity is None or plot_function is None:
+            return
 
-            plot_function = self.cb_plot_function.currentData()
-            print(plot_function)
+        field_norms = [x for x in PlotNorms]
 
-            newitem_index = 0
-            for fc in field_norms:
-                if plot_function in [x.value for x in fc.value.functions]:
-                    self.cb_plot_norm.addItem(fc.value.name, fc.value)
-                    self.cb_plot_norm.model().item(newitem_index).setEnabled(
-                        fc.value.enabled,
-                    )
-                    newitem_index += 1
+        newitem_index = 0
+        for fc in field_norms:
+            fc_val = _val(fc)
+            if plot_function in [_val(x) for x in fc_val.functions]:
+                self.cb_plot_norm.addItem(fc_val.name, fc_val)
+                self.cb_plot_norm.model().item(newitem_index).setEnabled(
+                    fc_val.enabled,
+                )
+                newitem_index += 1
 
     def _update_plotting_domain_options(self):
         # Remove all items before updating items
         for _ in range(self.cb_plot_domain.count()):
             self.cb_plot_domain.removeItem(0)
 
-        # Get selected field source coordinates
-        source_coordiante_system = self.field_node.data.attrs["coordinate_system"]
+        if self.field_node.data is None:
+            return
 
-        valid_plot_domains = self.__coordinate_domains__[source_coordiante_system]
+        # Get selected field source coordinates
+        source_coordinate_system = self.field_node.data.attrs["coordinate_system"]
+
+        valid_plot_domains = self.__coordinate_domains__[source_coordinate_system]
 
         for coordinates_domain in valid_plot_domains:
-            self.cb_plot_domain.addItem(coordinates_domain.name, coordinates_domain)
+            domain_val = _val(coordinates_domain)
+            self.cb_plot_domain.addItem(
+                domain_val.name,
+                domain_val,
+            )
 
     def _update_frequency_options(self):
         # Remove all items before updating items
         self.lw_frequency_range.clear()
+
+        if self.field_node.data is None:
+            return
 
         frequencies = self.field_node.data.coords["frequency"].values.tolist()
 
@@ -498,19 +544,31 @@ class Plot2D(QWidget):
             self.lw_frequency_range.addItem(item)
 
     def _save_state(self):
-        self.plot_parameters.field_quantity = self.selected_field_quantity
-        self.plot_parameters.field_component = self.selected_field_component
-        self.plot_parameters.plot_domain = self.selected_plot_domain
-        self.plot_parameters.applicate_function = self.selected_field_function
-        self.plot_parameters.applicate_scale = self.selected_field_scale
-        self.plot_parameters.applicate_norm = self.selected_field_norm
-        self.plot_parameters.selected_frequency = self.selected_plot_frequency
-        if self.selected_field_function == PlotFunctions.MAGNITUDE.value:
+        self.plot_parameters.source = self.field_node
+        if self.selected_field_quantity is not None:
+            self.plot_parameters.field_quantity = self.selected_field_quantity
+        if self.selected_field_component is not None:
+            self.plot_parameters.field_component = self.selected_field_component
+        if self.selected_plot_domain is not None:
+            self.plot_parameters.plot_domain = self.selected_plot_domain
+        if self.selected_field_function is not None:
+            self.plot_parameters.applicate_function = self.selected_field_function
+        if self.selected_field_scale is not None:
+            self.plot_parameters.applicate_scale = self.selected_field_scale
+        if self.selected_field_norm is not None:
+            self.plot_parameters.applicate_norm = self.selected_field_norm
+        if self.selected_plot_frequency is not None:
+            self.plot_parameters.selected_frequency = self.selected_plot_frequency
+
+        if self.selected_field_function == _val(PlotFunctions.MAGNITUDE):
             self.plot_parameters.gradient_state = self.hist.gradient.saveState()
-        if self.selected_field_function == PlotFunctions.PHASE.value:
+        if self.selected_field_function == _val(PlotFunctions.PHASE):
             self.plot_parameters.cyclic_gradient_state = self.hist.gradient.saveState()
 
     def _update_plot(self):
+        if self.field_node.data is None:
+            return
+
         # Set the histogram gradient
         self._set_lut_gradient()
 
@@ -525,13 +583,30 @@ class Plot2D(QWidget):
 
         # -- Apply selected coordinate transform --
 
+        selected_domain_name = getattr(self.selected_plot_domain, "name", "")
+        dir_cosine_names = {
+            "Direction Cosine XY",
+            "Direction Cosine XZ",
+            "Direction Cosine YZ",
+            "u_x, u_y",
+            "u_x, u_z",
+            "u_y, u_z",
+        }
+
+        is_dir_cosine = (
+            selected_domain_name in dir_cosine_names
+            or "direction cosine" in selected_domain_name.lower()
+            or self.selected_plot_domain
+            in (
+                _val(PlotDomains.DIRECTION_COSINE_XY),
+                _val(PlotDomains.DIRECTION_COSINE_XZ),
+                _val(PlotDomains.DIRECTION_COSINE_YZ),
+            )
+        )
+
         # NOTE: Native domain is spherical
         # Direction cosines require nonlinear transformation so we need to use pcolormesh for
-        if self.selected_plot_domain in (
-            PlotDomains.DIRECTION_COSINE_XY,
-            PlotDomains.DIRECTION_COSINE_XZ,
-            PlotDomains.DIRECTION_COSINE_YZ,
-        ):
+        if is_dir_cosine:
             # Get phi and theta as numpy arrays
             phi = self.field_node.data.phi.values
             theta = self.field_node.data.theta.values
@@ -550,11 +625,11 @@ class Plot2D(QWidget):
             # TODO/FIXME: implement faster interpolator using pre-computed Delaunay triangulation
             points = np.column_stack([ux_vals.ravel(), uy_vals.ravel()])
 
-            if self.selected_field_function == PlotFunctions.PHASE.value:
+            if self.selected_field_function == _val(PlotFunctions.PHASE):
                 # For phase we need to perform interpolation around the circle
                 ang_rad = field_fun_scaled.ravel()
 
-                if self.selected_field_scale == PlotScales.DEGREES.value:
+                if self.selected_field_scale == _val(PlotScales.DEGREES):
                     ang_rad = np.deg2rad(ang_rad)
 
                 z = np.exp(1j * ang_rad)
@@ -573,7 +648,7 @@ class Plot2D(QWidget):
 
                 field_fun_scaled = np.angle(z_real + 1j * z_imag)
 
-                if self.selected_field_scale == PlotScales.DEGREES.value:
+                if self.selected_field_scale == _val(PlotScales.DEGREES):
                     field_fun_scaled = np.rad2deg(field_fun_scaled)
 
             else:
@@ -651,7 +726,7 @@ class Plot2D(QWidget):
                 yMin=upper_left_y + height,
             )
 
-        if self.selected_field_function == PlotFunctions.MAGNITUDE.value:
+        if self.selected_field_function == _val(PlotFunctions.MAGNITUDE):
             # TODO: this should be passed in by the function itself, not special code here
             # Scale the range to clip low long-tail values
             self._autoscale_lut_range()
@@ -699,7 +774,7 @@ def get_transformed_data(spp: SurfacePlot2DParameters):
 
     field_data = field_ds.sel(frequency=spp.selected_frequency, component=component)
 
-    if field_data.attrs["coordinate_system"] == CoordinateSystemType.CARTESIAN:
+    if field_data.attrs.get("coordinate_system") == CoordinateSystemType.CARTESIAN:
         # FIXME: hack to select only z-coordinate for near-field scan to avoid data reduction of X coordinate in mag plot
         field_data = field_data.sel(z=field_data["z"][0])
 

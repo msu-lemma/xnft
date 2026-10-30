@@ -208,7 +208,7 @@ class TransformNode(DataNode):
     def analysis_type(self, analysis: AnalysisType):
         if not isinstance(analysis, AnalysisType):
             raise TypeError(
-                f'Argument "analysis_type" must be of type {AnalysisType} got {type(self.analysis)}',
+                f'Argument "analysis_type" must be of type {AnalysisType} got {type(analysis)}',
             )
         self._analysis_type = analysis
 

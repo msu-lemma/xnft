@@ -32,6 +32,7 @@ pyyaml = ">=6.0.3,<7"  # Load theoretical aperture files
 netcdf4 = ">=1.7.4,<2" # Export xarray to HDF5 (reports exporting)
 h5py = ">=3.16.0,<4"   # Read HDF5 files for LEmmA formatted measurement loader
 pandas = ">=3.0.6,<4"  # Gain calibration file loader
+dill = ">=0.4.1,<0.5"  # Read/Write .xnft file data
 
 # Unit handling/formatting
 quantiphy = ">=2.23,<3"
@@ -69,6 +70,7 @@ pyyaml = { workspace = true }
 netcdf4 = { workspace = true }
 h5py = { workspace = true }
 pandas = { workspace = true }
+dill = { workspace = true }
 quantiphy = { workspace = true }
 unyt = { workspace = true }
 

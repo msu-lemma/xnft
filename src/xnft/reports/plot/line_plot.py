@@ -264,89 +264,94 @@ class Plot1D(QWidget):
     def _update_plot(self):
         pass
 
-    def _add_trace(self, clicked: bool = False, trace: PlotTrace | None = None):
+    def _add_trace(
+        self, clicked: bool = False, trace: PlotTrace | TraceParameters | None = None
+    ):
         """Add a trace object to ReportNode to hold plot state."""
         trace_list = []
         if trace is None:
             dialog = NewTraceDialog(parent=self, project_node=self.report_node.root)
             if dialog.exec() == QDialog.Accepted:
-                trace_parameters_list = dialog.get_selections()
+                trace_list = dialog.get_selections()
+        elif isinstance(trace, TraceParameters):
+            trace_list = [trace]
+        elif isinstance(trace, PlotTrace):
+            trace_list = [trace.trace_parameters]
 
-                for tp in trace_parameters_list:
-                    # Generate the PlotTrace from the provided arguments
+        for tp in trace_list:
+            if isinstance(tp, PlotTrace):
+                plot_trace = tp
+                tp = tp.trace_parameters
+            else:
+                # Generate the PlotTrace from the provided arguments
 
-                    # -- Abscissa --
-                    if tp.source_field.data is not None:
-                        source_field = tp.source_field.data  # ["E"]
-                    else:
-                        raise RuntimeError("Source field data is not populated.")
+                # -- Abscissa --
+                if tp.source_field.data is not None:
+                    source_field = tp.source_field.data  # ["E"]
+                else:
+                    raise RuntimeError("Source field data is not populated.")
 
-                    abscissa_values = source_field[tp.abscissa]
-                    abscissa_units = tp.source_field.data.attrs["coordinate_units"][
-                        tp.abscissa
-                    ]
-                    if abscissa_units == unyt.radian:
-                        abscissa_values = np.rad2deg(abscissa_values)
+                abscissa_values = source_field[tp.abscissa]
+                abscissa_units = tp.source_field.data.attrs["coordinate_units"][
+                    tp.abscissa
+                ]
+                if abscissa_units == unyt.radian:
+                    abscissa_values = np.rad2deg(abscissa_values)
 
-                    # -- Ordinate --
+                # -- Ordinate --
 
-                    # logger.debug(source_field)
+                # logger.debug(source_field)
 
-                    # Get quantity from field values
-                    ordinate_raw_values = tp.field_quantity.function(
-                        tp.field_component.function(source_field).sel(**tp.slice_dict),
+                # Get quantity from field values
+                ordinate_raw_values = tp.field_quantity.function(
+                    tp.field_component.function(source_field).sel(**tp.slice_dict),
+                )
+
+                # logger.debug(ordinate_raw_values)
+
+                # Apply norm, function, and scale
+                ordinate_values = tp.ordinate_scale.function(
+                    tp.ordinate_function.function(
+                        tp.field_norm.function(ordinate_raw_values),
+                        dim=1,
+                    ),
+                )
+
+                ordinate_units = tp.ordinate_scale.unit_modifier(
+                    tp.field_norm.unit_modifier(tp.field_quantity.units),
+                )
+
+                ordinate_name = tp.field_quantity.name
+
+                # Update ordinate name if a function is applied
+                if tp.ordinate_function is not None:
+                    ordinate_name = (
+                        f"{tp.ordinate_function.name_short}({ordinate_name})"
                     )
 
-                    # logger.debug(ordinate_raw_values)
+                # -- Trace ---
+                plot_trace = PlotTrace(
+                    # -- PlotDataItem Parameters --
+                    x=abscissa_values,
+                    y=ordinate_values,
+                    name=tp.trace_name,
+                    pen=tp.trace_pen,
+                    symbol=tp.trace_marker_symbol,
+                    symbolBrush=pg.mkBrush(tp.trace_pen.color()),
+                    symbolPen=None,
+                    # -- Added PlotTrace Parameters --
+                    source=tp.source_field,
+                    trace_parameters=tp,
+                    ordinate_name=ordinate_name,
+                    ordinate_scale=tp.ordinate_scale,
+                    ordinate_units=ordinate_units,
+                )
 
-                    # Apply norm, function, and scale
-                    ordinate_values = tp.ordinate_scale.function(
-                        tp.ordinate_function.function(
-                            tp.field_norm.function(ordinate_raw_values),
-                            dim=1,
-                        ),
-                    )
-
-                    ordinate_units = tp.ordinate_scale.unit_modifier(
-                        tp.field_norm.unit_modifier(tp.field_quantity.units),
-                    )
-
-                    ordinate_name = tp.field_quantity.name
-
-                    # Update ordinate name if a function is applied
-                    if tp.ordinate_function is not None:
-                        ordinate_name = (
-                            f"{tp.ordinate_function.name_short}({ordinate_name})"
-                        )
-
-                    # -- Trace ---
-                    trace = PlotTrace(
-                        # -- PlotDataItem Parameters --
-                        x=abscissa_values,
-                        y=ordinate_values,
-                        name=tp.trace_name,
-                        pen=tp.trace_pen,
-                        symbol=tp.trace_marker_symbol,
-                        symbolBrush=pg.mkBrush(tp.trace_pen.color()),
-                        symbolPen=None,
-                        # -- Added PlotTrace Parameters --
-                        source=tp.source_field,
-                        trace_parameters=tp,
-                        ordinate_name=ordinate_name,
-                        ordinate_scale=tp.ordinate_scale,
-                        ordinate_units=ordinate_units,
-                    )
-                    trace_list.append(trace)
-        else:
-            trace_list.append(trace)
-
-        for trace in trace_list:
             # Must add trace to plot before widget to generate trace icon properly for legend
-            self.plot.addItem(trace)
-            self.trace_list_widget.add_trace(trace)
+            self.plot.addItem(plot_trace)
+            self.trace_list_widget.add_trace(plot_trace)
 
             # Set Abscissa units
-            tp = trace.trace_parameters
             self.abscissa = tp.abscissa
             abscissa_units = tp.source_field.data.attrs["coordinate_units"][tp.abscissa]
 
@@ -357,12 +362,12 @@ class Plot1D(QWidget):
 
             # Set ordiante units
             # self._update_ordinate()
-            ordinate_name = trace.ordinate_name
-            ordinate_units = str(trace.ordinate_units)
+            ordinate_name = plot_trace.ordinate_name
+            ordinate_units = str(plot_trace.ordinate_units)
             self.plot.setLabel("left", text=ordinate_name, units=ordinate_units)
 
-            if trace not in self.report_node.data:
-                self.report_node.data.append(trace)
+            if tp not in self.report_node.data:
+                self.report_node.data.append(tp)
 
     def _remove_trace(self):
         # Get selected trace from tree
@@ -380,6 +385,11 @@ class Plot1D(QWidget):
 
             if trace in self.report_node.data:
                 self.report_node.data.remove(trace)
+            elif (
+                hasattr(trace, "trace_parameters")
+                and trace.trace_parameters in self.report_node.data
+            ):
+                self.report_node.data.remove(trace.trace_parameters)
 
             # Clear abscisa if no traces left
             if self.num_traces == 0:

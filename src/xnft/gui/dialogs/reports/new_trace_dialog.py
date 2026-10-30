@@ -1,5 +1,5 @@
 """
-Define new trace dialog window (for dd plots).
+Define new trace dialog window (for 1d plots).
 
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State University.
 """
@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import logging
 import platform
-from dataclasses import dataclass
 from itertools import product
 
 import colorcet as cc
@@ -39,34 +38,16 @@ from PySide6.QtWidgets import (
 from quantiphy import Quantity
 
 from ....common.enums import NodeType
-from ....project.nodes.node import DataNode, Node
-from ....reports.plot.functions.field_components import FieldComponent
+from ....project.nodes.node import Node
 from ....reports.plot.functions.field_quantities import (
     FieldQuantities,
-    FieldQuantity,
 )
-from ....reports.plot.functions.functions import PlotFunction
-from ....reports.plot.functions.normalizations import PlotNorm, PlotNorms
-from ....reports.plot.functions.scales import PlotScale
+from ....reports.plot.functions.normalizations import PlotNorms
 from ....reports.plot.helpers.helpers import trace_preview
+from ....reports.plot.helpers.trace_parameters import TraceParameters
 from ..common import ListWidgetTitle
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class TraceParameters:
-    trace_name: str
-    trace_pen: QPen
-    trace_marker_symbol: str
-    source_field: DataNode
-    abscissa: str
-    slice_dict: dict[str, ArrayLike]
-    field_quantity: FieldQuantity
-    field_component: FieldComponent
-    ordinate_function: PlotFunction
-    ordinate_scale: PlotScale
-    field_norm: PlotNorm
 
 
 class NewTraceDialog(QDialog):
@@ -172,7 +153,7 @@ class NewTraceDialog(QDialog):
         ordinate_layout.addWidget(self.lwt_ordinate_scale)
         ordinate_layout.addWidget(self.lwt_field_norm)
 
-        # -- Dialog Butons --
+        # -- Dialog Buttons --
 
         self.buttons = QDialogButtonBox(
             QDialogButtonBox.Ok | QDialogButtonBox.Cancel,
@@ -278,16 +259,20 @@ class NewTraceDialog(QDialog):
                 trace_name_suffix = f"-{idx + 1}"
             trace_name = self.le_trace_name.text().strip() + trace_name_suffix
 
-            # -- Trace Style --
+            # -- Trace Style Primitives --
             if len(slice_list_products) == 1:
-                trace_pen = self.trace_style.get_pen()
+                pen_color = self.trace_style.current_color.name()
+                pen_width = float(self.trace_style.sb_line_width.value())
+                pen_style = int(
+                    self.trace_style.line_styles[
+                        self.trace_style.cb_line_style.currentText()
+                    ].value,
+                )
                 trace_marker_symbol = self.trace_style.cb_marker_symbol.currentData()
             else:
-                trace_pen = pg.mkPen(
-                    color=QColor(cc.glasbey_light[idx]),
-                    width=1.0,
-                    style=Qt.SolidLine,
-                )
+                pen_color = QColor(cc.glasbey_light[idx]).name()
+                pen_width = 1.0
+                pen_style = int(Qt.SolidLine.value)
                 trace_marker_symbol = None
 
             # -- Slice Parameters --
@@ -297,7 +282,9 @@ class NewTraceDialog(QDialog):
 
             trace_params = TraceParameters(
                 trace_name=trace_name,
-                trace_pen=trace_pen,
+                pen_color=pen_color,
+                pen_width=pen_width,
+                pen_style=pen_style,
                 trace_marker_symbol=trace_marker_symbol,
                 # -- Source Data --
                 source_field=self.lwt_source_field.lw.selectedItems()[0].data(
@@ -366,7 +353,7 @@ class NewTraceDialog(QDialog):
         for label, data in abscissa_options:
             item = QListWidgetItem(label)
             item.setData(Qt.UserRole, data)
-            if self.parent.abscissa != None and data != self.parent.abscissa:
+            if self.parent.abscissa is not None and data != self.parent.abscissa:
                 item.setFlags(item.flags() & ~Qt.ItemIsEnabled)
             self.lwt_abscissa.lw.addItem(item)
 

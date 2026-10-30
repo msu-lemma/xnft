@@ -46,10 +46,11 @@ from ..project.nodes.project import Project
 from ..resources.paths import resource_path
 from .dialogs.project.new_project_dialog import NewProjectDialog
 from .models.project_tree_model import ProjectManagerTreeModel
+from .tasks.bridge import TaskBridge
+from .tasks.worker import SpawnWorker
 from .utils import center_window
 from .views.mdi_area import QMdiAreaWatermark
 from .views.project_tree_view import ProjectTreeView
-from .workers.worker import SpawnWorker
 
 logger = logging.getLogger(__name__)
 
@@ -74,14 +75,13 @@ class MainWindow(QMainWindow):
         self.create_project_manager_widgets(self.project_manager)
         self.create_plot_area()
 
+        # Track active background execution threads
+        self._running_threads = set()
+
         center_window(self, target_size_ratio=0.7)
         self.restore_all()
 
     def create_actions(self):
-
-        # TODO: Handle project action function calls on separate thread helper using signals/slots
-        #       similar to _ui_action; unify worker function calling framework
-
         self._new_project_act = QAction(
             QIcon.fromTheme("document-new"),
             "&New Project...",
@@ -152,7 +152,6 @@ class MainWindow(QMainWindow):
         self.addToolBar(self._file_tool_bar)
 
     def create_status_bar(self):
-
         status = self.statusBar()
         status.showMessage("Ready")
 
@@ -261,7 +260,6 @@ class MainWindow(QMainWindow):
             self.properties_table.setItem(row, 1, value_item)
 
     def _about(self):
-
         meta = importlib.metadata.metadata("xnft")
 
         author_values = [
@@ -297,31 +295,12 @@ class MainWindow(QMainWindow):
             """
         )
         msg.setTextInteractionFlags(Qt.TextInteractionFlag.TextBrowserInteraction)
-
         msg.exec()
 
     def create_plot_area(self):
         # Create MDI area for windows to exist
         self.mdi_area = QMdiAreaWatermark()
         self.setCentralWidget(self.mdi_area)
-
-    def _open_project(self):
-        start_dir = str(Path.home())
-        chosen = QFileDialog.getOpenFileName(
-            self,
-            "Select xNFT Project File",
-            start_dir,
-            filter="*.xnft",
-        )
-
-        # Open the project and intsert into tree
-        proj = read_project(chosen[0])
-        model_index = self.model.insert_project(proj)
-
-        # Expand rows in tree and highlight
-        self.project_tree.expandRecursively(model_index)
-        self.project_tree.setCurrentIndex(model_index)
-        self.project_tree.scrollTo(model_index)
 
     def _new_project(self):
         dialog = NewProjectDialog(self)
@@ -341,11 +320,100 @@ class MainWindow(QMainWindow):
 
     def _save_project(self):
         active_project = self.project_tree.get_active_project()
-        if active_project is not None:
-            save_status = active_project.save()
-            self.statusBar().showMessage(save_status)
-        else:
+        if active_project is None:
             self.statusBar().showMessage("No project selected to save.")
+            return
+
+        self._run_async_task(
+            func=active_project.save,
+            message=f"Saving {active_project.name}...",
+            on_finished=lambda status: self.statusBar().showMessage(
+                status or "Project saved."
+            ),
+        )
+
+    def _open_project(self):
+        start_dir = str(Path.home())
+        chosen, _ = QFileDialog.getOpenFileName(
+            self,
+            "Select xNFT Project File",
+            start_dir,
+            filter="*.xnft",
+        )
+        if not chosen:
+            return
+
+        file_path = Path(chosen)
+
+        def _on_load_complete(proj):
+            model_index = self.model.insert_project(proj)
+            self.project_tree.expandRecursively(model_index)
+            self.project_tree.setCurrentIndex(model_index)
+            self.project_tree.scrollTo(model_index)
+            self.statusBar().showMessage(f"Loaded project '{proj.name}'.")
+
+        self._run_async_task(
+            func=read_project,
+            args=(file_path,),
+            message=f"Loading {file_path.name}...",
+            on_finished=_on_load_complete,
+        )
+
+    def _set_ui_busy(self, busy: bool, message: str = ""):
+        """Lock/unlock UI controls and set progress status."""
+        self.menuBar().setEnabled(not busy)
+        self._file_tool_bar.setEnabled(not busy)
+        self.project_tree.setEnabled(not busy)
+        self.properties_table.setEnabled(not busy)
+        if self.centralWidget():
+            self.centralWidget().setEnabled(not busy)
+
+        if busy:
+            self.statusBar().showMessage(message)
+            self.progress.setRange(0, 0)
+            self.progress.show()
+            QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
+        else:
+            QApplication.restoreOverrideCursor()
+            self.progress.setRange(0, 1)
+            self.progress.setValue(0)
+
+    def _on_task_completed(self, thread):
+        """Called on Main Thread when a background task finishes or errors."""
+        self._running_threads.discard(thread)
+        if not self._running_threads:
+            self._set_ui_busy(False)
+
+    def _run_async_task(
+        self,
+        func,
+        args: tuple = (),
+        kwargs: dict | None = None,
+        message: str = "Processing...",
+        on_finished=None,
+        on_error=None,
+    ):
+        """Spawns an async task with safe cross-thread signal dispatching."""
+        kwargs = kwargs or {}
+        self._set_ui_busy(True, message)
+
+        thread = QThread()
+        worker = SpawnWorker(func, invoke_args=args, invoke_kwargs=kwargs)
+        worker.moveToThread(thread)
+
+        # Bridge lives on the Main Thread (parented to self)
+        bridge = TaskBridge(thread, worker, on_finished, on_error, self)
+
+        worker.finished.connect(bridge.handle_finished)
+        worker.error.connect(bridge.handle_error)
+
+        thread._worker = worker
+        thread._bridge = bridge
+        self._running_threads.add(thread)
+
+        thread.started.connect(worker.run)
+        thread.start()
+        return thread
 
     def _ui_action(
         self,
@@ -379,7 +447,6 @@ class MainWindow(QMainWindow):
         # If a helper dialog is provided, get args and invoke; else invoke without args
         if helper_dialog is not None:
             dialog = helper_dialog(self, target_node=target_node)
-
             try:
                 if dialog.exec() == QDialog.Accepted:
                     invoke_kwargs = dialog.get_selections()
@@ -390,60 +457,30 @@ class MainWindow(QMainWindow):
                 # Handle garbage collection on the main gui thread.  Allowing GC to run on the
                 # worker thread can cause segfault.
                 dialog.deleteLater()
-                dialog = None
 
         if not run_function:
             return
 
         if spawn_thread:
-            thread = QThread(self)
-            worker = SpawnWorker(invoke_function, invoke_kwargs)
-            worker.moveToThread(thread)
-
-            thread.started.connect(worker.run)
-
-            worker.finished.connect(self._on_invoke_finished)
-            worker.error.connect(self._on_invoke_error)
-
-            worker.finished.connect(thread.quit)
-            worker.error.connect(thread.quit)
-
-            worker.finished.connect(worker.deleteLater)
-            worker.error.connect(worker.deleteLater)
-
-            thread.finished.connect(thread.deleteLater)
-
-            # Retain references while the operation is in progress.
-            self._invoke_thread = thread
-            self._invoke_worker = worker
-
-            self.statusBar().showMessage(f"{target_node.name}: Working...")
-            self.progress.setRange(0, 0)
-            self.progress.show()
-
-            thread.start()
+            self._run_async_task(
+                func=invoke_function,
+                kwargs=invoke_kwargs,
+                message=f"{target_node.name}: Working...",
+                on_finished=self._on_invoke_finished,
+                on_error=self._on_invoke_error,
+            )
         else:
             result_dict = invoke_function(**invoke_kwargs)
             self._on_invoke_finished(result_dict)
 
     def _on_invoke_finished(self, result_dict):
-
         if result_dict is None:
             return
-
-        # Reset progress bar to idle
-        self.progress.setRange(0, 1)
 
         status = result_dict.get("status")
         if status:
             self.statusBar().showMessage(status)
 
-        # Set status bar text
-        status = result_dict.get("status", None)
-        if status:
-            self.statusBar().showMessage(status)
-
-        # Add nodes to project manager tree
         node_pair_list = result_dict.get("nodes", None)
         if node_pair_list:
             model_index = None
@@ -473,11 +510,8 @@ class MainWindow(QMainWindow):
                 sub = self.mdi_area.addSubWindow(win)
                 sub.show()
 
-    def _on_invoke_error(self, exc):
-        # Reset progress bar to idle
-        self.progress.setRange(0, 1)
-        # Disable error for now as "cancel" is not handled properly
-        # self.statusBar().showMessage(f"Error: {exc}")
+    def _on_invoke_error(self, exc, tb_str=None):
+        self.statusBar().showMessage(f"Operation failed: {exc}")
 
     def restore_all(self):
         if self.settings.contains("geometry"):
@@ -486,6 +520,38 @@ class MainWindow(QMainWindow):
             self.restoreState(self.settings.value("windowState"))
 
     def closeEvent(self, event):
+        """Prevent crash on close by waiting for running background threads."""
+        if self._running_threads:
+            reply = QMessageBox.question(
+                self,
+                "Task in Progress",
+                "A save or load operation is currently running.\nWait for it to complete before closing?",
+                QMessageBox.StandardButton.Wait | QMessageBox.StandardButton.Cancel,
+                QMessageBox.StandardButton.Wait,
+            )
+
+            if reply == QMessageBox.StandardButton.Wait:
+                self.statusBar().showMessage(
+                    "Waiting for background operations to finish..."
+                )
+                still_running = False
+                for thread in list(self._running_threads):
+                    thread.quit()
+                    if not thread.wait(3000):
+                        still_running = True
+
+                if still_running:
+                    QMessageBox.warning(
+                        self,
+                        "Tasks Still Active",
+                        "Background operations could not be stopped immediately. Please try closing again shortly.",
+                    )
+                    event.ignore()
+                    return
+            else:
+                event.ignore()
+                return
+
         self.settings.setValue("geometry", self.saveGeometry())
         self.settings.setValue("windowState", self.saveState())
         super().closeEvent(event)
@@ -494,11 +560,6 @@ class MainWindow(QMainWindow):
 def init_application():
     register_builtin_loaders()
     register_plugins()
-
-    # TODO/FIXME: for debug only
-    import faulthandler
-
-    faulthandler.enable(all_threads=True)
 
 
 def main():

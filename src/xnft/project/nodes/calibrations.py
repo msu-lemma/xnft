@@ -105,7 +105,7 @@ class GainCalibrationNode(DataNode):
     @property
     @gui_property(label="Reference Field", order=60)
     def ref_field_name(self):
-        return self.gain_cal_field._name
+        return self.gain_cal_field.name if self.gain_cal_field else "None"
 
     @property
     @gui_property(label="Frequency Range", order=70)

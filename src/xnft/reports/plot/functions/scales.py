@@ -43,3 +43,7 @@ class PlotScales(Enum):
         unit_modifier=lambda x: "rad",
         enabled=True,
     )
+
+    def __reduce_ex__(self, proto):
+        # Pickles the Enum member by reference name, e.g., getattr(PlotScales, 'LINEAR')
+        return getattr, (self.__class__, self.name)
