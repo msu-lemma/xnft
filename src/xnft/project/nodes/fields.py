@@ -188,11 +188,7 @@ class FieldNode(DataNode):
     def gain_calibration_gui(self):
         if self.data is not None:
             gain_cal = self.data.attrs.get("gain_calibration")
-            if gain_cal:
-                return (
-                    f"{gain_cal.name}" if hasattr(gain_cal, "name") else str(gain_cal)
-                )
-        return "None"
+            return str(bool(gain_cal))
 
     @context_action(
         label="Export Field",

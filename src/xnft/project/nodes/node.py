@@ -233,13 +233,14 @@ class Node:
         else:
             raise TypeError(f"Node children must be of type 'Node', got {type(child)}.")
 
-    def remove_child(self, child):
+    def remove_child(self, child: Node):
         """Remove a single child Node."""
         if not isinstance(child, Node):
             raise TypeError(f"Node children must be of type 'Node', got {type(child)}.")
         if child not in self._children:
             raise ValueError("Attempting to remove item that is not a child of node.")
         self._children.remove(child)
+        child._parent = None
 
     @property
     def child_count(self) -> int:
@@ -402,6 +403,7 @@ class DataNode(Node):
 
     def __init__(self, *, source=None, name=None, node_type=NodeType.UNKNOWN, **kwargs):
         super().__init__(**kwargs)
+        self.name_editable = True
         self._name = name
         self._node_type = node_type
         self.source = source
@@ -421,6 +423,29 @@ class DataNode(Node):
                 f'Argument "source_node" must be of type {Node} or None got {type(source_node)}',
             )
         self._source = source_node
+
+    # -- Context Actions --------
+
+    @context_action(
+        label="Delete",
+        tooltip="Delete the node from the project",
+        order=900,
+        separator=True,
+        action="delete_node",
+    )
+    def delete(self) -> None:
+        """Remove this data node from its parent tree structure."""
+        if self.parent:
+            self.parent.remove_child(self)
+
+    @context_action(
+        label="Rename",
+        tooltip="Rename this node",
+        order=100,
+        action="rename_node",
+    )
+    def rename() -> None:
+        """Trigger inline renaming in the tree view."""
 
     # -- File Serialization Overrides ------------
 

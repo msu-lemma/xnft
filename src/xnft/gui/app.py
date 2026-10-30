@@ -330,6 +330,7 @@ class MainWindow(QMainWindow):
             on_finished=lambda status: self.statusBar().showMessage(
                 status or "Project saved."
             ),
+            lock_ui=True,
         )
 
     def _open_project(self):
@@ -359,20 +360,25 @@ class MainWindow(QMainWindow):
             on_finished=_on_load_complete,
         )
 
-    def _set_ui_busy(self, busy: bool, message: str = ""):
+    def _set_ui_busy(self, busy: bool, message: str = "", lock_ui: bool = False):
         """Lock/unlock UI controls and set progress status."""
-        self.menuBar().setEnabled(not busy)
-        self._file_tool_bar.setEnabled(not busy)
-        self.project_tree.setEnabled(not busy)
-        self.properties_table.setEnabled(not busy)
+
+        set_enabled = not (busy and lock_ui)
+        self.menuBar().setEnabled(set_enabled)
+        self._file_tool_bar.setEnabled(set_enabled)
+        self.project_tree.setEnabled(set_enabled)
+        self.properties_table.setEnabled(set_enabled)
         if self.centralWidget():
-            self.centralWidget().setEnabled(not busy)
+            self.centralWidget().setEnabled(set_enabled)
 
         if busy:
             self.statusBar().showMessage(message)
             self.progress.setRange(0, 0)
             self.progress.show()
-            QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
+            if lock_ui:
+                QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
+            else:
+                QApplication.setOverrideCursor(Qt.CursorShape.BusyCursor)
         else:
             QApplication.restoreOverrideCursor()
             self.progress.setRange(0, 1)
@@ -392,10 +398,11 @@ class MainWindow(QMainWindow):
         message: str = "Processing...",
         on_finished=None,
         on_error=None,
+        lock_ui=False,
     ):
         """Spawns an async task with safe cross-thread signal dispatching."""
         kwargs = kwargs or {}
-        self._set_ui_busy(True, message)
+        self._set_ui_busy(True, message, lock_ui=lock_ui)
 
         thread = QThread()
         worker = SpawnWorker(func, invoke_args=args, invoke_kwargs=kwargs)
