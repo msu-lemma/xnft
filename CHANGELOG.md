@@ -17,5 +17,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Projects with reports/plots can now be saved
 - `.xnft` file schema now stable (software updates should not break existing data files)
 
-
 [unreleased]: https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/compare/v0.1.0b2...HEAD

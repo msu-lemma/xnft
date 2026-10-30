@@ -26,6 +26,7 @@ dependencies = [
   "netcdf4>=1.7.4,<2",
   "h5py>=3.16.0,<4",
   "pandas>=3.0.6,<4",
+  "dill >=0.4.1,<0.5",
   "quantiphy>=2.23,<3",
   "unyt>=3.1.0,<4",
 ]
