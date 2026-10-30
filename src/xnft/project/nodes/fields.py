@@ -179,13 +179,19 @@ class FieldNode(DataNode):
     @property
     @gui_property(label="AUT Aperture Size", order=6)
     def aut_size_gui(self):
-        return f"{Quantity(self.data.attrs['aperture_size'], units='m')}"
+        if self.data is not None and "aperture_size" in self.data.attrs:
+            return f"{Quantity(self.data.attrs['aperture_size'], units='m')}"
+        return "None"
 
     @property
     @gui_property(label="Gain Calibration", order=7)
     def gain_calibration_gui(self):
-        if self.data.attrs["gain_calibration"]:
-            return f"{self.data.attrs['gain_calibration'].name}"
+        if self.data is not None:
+            gain_cal = self.data.attrs.get("gain_calibration")
+            if gain_cal:
+                return (
+                    f"{gain_cal.name}" if hasattr(gain_cal, "name") else str(gain_cal)
+                )
         return "None"
 
     @context_action(

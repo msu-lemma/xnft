@@ -37,3 +37,7 @@ class PlotNorms(Enum):
         field_types={FieldType.NEAR, FieldType.FAR},  # ratio
         functions={PlotFunctions.MAGNITUDE, PlotFunctions.PHASE},
     )
+
+    def __reduce_ex__(self, proto):
+        # Pickles the Enum member by reference name
+        return getattr, (self.__class__, self.name)

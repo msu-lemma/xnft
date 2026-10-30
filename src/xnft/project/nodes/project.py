@@ -75,7 +75,7 @@ class Project(Node):
             self._path = path
 
         # try:
-        write_project(self, compression_level=10)
+        write_project(self, compression_level=0)
         return f"Saved project {self.name} to path: {self._path}"
         # except Exception:
         #     return f"Failed to save {self.name} to path: {self._path}"

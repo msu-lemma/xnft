@@ -1,6 +1,8 @@
 """
 Handle reading and writing xNFT projects.
 
+xNFT projects store attributes/native Python as pickle files and arrays in
+
 Copyright 2025-2026 LEmmA, Electromagnetics Research Group, Michigan State
 University.
 """
@@ -8,52 +10,46 @@ University.
 from __future__ import annotations
 
 import os
-import pickle
-import sys
 import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-if sys.version_info >= (3, 14):
-    from compression import zstd
-else:
-    from backports import zstd
-
-# Only imports Projec tfor type checking
+# Only imports Project for type checking
 if TYPE_CHECKING:
     from .nodes.project import Project
 
 
-def write_project(project: Project, compression_level=10):
+def write_project(project: Project, compression_level=4):
     """
-    Write `project` to disk at specified `compression_level`.
+    Write `project` to disk in ZIP container (.xnft) format at specified `compression_level`.
 
     Parameters
     ----------
     project : Project
         Project to write to disk.
     compression_level : int, optional
-        Compression level for `zstd` to use when writing, by default 10.
+        Gzip compression level (0-9) to use when writing datasets, by default 4.
 
     """
-    # if project._path is not None:
-    #     with zstd.open(project._path, mode="wb", level=compression_level) as f:
-    #         pickle.dump(project, f, protocol=pickle.HIGHEST_PROTOCOL)
-    # else:
-    #     raise TypeError('Project path must be specified. Got `None`.')
 
     if project._path is None:
         raise TypeError("Project path must be specified. Got `None`.")
 
     path = Path(project._path)
     tmp_dir = path.parent
+    tmp_dir.mkdir(parents=True, exist_ok=True)  # Make directories if needed
 
-    with tempfile.NamedTemporaryFile(dir=tmp_dir, delete=False) as tmp:
+    # Temp file for atomic file replacements, keeping old save file if write fails midway
+    with tempfile.NamedTemporaryFile(dir=tmp_dir, delete=False, suffix=".xnft") as tmp:
         tmp_path = Path(tmp.name)
 
+    if compression_level > 9:
+        compression_level = 9
+    elif compression_level < 0:
+        compression_level = 0
+
     try:
-        with zstd.open(tmp_path, mode="wb", level=compression_level) as f:
-            pickle.dump(project, f, protocol=pickle.HIGHEST_PROTOCOL)
+        project.to_zip(tmp_path, compression_level=compression_level)
 
         # atomic replace to avoid overwriting file with corrupted project
         os.replace(tmp_path, path)
@@ -78,10 +74,19 @@ def read_project(project_path: Path) -> Project:
         Project loaded from disk.
 
     """
-    with zstd.open(project_path, "rb") as f:
-        project = pickle.load(f)
+    # Force import of node modules to populate Node._registry via __init_subclass__
+    from . import nodes  # noqa: F401
+    from .nodes.node import Node
+    from .nodes.project import Project
+
+    path = Path(project_path).resolve()
+
+    project = Node.from_zip(path)
+
+    if not isinstance(project, Project):
+        raise TypeError(f"Expected root node type Project, got type {type(project)}")
 
     # Update path if file name/path changed
-    project.path = project_path
+    project.path = path
 
     return project
