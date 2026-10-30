@@ -66,6 +66,21 @@ class ProjectManagerTreeModel(QAbstractItemModel):
         child = parent_node.get_child_by_index(row)
         return self.createIndex(row, column, child)
 
+    def _get_index_for_item(self, item: Node | Project | None) -> QModelIndex:
+        """Helper to compute the QModelIndex for any Project or Node."""
+        if item is None:
+            return QModelIndex()
+
+        if isinstance(item, Project):
+            row = self._project_manager.index_of_project(item)
+            return self.createIndex(row, 0, item)
+
+        if isinstance(item, Node) and item.parent is not None:
+            row = item.parent.children.index(item)
+            return self.createIndex(row, 0, item)
+
+        return QModelIndex()
+
     def parent(self, index: QModelIndex) -> QModelIndex:
         """
         Returns the parent of the model index, or QModelIndex() if it has no parent.
@@ -187,43 +202,44 @@ class ProjectManagerTreeModel(QAbstractItemModel):
         Returns
         -------
         QModelIndex
-            Newly intserted model index.
-
+            Newly inserted model index.
         """
-        parent_row_index = parent_item.parent.children.index(parent_item)
-
-        parent_index = self.createIndex(parent_row_index, 0, parent_item)
+        parent_index = self._get_index_for_item(parent_item)
         insert_row_index = parent_item.child_count  # append to end
 
         self.beginInsertRows(parent_index, insert_row_index, insert_row_index)
         parent_item.add_child(node)
         self.endInsertRows()
 
-        # Return the model index to caller for other functions to use
-        # e.g., expand newly added rows
         model_index = self.createIndex(insert_row_index, 0, node)
-
         return model_index
 
-    def remove_node(self, parent_item: Node, node: Node):
+    def remove_node(self, parent_or_node: Node, node: Node | None = None):
         """
-        Remove a node from the project manager tree.
+        Remove a node from the project manager tree and update Qt views.
 
         Parameters
         ----------
-        parent_item : project.Node
-            Parent of item being removed.
-        node : project.Node
-            Node object to remove.
-
+        parent_or_node : project.Node
+            The node to remove, OR the parent node if `node` is also explicitly passed.
+        node : project.Node, optional
+            Node object to remove if parent_or_node was passed as parent.
         """
-        parent_row_index = parent_item.parent.children.index(parent_item)
+        if node is not None:
+            parent_item = parent_or_node
+            target_node = node
+        else:
+            target_node = parent_or_node
+            parent_item = target_node.parent
 
-        parent_index = self.createIndex(parent_row_index, 0, parent_item)
-        remove_row_index = parent_item.child_count
+        if parent_item is None:
+            return
+
+        remove_row_index = parent_item.children.index(target_node)
+        parent_index = self._get_index_for_item(parent_item)
 
         self.beginRemoveRows(parent_index, remove_row_index, remove_row_index)
-        parent_item.remove_child(node)
+        parent_item.remove_child(target_node)
         self.endRemoveRows()
 
     def flags(self, index: QModelIndex) -> Qt.ItemFlag:
@@ -248,14 +264,13 @@ class ProjectManagerTreeModel(QAbstractItemModel):
         if not index.isValid():
             return Qt.NoItemFlags
 
-        # Default flags; always enabled and selectable
+        # Default flags: always enabled and selectable
         flags = Qt.ItemIsEnabled | Qt.ItemIsSelectable
 
         item = index.internalPointer()
 
-        # Only allow user to edit (rename) some nodes
-        editable = getattr(item, "name_editable", False)
-        if editable:
+        # Enable inline editing for DataNodes and any explicitly editable node
+        if isinstance(item, DataNode) or getattr(item, "name_editable", False):
             flags |= Qt.ItemIsEditable
 
         return flags
@@ -285,22 +300,24 @@ class ProjectManagerTreeModel(QAbstractItemModel):
         if role not in (Qt.EditRole, Qt.DisplayRole):
             return False
 
-        # Only allow user to rename DataNodes (user-created nodes with data)
+        if not index.isValid():
+            return False
+
         node = index.internalPointer()
         if not isinstance(node, (DataNode, Project)):
             return False
 
-        is_editable = getattr(node, "name_editable", False)
-
-        if not is_editable:
+        # Allow renaming for DataNodes or any node with name_editable=True
+        if not (isinstance(node, DataNode) or getattr(node, "name_editable", False)):
             return False
 
-        new_name = str(value)
+        new_name = str(value).strip()
+        if not new_name:
+            return False  # Reject empty names
 
-        # Only update if the name changed
         if new_name != node.name:
             node.name = new_name
-            # Send dataChanged signal on success to allow UI to update
+            # Emit dataChanged signal so QTreeView redraws the updated name
             self.dataChanged.emit(index, index, [Qt.DisplayRole, Qt.EditRole])
-            return True
-        return False
+
+        return True

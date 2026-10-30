@@ -18,7 +18,6 @@ from numpy.typing import NDArray
 
 from xnft.common.enums import PolarizationType, SParameterType
 
-from ..calibration.gain import GainCalibration
 from .enums import CoordinateSystemType, FieldType
 
 # Allowed coordinate system types for near/far-field
@@ -77,7 +76,7 @@ class FieldDataset:
         field_type: FieldType,
         data_source: DataSource,
         aperture_size: float = 0.0,
-        gain_calibration: GainCalibration | None = None,
+        gain_calibration: bool = False,
     ) -> xr.Dataset:
         """
         Create xarray field dataset with data validation.
@@ -101,9 +100,8 @@ class FieldDataset:
         aperture_size : float, optional
             Largest dimension of the aperture inducing the field in meters
             Used to compute valid observation angles, by default 0.0
-        gain_calibration : GainCalibration, optional
-            Gain calibration object containing standard and measurement
-            fields used to create a gain correction lookup table. By default None
+        gain_calibration : bool, optional
+            Indicator of if field was gain calibrated. By default False
 
         Returns
         -------

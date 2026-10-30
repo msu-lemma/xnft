@@ -108,7 +108,24 @@ class ProjectTreeView(QTreeView):
                         spawn_thread=spawn_thread,
                     ),
                 )
-
+            elif context_action.action == "rename_node":
+                action.triggered.connect(
+                    lambda checked=False, idx=index: self.edit(idx)
+                )
+            elif context_action.action == "delete_node":
+                tree_model = self.model()
+                action.triggered.connect(
+                    lambda checked=False, tm=tree_model, target_node=node: (
+                        tm.remove_node(target_node)
+                    )
+                )
+            elif context_action.action == "delete_node":
+                model = self.model()
+                action.triggered.connect(
+                    lambda checked=False, model=model, target_node=node: (
+                        model.remove_node(target_node)
+                    )
+                )
             elif context_action.action == "close_project" and isinstance(
                 node,
                 manager.Project,
@@ -123,6 +140,7 @@ class ProjectTreeView(QTreeView):
                     model.remove_project(proj),
                 )
                 # fmt: on
+
             else:
                 # If no context.action specified, directly invoke callable
                 invoke = getattr(context_action, "invoke", None)
