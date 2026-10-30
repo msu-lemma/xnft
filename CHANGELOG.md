@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-TODO
+### Added
+
+- Stable serialization scheme using zip file to hold pickled attributes and hdf5 data in one container.
+- Save/load project moved to separate thread; added UI indications to user to show save/load in progress.
+
+### Fixed
+
+- Projects with reports/plots can now be saved
+- `.xnft` file schema now stable (software updates should not break existing data files)
+
 
 [unreleased]: https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/compare/v0.1.0b2...HEAD
