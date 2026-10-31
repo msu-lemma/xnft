@@ -15,6 +15,10 @@ from PySide6.QtCore import (
     Qt,
 )
 from PySide6.QtGui import (
+    QBrush,
+    QColor,
+    QGuiApplication,
+    QImage,
     QPainter,
     QPixmap,
 )
@@ -38,7 +42,7 @@ class QMdiAreaWatermark(QMdiArea):
         )
 
         self._lemma_logo_path = str(
-            files("xnft.resources.logos").joinpath("lemma_logo.svg"),
+            files("xnft.resources.logos").joinpath("lemma_logo_v2.svg"),
         )
 
         self._emrg_logo = QSvgRenderer(self._emrg_logo_path)
@@ -47,8 +51,9 @@ class QMdiAreaWatermark(QMdiArea):
         self._opacity = 0.5
         self._margin = 12
 
-        self._emrg_target_size = QSizeF(510.2 / 2, 164 / 2)
-        self._lemma_target_size = QSizeF(245, 245)
+        self._emrg_target_size = QSizeF(510.2 * 0.55, 164 * 0.55)
+        # self._lemma_target_size = QSizeF(245, 245)
+        self._lemma_target_size = QSizeF(243.0 * 1.35, 112.6 * 1.35)
 
         self._oversample_ratio = 2.0
 
@@ -102,6 +107,18 @@ class QMdiAreaWatermark(QMdiArea):
     def paintEvent(self, event):
         super().paintEvent(event)
 
+        # Set canvas background color based on OS light/dark theme
+
+        style_hints = QGuiApplication.styleHints()
+        current_scheme = style_hints.colorScheme()
+
+        if current_scheme == Qt.ColorScheme.Dark:
+            self.setBackground(QBrush(QColor(100, 100, 100)))
+        else:
+            self.setBackground(QBrush(QColor(200, 200, 200)))
+
+        # Update logos
+
         painter = QPainter(self.viewport())
         painter.setOpacity(self._opacity)
         painter.setRenderHint(QPainter.Antialiasing, True)
@@ -116,7 +133,7 @@ class QMdiAreaWatermark(QMdiArea):
         emrg_x = vp_rect.right() - emrg_w - self._margin
         emrg_y = vp_rect.bottom() - emrg_h - self._margin
 
-        painter.drawPixmap(QPointF(emrg_x, emrg_y), self._emrg_logo_pixmap)
+        self.drawPixmap(painter, QPointF(emrg_x, emrg_y), self._emrg_logo_pixmap)
 
         # Add LEmmA logo
         lemma_w = self._lemma_target_size.width()
@@ -124,4 +141,19 @@ class QMdiAreaWatermark(QMdiArea):
         lemma_x = vp_rect.right() - lemma_w - self._margin
         lemma_y = vp_rect.top() + self._margin
 
-        painter.drawPixmap(QPointF(lemma_x, lemma_y), self._lemma_logo_pixmap)
+        self.drawPixmap(painter, QPointF(lemma_x, lemma_y), self._lemma_logo_pixmap)
+
+    def drawPixmap(self, painter, location, pixmap):
+
+        # Switch light vs. dark images based on current canvas background color
+        background_lightness = self.background().color().lightnessF()
+
+        _pixmap = pixmap if background_lightness > 0.5 else self.invertPixmap(pixmap)
+
+        painter.drawPixmap(location, _pixmap)
+
+    def invertPixmap(self, pixmap):
+
+        image = pixmap.toImage()
+        image.invertPixels(QImage.InvertMode.InvertRgb)
+        return QPixmap.fromImage(image)
