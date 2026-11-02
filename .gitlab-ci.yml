@@ -211,6 +211,7 @@ publish-wheel:
 
   needs:
     - job: test
+      optional: true
     - job: package
       artifacts: true
 
@@ -237,6 +238,7 @@ publish-conda:
 
   needs:
     - job: test
+      optional: true
     - job: package
       artifacts: true
 
@@ -264,13 +266,14 @@ publish-conda:
         "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_NAME}-dev-conda/${PACKAGE_VERSION}/${FILE_NAME}"
 
 ## Upload wheel/conda packages to registry
-package-release:
+publish-release:
   interruptible: false
   stage: release
   image: registry.gitlab.com/gitlab-org/cli:latest
 
   needs:
     - job: test
+      optional: true
     - job: package
       artifacts: true
 
@@ -314,9 +317,10 @@ release:
 
   needs:
     - job: test
+      optional: true
     - job: package
       artifacts: true
-    - job: package-release
+    - job: publish-release
 
   rules:
     - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+(a\d+|b\d+|rc\d+)?$/'
