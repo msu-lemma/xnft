@@ -142,13 +142,8 @@ Installing from source is required to develop or package _xNFT_. To install _xNF
 2. Clone this repository by clicking the **Code** button in the upper right and selecting either "Clone with SSH" or "Clone with HTTPS" to copy the repo URL, then run:
 
     ```shell
-    git clone git@gitlab.msu.edu:ece-lemma/public/xnft/xnft.git
+    git clone https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft.git
     ```
-
-    > [!WARNING]
-    >
-    > **TODO: Update clone URL once project is public:
-    > https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft.git**
 
 3. Enter into the `xnft` directory
 
