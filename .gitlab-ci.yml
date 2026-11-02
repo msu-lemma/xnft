@@ -90,6 +90,8 @@ code-quality:
   stage: build-test
   cache:
     <<: *pixi-cache
+  before_script:
+    - apt-get update && apt-get install -y --no-install-recommends git git-lfs
   script:
     - pixi run -e test ruff check --output-format=gitlab --output-file=$CI_PROJECT_DIR/code-quality-report.json
   artifacts:
@@ -112,6 +114,8 @@ docs-build:
       texlive-fonts-extra
       fonts-freefont-otf
       fontconfig
+      git 
+      git-lfs
     - rm -rf /var/lib/apt/lists/*
   script:
     - pixi run -e docs build-docs
@@ -134,6 +138,7 @@ package:
     <<: *pixi-cache
 
   before_script:
+    - apt-get update && apt-get install -y --no-install-recommends git git-lfs
     - git fetch --force --tags
     - git describe --tags --always --dirty
 
@@ -193,6 +198,9 @@ publish-wheel:
   rules:
     - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
     - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+(a\d+|b\d+|rc\d+)?$/'
+
+  before_script:
+    - apt-get update && apt-get install -y --no-install-recommends git git-lfs
 
   script:
     - pixi run -e build python -m twine upload

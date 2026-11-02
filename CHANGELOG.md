@@ -21,4 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `.xnft` file schema now stable (software updates should not break existing data files).
 - Line Plot now works for plotting any field component.
 
+### Changed
+
+- LEmmA scanner field loader moved to external plugin module [`xnft-lemma-scanner`](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft-lemma-scanner)
+
 [unreleased]: https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/compare/v0.1.0b2...HEAD
