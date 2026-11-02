@@ -19,14 +19,6 @@ variables:
   # FF_USE_FASTZIP: "true"
   # CACHE_COMPRESSION_LEVEL: "fastest"
 
-.glab-before-script: &glab-before-script
-  before_script:
-    - glab auth login
-      --hostname "${CI_SERVER_HOST}"
-      --api-host "www.gitlab.msu.edu"
-      --api-protocol "${CI_SERVER_PROTOCOL}"
-      --job-token "${CI_JOB_TOKEN}"
-
 # Store our package cache in our git repo so we can cache it
 .pixi-cache: &pixi-cache
   key:
@@ -76,6 +68,7 @@ test:
     <<: *pixi-cache
 
   before_script:
+    - apt-get update && apt-get install -y --no-install-recommends git git-lfs
     - git -C data lfs pull
 
   script:
@@ -215,11 +208,6 @@ publish-conda:
   stage: release
   image: registry.gitlab.com/gitlab-org/cli:latest
 
-  <<: *glab-before-script
-
-  variables:
-    GLAB_ENABLE_CI_AUTOLOGIN: "true"
-
   needs:
     - job: test
     - job: package
@@ -229,23 +217,16 @@ publish-conda:
     - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
 
   script:
-    - CONDA_FILE="$(find dist -maxdepth 1 -type f -name '*.conda' ! -name 'xnft-dev-main.conda'  -print  -quit )"
-    - echo "Uploading $(basename "${CONDA_FILE}")"
-    - glab packages upload "${CONDA_FILE}"
-      --repo "${CI_PROJECT_PATH}"
-      --name "${CI_PROJECT_NAME}-dev-conda"
-      --version "${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}"
+    - |
+      CONDA_FILE="$(find dist -maxdepth 1 -type f -name '*.conda' ! -name 'xnft-dev-main.conda'  -print  -quit )"
+      echo "Uploading $(basename "${CONDA_FILE}")
+      curl --fail-with-body --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file "${CONDA_FILE}" ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_NAME}-dev-conda/${PACKAGE_VERSION}/${FILE_NAME}
 
 # Upload wheel/conda packages to registry
 package-release:
   interruptible: false
   stage: release
   image: registry.gitlab.com/gitlab-org/cli:latest
-
-  <<: *glab-before-script
-
-  variables:
-    GLAB_ENABLE_CI_AUTOLOGIN: "true"
 
   needs:
     - job: test
@@ -269,10 +250,10 @@ package-release:
 
         echo "Uploading $(basename "${PACKAGE_FILE}")"
 
-        glab packages upload "${PACKAGE_FILE}" \
-          --repo "${CI_PROJECT_PATH}" \
-          --name "${CI_PROJECT_NAME}" \
-          --version "${CI_COMMIT_TAG}"
+        curl --fail-with-body \
+            --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \
+            --upload-file "${PACKAGE_FILE}" \
+            "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_NAME}/${CI_COMMIT_TAG}/${FILE_NAME}"
       done
 
 # Create release for tagged versions
