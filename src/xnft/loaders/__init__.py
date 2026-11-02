@@ -9,7 +9,6 @@ import importlib
 _BUILTIN_LOADERS = (
     "xnft.loaders.fields.analytic",
     "xnft.loaders.fields.hfss",
-    "xnft.loaders.fields.lemma",
     "xnft.loaders.fields.nsi",
 )
 

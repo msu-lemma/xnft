@@ -194,6 +194,9 @@ cmd = ["uv", "build"]
 xnft = { path = "." }
 git-lfs = ">=3.8.0,<4"
 
+# Include LEmmA scanner for development/testing purposes
+xnft-lemma-scanner = { git = "https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft-lemma-scanner.git", rev = 'main' }
+
 [feature.test.dependencies]
 pytest = ">=9.1.1,<10"
 pytest-cov = ">=7.1.0,<8"

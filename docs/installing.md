@@ -139,7 +139,7 @@ Installing from source is required to develop or package _xNFT_. To install _xNF
 ### 2.1 Download Source
 
 1. Open a terminal/PowerShell and navigate to the location where you would like to download the project
-2. Clone this repository by clicking the **Code** button in the upper right and selecting either "Clone with SSH" or "Clone with HTTPS" to copy the repo URL, then run:
+2. Clone this repository by running:
 
     ```shell
     git clone https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft.git
@@ -181,6 +181,27 @@ To pull the datasets, run:
    ```
 
 This will download datasets in to the `data/...` folders.
+<!-- 
+#### Install LEmmA Scanner field Loader Extension (Optional)
+
+The "Test Data" project includes measured data collected by the LEmmA planar near-field scanner.  To load these data, the `xnft-lemma-scanner` extension module must be installed.
+
+1. Clone the `xnft-lemma-scanner` repository into the directory next to the `xnft` repository. Starting from the `xnft` directory, run:
+
+    ```shell
+    cd ..
+    git clone https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft-lemma-scanner.git
+    ```
+
+    To run _xNFT_ with the LEmmA scanner extension, launch it from within the `xnft-lemma-scanner.
+
+2. Enter the `xnft-lemma-scanner` directory
+
+    ```shell
+    cd xnft-lemma-scanner
+    ```
+
+> [!NOTE] To launch with the  -->
 
 ### 2.3 Install and Run
 
