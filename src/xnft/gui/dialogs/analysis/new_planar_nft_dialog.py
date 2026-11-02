@@ -118,6 +118,7 @@ class NewPlanarNearFieldTransform(QDialog):
         self.lw_frequencies.setFocusPolicy(Qt.StrongFocus)
         self.lw_frequencies.setSelectionMode(QListWidget.ExtendedSelection)
         self._update_frequencies()
+        self._update_frequency_availability()
 
         # Generate help label based on platform type
         mod_key = "⌘" if platform.system() == "Darwin" else "Ctrl"
@@ -162,6 +163,9 @@ class NewPlanarNearFieldTransform(QDialog):
 
         # --- Add Connections ---
         self.cb_source_field.currentTextChanged.connect(self._update_frequencies)
+        self.cb_gain_cal.currentIndexChanged.connect(
+            self._update_frequency_availability
+        )
         self.buttons.accepted.connect(self._on_accept)
         self.buttons.rejected.connect(self.reject)
         self.le_transform_name.returnPressed.connect(self._try_accept)
@@ -198,6 +202,38 @@ class NewPlanarNearFieldTransform(QDialog):
                 item = QListWidgetItem(label)
                 item.setData(Qt.UserRole, data)
                 self.lw_frequencies.addItem(item)
+
+        self._update_frequency_availability()
+
+    def _update_frequency_availability(self) -> None:
+        """Disable frequencies outside the gain calibration range."""
+
+        gain_cal_node = self.cb_gain_cal.currentData()
+
+        if gain_cal_node is None:
+            for index in range(self.lw_frequencies.count()):
+                item = self.lw_frequencies.item(index)
+                item.setFlags(item.flags() | Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+            return
+
+        gain_cal_data = gain_cal_node.gain_cal_ref.data
+        gain_cal_freqs = gain_cal_data.coords["frequency"].values
+
+        min_freq = np.min(gain_cal_freqs)
+        max_freq = np.max(gain_cal_freqs)
+
+        for index in range(self.lw_frequencies.count()):
+            item = self.lw_frequencies.item(index)
+            frequency = float(item.data(Qt.UserRole))
+
+            is_available = np.isfinite(frequency) and min_freq <= frequency <= max_freq
+
+            if is_available:
+                item.setFlags(item.flags() | Qt.ItemIsEnabled | Qt.ItemIsSelectable)
+            else:
+                # Clear selection before disabling the item.
+                item.setSelected(False)
+                item.setFlags(item.flags() & ~Qt.ItemIsEnabled & ~Qt.ItemIsSelectable)
 
     def _is_input_valid(self, silent=True) -> bool:
         """

@@ -49,6 +49,7 @@ class NewFieldReport(QDialog):
         target_node=None,
         show_fields=True,
         select_multiple_fields=False,
+        default_report_name="Field Report",
     ):
         super().__init__(parent)
         self.setWindowTitle("New Field Report")
@@ -65,7 +66,7 @@ class NewFieldReport(QDialog):
 
         group_report_name.setFlat(True)
         self.le_report_name = QLineEdit(self)
-        self.le_report_name.setText("Field Report")
+        self.le_report_name.setText(default_report_name)
         self.le_report_name.setPlaceholderText("Enter the name for the report")
 
         form_layout_report_name = QFormLayout()

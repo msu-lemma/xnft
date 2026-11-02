@@ -90,7 +90,7 @@ def load_gain_cal(
 
     Returns
     -------
-    GainCalibration | str
+    GainCalibrationReference | str
         GainCalibration or GainCalibration.name if "name_only" is True
 
     """

@@ -47,10 +47,14 @@ class ReportsNode(Node):
         order=10,
         enabled=True,
         action="ui_action",
-        helper_dialog=partial(NewFieldReport, show_fields=False),
+        helper_dialog=partial(
+            NewFieldReport,
+            show_fields=False,
+            default_report_name="Line Plot",
+        ),
         icon_name="document-new",
     )
-    def new_1d_field_report(self, **kwargs):
+    def new_line_plot_report(self, **kwargs):
         report_node = ReportNodeLinePlot(
             name=kwargs["report_name"],
             args=kwargs,
@@ -83,10 +87,11 @@ class ReportsNode(Node):
             NewFieldReport,
             show_fields=True,
             select_multiple_fields=False,
+            default_report_name="Surface Plot",
         ),
         icon_name="document-new",
     )
-    def new_2d_field_report(self, **kwargs):
+    def new_surface_plot_report(self, **kwargs):
         report_node = ReportNodeSurfacePlot2D(
             name=kwargs["report_name"],
             fields=kwargs["fields"],
