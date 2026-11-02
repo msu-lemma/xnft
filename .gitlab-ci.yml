@@ -195,7 +195,6 @@ publish-conda:
 
   variables:
     GLAB_ENABLE_CI_AUTOLOGIN: "true"
-    GITLAB_HOST: "www.gitlab.msu.edu"
 
   needs:
     - job: test
@@ -206,8 +205,7 @@ publish-conda:
     - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
 
   script:
-    - CONDA_FILE="$(find dist -maxdepth 1 -type f -name '*.conda' ! -name 'xnft-dev-main.conda' -print -quit)"
-    - test -n "${CONDA_FILE}"
+    - CONDA_FILE="$(find dist -maxdepth 1 -type f -name '*.conda' ! -name 'xnft-dev-main.conda'  -print  -quit )"
     - echo "Uploading $(basename "${CONDA_FILE}")"
     - glab packages upload "${CONDA_FILE}"
       --repo "${CI_PROJECT_PATH}"
@@ -222,7 +220,6 @@ package-release:
 
   variables:
     GLAB_ENABLE_CI_AUTOLOGIN: "true"
-    GITLAB_HOST: "www.gitlab.msu.edu"
 
   needs:
     - job: test
@@ -235,7 +232,6 @@ package-release:
   script:
     - |
       set -eu
-
       for PACKAGE_FILE in dist/*.conda dist/*.whl dist/*.tar.gz; do
         if [ ! -f "${PACKAGE_FILE}" ]; then
           continue
