@@ -40,7 +40,7 @@ unyt = ">=3.1.0,<4"
 
 [package]
 name = "xnft"
-version = "0.1.0"
+version = "0.0.0.dev0"
 publish = true
 
 [package.build.backend]
