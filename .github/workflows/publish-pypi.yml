@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - name: Check out commit
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -48,7 +48,8 @@ jobs:
           fi
 
           if ! git rev-parse --verify \
-            "refs/tags/${RELEASE_TAG}^{commit}" >/dev/null 2>&1; then
+            "refs/tags/${RELEASE_TAG}^{commit}" >/dev/null 2>&1
+          then
             echo "Original release tag is missing: ${RELEASE_TAG}" >&2
             exit 1
           fi
@@ -76,22 +77,35 @@ jobs:
           echo "release-tag=${RELEASE_TAG}" >> "${GITHUB_OUTPUT}"
           echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
 
+          # Preserve the overrides for subsequent shell steps.
+          echo "SETUPTOOLS_SCM_PRETEND_VERSION=${VERSION}" \
+            >> "${GITHUB_ENV}"
+
           echo "Release tag: ${RELEASE_TAG}"
           echo "Package version: ${VERSION}"
           echo "Commit: ${PROMOTION_COMMIT}"
 
       - name: Set up Pixi
         uses: prefix-dev/setup-pixi@v0.11.3
+        env:
+          SETUPTOOLS_SCM_PRETEND_VERSION: ${{ steps.release.outputs.version }}
         with:
-          pixi-version: 0.83.0
+          pixi-version: v0.83.0
           environments: build
           frozen: true
           cache: true
 
+      - name: Verify version overrides
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -n "${SETUPTOOLS_SCM_PRETEND_VERSION}"
+
+          echo "Configured package version: ${SETUPTOOLS_SCM_PRETEND_VERSION}"
+
       - name: Build Python distributions
         shell: bash
-        env:
-          SETUPTOOLS_SCM_PRETEND_VERSION_FOR_XNFT: ${{ steps.release.outputs.version }}
         run: |
           set -euo pipefail
 

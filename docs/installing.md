@@ -27,11 +27,11 @@ Two package versions are available:
 
     Development packages are generated from the `main` branch which contain the latest features and bug fixes but may be less stable than the [Release packages](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/releases).. Each build contains `.conda` and `.whl` artifacts to install.
 
-    The latest development wheel package may also be installed using `uv` directly from the MSU GitLab PyPI registry by running:
+    <!-- The latest development wheel package may also be installed using `uv` directly from the MSU GitLab PyPI registry by running (only for authenticated users):
 
     ```shell
     uv tool install xnft --index-url https://www.gitlab.msu.edu/api/v4/projects/28094/packages/pypi/simple
-    ```
+    ``` -->
 
 > [!note]
 > When using PyPI, it is recommended to use an environment manager such as [conda](https://docs.conda.io/projects/conda/en/stable/), [pixi](https://pixi.prefix.dev/latest/), [venv](https://docs.python.org/3/library/venv.html), or [pipenv](https://pipenv.pypa.io/en/latest/) to minimize package conflicts with system Python installs.
@@ -165,13 +165,13 @@ To pull the datasets, run:
    **On macOS/Linux:**
 
    ```shell
-   GIT_LFS_SKIP_SMUDGE=1 git submodule update --init --recursive
+   GIT_LFS_SKIP_SMUDGE=1 git submodule update --init --recursive --checkout
    ```
 
    **On Windows (PowerShell):**
 
    ```shell
-   $env:GIT_LFS_SKIP_SMUDGE = '1'; git submodule update --init --recursive
+   $env:GIT_LFS_SKIP_SMUDGE = '1'; git submodule update --init --recursive --checkout
    ```
 
 2. Download the files
