@@ -11,10 +11,17 @@ This quick start provides a walk-through demonstrating how to load example measu
 
 ### 1. Installation
 
-To install _xNFT_ and download test data, see **[Installing _xNFT_](docs/installing.md)**.
+## Prerequisite
 
-> [!NOTE]
-> Be sure to **[download the test data](installing.md#2-download-test-data-optional)** during installation.
+Ensure _xNFT_ and the `xnft-lemma-scanner` extension have been installed and test data has been downloaded.  These may be installed via PyPI by running:
+
+```shell
+uv tool install xnft --with xnft-lemma-scanner
+```
+
+For further information on installing _xNFT_ refer to the [Installation Guide](./installing.md##1-install-from-python-package-index-pypi-recommended).
+
+To download test data refer to the **[test data download instructions](installing.md#5-download-test-data-optional)**.
 
 ### 2. Run _xNFT_
 
