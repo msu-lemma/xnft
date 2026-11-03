@@ -397,6 +397,10 @@ publish-pypi:
   # Only run on releases to avoid uploading duplicate packages
   rules: *release-rules
 
+  before_script:
+    - apt-get update
+    - apt-get install -y --no-install-recommends git
+
   script:
     - |
       set -eu
