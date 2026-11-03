@@ -158,6 +158,9 @@ docs-build:
 
   rules: *test-rules
 
+  variables:
+    GIT_DEPTH: "0"
+
   cache:
     <<: *pixi-cache
 
@@ -174,6 +177,7 @@ docs-build:
       git
       git-lfs
     - rm -rf /var/lib/apt/lists/*
+    - git fetch --force --tags
 
   script:
     - pixi run -e docs build-docs
@@ -333,8 +337,6 @@ package-conda:
         exit 1
       fi
 
-      # Ensure that any Python distribution built internally by the Pixi
-      # backend uses the same version.
       export SETUPTOOLS_SCM_PRETEND_VERSION="${PACKAGE_VERSION}"
 
       pixi publish --target-dir=dist
@@ -353,15 +355,19 @@ package-conda:
         exit 1
       fi
 
-      case "${CONDA_FILE}" in
-        *-"${PACKAGE_VERSION}"-*)
-          ;;
-        *)
-          echo "ERROR: Conda package does not use version ${PACKAGE_VERSION}." >&2
-          echo "Conda package: ${CONDA_FILE}" >&2
-          exit 1
-          ;;
-      esac
+      # Require the exact requested version for tagged releases.
+      # Development versions can be normalized by the package backend.
+      if [ -n "${CI_COMMIT_TAG:-}" ]; then
+        case "${CONDA_FILE}" in
+          *-"${PACKAGE_VERSION}"-*)
+            ;;
+          *)
+            echo "ERROR: Conda package does not use release version ${PACKAGE_VERSION}." >&2
+            echo "Conda package: ${CONDA_FILE}" >&2
+            exit 1
+            ;;
+        esac
+      fi
 
       printf 'CONDA_FILE=%s\n' "${CONDA_FILE}" > conda-package.env
       printf 'PACKAGE_VERSION=%s\n' "${PACKAGE_VERSION}" >> conda-package.env
@@ -374,7 +380,6 @@ package-conda:
       - "dist/*.conda"
     reports:
       dotenv: conda-package.env
-
 publish-pypi:
   interruptible: false
   stage: release
