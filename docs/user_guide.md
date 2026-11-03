@@ -1,14 +1,4 @@
-# Getting Started
-
-## Prerequisite
-
-Ensure _xNFT_ and the `xnft-lemma-scanner` extension have been installed.  These may be installed via PyPI by running:
-
-```shell
-uv tool install xnft --with xnft-lemma-scanner
-```
-
-For further information on installing _xNFT_ refer to the [Installation Guide](./installing.md##1-install-from-python-package-index-pypi-recommended).
+# User Guide
 
 ## User Interface Overview
 
