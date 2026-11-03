@@ -2,20 +2,53 @@
 
 ## Table of Contents
 
-1. [Install From Package (Recommended)](#1-install-from-package-recommended)
-2. [Install From Source](#2-installing-from-source)
-3. [Build Redistributable Package with Embedded Dependencies](#3-build-distributable-package)
+1. [Install From Python Package Index (PyPI) (Recommended)](#1-install-from-python-package-index-pypi-recommended)
+2. [Install From Development Package](#2-install-from-development-package)
+3. [Install From Source](#3-installing-from-source)
+4. [Build Redistributable Package with Embedded Dependencies](#4-build-distributable-package)
+5. [Download Test Data](#5-download-test-data-optional)
 
-## 1. Install From Package (Recommended)
+## 1. Install From Python Package Index (PyPI) (Recommended)
 
-Installing from a packaged source is recommended for _xNFT_ users.  For developers, see [Installing from Source](#2-installing-from-source).
+**Prerequesite:** To install xnft it's recommended to use `uv`. To install `uv` visit: https://docs.astral.sh/uv/getting-started/installation/. It may be necessary to close and re-open your terminal after installing `uv`.
 
-### 1.1 Download _xNFT_
+### 1.1 Install _xNFT_
 
-> [!NOTE]
-> Installation via PyPI and conda-forge are planned but not yet supported.
+To install _xNFT_ from PyPI using `uv` run:
 
-Packaged versions of _xNFT_ are provided in `.conda` (conda/pixi format) and `.whl` (pip format) which can be found at the links in the following section.
+```shell
+uv tool install xnft
+```
+
+To run _xNFT_ simply run:
+
+```shell
+xnft
+```
+
+### 1.2 Install Extensions (Optional)
+
+To install optional field loaders, e.g., `xnft-lemma-scanner` field loader, run:
+
+```shell
+uv tool install xnft --with xnft-lemma-scanner
+```
+
+Further extensions from PyPI or `.whl` files can be added after the `--with` flags if desired as well.
+
+### 1.3 Download Test Data (Optional)
+
+To download test data for evaluating _xNFT_ see **[Download Test Data](#5-download-test-data-optional)**
+
+## 2. Install From Development Package
+
+Installing from a packaged source is recommended for _xNFT_ users. The CI pipeline publishes pre-built packages for every commit which may be downloaded and installed, described in this section.
+
+To install the latest tagged version, see [Install From Python Package Index (PyPI)](#1-install-from-python-package-index-pypi-recommended). For developers, see [Installing from Source](3-installing-from-source).
+
+### 2.1 Download _xNFT_
+
+The CI pipeline produces packaged versions of _xNFT_ are provided in `.conda` (conda/pixi format) and `.whl` (pip format) which can be found at the links in the following section.
 
 Two package versions are available:
 
@@ -25,20 +58,11 @@ Two package versions are available:
 
 - **[Development Packages](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/packages/)**
 
-    Development packages are generated from the `main` branch which contain the latest features and bug fixes but may be less stable than the [Release packages](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/releases).. Each build contains `.conda` and `.whl` artifacts to install.
+    Development packages are generated from the `main` branch which contain the latest features and bug fixes but may be less stable than the [Release packages](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/releases). Each build contains `.conda` and `.whl` artifacts to install.
 
-    <!-- The latest development wheel package may also be installed using `uv` directly from the MSU GitLab PyPI registry by running (only for authenticated users):
+### 2.2 Install _xNFT_
 
-    ```shell
-    uv tool install xnft --index-url https://www.gitlab.msu.edu/api/v4/projects/28094/packages/pypi/simple
-    ``` -->
-
-> [!note]
-> When using PyPI, it is recommended to use an environment manager such as [conda](https://docs.conda.io/projects/conda/en/stable/), [pixi](https://pixi.prefix.dev/latest/), [venv](https://docs.python.org/3/library/venv.html), or [pipenv](https://pipenv.pypa.io/en/latest/) to minimize package conflicts with system Python installs.
-
-### 1.2 Install _xNFT_
-
-Once the desired xNFT version has been downloaded from [Package Sources](#11-package-sources), the package may be installed.
+Once the desired xNFT version has been downloaded, the package may be installed.
 
 The two supported methods of installation are using **[pixi](https://pixi.prefix.dev/latest/)** or **[uv](https://docs.astral.sh/uv/)**.
 
@@ -60,6 +84,14 @@ The two supported methods of installation are using **[pixi](https://pixi.prefix
     xnft
     ```
 
+    > [!NOTE]
+    >
+    > Extensions from PyPI or `.whl` files can be appended to the install command using the `--with` flag, e.g.:
+    >
+    > ```shell
+    > uv tool install --python 3.14 xnft-<version>-py3-none-any.whl --with xnft-lemma-scanner
+    > ```
+
 - **Install via pixi**
 
     **Prerequesite:** Install pixi: https://pixi.prefix.dev/latest/installation/. It may be necessary to close and re-open your terminal after installing `uv`.
@@ -67,7 +99,7 @@ The two supported methods of installation are using **[pixi](https://pixi.prefix
     To install the _xNFT_ using pixi, first download the `.conda` file, then run
 
     ```shell
-    pixi global install --path xnft-<version>.conda 
+    pixi global install -e xnft --path xnft-<version>.conda 
     ```
 
     Once installed, _xNFT_ may be run from the terminal simply as:
@@ -76,15 +108,19 @@ The two supported methods of installation are using **[pixi](https://pixi.prefix
     xnft
     ```
 
-### 1.3 Download Test Data
+    > [!NOTE]
+    >
+    > Extensions from `.conda` files can be appended to the install command using the `--with` flag, e.g.:
+    >
+    > ```shell
+    > pixi global install -e xnft --path xnft-<version>.conda --with xnft-lemma-scanner-<version>.conda
+    > ```
 
-Test data for evaluating _xNFT_ can be found in the **[_xNFT_ Data](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft-data)** repository.  
+### 2.3 Download Test Data (Optional)
 
-A zip of the entire data repository can be downloaded by selecting the `Code` drop-down button in the upper-right corner, then selecting one of the file options below "Download Source Code".  Note that this may be several gigabytes.
+To download test data for evaluating _xNFT_ see **[Download Test Data](#5-download-test-data-optional)**
 
-Altnernatively, individual test files may be downloaded by navigating the `near_field` and `far_field` folders directly.
-
-## 2. Installing From Source
+## 3. Installing From Source
 
 Installing from source is required to develop or package _xNFT_. To install _xNFT_ from source, it is recommended to use Pixi to manage the environment (<https://pixi.prefix.dev/latest/>).
 
@@ -151,9 +187,6 @@ Installing from source is required to develop or package _xNFT_. To install _xNF
     cd xnft
     ```
 
-> [!Note]
-> The SSH option will use your SSH keys allowing for more convenient passwordless authentication if your ssh-agent is properly configured.
-
 ### 2.2 Download Test Data (Optional)
 
 Optional test data is stored in a secondary **[`xnft-data`](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft-data)** repository included as a git submodule in this project.  Note that these archives contain sevaral gigabytes of data and are thus not downloaded by default.
@@ -181,27 +214,6 @@ To pull the datasets, run:
    ```
 
 This will download datasets in to the `data/...` folders.
-<!-- 
-#### Install LEmmA Scanner field Loader Extension (Optional)
-
-The "Test Data" project includes measured data collected by the LEmmA planar near-field scanner.  To load these data, the `xnft-lemma-scanner` extension module must be installed.
-
-1. Clone the `xnft-lemma-scanner` repository into the directory next to the `xnft` repository. Starting from the `xnft` directory, run:
-
-    ```shell
-    cd ..
-    git clone https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft-lemma-scanner.git
-    ```
-
-    To run _xNFT_ with the LEmmA scanner extension, launch it from within the `xnft-lemma-scanner.
-
-2. Enter the `xnft-lemma-scanner` directory
-
-    ```shell
-    cd xnft-lemma-scanner
-    ```
-
-> [!NOTE] To launch with the  -->
 
 ### 2.3 Install and Run
 
@@ -215,7 +227,7 @@ This will install all packages necessary into the `default` Pixi environment, th
 > [!NOTE]
 > On the first run of `xnft` it may take some time to open as packages are compiled to Python bytecode. These compiled packages will be cached and it will open and run much faster on subsequent launches.
 
-## 3. Build Distributable Package
+## 4. Build Distributable Package
 
 > [!note]
 > Due to licensing concerns, a redistributable package with embedded third-party dependencies is not provided by the CI.  Users may create this for personal use via the provided scripts if desired.
@@ -223,7 +235,7 @@ This will install all packages necessary into the `default` Pixi environment, th
 > [!note]
 > Building a standalone redistributable pacakge currenly only works for macOS (`.app`) and Windows (`.exe`). Currently, an issue exists with packaging some `.so` files in the Linux build path.
 
-First, follow the [Installing From Source](#2-installing-from-source) instructions above.
+First, follow the [Installing From Source](#3-installing-from-source) instructions above.
 
 The `pixi.toml` provides packaging tasks to generate a standalone executable.  Note that this can only generate a target package to run on the same OS/architecture as the build platform, e.g., macOS/arm64, Windows-11/x86, etc.
 
@@ -234,3 +246,11 @@ pixi run build-exe
 ```
 
 Once the build completes, the package will be located in the `dist` folder.
+
+## 5. Download Test Data (Optional)
+
+Test data for evaluating _xNFT_ can be found in the **[_xNFT_ Data](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft-data)** repository.  
+
+A zip of the entire data repository can be downloaded by selecting the `Code` drop-down button in the upper-right corner, then selecting one of the file options below "Download Source Code".  Note that this may be several gigabytes.
+
+Altnernatively, individual test files may be downloaded by navigating the `near_field` and `far_field` folders directly.
