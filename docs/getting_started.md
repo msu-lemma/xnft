@@ -68,7 +68,7 @@ Right-click on the Field Node to add a new measured field.  A New Field Measurem
 
 In the New Field Measurement dialog, the user may enter the desired Field Name or accept the automatically generated name based on the source file format.
 
-For this demonstration, select the "LEmmA Scanner V1" file format.  We will load the NSI-MI ANT-SGH-26.5-40 standard gain horn antenna measurement from the LEmmA planar near-field scanner.  To load this, navigate to `/Users/merlojas/Projects/lemma/xnft/data/near_field/planar/xnft.lemma_v1/` and select:
+For this demonstration, select the "LEmmA Scanner V1" file format.  We will load the NSI-MI ANT-SGH-26.5-40 standard gain horn antenna measurement from the LEmmA planar near-field scanner.  To load this, navigate to the data folder downloaded in the [Download Test Data](../install.md#5-download-test-data-optional) section of the installation guide `data/near_field/planar/xnft.lemma_v1/` and select:
 
 - `003_nsi_ant-sgh-26_5-40_20260210_1453_co.h5`
 - `003_nsi_ant-sgh-26_5-40_20260210_1453_cx.h5`
