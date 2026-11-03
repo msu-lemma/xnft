@@ -575,14 +575,18 @@ def main():
 
     sys.argv[0] = "xNFT"  # Overwrite name of command to show application name
 
+    QApplication.setAttribute(Qt.ApplicationAttribute.AA_UseHighDpiPixmaps)
+
     app = QApplication(sys.argv)
-    app.setAttribute(Qt.AA_UseHighDpiPixmaps)
     app.setWindowIcon(QIcon(str(resource_path("icons", "xnft_flat.png"))))
 
     app.setApplicationName("xnft")
     app.setApplicationDisplayName("xNFT")
     app.setOrganizationDomain("lemma.msu.edu")
     app.setOrganizationName("LEmmA")
+
+    # Used primarily for Linux desktop-entry matching.
+    app.setDesktopFileName("edu.msu.lemma.xnft")
 
     pm = manager.Manager()
     window = MainWindow(pm)
