@@ -1,5 +1,15 @@
 # Getting Started
 
+## Prerequisite
+
+Ensure _xNFT_ and the `xnft-lemma-scanner` extension have been installed.  These may be installed via PyPI by running:
+
+```shell
+uv tool install xnft --with xnft-lemma-scanner
+```
+
+For further information on installing _xNFT_ refer to the [Installation Guide](./installing.md##1-install-from-python-package-index-pypi-recommended).
+
 ## User Interface Overview
 
 The main xNFT window, shown in Fig. 1, is structured to be similar to other engineering design software.
