@@ -8,7 +8,7 @@ platforms = [
 ]
 channels = ["https://prefix.dev/conda-forge"]
 preview = ["pixi-build"]
-exclude-newer = "14d" # Wait two weeks before using new packages
+exclude-newer = "7d" # Wait one week before using new packages
 
 [workspace.dependencies]
 python = ">=3.12,<3.15"
@@ -185,8 +185,8 @@ iconutil -c icns "${ICNS_PATH}"
 [feature.build.tasks.build-exe]
 cmd = ["pyinstaller", "--noconfirm", "xnft.spec"]
 
-[feature.build.tasks.build-wheel]
-cmd = ["uv", "build"]
+[feature.build.tasks.build-dist]
+cmd = ["uv", "build", "--sdist", "--wheel", "--no-sources"]
 
 [dependencies]
 # Editable installation not yet supported -- see:
