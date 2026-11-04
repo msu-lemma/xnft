@@ -164,9 +164,11 @@ If you use _xNFT_ in your work, please consider citing it. Citation metadata is 
 
 - **When citing the use of the software package**, please specify the version used for reproduceability.  The preferred format is:
 
-  > J. M. Merlo and M. Ettorre. *xNFT - Antenna measurement software.* (v#.#.#). Michigan State University. [Online]. Available: https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft
+  <!-- > J. M. Merlo and M. Ettorre. *xNFT - Antenna measurement software.* (v#.#.#). Michigan State University. [Online]. Available: https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft -->
 
-  <details>
+  > J. M. Merlo, M. Ettorre. *xNFT: An Open Near-Field Antenna Measurement Software Suite.* (v#.#.#). Zenodo. doi: 10.5281/zenodo.23693994.
+
+  <!-- <details>
   <summary>BibTex Format (click to view)</summary>
 
   🚧 TODO 🚧
@@ -185,8 +187,8 @@ If you use _xNFT_ in your work, please consider citing it. Citation metadata is 
   ```
 
   </details>
-
-  Please replace "(v#.#.#)" with the version of the software you used, e.g. "(v0.1.0)".
+-->
+    Please replace "(v#.#.#)" with the version of the software you used, e.g. "(v0.1.0)" and the DOI with the appropriate DOI for the relase [on Zenodo](https://doi.org/10.5281/zenodo.23693993).
 
 - **When citing the software package implementation**, please cite our AMTA conference paper. The preferred format is:
 
