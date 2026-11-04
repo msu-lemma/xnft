@@ -98,7 +98,13 @@ _xNFT_ is designed to run on a wide range of operating systems and architectures
 
 ## Installation
 
-To install _xNFT_ and download test data, see **[Installing _xNFT_](docs/installing.md)**.
+To install _xNFT_ run:
+
+```shell
+uv tool install xnft
+```
+
+For futher install information and to download test data, see **[Installing _xNFT_](docs/installing.md)**.
 
 ## Documentation
 
