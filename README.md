@@ -187,8 +187,8 @@ If you use _xNFT_ in your work, please consider citing it. Citation metadata is 
   ```
 
   </details>
--->
-    Please replace "(v#.#.#)" with the version of the software you used, e.g. "(v0.1.0)" and the DOI with the appropriate DOI for the relase [on Zenodo](https://doi.org/10.5281/zenodo.23693993).
+  -->
+    If using a specific version, please replace "(v#.#.#)" with the version of the software you used, e.g. "(v0.1.0)" and the DOI with the appropriate DOI for the relase [on Zenodo](https://doi.org/10.5281/zenodo.23693993).
 
 - **When citing the software package implementation**, please cite our AMTA conference paper. The preferred format is:
 
