@@ -4,12 +4,33 @@ dynamic = ["version"]
 authors = [
   { name = "Jason Merlo", email = "merlojas@msu.edu" },
   { name = "Mauro Ettorre", email = "ettorre@msu.edu" },
-  { name = "LEmmA Group, Michigan State University" },
 ]
 maintainers = [{ name = "Jason Merlo", email = "merlojas@msu.edu" }]
 readme = "README.md"
 description = "Antenna measurement and analysis software."
 license = "MIT"
+
+keywords = [
+  "antenna",
+  "antenna measurements",
+  "near-field measurement",
+  "near-field transform",
+  "probe compensation",
+]
+
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Topic :: Scientific/Engineering",
+  "License :: OSI Approved :: MIT License",
+  "Natural Language :: English",
+  "Operating System :: MacOS",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+]
 
 requires-python = ">=3.12,<3.15"
 
@@ -31,12 +52,17 @@ dependencies = [
   "unyt>=3.1.0,<4",
 ]
 
-[project.scripts]
+[project.gui-scripts]
 xnft = "xnft.gui.app:main"
 
 [project.urls]
-Homepage = "https://gitlab.msu.edu/ece-lemma/near-field"
-Issues = "https://gitlab.msu.edu/ece-lemma/near-field/-/issues"
+homepage = "https://gitlab.msu.edu/ece-lemma/near-field"
+repository = "https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft.git"
+github = "https://github.com/msu-lemma/xnft"
+issues = "https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/work_items?sort=closed_at_desc&state=opened"
+download = "https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/releases"
+changelog = "https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/blob/main/CHANGELOG.md"
+documentation = "https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/tree/main/docs"
 
 [build-system]
 requires = ["hatchling>=1.32.4,<2", "hatch-vcs>=0.5.0,<0.6"]
