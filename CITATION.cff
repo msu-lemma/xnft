@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-title: "xNFT - Antenna Measurement Software"
+title: xNFT - Antenna Measurement Software
 message: >-
   If you use this software, please cite it using the
   metadata from this file.
@@ -14,11 +14,21 @@ authors:
     family-names: Ettorre
     email: ettorre@msu.edu
     affiliation: Michigan State University
+    orcid: "https://orcid.org/0000-0002-4764-6875"
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.23693993
 repository-code: "https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft"
-url: "https://sites.google.com/site/mauroettorre/home"
+url: "https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft"
 abstract: >-
   xNFT is a cross-platform, high-performance, general
   purpose antenna measurement and analysis software tool,
   primarily focusing on near-to-far field transformations
   (NFTs), permissively distributed under the MIT license.
+keywords:
+  - Antennas
+  - Antenna measurement
+  - near-field measurement
+  - near-field transform
+  - probe compensation
 license: MIT
