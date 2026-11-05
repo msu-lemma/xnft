@@ -166,7 +166,7 @@ If you use _xNFT_ in your work, please consider citing it. Citation metadata is 
 
   <!-- > J. M. Merlo and M. Ettorre. *xNFT - Antenna measurement software.* (v#.#.#). Michigan State University. [Online]. Available: https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft -->
 
-  > J. M. Merlo, M. Ettorre. *xNFT: An Open Near-Field Antenna Measurement Software Suite.* (v#.#.#). Zenodo. doi: 10.5281/zenodo.23693994.
+  > J. M. Merlo, M. Ettorre. _xNFT: An Open Near-Field Antenna Measurement Software Suite._ (v#.#.#). doi: 10.5281/zenodo.23693994.
 
   <!-- <details>
   <summary>BibTex Format (click to view)</summary>
