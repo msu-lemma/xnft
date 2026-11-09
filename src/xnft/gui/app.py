@@ -273,7 +273,7 @@ class MainWindow(QMainWindow):
         if raw_project_url_list:
             project_urls = "<br>".join(
                 [
-                    f"<b>{x.split(',')[0]}</b>: "
+                    f"<b>{x.split(',')[0].title()}</b>: "
                     f'<a href="{x.split(",", 1)[1].strip()}">{x.split(",", 1)[1].strip()}</a>'
                     for x in raw_project_url_list
                 ]
@@ -295,6 +295,14 @@ class MainWindow(QMainWindow):
             """
         )
         msg.setTextInteractionFlags(Qt.TextInteractionFlag.TextBrowserInteraction)
+
+        # Make wider to handle the URLs
+        msg.setStyleSheet("""
+            QMessageBox QLabel {
+                min-width: 640px;
+            }
+        """)
+
         msg.exec()
 
     def create_plot_area(self):
