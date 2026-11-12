@@ -5,7 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
 ## [Unreleased]
+
+...
+
+## [v0.1.0]
 
 ### Added
 
@@ -25,4 +30,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - LEmmA scanner field loader moved to external plugin module [`xnft-lemma-scanner`](https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft-lemma-scanner)
 
-[unreleased]: https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/compare/v0.1.0b2...HEAD
+[Unreleased]: https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/compare/v0.1.0b2...v0.1.0
+[v0.1.0]: https://www.gitlab.msu.edu/ece-lemma/public/xnft/xnft/-/compare/v0.1.0b2...v0.1.0
+
